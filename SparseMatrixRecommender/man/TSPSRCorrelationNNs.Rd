@@ -9,7 +9,7 @@ TSPSRCorrelationNNs(timeSeriesMat, smr, itemIDtoNameRules,
   smr.nrecs = 2000, method = "pearson")
 }
 \arguments{
-\item{timeSeriesMat}{A matrix with time siries.}
+\item{timeSeriesMat}{A matrix with time series.}
 
 \item{smr}{An SMR object (e.g. based on time averaged signals).}
 
