@@ -4,14 +4,15 @@
 \alias{SMRCreateFromMatrices}
 \title{Creation of a Sparse Matrix Recommender object with matrix.}
 \usage{
-SMRCreateFromMatrices(matrices, tagTypes, itemColumnName)
+SMRCreateFromMatrices(matrices, tagTypes = NULL,
+  itemColumnName = "Item")
 }
 \arguments{
-\item{matrices}{Matrices to be spliced into a metadata matrix.}
+\item{matrices}{A list of matrices to be spliced into a metadata matrix.}
 
-\item{tagTypes}{The name of the column containing the categorical tags.}
+\item{tagTypes}{Optional vector of matrix names. If NULL the names \code{matrices} are used.}
 
-\item{itemColumnName}{The name of the column containing the unique items.}
+\item{itemColumnName}{The column name of recommender items (in data and recommendations).}
 }
 \value{
 SMR object
@@ -24,6 +25,6 @@ An S3 object is returned that is list with class attribute set to "SMR".
 }
 \seealso{
 Other Creation functions: \code{\link{SMRCreateItemTagMatrix}},
-  \code{\link{SMRCreate}}
+  \code{\link{SMRCreate}}, \code{\link{TSCorrSMRCreate}}
 }
 \concept{Creation functions}

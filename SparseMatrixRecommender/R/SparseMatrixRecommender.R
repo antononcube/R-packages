@@ -148,15 +148,22 @@ SMRCreate <- function(dataRows, tagTypes, itemColumnName ){
 
 #' Creation of a Sparse Matrix Recommender object with matrix.
 #' @description Creates a sparse matrix recommender from a list of matrices and a corresponding list of tag types.
-#' @param matrices Matrices to be spliced into a metadata matrix.
-#' @param tagTypes The name of the column containing the categorical tags.
-#' @param itemColumnName The name of the column containing the unique items.
+#' @param matrices A list of matrices to be spliced into a metadata matrix.
+#' @param tagTypes Optional vector of matrix names. If NULL the names \code{matrices} are used.
+#' @param itemColumnName The column name of recommender items (in data and recommendations).
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
 #' @return SMR object
 #' @family Creation functions
 #' @export
-SMRCreateFromMatrices <- function( matrices, tagTypes, itemColumnName ){
+SMRCreateFromMatrices <- function( matrices, tagTypes = NULL, itemColumnName = "Item" ){
 
+  if( is.null(tagTypes) ) { 
+    tagTypes <- names(matrices)
+    if( length(unique(names(matrices))) < length(matrices) ) {
+      stop( "When tagTypes = NULL the elements of the argument matrices are expected to have unique names.", call. = TRUE )
+    }
+  }
+  
   if ( length(matrices) != length(tagTypes)  ) {
     stop("The same number of matrices and tag types is required.", call.=TRUE)
   }
@@ -167,7 +174,7 @@ SMRCreateFromMatrices <- function( matrices, tagTypes, itemColumnName ){
   ends <- cumsum(widths)
   begins <- ends - widths + 1
   ranges <- data.frame(Begin=begins, End=ends)
-  rownames(ranges)=tagTypes
+  rownames(ranges) <- tagTypes
 
   tagToIndexRules <- 1:ncol(m)
   names(tagToIndexRules) <- colnames(m)
