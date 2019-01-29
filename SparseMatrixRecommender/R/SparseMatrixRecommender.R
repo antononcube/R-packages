@@ -860,15 +860,66 @@ SMRRemoveTagTypes <- function( smr, removeTagTypes ) {
   newSMR
 }
 
+
 ##===========================================================
-## SMR algebra operations
+## Sparse matrix transformations
 ##===========================================================
+
+#' Convert a data frame of triplets into a sparse matrix.
+#' @description Turns a data frame of three columns (triplets) into a sparse matrix.
+#' @param triplets A data frame with three columns.
+#' @return A sparse matrix
+#' @family Sparse matrix transformations
+#' @export
+SMRTripletsToSparseMatrix <-  function( triplets ) {
+  itemIDs <- unique( triplets[,1] )
+  propertyIDs <- unique( triplets[,2] )
+  itemIDToIndex <- 1:length(itemIDs)
+  names(itemIDToIndex) <- itemIDs
+  propertyIDToIndex <- 1:length(propertyIDs)
+  names(propertyIDToIndex) <- propertyIDs
+  smat <- sparseMatrix( i=itemIDToIndex[ triplets[,1] ],
+                        j=propertyIDToIndex[ triplets[,2] ],
+                        x=triplets[,3],
+                        dims=c( length(itemIDs), length(propertyIDs) )  )
+  rownames(smat) <- itemIDs
+  colnames(smat) <- propertyIDs
+  
+  # I don't think we need the rules arrays. We can always re-create them if needed.
+  #list( Matrix=smat, ItemIDToIndex=itemIDToIndex, PropertyIDToIndex=propertyIDToIndex )
+  smat
+}
+
+#' Convert sparse matrix into triplets.
+#' @description Converts a sparse matrix into a data frame triplets.
+#' @param smat A sparse matrix.
+#' @return A data frame of triplets 
+#' @family Sparse matrix transformations
+#' @export
+SMRSparseMatrixToTriplets <- function( smat ) {
+  # Use summary() over sparse matrix.
+  # Then using rules over the indices.
+  triplets <- summary(smat)
+  
+  # Rules
+  if( !is.null(colnames(smat)) && !is.null(rownames(smat)) ) {
+    rowRules <- 1:nrow(smat)
+    names(rowRules) <- rownames( smat )
+    colRules <- 1:ncol(smat)
+    names(colRules) <- colnames( smat )
+    triplets$i <- names( rowRules[ triplets$i ] )
+    triplets$j <- names( colRules[ triplets$j ] )
+  }
+  
+  triplets
+}
 
 #' Impose row ID's.
 #' @description Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
 #' @param rowIDs An array of row ID's.
 #' @param smat A matrix with named rows.
 #' @return Matrix
+#' @family Sparse matrix transformations
 #' @export
 SMRImposeRowIDs <- function( rowIDs, smat ) {
 
@@ -893,11 +944,17 @@ SMRImposeRowIDs <- function( rowIDs, smat ) {
 #' @param colIDs An array of column ID's.
 #' @param smat A matrix with named columns.
 #' @return Matrix
+#' @family Sparse matrix transformations
 #' @export
 SMRImposeColumnIDs <- function( colIDs, smat ) {
 
   t( SMRImposeRowIDs( colIDs, t(smat)) )
 }
+
+
+##===========================================================
+## SMR algebra operations
+##===========================================================
 
 #' Annex a sub-matrix.
 #' @description Annex a sub-matrix to the metadata matrix of an SMR object.
@@ -1068,7 +1125,7 @@ SMRMatricesToLongDF <- function( smr, tagTypes = NULL, .progress = "none" ) {
   if ( is.null(tagTypes) ) { tagTypes = smr$TagTypes }
 
   dfs <-
-    llply( tagTypes, function(tt) {
+    plyr::llply( tagTypes, function(tt) {
       df <- SMRSparseMatrixToDF(smr, tt)
       if ( nrow(df) == 0 ) { NULL }
       else {
@@ -1094,6 +1151,7 @@ SMRMatricesToWideDF <- function( smr, tagTypes = NULL, sep = ", ", .progress = "
                              formula = as.formula( paste( smr$ItemColumnName, " ~ TagType " ) ),
                              value.var = "Value", fun.aggregate = function(x) paste(x, collapse = sep ) )
 }
+
 
 
 ##===========================================================

@@ -143,7 +143,7 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
 #' @param smr A sparse matrix recommender.
 #' @param classLabelMatrix A matrix with class labels; each column is for 
 #' a different label.
-#' @param correlationMethod Corellation method, one of: 
+#' @param correlationMethod Correlation method, one of: 
 #' 'dot', 'pearson', 'spearman', 'kendall'.
 #' @param smrNRecs The number of recommendations for the intermediate candidate 
 #' finding using the SMR object \code{smr}.

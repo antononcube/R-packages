@@ -16,7 +16,7 @@ TSCorrSMRCreate(timeSeriesMatrix, smr, classLabelMatrix = NULL,
 \item{classLabelMatrix}{A matrix with class labels; each column is for 
 a different label.}
 
-\item{correlationMethod}{Corellation method, one of: 
+\item{correlationMethod}{Correlation method, one of: 
 'dot', 'pearson', 'spearman', 'kendall'.}
 
 \item{smrNRecs}{The number of recommendations for the intermediate candidate 

@@ -51,10 +51,12 @@
 ##=======================================================================================
 
 
-#' @import shiny
-#' @import shinydashboard
+#' @import dplyr
+#' @import ggplot2
 #' @import DT
 #' @import RcppRoll
+#' @import shiny
+#' @import shinydashboard
 NULL
 
 ##===========================================================
@@ -84,7 +86,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
         
         tabItem( tabName = "NNs",
                  
-                 selectInput( "searchID", "Entety:", rownames(tsSMR$SMR$M) ),
+                 selectInput( "searchID", "Entity:", rownames(tsSMR$SMR$M) ),
                  
                  numericInput( "numberOfNNs", "Number of NNs:", 12 ),
                  
@@ -153,38 +155,38 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
     
     recResNNsExtended <- reactive( 
       
-      setNames( SparseMatrixToTriplets( smat = tsSMR$TSMat ), c("Entety", "TimeIntervalBoundaryName", "Value" ) ) %>% 
+      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>% 
         # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
         mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
-        dplyr::filter( Entety %in% recResNNs()$ItemID ) %>%
-        inner_join( recResNNs(), by = c("Entety" = "ItemID" ) ) %>% 
-        arrange( Score, Entety, TimeIntervalBoundary) %>%
-        group_by( Entety ) %>%
-        mutate( Value.ma = RcppRoll::roll_mean(Value, 12, align="right", fill=0) ) %>%
-        ungroup()
+        dplyr::filter( Entity %in% recResNNs()$ItemID ) %>%
+        dplyr::inner_join( recResNNs(), by = c("Entity" = "ItemID" ) ) %>% 
+        dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
+        dplyr::group_by( Entity ) %>%
+        dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, 12, align="right", fill=0) ) %>%
+        dplyr::ungroup()
       
     )
     
     recResSVecExtended <- reactive( 
       
-      setNames( SparseMatrixToTriplets( smat = tsSMR$TSMat ), c("Entety", "TimeIntervalBoundaryName", "Value" ) ) %>% 
+      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>% 
         # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
         mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
-        dplyr::filter( Entety %in% recResSVec()$ItemID ) %>%
-        inner_join( recResSVec(), by = c("Entety" = "ItemID" ) ) %>% 
-        arrange( Score, Entety, TimeIntervalBoundary) %>%
-        group_by( Entety ) %>%
-        mutate( Value.ma = roll_mean(Value, 12, align="right", fill=0) ) %>%
-        ungroup()
+        dplyr::filter( Entity %in% recResSVec()$ItemID ) %>%
+        dplyr::inner_join( recResSVec(), by = c("Entity" = "ItemID" ) ) %>% 
+        dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
+        dplyr::group_by( Entity ) %>%
+        dplyr::mutate( Value.ma = roll_mean(Value, 12, align="right", fill=0) ) %>%
+        dplyr::ungroup()
       
     )
     
-    ## Entety NNs plot 
+    ## Entity NNs plot 
     output$entetyNNsPlot <- renderPlot( {
       
-      ggplot( recResNNsExtended() ) +
-        geom_line( aes_string( x = "TimeIntervalBoundary", y = input$nnsValueColName, color = "ItemName" ), na.rm = T ) +
-        facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free" )
+      ggplot2::ggplot( recResNNsExtended() ) +
+        ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = input$nnsValueColName, color = "ItemName" ), na.rm = T ) +
+        ggplot2::facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free" )
       
     })
     
@@ -196,8 +198,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
     ## Search vector plot 
     output$searchVectorPlot <- renderPlot( {
       
-      ggplot( searchVecPlotDF() ) +
-        geom_line( aes( x = TimeIntervalBoundary, y = Value ), na.rm = T )
+      ggplot2::ggplot( searchVecPlotDF() ) +
+        ggplot2::geom_line( ggplot2::aes( x = TimeIntervalBoundary, y = Value ), na.rm = T )
       
     })
     
@@ -220,10 +222,10 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
           res
         } )
       
-      ggplot( recResSVecExtended()  ) +
-        geom_line( aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName" ), na.rm = T ) +
-        facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free" ) +
-        geom_line( data = searchVecPlotDF2, aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
+      ggplot2::ggplot( recResSVecExtended()  ) +
+        ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName" ), na.rm = T ) +
+        ggplot2::facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free" ) +
+        ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
       
       
     })
