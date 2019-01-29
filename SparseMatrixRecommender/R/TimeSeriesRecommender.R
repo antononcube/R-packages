@@ -39,7 +39,7 @@ NULL
 
 #' Time series recommendations finding.
 #' @description Finds time series recommendations for specified search row ID and / or search vector ID.
-#' @param timeSeriesMat A matrix with time siries.
+#' @param timeSeriesMat A matrix with time series.
 #' @param smr An SMR object (e.g. based on time averaged signals).
 #' @param itemIDtoNameRules Item ID's to names rules.
 #' @param searchRowID Search row ID that is in \code{rownames(timeSeriesMat) == rownames(smr$M)} or NULL.
@@ -141,10 +141,15 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
 #' Time series recommender creation.
 #' @param timeSeriesMatrix A time series matrix.
 #' @param smr A sparse matrix recommender.
-#' @param classLabelMatrix A matrix with class labels; each column is for a different label.
-#' @param correlationMethod Corellation method, one of: 'dot', 'pearson', 'spearman', 'kendall'.
-#' @param smrNRecs The number of recommendations for the intermediate candidate finding using the SMR object \code{smr}.
+#' @param classLabelMatrix A matrix with class labels; each column is for 
+#' a different label.
+#' @param correlationMethod Corellation method, one of: 
+#' 'dot', 'pearson', 'spearman', 'kendall'.
+#' @param smrNRecs The number of recommendations for the intermediate candidate 
+#' finding using the SMR object \code{smr}.
 #' @param itemIDtoNameRules Item ID's to names rules.
+#' @param tibNameToTIBRules A vector with named elements that maps time matrix 
+#' column names to time interval boundaries.
 #' @return A list (an S3 object)
 #' @family Creation functions
 #' @export
@@ -152,10 +157,16 @@ TSCorrSMRCreate <- function( timeSeriesMatrix, smr,
                              classLabelMatrix = NULL, 
                              correlationMethod = "pearson", 
                              smrNRecs = 2000, 
-                             itemIDtoNameRules = NULL ) {
+                             itemIDtoNameRules = NULL,
+                             tibNameToTIBRules = NULL ) {
   
-  obj <- list( TSMat = timeSeriesMatrix, SMR = smr, ClassLabelsMat = classLabelMatrix,
-               CorrelationMethod = correlationMethod, SMRNRecs = smrNRecs, ItemIDtoNameRules = itemIDtoNameRules )
+  obj <- list( TSMat = timeSeriesMatrix,
+               SMR = smr, 
+               ClassLabelsMat = classLabelMatrix,
+               CorrelationMethod = correlationMethod, 
+               SMRNRecs = smrNRecs, 
+               ItemIDtoNameRules = itemIDtoNameRules,
+               TIBNameToTIBRules = tibNameToTIBRules )
   class(obj) <- "TSCorrSMR"
   obj
 }
