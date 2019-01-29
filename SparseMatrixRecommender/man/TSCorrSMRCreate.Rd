@@ -6,20 +6,26 @@
 \usage{
 TSCorrSMRCreate(timeSeriesMatrix, smr, classLabelMatrix = NULL,
   correlationMethod = "pearson", smrNRecs = 2000,
-  itemIDtoNameRules = NULL)
+  itemIDtoNameRules = NULL, tibNameToTIBRules = NULL)
 }
 \arguments{
 \item{timeSeriesMatrix}{A time series matrix.}
 
 \item{smr}{A sparse matrix recommender.}
 
-\item{classLabelMatrix}{A matrix with class labels; each column is for a different label.}
+\item{classLabelMatrix}{A matrix with class labels; each column is for 
+a different label.}
 
-\item{correlationMethod}{Corellation method, one of: 'dot', 'pearson', 'spearman', 'kendall'.}
+\item{correlationMethod}{Corellation method, one of: 
+'dot', 'pearson', 'spearman', 'kendall'.}
 
-\item{smrNRecs}{The number of recommendations for the intermediate candidate finding using the SMR object \code{smr}.}
+\item{smrNRecs}{The number of recommendations for the intermediate candidate 
+finding using the SMR object \code{smr}.}
 
 \item{itemIDtoNameRules}{Item ID's to names rules.}
+
+\item{tibNameToTIBRules}{A vector with named elements that maps time matrix 
+column names to time interval boundaries.}
 }
 \value{
 A list (an S3 object)
