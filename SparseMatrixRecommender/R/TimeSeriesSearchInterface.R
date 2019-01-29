@@ -51,8 +51,10 @@
 ##=======================================================================================
 
 
+#' @import shiny
 #' @import shinydashboard
 #' @import DT
+#' @import RcppRoll
 NULL
 
 ##===========================================================
@@ -158,7 +160,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
         inner_join( recResNNs(), by = c("Entety" = "ItemID" ) ) %>% 
         arrange( Score, Entety, TimeIntervalBoundary) %>%
         group_by( Entety ) %>%
-        mutate( Value.ma = roll_mean(Value, 12, align="right", fill=0) ) %>%
+        mutate( Value.ma = RcppRoll::roll_mean(Value, 12, align="right", fill=0) ) %>%
         ungroup()
       
     )
@@ -244,6 +246,14 @@ TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL ) {
   
   if( is.null(tsSearchVectors) ) {
     tsSearchVectors <- MakeTimeSeriesSearchVectors( tsSMR$TSMat )
+  }
+  
+  if( is.null(tsSMR$ItemIDtoNameRules) ) {
+    tsSMR$ItemIDtoNameRules <- setNames( rownames(tsSMR$SMR$M), rownames(tsSMR$SMR$M) )
+  }
+  
+  if( is.null(tsSMR$TIBNameToTIBRules) ) {
+    tsSMR$TIBNameToTIBRules <- setNames( 1:ncol(tsSMR$TSMat), colnames(tsSMR$TSMat))
   }
   
   shiny::shinyApp( ui = TSCorrSMRMakeUI( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors ), 

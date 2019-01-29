@@ -17,5 +17,7 @@ Imports:
     DT,
     Matrix,
     plyr,
+    RcppRoll,
     reshape2,
+    shiny,
     shinydashboard
