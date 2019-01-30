@@ -53,7 +53,6 @@
 
 #' @import dplyr
 #' @import ggplot2
-#' @import DT
 #' @import RcppRoll
 #' @import shiny
 #' @import shinydashboard
@@ -63,11 +62,11 @@ NULL
 ## UI page
 ##===========================================================
 
-#' Time series search interface UI.
+#' Time series search interface UI
 #' @param tsSMR A time series recommender.
 #' @param tsSearchVectors A list of time series search vectors.
-#' @return Shiny UI object
-#' @family Time series search interface
+#' @return Shiny UI object.
+#' @family Time series search interface functions
 #' @export
 TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
   
@@ -126,11 +125,11 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 ## server function
 ##===========================================================
 
-#' Time series search interface server function.
+#' Time series search interface server function
 #' @param tsSMR A time series recommender.
 #' @param tsSearchVectors A list of time series search vectors.
-#' @return Shiny server function
-#' @family Time series search interface
+#' @return Shiny server function.
+#' @family Time series search interface functions.
 #' @export
 TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
   
@@ -238,11 +237,11 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
 ## Make shiny app
 ##===========================================================
 
-#' Creation of time series search interface.
+#' Creation of time series search interface
 #' @param tsSMR A time series recommender.
 #' @param tsSearchVectors A list of time series search vectors.
-#' @return Shiny app object
-#' @family Time series search interface
+#' @return Shiny app object.
+#' @family Time series search interface functions
 #' @export
 TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL ) {
   

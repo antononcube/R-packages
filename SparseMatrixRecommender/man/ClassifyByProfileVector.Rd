@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{ClassifyByProfileVector}
 \alias{ClassifyByProfileVector}
-\title{Classification using a profile vector.}
+\title{Classification using a profile vector}
 \usage{
 ClassifyByProfileVector(x, tagType, profileVec, nTopNNs, voting = FALSE)
 }

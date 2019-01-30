@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRProfileVector}
 \alias{SMRProfileVector}
-\title{Profile vector calculation.}
+\title{Profile vector calculation}
 \usage{
 SMRProfileVector(smr, itemHistory)
 }
@@ -12,7 +12,7 @@ SMRProfileVector(smr, itemHistory)
 \item{itemHistory}{A data frame with items history with column names c("Rating", "Item").}
 }
 \value{
-Sparse matrix
+Sparse matrix.
 }
 \description{
 Calculate profile vector from item history.

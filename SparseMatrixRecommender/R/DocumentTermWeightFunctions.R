@@ -49,9 +49,9 @@
 ##=======================================================================================
 
 
-#' @import plyr
-#' @import reshape2
 #' @import Matrix
+#' @import purrr
+#' @import reshape2
 NULL
 
 # Defined for legacy code purposes
@@ -195,7 +195,7 @@ SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL
 
         warning( "The normalization per row with the argument normalizerFunction set to 'Max' or 'Maximum' is potentially very slow." )
 
-        svec <- laply( 1:nrow(mat), function(i) { max( mat[i,,drop=FALSE] ) })
+        svec <- purrr::map_dbl( 1:nrow(mat), function(i) { max( mat[i,,drop=FALSE] ) })
         svec <- ifelse( svec > 0, svec, 1 )
         mat <- mat / svec
 
@@ -282,14 +282,12 @@ SMRToBagOfWords <- function( text, split = "\\W", punctuationPattern = "[[:punct
 #' @param ids A list of ID's corresponding to the documents.
 #' @param split A string pattern to split with.
 #' @param applyWordStemming Should word stemming be applied or not?
-#' @param .progress progress argument of plyr functions (plyr::ldply)
 #' @details It would be nice if this function uses SMRToBagOfWords function defined above.
 #' @return Sparse matrix
 #' @family Document-term matrix functions
 #' @export
 SMRMakeDocumentTermMatrix <- function( documents, ids = NULL, split = "\\W",
-                                       applyWordStemming = TRUE, minWordLength = 2,
-                                       .progress = "none" ) {
+                                       applyWordStemming = TRUE, minWordLength = 2 ) {
 
   if ( is.null(ids) ) { ids = 1:length(documents) }
 
@@ -301,8 +299,8 @@ SMRMakeDocumentTermMatrix <- function( documents, ids = NULL, split = "\\W",
   ss <- setNames( strsplit( documents, split = split ), ids )
 
   ## Remove words that are too short
-  ss <- ss[ plyr::llply(ss, length) > 0 ]
-  ss <- plyr::llply( ss, function(x) x[ nchar(x) > minWordLength ] )
+  ss <- ss[ purrr::map(ss, length) > 0 ]
+  ss <- purrr::map( ss, function(x) x[ nchar(x) > minWordLength ] )
 
   ## Convert all words to lower case and apply stemming
   snLoadQ = exists("wordStem")
@@ -311,14 +309,14 @@ SMRMakeDocumentTermMatrix <- function( documents, ids = NULL, split = "\\W",
       snLoadQ = require("SnowballC")
   }
   if ( applyWordStemming && snLoadQ ) {
-    ss <- plyr::llply( ss, function(x) wordStem( tolower(x) ) )
+    ss <- purrr::map( ss, function(x) wordStem( tolower(x) ) )
   } else {
-    ss <- plyr::llply( ss, function(x) tolower(x) )
+    ss <- purrr::map( ss, function(x) tolower(x) )
   }
-  ss <- ss[ plyr::llply(ss, length) > 0 ]
+  ss <- ss[ purrr::map(ss, length) > 0 ]
 
   ## Make document-term contingency matrix
-  ssDF <- plyr::ldply( 1:length(ss), function(i) { data.frame( id = names(ss)[i], term = ss[[i]], stringsAsFactors = FALSE ) }, .progress = .progress )
+  ssDF <- purrr::map_df( 1:length(ss), function(i) { data.frame( id = names(ss)[i], term = ss[[i]], stringsAsFactors = FALSE ) }, .progress = .progress )
   dtMat <- xtabs( formula = ~ id + term, ssDF, sparse = TRUE )
 
   dtMat

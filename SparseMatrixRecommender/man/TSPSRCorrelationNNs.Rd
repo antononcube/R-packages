@@ -2,7 +2,7 @@
 % Please edit documentation in R/TimeSeriesRecommender.R
 \name{TSPSRCorrelationNNs}
 \alias{TSPSRCorrelationNNs}
-\title{Time series recommendations finding.}
+\title{Time series recommendations finding}
 \usage{
 TSPSRCorrelationNNs(timeSeriesMat, smr, itemIDtoNameRules,
   searchRowID = NULL, searchVector = NULL, nrecs = 12,

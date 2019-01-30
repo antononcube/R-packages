@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRRecommendationsByProfileDF}
 \alias{SMRRecommendationsByProfileDF}
-\title{Recommendations using a profile data frame.}
+\title{Recommendations using a profile data frame}
 \usage{
 SMRRecommendationsByProfileDF(smr, profile, nrecs)
 }

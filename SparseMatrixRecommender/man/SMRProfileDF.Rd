@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRProfileDF}
 \alias{SMRProfileDF}
-\title{Profile vector calculation.}
+\title{Profile vector calculation}
 \usage{
 SMRProfileDF(smr, itemHistory)
 }

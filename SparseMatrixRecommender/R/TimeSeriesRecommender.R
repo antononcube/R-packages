@@ -31,13 +31,13 @@
 #
 #=======================================================================================
 
-#' @import plyr
+#' @import purrr
 #' @import reshape2
 #' @import Matrix
 #' @import stringr
 NULL
 
-#' Time series recommendations finding.
+#' Time series recommendations finding
 #' @description Finds time series recommendations for specified search row ID and / or search vector ID.
 #' @param timeSeriesMat A matrix with time series.
 #' @param smr An SMR object (e.g. based on time averaged signals).
@@ -138,7 +138,7 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
 }
 
 
-#' Time series recommender creation.
+#' Time series recommender creation
 #' @param timeSeriesMatrix A time series matrix.
 #' @param smr A sparse matrix recommender.
 #' @param classLabelMatrix A matrix with class labels; each column is for 
@@ -150,7 +150,7 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
 #' @param itemIDtoNameRules Item ID's to names rules.
 #' @param tibNameToTIBRules A vector with named elements that maps time matrix 
 #' column names to time interval boundaries.
-#' @return A list (an S3 object)
+#' @return A list (an S3 object).
 #' @family Creation functions
 #' @export
 TSCorrSMRCreate <- function( timeSeriesMatrix, smr, 
@@ -181,7 +181,7 @@ TSCorrSMRCreate <- function( timeSeriesMatrix, smr,
 ##    class(...) = "TSCorrSMR"
 ## The dimensions of TSMat and SMR$M have to be the same.
 
-#' Time series recommendations calculation.
+#' Time series recommendations calculation
 #' @description Specialization of Recommendations for TSCorrSMR objects.
 #' @return A data frame with columns "Score", "Item".
 #' @export
@@ -223,7 +223,7 @@ Recommendations.TSCorrSMR <- function( x, historyItems, historyRatings, nrecs, r
   recs
 }
 
-#' Classification with time series recommender.
+#' Classification with time series recommender
 #' @description Specialization of \code{ClassifyByProfileVector} for time series recommender objects.
 #' @param x A time series recommender object ("TSCorrSMR").
 #' @param profileVec A profile vector.
@@ -272,7 +272,7 @@ ClassifyByProfileVector.TSCorrSMR <- function ( x, profileVec, nTopNNs, voting =
 ## Time series search vectors
 ##===========================================================
 
-#' Search time series creation.
+#' Search time series creation
 #' @description Creates a list of search vectors (time series) for a given time series matrix.
 #' @param tsMat A sparse matrix with rows corresponding to time series.
 #' @details This "helper" function can be used for finding trends of the signals.

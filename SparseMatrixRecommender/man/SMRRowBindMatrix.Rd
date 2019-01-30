@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRRowBindMatrix}
 \alias{SMRRowBindMatrix}
-\title{Row bind a matrix with a sparse matrix recommender.}
+\title{Row bind a matrix with a sparse matrix recommender}
 \usage{
 SMRRowBindMatrix(smr, smat)
 }
@@ -12,14 +12,13 @@ SMRRowBindMatrix(smr, smat)
 \item{smat}{A sparse matrix.}
 }
 \value{
-Sparse matrix recommender
+A sparse matrix recommender.
 }
 \description{
 Row-binds the matrix of a sparse matrix recommender with a sparse matrix.
 }
 \seealso{
-Other SMR modification: \code{\link{SMRAnnexSubMatrix}},
-  \code{\link{SMRJoin}}, \code{\link{SMRRemoveTagTypes}},
-  \code{\link{SMRRowBind}}
+Other SMR modification functions: \code{\link{SMRAnnexSubMatrix}},
+  \code{\link{SMRJoin}}
 }
-\concept{SMR modification}
+\concept{SMR modification functions}

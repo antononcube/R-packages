@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRSparseMatrixToTriplets}
 \alias{SMRSparseMatrixToTriplets}
-\title{Convert sparse matrix into triplets.}
+\title{Convert sparse matrix into triplets}
 \usage{
 SMRSparseMatrixToTriplets(smat)
 }
@@ -10,14 +10,14 @@ SMRSparseMatrixToTriplets(smat)
 \item{smat}{A sparse matrix.}
 }
 \value{
-A data frame of triplets
+A data frame of triplets.
 }
 \description{
 Converts a sparse matrix into a data frame triplets.
 }
 \seealso{
-Other Sparse matrix transformations: \code{\link{SMRImposeColumnIDs}},
+Other Sparse matrix transformation functions: \code{\link{SMRImposeColumnIDs}},
   \code{\link{SMRImposeRowIDs}},
   \code{\link{SMRTripletsToSparseMatrix}}
 }
-\concept{Sparse matrix transformations}
+\concept{Sparse matrix transformation functions}

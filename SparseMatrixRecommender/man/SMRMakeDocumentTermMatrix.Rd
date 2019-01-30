@@ -5,7 +5,7 @@
 \title{Create document-term matrix from a document collection.}
 \usage{
 SMRMakeDocumentTermMatrix(documents, ids = NULL, split = "\\\\W",
-  applyWordStemming = TRUE, minWordLength = 2, .progress = "none")
+  applyWordStemming = TRUE, minWordLength = 2)
 }
 \arguments{
 \item{documents}{A list of documents.}
@@ -15,8 +15,6 @@ SMRMakeDocumentTermMatrix(documents, ids = NULL, split = "\\\\W",
 \item{split}{A string pattern to split with.}
 
 \item{applyWordStemming}{Should word stemming be applied or not?}
-
-\item{.progress}{progress argument of plyr functions (plyr::ldply)}
 }
 \value{
 Sparse matrix

@@ -2,21 +2,19 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRMatricesToWideDF}
 \alias{SMRMatricesToWideDF}
-\title{Sub-matrices to data frame wide form conversion.}
+\title{Sub-matrices to data frame wide form conversion}
 \usage{
 SMRMatricesToWideDF(smr, tagTypes = NULL, sep = ", ",
   .progress = "none")
 }
 \arguments{
-\item{smr}{a sparse matrix object}
+\item{smr}{A sparse matrix object.}
 
-\item{tagTypes}{the tag types to make the data frame with}
-
-\item{.progress}{Same as \code{.progress} argument for \code{plyr::llply}.}
+\item{tagTypes}{The tag types to make the data frame with.}
 }
 \value{
-Data frame
+A data frame.
 }
 \description{
-Long form of the data frame
+Long form of the data frame.
 }

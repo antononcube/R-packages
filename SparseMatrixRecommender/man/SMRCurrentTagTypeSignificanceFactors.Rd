@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRCurrentTagTypeSignificanceFactors}
 \alias{SMRCurrentTagTypeSignificanceFactors}
-\title{Get current tag type significance factors.}
+\title{Get current tag type significance factors}
 \usage{
 SMRCurrentTagTypeSignificanceFactors(smr)
 }

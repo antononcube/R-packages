@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRMetadataProofs}
 \alias{SMRMetadataProofs}
-\title{Metadata proofs.}
+\title{Metadata proofs}
 \usage{
 SMRMetadataProofs(smr, toBeLovedItem, profile, normalizeScores = TRUE,
   style = "intersection")

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{RecommenderItems}
 \alias{RecommenderItems}
-\title{Recommender items.}
+\title{Recommender items}
 \usage{
 RecommenderItems(recommender)
 }
@@ -13,5 +13,5 @@ RecommenderItems(recommender)
 A list of item ID's (strings).
 }
 \description{
-Recommender items.
+Recommender items
 }

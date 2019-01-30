@@ -2,10 +2,9 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRCreateFromSpecification}
 \alias{SMRCreateFromSpecification}
-\title{Creation of a Sparse Matrix Recommender object from a specification.}
+\title{Creation of a Sparse Matrix Recommender object from a specification}
 \usage{
-SMRCreateFromSpecification(data, metaDataSpec, itemCol,
-  .progress = "none", .verbose = FALSE)
+SMRCreateFromSpecification(data, metaDataSpec, itemCol)
 }
 \arguments{
 \item{data}{A transactions-like data frame.}
@@ -16,9 +15,15 @@ SMRCreateFromSpecification(data, metaDataSpec, itemCol,
 \item{itemCol}{The name of the column containing the unique items.}
 }
 \value{
-SMR object
+SMR object.
 }
 \description{
 Creates a sparse matrix recommender from transactions-like data
 and a meta-data specification.
 }
+\seealso{
+Other Creation functions: \code{\link{SMRCreateFromMatrices}},
+  \code{\link{SMRCreateItemTagMatrix}},
+  \code{\link{SMRCreate}}, \code{\link{TSCorrSMRCreate}}
+}
+\concept{Creation functions}

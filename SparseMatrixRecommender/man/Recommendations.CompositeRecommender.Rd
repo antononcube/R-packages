@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{Recommendations.CompositeRecommender}
 \alias{Recommendations.CompositeRecommender}
-\title{Calculate recommendations with a composite recommender.}
+\title{Calculate recommendations with a composite recommender}
 \usage{
 \method{Recommendations}{CompositeRecommender}(x, historyItems,
   historyRatings, nrecs, removeHistory = TRUE,

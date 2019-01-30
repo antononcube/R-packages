@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRRecommendationsByProfileVector}
 \alias{SMRRecommendationsByProfileVector}
-\title{Recommendations by profile vector.}
+\title{Recommendations by profile vector}
 \usage{
 SMRRecommendationsByProfileVector(smr, profileVec, nrecs)
 }

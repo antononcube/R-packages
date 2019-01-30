@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRRecommendationsVectorToDF}
 \alias{SMRRecommendationsVectorToDF}
-\title{Convert a recommendations vector to a data frame.}
+\title{Convert a recommendations vector to a data frame}
 \usage{
 SMRRecommendationsVectorToDF(rvec, history, nrecs, removeHistory)
 }
@@ -14,6 +14,9 @@ SMRRecommendationsVectorToDF(rvec, history, nrecs, removeHistory)
 \item{nrecs}{Number of recommendations to be returned.}
 
 \item{removeHistory}{Should the history be dropped or not?}
+}
+\value{
+Data frame.
 }
 \description{
 Convert a recommendations vector to a data frame.

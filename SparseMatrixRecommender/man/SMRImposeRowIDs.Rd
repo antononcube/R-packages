@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRImposeRowIDs}
 \alias{SMRImposeRowIDs}
-\title{Impose row ID's.}
+\title{Impose row ID's}
 \usage{
 SMRImposeRowIDs(rowIDs, smat)
 }
@@ -12,14 +12,14 @@ SMRImposeRowIDs(rowIDs, smat)
 \item{smat}{A matrix with named rows.}
 }
 \value{
-Matrix
+Matrix.
 }
 \description{
 Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
 }
 \seealso{
-Other Sparse matrix transformations: \code{\link{SMRImposeColumnIDs}},
+Other Sparse matrix transformation functions: \code{\link{SMRImposeColumnIDs}},
   \code{\link{SMRSparseMatrixToTriplets}},
   \code{\link{SMRTripletsToSparseMatrix}}
 }
-\concept{Sparse matrix transformations}
+\concept{Sparse matrix transformation functions}

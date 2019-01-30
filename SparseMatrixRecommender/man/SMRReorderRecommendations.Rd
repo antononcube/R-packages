@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRReorderRecommendations}
 \alias{SMRReorderRecommendations}
-\title{Recommendations reordering.}
+\title{Recommendations reordering}
 \usage{
 SMRReorderRecommendations(smr, recs, tagIDs)
 }

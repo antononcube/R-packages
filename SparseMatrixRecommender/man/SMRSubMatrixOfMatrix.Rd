@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRSubMatrixOfMatrix}
 \alias{SMRSubMatrixOfMatrix}
-\title{Sub-matrix corresponding to a tag type.}
+\title{Sub-matrix corresponding to a tag type}
 \usage{
 SMRSubMatrixOfMatrix(M, ranges, tagType)
 }
@@ -12,6 +12,9 @@ SMRSubMatrixOfMatrix(M, ranges, tagType)
 \item{ranges}{Column ranges of sub-matrices (in a sparse matrix recommender object).}
 
 \item{tagType}{A tag type.}
+}
+\value{
+Sparse matrix.
 }
 \description{
 Returns the sub-matrix of a matrix that corresponds to a tag type in an SMR object.

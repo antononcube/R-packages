@@ -2,7 +2,7 @@
 % Please edit documentation in R/TimeSeriesRecommender.R
 \name{ClassifyByProfileVector.TSCorrSMR}
 \alias{ClassifyByProfileVector.TSCorrSMR}
-\title{Classification with time series recommender.}
+\title{Classification with time series recommender}
 \usage{
 \method{ClassifyByProfileVector}{TSCorrSMR}(x, profileVec, nTopNNs,
   voting = FALSE)

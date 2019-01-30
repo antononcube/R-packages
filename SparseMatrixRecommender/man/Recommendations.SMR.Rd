@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{Recommendations.SMR}
 \alias{Recommendations.SMR}
-\title{Specialization of Recommendations for SMR objects.}
+\title{Specialization of Recommendations for SMR objects}
 \usage{
 \method{Recommendations}{SMR}(x, historyItems, historyRatings, nrecs,
   removeHistory = TRUE, ...)
@@ -25,6 +25,6 @@ The result is a data frame with the columns c("Score", "Item").
 Specialization of Recommendations for SMR objects.
 }
 \seealso{
-Other Recommendations calculations: \code{\link{Recommendations}}
+Other Recommendations calculation functions: \code{\link{Recommendations}}
 }
-\concept{Recommendations calculations}
+\concept{Recommendations calculation functions}

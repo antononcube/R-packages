@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRSubMatrix}
 \alias{SMRSubMatrix}
-\title{Sub-matrix corresponding to a tag type.}
+\title{Sub-matrix corresponding to a tag type}
 \usage{
 SMRSubMatrix(smr, tagType)
 }
@@ -12,7 +12,7 @@ SMRSubMatrix(smr, tagType)
 \item{tagType}{A tag type.}
 }
 \value{
-Sparse matrix
+Sparse matrix.
 }
 \description{
 Returns the sub-matrix of the SMR metadata matrix that corresponds to a tag type.

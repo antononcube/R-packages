@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRProfileDFToVector}
 \alias{SMRProfileDFToVector}
-\title{Conversion of a profile data frame to a vector.}
+\title{Conversion of a profile data frame to a vector}
 \usage{
 SMRProfileDFToVector(smr, profileDF, tagType = NULL,
   uniqueColumns = TRUE)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/TimeSeriesRecommender.R
 \name{TSCorrSMRCreate}
 \alias{TSCorrSMRCreate}
-\title{Time series recommender creation.}
+\title{Time series recommender creation}
 \usage{
 TSCorrSMRCreate(timeSeriesMatrix, smr, classLabelMatrix = NULL,
   correlationMethod = "pearson", smrNRecs = 2000,
@@ -28,13 +28,14 @@ finding using the SMR object \code{smr}.}
 column names to time interval boundaries.}
 }
 \value{
-A list (an S3 object)
+A list (an S3 object).
 }
 \description{
-Time series recommender creation.
+Time series recommender creation
 }
 \seealso{
 Other Creation functions: \code{\link{SMRCreateFromMatrices}},
+  \code{\link{SMRCreateFromSpecification}},
   \code{\link{SMRCreateItemTagMatrix}},
   \code{\link{SMRCreate}}
 }

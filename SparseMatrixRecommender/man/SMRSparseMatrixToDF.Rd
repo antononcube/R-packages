@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRSparseMatrixToDF}
 \alias{SMRSparseMatrixToDF}
-\title{Sub-matrix to data frame conversion.}
+\title{Sub-matrix to data frame conversion}
 \usage{
 SMRSparseMatrixToDF(smr, tagType)
 }
@@ -12,7 +12,7 @@ SMRSparseMatrixToDF(smr, tagType)
 \item{tagType}{A tag type (string).}
 }
 \value{
-Data frame
+A data frame.
 }
 \description{
 Makes a data frame of the sparse matrix recommender sub-matrix

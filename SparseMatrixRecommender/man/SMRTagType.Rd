@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRTagType}
 \alias{SMRTagType}
-\title{Tag type correspondence.}
+\title{Tag type correspondence}
 \usage{
 SMRTagType(smr, tag)
 }

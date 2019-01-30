@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRRecommendationsDF}
 \alias{SMRRecommendationsDF}
-\title{Compute recommendations using a history data frame.}
+\title{Compute recommendations using a history data frame}
 \usage{
 SMRRecommendationsDF(smr, history, nrecs, removeHistory = TRUE)
 }

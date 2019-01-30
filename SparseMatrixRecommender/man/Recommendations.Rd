@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{Recommendations}
 \alias{Recommendations}
-\title{Compute recommendations.}
+\title{Compute recommendations}
 \usage{
 Recommendations(x, historyItems, historyRatings, nrecs,
   removeHistory = TRUE, ...)
@@ -25,6 +25,6 @@ A data frame with the columns c("Score", "Item").
 The generic function for calculating recommendations by history.
 }
 \seealso{
-Other Recommendations calculations: \code{\link{Recommendations.SMR}}
+Other Recommendations calculation functions: \code{\link{Recommendations.SMR}}
 }
-\concept{Recommendations calculations}
+\concept{Recommendations calculation functions}

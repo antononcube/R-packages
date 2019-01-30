@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRItemData}
 \alias{SMRItemData}
-\title{Interpret recommendations.}
+\title{Interpret recommendations}
 \usage{
 SMRItemData(smr, recs, tagTypes = NULL)
 }

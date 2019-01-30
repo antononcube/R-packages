@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{ConsumptionProfile}
 \alias{ConsumptionProfile}
-\title{Calculation of a consumption profile.}
+\title{Calculation of a consumption profile}
 \usage{
 ConsumptionProfile(x, historyItems, historyRatings, allColumns = FALSE,
   ...)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRRecommendations}
 \alias{SMRRecommendations}
-\title{Compute recommendations.}
+\title{Compute recommendations}
 \usage{
 SMRRecommendations(smr, userHistoryItems, userRatings, nrecs,
   removeHistory = TRUE)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRCreateFromMatrices}
 \alias{SMRCreateFromMatrices}
-\title{Creation of a Sparse Matrix Recommender object with matrix.}
+\title{Creation of a Sparse Matrix Recommender object with matrix}
 \usage{
 SMRCreateFromMatrices(matrices, tagTypes = NULL,
   itemColumnName = "Item")
@@ -15,7 +15,7 @@ SMRCreateFromMatrices(matrices, tagTypes = NULL,
 \item{itemColumnName}{The column name of recommender items (in data and recommendations).}
 }
 \value{
-SMR object
+SMR object.
 }
 \description{
 Creates a sparse matrix recommender from a list of matrices and a corresponding list of tag types.
@@ -24,7 +24,8 @@ Creates a sparse matrix recommender from a list of matrices and a corresponding 
 An S3 object is returned that is list with class attribute set to "SMR".
 }
 \seealso{
-Other Creation functions: \code{\link{SMRCreateItemTagMatrix}},
+Other Creation functions: \code{\link{SMRCreateFromSpecification}},
+  \code{\link{SMRCreateItemTagMatrix}},
   \code{\link{SMRCreate}}, \code{\link{TSCorrSMRCreate}}
 }
 \concept{Creation functions}

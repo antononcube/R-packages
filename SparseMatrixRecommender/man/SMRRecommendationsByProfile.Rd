@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRRecommendationsByProfile}
 \alias{SMRRecommendationsByProfile}
-\title{Recommendations using two vectors comprising a profile.}
+\title{Recommendations using two vectors comprising a profile}
 \usage{
 SMRRecommendationsByProfile(smr, profileInds, profileRatings, nrecs)
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRRemoveTagTypes}
 \alias{SMRRemoveTagTypes}
-\title{Remove tag types from a sparse matrix recommender.}
+\title{Remove tag types from a sparse matrix recommender}
 \usage{
 SMRRemoveTagTypes(smr, removeTagTypes)
 }
@@ -12,14 +12,12 @@ SMRRemoveTagTypes(smr, removeTagTypes)
 \item{removeTagTypes}{A list of tag types to be removed from \code{smr}.}
 }
 \value{
-Sparse matrix recommender
+Sparse matrix recommender.
 }
 \description{
 Creates an SMR object from a given SMR object by removing specified tag types
 }
 \seealso{
-Other SMR modification: \code{\link{SMRAnnexSubMatrix}},
-  \code{\link{SMRJoin}}, \code{\link{SMRRowBindMatrix}},
-  \code{\link{SMRRowBind}}
+Other SMR modification: \code{\link{SMRRowBind}}
 }
 \concept{SMR modification}

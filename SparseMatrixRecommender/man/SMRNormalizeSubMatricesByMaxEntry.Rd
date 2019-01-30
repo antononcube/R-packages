@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRNormalizeSubMatricesByMaxEntry}
 \alias{SMRNormalizeSubMatricesByMaxEntry}
-\title{Normalization by maximum.}
+\title{Normalization by maximum}
 \usage{
 SMRNormalizeSubMatricesByMaxEntry(smr)
 }
@@ -10,7 +10,7 @@ SMRNormalizeSubMatricesByMaxEntry(smr)
 \item{smr}{A sparse matrix recommender object (list with named elements).}
 }
 \value{
-Sparse matrix
+Sparse matrix.
 }
 \description{
 Makes all sub-matrices to have elements between 0 and 1.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/TimeSeriesRecommender.R
 \name{Recommendations.TSCorrSMR}
 \alias{Recommendations.TSCorrSMR}
-\title{Time series recommendations calculation.}
+\title{Time series recommendations calculation}
 \usage{
 \method{Recommendations}{TSCorrSMR}(x, historyItems, historyRatings, nrecs,
   removeHistory = TRUE, ...)

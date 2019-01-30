@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{predict.SMR}
 \alias{predict.SMR}
-\title{Classification with a sparse matrix recommender object.}
+\title{Classification with a sparse matrix recommender object}
 \usage{
 \method{predict}{SMR}(smr, data, type = "decision", normalized = TRUE,
   ...)

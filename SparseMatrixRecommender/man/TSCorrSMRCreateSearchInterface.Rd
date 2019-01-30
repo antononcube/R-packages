@@ -2,7 +2,7 @@
 % Please edit documentation in R/TimeSeriesSearchInterface.R
 \name{TSCorrSMRCreateSearchInterface}
 \alias{TSCorrSMRCreateSearchInterface}
-\title{Creation of time series search interface.}
+\title{Creation of time series search interface}
 \usage{
 TSCorrSMRCreateSearchInterface(tsSMR, tsSearchVectors = NULL)
 }
@@ -12,13 +12,12 @@ TSCorrSMRCreateSearchInterface(tsSMR, tsSearchVectors = NULL)
 \item{tsSearchVectors}{A list of time series search vectors.}
 }
 \value{
-Shiny app object
+Shiny app object.
 }
 \description{
-Creation of time series search interface.
+Creation of time series search interface
 }
 \seealso{
-Other Time series search interface: \code{\link{TSCorrSMRMakeServerFunction}},
-  \code{\link{TSCorrSMRMakeUI}}
+Other Time series search interface functions: \code{\link{TSCorrSMRMakeUI}}
 }
-\concept{Time series search interface}
+\concept{Time series search interface functions}

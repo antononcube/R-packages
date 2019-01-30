@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRProfileDFFromVector}
 \alias{SMRProfileDFFromVector}
-\title{Conversion of a profile vector to a data frame.}
+\title{Conversion of a profile vector to a data frame}
 \usage{
 SMRProfileDFFromVector(smr, pvec)
 }

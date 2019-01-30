@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{ConsumptionProfile.SMR}
 \alias{ConsumptionProfile.SMR}
-\title{Calculation of a consumption profile with an SMR object.}
+\title{Calculation of a consumption profile with an SMR object}
 \usage{
 \method{ConsumptionProfile}{SMR}(x, historyItems, historyRatings,
   allColumns = FALSE, ...)

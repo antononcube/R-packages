@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{RecommenderTags}
 \alias{RecommenderTags}
-\title{Recommender tags.}
+\title{Recommender tags}
 \usage{
 RecommenderTags(recommender)
 }
@@ -13,5 +13,5 @@ RecommenderTags(recommender)
 A list of tags.
 }
 \description{
-Recommender tags.
+Recommender tags
 }

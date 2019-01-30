@@ -2,7 +2,7 @@
 % Please edit documentation in R/TimeSeriesRecommender.R
 \name{MakeTimeSeriesSearchVectors}
 \alias{MakeTimeSeriesSearchVectors}
-\title{Search time series creation.}
+\title{Search time series creation}
 \usage{
 MakeTimeSeriesSearchVectors(tsMat)
 }

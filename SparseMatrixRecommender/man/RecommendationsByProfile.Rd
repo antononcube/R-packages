@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{RecommendationsByProfile}
 \alias{RecommendationsByProfile}
-\title{Compute recommendations by profile.}
+\title{Compute recommendations by profile}
 \usage{
 RecommendationsByProfile(x, profileTags, profileTagScores, nrecs, ...)
 }

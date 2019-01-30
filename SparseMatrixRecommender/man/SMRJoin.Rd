@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRJoin}
 \alias{SMRJoin}
-\title{Join two sparse matrix recommender objects.}
+\title{Join two sparse matrix recommender objects}
 \usage{
 SMRJoin(smr1, smr2, colnamesPrefix1 = NULL, colnamesPrefix2 = NULL)
 }
@@ -16,14 +16,13 @@ SMRJoin(smr1, smr2, colnamesPrefix1 = NULL, colnamesPrefix2 = NULL)
 \item{colnamesPrefix2}{The prefix to be concatenated to the colnames of the second SMR object.}
 }
 \value{
-Sparse matrix recommender
+Sparse matrix recommender.
 }
 \description{
 Join two SMR objects.
 }
 \seealso{
-Other SMR modification: \code{\link{SMRAnnexSubMatrix}},
-  \code{\link{SMRRemoveTagTypes}},
-  \code{\link{SMRRowBindMatrix}}, \code{\link{SMRRowBind}}
+Other SMR modification functions: \code{\link{SMRAnnexSubMatrix}},
+  \code{\link{SMRRowBindMatrix}}
 }
-\concept{SMR modification}
+\concept{SMR modification functions}

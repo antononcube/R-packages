@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRApplyTagWeights}
 \alias{SMRApplyTagWeights}
-\title{Apply tag weights.}
+\title{Apply tag weights}
 \usage{
 SMRApplyTagWeights(smr, weights)
 }
@@ -12,7 +12,7 @@ SMRApplyTagWeights(smr, weights)
 \item{weights}{A list of weights to be applied.}
 }
 \value{
-Sparse matrix
+Sparse matrix.
 }
 \description{
 Changes the weights of the tags of a sparse matrix recommender object

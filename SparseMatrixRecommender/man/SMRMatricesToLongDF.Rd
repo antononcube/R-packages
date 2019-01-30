@@ -2,19 +2,17 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRMatricesToLongDF}
 \alias{SMRMatricesToLongDF}
-\title{Sub-matrices to data frame long form conversion.}
+\title{Sub-matrices to data frame long form conversion}
 \usage{
-SMRMatricesToLongDF(smr, tagTypes = NULL, .progress = "none")
+SMRMatricesToLongDF(smr, tagTypes = NULL)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
 \item{tagTypes}{A vector tag types (strings) to make the data frame with.}
-
-\item{.progress}{Same as \code{.progress} argument for \code{plyr::llply}.}
 }
 \value{
-Data frame
+A data frame.
 }
 \description{
 Long form of the data frame.

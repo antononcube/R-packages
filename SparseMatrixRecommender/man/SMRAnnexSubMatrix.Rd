@@ -2,26 +2,25 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRAnnexSubMatrix}
 \alias{SMRAnnexSubMatrix}
-\title{Annex a sub-matrix.}
+\title{Annex a sub-matrix}
 \usage{
 SMRAnnexSubMatrix(smr, newSubMat, newTagType)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
-\item{newSubMat}{The new sub-matrix to be annexed}
+\item{newSubMat}{The new sub-matrix to be annexed.}
 
 \item{newTagType}{The tag type associated with the new sub-matrix.}
 }
 \value{
-Sparse matrix recommender
+Sparse matrix recommender.
 }
 \description{
 Annex a sub-matrix to the metadata matrix of an SMR object.
 }
 \seealso{
-Other SMR modification: \code{\link{SMRJoin}},
-  \code{\link{SMRRemoveTagTypes}},
-  \code{\link{SMRRowBindMatrix}}, \code{\link{SMRRowBind}}
+Other SMR modification functions: \code{\link{SMRJoin}},
+  \code{\link{SMRRowBindMatrix}}
 }
-\concept{SMR modification}
+\concept{SMR modification functions}

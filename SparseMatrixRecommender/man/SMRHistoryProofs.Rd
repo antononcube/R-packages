@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRHistoryProofs}
 \alias{SMRHistoryProofs}
-\title{History proofs.}
+\title{History proofs}
 \usage{
 SMRHistoryProofs(smr, toBeLovedItem, history, normalizeScores = TRUE)
 }
