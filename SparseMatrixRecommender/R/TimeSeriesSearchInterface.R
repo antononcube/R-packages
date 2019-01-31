@@ -63,6 +63,7 @@ NULL
 ##===========================================================
 
 #' Time series search interface UI
+#' @description Creates the Shiny UI function for a time series search interface.
 #' @param tsSMR A time series recommender.
 #' @param tsSearchVectors A list of time series search vectors.
 #' @return Shiny UI object.
@@ -132,14 +133,15 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 
 
 ##===========================================================
-## server function
+## Server function
 ##===========================================================
 
 #' Time series search interface server function
+#' @description Creates the Shiny server function for a time series search interface.
 #' @param tsSMR A time series recommender.
 #' @param tsSearchVectors A list of time series search vectors.
 #' @return Shiny server function.
-#' @family Time series search interface functions.
+#' @family Time series search interface functions
 #' @export
 TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
   
@@ -248,6 +250,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
 ##===========================================================
 
 #' Creation of time series search interface
+#' @description Creates Shiny interface for a given time series recommender and 
+#' optional search time series shapes.
 #' @param tsSMR A time series recommender.
 #' @param tsSearchVectors A list of time series search vectors.
 #' @return Shiny app object.
