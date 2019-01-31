@@ -42,6 +42,7 @@
 ##=======================================================================================
 
 
+#' @import DT
 #' @import purrr
 #' @import shiny
 #' @import shinydashboard
@@ -83,14 +84,14 @@ SMRMakeUI <- function( itemSMR ) {
                 tabsetPanel( 
                   tabPanel( "Search results", 
                             h4("Search results"),
-                            shiny::dataTableOutput("view")
+                            DT::dataTableOutput("view")
                   ),
                   
                   tabPanel( "Consumed items list",
                             h4("Consumed items list"),
                             tabsetPanel(
-                              tabPanel( "short", shiny::dataTableOutput("itemList") ),
-                              tabPanel( "extended", shiny::dataTableOutput("itemListData") ) 
+                              tabPanel( "short", DT::dataTableOutput("itemList") ),
+                              tabPanel( "extended", DT::dataTableOutput("itemListData") ) 
                             )
                   )
                 )              
@@ -99,7 +100,7 @@ SMRMakeUI <- function( itemSMR ) {
         column( 3, 
                 textInput("tagTypeSFactors", "Tag type significance factors:", 
                           paste( "c(", paste( SMRCurrentTagTypeSignificanceFactors( itemSMR ), collapse = ", " ), ")" ) ),
-                shiny::dataTableOutput("significanceFactors")
+                DT::dataTableOutput("significanceFactors")
         )
       ),
       
@@ -107,8 +108,8 @@ SMRMakeUI <- function( itemSMR ) {
         column( 9,
                 h4("Recommendations"),
                 tabsetPanel(
-                  tabPanel( "main", shiny::dataTableOutput("recs") ),
-                  tabPanel( "proofs", shiny::dataTableOutput("recsProofs") ),
+                  tabPanel( "main", DT::dataTableOutput("recs") ),
+                  tabPanel( "proofs", DT::dataTableOutput("recsProofs") ),
                   tabPanel( "scores plot", plotOutput("recsScoresPlot") )
                 )
         ),
@@ -117,10 +118,10 @@ SMRMakeUI <- function( itemSMR ) {
                   tabPanel( "Profile",
                             textInput("selectedProfileTags", "Selected tags:", ""),
                             h4("Profile"),
-                            shiny::dataTableOutput("uprofile") ),
+                            DT::dataTableOutput("uprofile") ),
                   tabPanel( "Detailed proof",
                             h4("Detailed proof"),
-                            shiny::dataTableOutput("uproof") )
+                            DT::dataTableOutput("uproof") )
                 )
         )
       )
@@ -244,7 +245,7 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
     })
     
     
-    output$significanceFactors <- shiny::renderDataTable({ datatable({
+    output$significanceFactors <- DT::renderDataTable({ datatable({
       data.frame( TagType = names(tagTypeSFactors()), S.Factor = tagTypeSFactors() )
     }, rownames = FALSE, options = list(pageLength = 8 ) ) })
     
@@ -253,9 +254,9 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
       
       nrecs <- max( 100, input$nrecs )
       itemSMR$M <- SMRApplyTagTypeWeights( itemSMR, tagTypeSFactors()  )
-      
+
       if( FALSE ) {
-        ## This is much simple for SMR objects:
+        ## This is much simpler for SMR objects:
         res <- SMRRecommendationsDF( itemSMR, mHist(), nrecs )
       } else {
         res <- Recommendations( x = itemSMR, historyItems = mHist()[[2]], historyRatings = mHist()[[1]], nrecs = nrecs )
@@ -286,18 +287,18 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
     })
     
     ## The list of user consumed items
-    output$itemList <- shiny::renderDataTable({ datatable({
+    output$itemList <- DT::renderDataTable({ datatable({
       res <- itemData[ itemListInds(), itemDataColNames ]
       res <- cbind( res, StarRating=itemListRatings() )
       res
     }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE) ) })
     
-    output$itemListData <- shiny::renderDataTable({ datatable({
+    output$itemListData <- DT::renderDataTable({ datatable({
       extendedItemData()
     }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE) ) })
     
     ## Using simple title search
-    output$view <-  shiny::renderDataTable({ datatable({
+    output$view <- DT::renderDataTable({ datatable({
       inds <- grep( pattern=input$search, iconv( itemData[[searchColName]] ), ignore.case=TRUE )
       res <- itemData[ inds, itemDataColNames ]
       res
@@ -305,7 +306,7 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
     
     
     output$recs <-
-      shiny::renderDataTable({ datatable({
+      DT::renderDataTable({ datatable({
         ## Do extensions of the recommendations with needed
         resIDs <- recommendations()[[3]]
         res <- merge( x = recommendations(), y = itemData[, itemDataColNames ], by.x = itemSMR$ItemColumnName, by.y = itemDataIDColName, all.x = TRUE )
@@ -314,15 +315,16 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
       }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE), selection = list( mode = 'single', selected = c(1)) ) })
     
     output$recsProofs <-
-      shiny::renderDataTable({ datatable({
+      DT::renderDataTable({ datatable({
         itemSMR$M <- SMRApplyTagTypeWeights( itemSMR, tagTypeSFactors()  )
-        proofs <- purrr::map( recommendations()[[3]], function(x) {
+        proofs <- purrr::map_chr( recommendations()[[3]], function(x) {
           pdf <- SMRMetadataProofs( smr = itemSMR, toBeLovedItem = x, profile = userProfile(), normalizeScores = TRUE )
           if ( length( selectedProfileTags() ) > 0 ) {
             pdf <- pdf[ pdf$Index %in% selectedProfileTags(), ]
           }
           paste( pdf$Tag, collapse="; ")
         })
+
         ## Recommendations extensions with proofs
         res <- cbind( recommendations(), Proofs=proofs, stringsAsFactors = FALSE )
         res[-2]
@@ -332,14 +334,14 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
       plot( recommendations()$Score, main="Recommendation scores", xlab="recommendations row number", ylab="score")
     })
     
-    output$uprofile <- shiny::renderDataTable({ datatable({
+    output$uprofile <- DT::renderDataTable({ datatable({
       itemSMR$M <- SMRApplyTagTypeWeights( itemSMR, tagTypeSFactors() )
       res <- SMRProfileDF( itemSMR, mHist() )
       res$Tag <-  iconv( res$Tag )
-      cbind( res, TagType = purrr::map( res$Index, function(x) SMRTagType( itemSMR, x ) ) )
+      cbind( res, TagType = purrr::map_chr( res$Index, function(x) SMRTagType( itemSMR, x ) ) )
     }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE) ) })
     
-    output$uproof <- shiny::renderDataTable({ datatable({
+    output$uproof <- DT::renderDataTable({ datatable({
       sRow <- input$recs_rows_selected
       if( is.null(sRow) ) { NULL 
       } else { 
@@ -372,6 +374,12 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
 #' @family SMR interface functions
 #' @export
 SMRCreateSearchInterface <- function( itemSMR, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W" ) {
+  
+  res <- length(unlist(strsplit( x = rownames(itemSMR$M), split = itemListIDsSplitPattern, fixed = FALSE )))
+  
+  if( res != nrow(itemSMR$M) ) {
+    stop( "The argument itemListIDsSplitPattern splits the rownames of itemSMR$M.", call. = TRUE )
+  }
   
   shiny::shinyApp( ui = SMRMakeUI( itemSMR = itemSMR ), 
                    server = SMRMakeServerFunction( itemSMR = itemSMR, 
