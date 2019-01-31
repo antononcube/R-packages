@@ -15,9 +15,12 @@ TSCorrSMRCreateSearchInterface(tsSMR, tsSearchVectors = NULL)
 Shiny app object.
 }
 \description{
-Creation of time series search interface
+Creates Shiny interface for a given time series recommender and 
+optional search time series shapes.
 }
 \seealso{
-Other Time series search interface functions: \code{\link{TSCorrSMRMakeUI}}
+Other Time series search interface functions: \code{\link{SMRMakeUI}},
+  \code{\link{TSCorrSMRMakeServerFunction}},
+  \code{\link{TSCorrSMRMakeUI}}
 }
 \concept{Time series search interface functions}

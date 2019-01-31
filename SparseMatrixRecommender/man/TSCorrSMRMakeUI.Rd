@@ -15,9 +15,11 @@ TSCorrSMRMakeUI(tsSMR, tsSearchVectors)
 Shiny UI object.
 }
 \description{
-Time series search interface UI
+Creates the Shiny UI function for a time series search interface.
 }
 \seealso{
-Other Time series search interface functions: \code{\link{TSCorrSMRCreateSearchInterface}}
+Other Time series search interface functions: \code{\link{SMRMakeUI}},
+  \code{\link{TSCorrSMRCreateSearchInterface}},
+  \code{\link{TSCorrSMRMakeServerFunction}}
 }
 \concept{Time series search interface functions}

@@ -15,6 +15,11 @@ TSCorrSMRMakeServerFunction(tsSMR, tsSearchVectors)
 Shiny server function.
 }
 \description{
-Time series search interface server function
+Creates the Shiny server function for a time series search interface.
 }
-\concept{Time series search interface functions.}
+\seealso{
+Other Time series search interface functions: \code{\link{SMRMakeUI}},
+  \code{\link{TSCorrSMRCreateSearchInterface}},
+  \code{\link{TSCorrSMRMakeUI}}
+}
+\concept{Time series search interface functions}

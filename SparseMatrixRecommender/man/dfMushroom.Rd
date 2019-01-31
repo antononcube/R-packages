@@ -13,7 +13,7 @@ dfMushroom
 }
 \description{
 This data set consists of 8124 records of the physical 
-charachteristics of gilled mushrooms in the Agaricus and Lepiota family,
+characteristics of gilled mushrooms in the Agaricus and Lepiota family,
 along with their edibility. 
 Each row represents one mushroom.
 }
