@@ -89,7 +89,12 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
                  
                  numericInput( "numberOfNNs", "Number of NNs:", 12 ),
                  
-                 selectInput( "nnsValueColName", "Value plotting:", c( "Raw" = "Value", "Smoothed" = "Value.ma" ) ),
+                 fluidRow(
+                   column(width = 4,
+                          selectInput( "nnsValueColName", "Value plotting:", c( "Raw" = "Value", "Smoothed" = "Value.ma" ) )),
+                   column(width = 4,
+                          numericInput( "nnsSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ))
+                   ),
                  
                  hr(),
                  
@@ -103,7 +108,12 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
                  
                  numericInput( "numberOfSearchResults", "Number of search results:", 12 ),
                  
-                 selectInput( "svecValueColName", "Value plotting:", c( "Raw" = "Value", "Smoothed" = "Value.ma" ) ),
+                 fluidRow(
+                   column(width = 4,
+                          selectInput( "svecValueColName", "Value plotting:", c( "Raw" = "Value", "Smoothed" = "Value.ma" ) ) ),
+                   column(width = 4,
+                          numericInput( "svecSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ) )
+                 ),
                  
                  selectInput( "searchVectorColor", "Search vector color:", c("blue", "lightblue", "black", "gray10", "gray25", "gray50", "gray75", "gray90" ), selected = "gray75" ),
                  
@@ -161,7 +171,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
         dplyr::inner_join( recResNNs(), by = c("Entity" = "ItemID" ) ) %>% 
         dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
         dplyr::group_by( Entity ) %>%
-        dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, 12, align="right", fill=0) ) %>%
+        dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, input$nnsSmoothedWindowSize, align="right", fill=0) ) %>%
         dplyr::ungroup()
       
     )
@@ -175,7 +185,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
         dplyr::inner_join( recResSVec(), by = c("Entity" = "ItemID" ) ) %>% 
         dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
         dplyr::group_by( Entity ) %>%
-        dplyr::mutate( Value.ma = roll_mean(Value, 12, align="right", fill=0) ) %>%
+        dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, input$svecSmoothedWindowSize, align="right", fill=0) ) %>%
         dplyr::ungroup()
       
     )
