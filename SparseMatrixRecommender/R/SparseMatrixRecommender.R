@@ -115,20 +115,18 @@
 #' @import reshape2
 NULL
 
-#' Creation of item-tag matrix
+#' Creation of an item-tag contingency matrix
 #' @description Convert to contingency matrix from item consumption "transactions" (e.g. instances of movie watching).
 #' @param dataRows A data frame corresponding to a item consumption metadata table.
 #' @param itemColumnName A name of the column of \code{dataRows} the values of which correspond to the rows of the returned matrix.
 #' @param tagType A name of the column of \code{dataRows} the values of which correspond to the columns of the returned matrix.
 #' @param sparse A logical, should the returned matrix be sparse or not.
-#' @return (Sparse) matrix.
+#' @return A sparse matrix or a matrix.
 #' @family Creation functions
 #' @export
-SMRCreateItemTagMatrix <- function( dataRows, itemColumnName, tagType, sparse=TRUE ) {
-  # frequencies <- plyr::count(dataRows, vars = c(itemColumnName, tagType) )
-  frequencies <- as.data.frame( dplyr::count( dplyr::group_by_( dataRows, itemColumnName, tagType ) ) )
-  formulaString <- paste("n ~", itemColumnName, "+", tagType)
-  xtabs(as.formula(formulaString), frequencies, sparse=sparse )
+SMRCreateItemTagMatrix <- function( dataRows, itemColumnName, tagType, sparse = TRUE ) {
+  formulaString <- paste("~", itemColumnName, "+", tagType)
+  xtabs( formula = as.formula(formulaString), data = dataRows, sparse = sparse )
 }
 
 #' Creation of a Sparse Matrix Recommender object from a transactions data frame

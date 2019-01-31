@@ -2,7 +2,7 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRCreateItemTagMatrix}
 \alias{SMRCreateItemTagMatrix}
-\title{Creation of item-tag matrix}
+\title{Creation of an item-tag contingency matrix}
 \usage{
 SMRCreateItemTagMatrix(dataRows, itemColumnName, tagType, sparse = TRUE)
 }
@@ -16,7 +16,7 @@ SMRCreateItemTagMatrix(dataRows, itemColumnName, tagType, sparse = TRUE)
 \item{sparse}{A logical, should the returned matrix be sparse or not.}
 }
 \value{
-(Sparse) matrix.
+A sparse matrix or a matrix.
 }
 \description{
 Convert to contingency matrix from item consumption "transactions" (e.g. instances of movie watching).
