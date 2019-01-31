@@ -1,0 +1,156 @@
+---
+title: "SMR creation and usage example"
+author: Anton Antonov
+date: "2019-01-28"
+output: html_notebook
+---
+
+```{r}
+library(SparseMatrixRecommender)
+#devtools::load_all()
+```
+
+# Introduction
+
+TBD...
+
+# Installataion
+
+```{r, eval=F}
+library(devtools)
+install_github( repo = "antononcube/R-packages", subdir = "SparseMatrixRecommender" )
+```
+
+
+# Data
+
+## Titanic data
+
+```{r}
+dfTitanic
+```
+
+
+```{r}
+summary(as.data.frame(unclass(dfTitanic)))
+```
+
+## Mushroom data
+
+```{r}
+dfMushroom
+```
+
+```{r}
+summary(as.data.frame(unclass(dfMushroom)))
+```
+
+# Create SMR classifier
+
+## Split the data
+
+Here we separate the indices of the data.
+
+```{r}
+set.seed(2404)
+trainingInds <- sample( 1:nrow(dfTitanic), round(0.75*nrow(dfTitanic)))
+testInds <- setdiff(1:nrow(dfTitanic), trainingInds)
+```
+
+```{r}
+trainingData <- dfTitanic[trainingInds,]
+testData <- dfTitanic[testInds,]
+```
+
+## Class labels
+
+```{r}
+labelColumnName <- "passengerSurvival"
+```
+
+Here we determine the class label to focus on:
+
+```{r}
+focusLabel <- plyr::count( dfTitanic[[labelColumnName]] )
+focusLabel <- as.character(focusLabel[which.min(focusLabel$freq),1])
+focusLabel
+```
+
+## Create SMR directly from data
+
+```{r}
+smr <- SMRCreate( trainingData, 
+                  tagTypes = setdiff( colnames(trainingData), "id" ), 
+                  itemColumnName = "id" )
+```
+
+
+## Create SMR with matrices
+
+```{r}
+sMatNames <- colnames(trainingData)[-1]
+sMats <- purrr::map( sMatNames, function(x) { xtabs( as.formula( paste0("~ id + ", x) ), trainingData, sparse = TRUE ) } )
+names(sMats) <- sMatNames
+sMats <- purrr::map( sMats, function(x) { SMRApplyTermWeightFunctions( x, "IDF", "None", "None" ) } )
+smr2 <- SMRCreateFromMatrices( matrices = sMats, itemColumnName = "id" )
+```
+
+### Same matrices check
+
+```{r}
+smat1 <- SMRSubMatrix( smr, "passengerAge" )
+smat2 <- SMRMakeRowStochastic( SMRSubMatrix( smr2, "passengerAge" ) )
+norm(smat1 - smat2)
+```
+
+
+## Recommendations by profile
+
+```{r}
+dfTitanic %>% 
+  dplyr::filter( passengerSex == "female" & passengerAge == 30 )
+```
+
+```{r}
+prof <- SMRProfileDF( smr, itemHistory = data.frame( Rating = c(1,1,1), Item = c("id.1", "id.14", "id.33"), stringsAsFactors = F ) )
+prof
+```
+
+```{r}
+recs <- SMRRecommendationsByProfileDF( smr = smr, profile = prof[, 1:2], nrecs = 12 )
+recs %>% dplyr::inner_join( dfTitanic, by = c("Item" = "id"))
+```
+
+```{r}
+recs2 <- SMRRecommendationsByProfileDF( smr = smr2, profile = prof[, 1:2], nrecs = 12 )
+recs2 %>% dplyr::inner_join( dfTitanic, by = c("Item" = "id"))
+```
+
+# Classify
+
+## Using the direct-SMR classifier
+
+```{r}
+clRes <- predict( smr, 
+                  testData[, grep( labelColumnName, colnames(testData), invert = T )], 
+                  nTopNNs = 20, type = "decision", tagType = labelColumnName )
+```
+
+```{r}
+xtabs( ~ Actual + Predicted, data.frame( Actual = testData[[labelColumnName]], Predicted = clRes, stringsAsFactors = F))
+```
+
+## Using the TF-IDF SMR classifier
+
+```{r}
+clRes2 <- predict( smr2, 
+                   testData[, grep( labelColumnName, colnames(testData), invert = T )], 
+                   nTopNNs = 20, type = "decision", tagType = labelColumnName )
+```
+
+```{r}
+xtabs( ~ Actual + Predicted, data.frame( Actual = testData[[labelColumnName]], Predicted = clRes2, stringsAsFactors = F))
+```
+
+
+

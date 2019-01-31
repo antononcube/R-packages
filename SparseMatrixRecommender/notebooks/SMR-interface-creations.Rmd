@@ -1,0 +1,43 @@
+---
+title: "Make interfaces"
+author: "Anton Antonov"
+output: html_notebook
+---
+
+
+# Introduction
+
+```{r}
+devtools::load_all()
+```
+
+# Titanic
+
+```{r}
+SMRCreateSearchInterface( itemSMR = smrTitanic2, itemData = dfTitanic2, itemDataIDColName = "id", searchColName = "id" )
+```
+
+
+```{r}
+smrTitanic <- SMRCreate( dfTitanic, 
+                         tagTypes = setdiff( colnames(dfTitanic), "id" ), 
+                         itemColumnName = "id" )
+```
+
+
+```{r}
+SMRCreateSearchInterface( itemSMR = smrTitanic, itemData = dfTitanic, itemDataIDColName = "id", searchColName = "id", itemListIDsSplitPattern = " " )
+```
+
+# Mushroom
+
+
+```{r}
+smrMushroom <- SMRCreate( dfMushroom, 
+                          tagTypes = setdiff( colnames(dfMushroom), "id" ), 
+                          itemColumnName = "id" )
+```
+
+```{r}
+SMRCreateSearchInterface( itemSMR = smrMushroom, itemData = dfMushroom, itemDataIDColName = "id", searchColName = "id", itemListIDsSplitPattern = "\\W" )
+```
