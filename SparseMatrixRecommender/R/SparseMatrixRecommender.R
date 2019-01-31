@@ -142,6 +142,10 @@ SMRCreate <- function(dataRows, tagTypes, itemColumnName ){
   matrices <- purrr::map(tagTypes, function(x){
     SMRCreateItemTagMatrix(dataRows, tagType=x, itemColumnName=itemColumnName)
   })
+  
+  allRowNames <- sort(unique(unlist(purrr::map( matrices, rownames ))))
+  matrices <-purrr::map( matrices, function(x) SMRImposeRowIDs( rowIDs = allRowNames, smat = x ) )                    
+    
   SMRCreateFromMatrices(matrices, tagTypes, itemColumnName)
 }
 
