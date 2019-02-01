@@ -100,7 +100,7 @@ smr2 <- SMRCreateFromMatrices( matrices = sMats, itemColumnName = "id" )
 ```{r}
 smat1 <- SMRSubMatrix( smr, "passengerAge" )
 smat2 <- SMRMakeRowStochastic( SMRSubMatrix( smr2, "passengerAge" ) )
-norm(smat1 - smat2)
+norm(as.matrix(smat1 - smat2))
 ```
 
 

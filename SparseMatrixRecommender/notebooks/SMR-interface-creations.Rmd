@@ -13,10 +13,6 @@ devtools::load_all()
 
 # Titanic
 
-```{r}
-SMRCreateSearchInterface( itemSMR = smrTitanic2, itemData = dfTitanic2, itemDataIDColName = "id", searchColName = "id" )
-```
-
 
 ```{r}
 smrTitanic <- SMRCreate( dfTitanic, 
