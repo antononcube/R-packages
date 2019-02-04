@@ -1,0 +1,20 @@
+Package: OutlierIdentifiers
+Type: Package
+Title: Outlier Identifiers
+Version: 1.0.0
+Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+                  role = c("aut", "cre"))
+Maintainer: Anton Antonov <antononcube@gmail.com>
+Description: This R package provides a collection of functions for finding
+    outliers in 1-dimensional data.
+License: GPL-3
+Language: en-US
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/antononcube/R-packages/tree/master/OutlierIdentifiers
+RoxygenNote: 6.1.1
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
