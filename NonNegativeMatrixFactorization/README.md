@@ -6,11 +6,15 @@ Mathematica package
 [AAp1].
 
 The implementation follows the description of the hybrid algorithm
-GD-CLS (Gradient Descent with Constrained Least Squares) in the article [FS1]
+GD-CLS (Gradient Descent with Constrained Least Squares) in the article [FS1].
 
 The functions is based on base R's sparse matrix library `Matrix`.
 (The reason I wrote this package is that there was no R library for NNMF using sparse matrices.)
 
+To install use the command:
+
+    devtools::install_github("antononcube/R-packages", subdir = "NonNegativeMatrixFactorization")   
+    
 ## References
 
 [AAp1] Anton Antonov, "Implementation of the Non-Negative Matrix Factorization algorithm in Mathematica",
