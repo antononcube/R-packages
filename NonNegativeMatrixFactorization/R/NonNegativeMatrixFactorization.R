@@ -46,6 +46,7 @@
 ##=======================================================================================
 
 #' @import Matrix
+#' @import purrr
 NULL
 
 #' Non-Negative Matrix Factorization (NNMF).
@@ -118,7 +119,7 @@ NNMFNormalizeMatrixProduct <- function( W, H, normalizeLeftQ = TRUE ) {
 
   if ( normalizeLeftQ ) {
 
-    d <- laply( 1:ncol(W), function(i) sqrt( W[,i] %*% W[,i] ) )
+    d <- sapply( 1:ncol(W), function(i) sqrt( W[,i] %*% W[,i] ) )
     S <- Diagonal( x = d )
     dinv <- 1 / ifelse( d == 0, 1, d ); dinv[ d==0 ] = 0
     SI <- Diagonal( x = dinv )
@@ -127,7 +128,7 @@ NNMFNormalizeMatrixProduct <- function( W, H, normalizeLeftQ = TRUE ) {
 
   } else {
 
-    d <- laply( 1:nrow(H), function(i) sqrt( H[i,] %*% H[i,] ) )
+    d <- sapply( 1:nrow(H), function(i) sqrt( H[i,] %*% H[i,] ) )
     S <- Diagonal( x = d )
     dinv <- 1 / ifelse( d == 0, 1, d ); dinv[ d==0 ] = 0
     SI <- Diagonal( x = dinv )
@@ -168,8 +169,9 @@ ColumnCentralizeSparseMatrix <- function( smat, centerFinder = median, spreadFin
   dtMatDF <- summary( smat )
   dtMatDF <- data.frame( i=dtMatDF$i, j=dtMatDF$j, x=dtMatDF$x )
 
+
   meanDF <-
-    ddply( .data = dtMatDF, .variables = c("j"), .fun = function(df) {
+    purrr::map_df( split( dtMatDF, dtMatDF$j ), function(df) {
 
       sp <- 0
       if ( !is.null(spreadFinder) ) { sp <- spreadFinder( df$x ) }
