@@ -316,7 +316,10 @@ SMRMakeDocumentTermMatrix <- function( documents, ids = NULL, split = "\\W",
   ss <- ss[ purrr::map(ss, length) > 0 ]
 
   ## Make document-term contingency matrix
-  ssDF <- purrr::map_df( 1:length(ss), function(i) { data.frame( id = names(ss)[i], term = ss[[i]], stringsAsFactors = FALSE ) }, .progress = .progress )
+  ssDF <- purrr::map_df( 1:length(ss), 
+                         function(i) { 
+                           data.frame( id = names(ss)[i], term = ss[[i]], stringsAsFactors = FALSE ) 
+                         })
   dtMat <- xtabs( formula = ~ id + term, ssDF, sparse = TRUE )
 
   dtMat
