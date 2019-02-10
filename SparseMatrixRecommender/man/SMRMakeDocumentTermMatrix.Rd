@@ -27,6 +27,7 @@ It would be nice if this function uses SMRToBagOfWords function defined above.
 }
 \seealso{
 Other Document-term matrix functions: \code{\link{SMRApplyTermWeightFunctions}},
+  \code{\link{SMRGlobalTermFunctionWeights}},
   \code{\link{SMRMakeColumnStochastic}},
   \code{\link{SMRToBagOfWords}}
 }

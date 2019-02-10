@@ -22,6 +22,7 @@ Converts a string into a bag of words.
 }
 \seealso{
 Other Document-term matrix functions: \code{\link{SMRApplyTermWeightFunctions}},
+  \code{\link{SMRGlobalTermFunctionWeights}},
   \code{\link{SMRMakeColumnStochastic}},
   \code{\link{SMRMakeDocumentTermMatrix}}
 }

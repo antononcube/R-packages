@@ -10,7 +10,7 @@ SMRApplyTermWeightFunctions(docTermMat, globalWeightFunction = NULL,
 \arguments{
 \item{docTermMat}{A document-term sparse matrix (dgCMatrix).}
 
-\item{globalWeightFunction}{A global weight function ID (a string, one of "IDF", "GFIDF", "Normal", "None").}
+\item{globalWeightFunction}{A global weight function ID.}
 
 \item{localWeightFunction}{A global weight function ID (a string, one of "Binary", "TermFrequency", "Log", "None").}
 
@@ -20,7 +20,8 @@ SMRApplyTermWeightFunctions(docTermMat, globalWeightFunction = NULL,
 Sparse matrix
 }
 \description{
-Applies the global weight functions like Inverse Document Frequency (IDF) to the entries of a sparse matrix.
+Applies the term weight functions -- like Inverse Document Frequency (IDF) -- 
+to the entries of a sparse matrix.
 }
 \details{
 The implemented global weight function ID's are "IDF", "GFIDF", "Normal", "Binary", "Entropy", "Sum", "None".
@@ -28,7 +29,8 @@ The implemented local weight function ID's are "Binary", "TermFrequency", "Log",
 The implemented normalization function ID's are "Cosine", "Sum", "None".
 }
 \seealso{
-Other Document-term matrix functions: \code{\link{SMRMakeColumnStochastic}},
+Other Document-term matrix functions: \code{\link{SMRGlobalTermFunctionWeights}},
+  \code{\link{SMRMakeColumnStochastic}},
   \code{\link{SMRMakeDocumentTermMatrix}},
   \code{\link{SMRToBagOfWords}}
 }

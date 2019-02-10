@@ -17,6 +17,7 @@ Makes the matrix argument a column stochastic matrix (the sum of each column is 
 }
 \seealso{
 Other Document-term matrix functions: \code{\link{SMRApplyTermWeightFunctions}},
+  \code{\link{SMRGlobalTermFunctionWeights}},
   \code{\link{SMRMakeDocumentTermMatrix}},
   \code{\link{SMRToBagOfWords}}
 }
