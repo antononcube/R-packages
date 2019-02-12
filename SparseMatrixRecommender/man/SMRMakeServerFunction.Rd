@@ -14,10 +14,12 @@ SMRMakeServerFunction(itemSMR, itemData, itemDataColNames = NULL,
 \item{itemData}{A data frame with rows corresponding to items (to be recommended.)}
 
 \item{itemDataColNames}{Which column names of \code{itemData} should be used in 
-the search and recommendation results.}
+the table displays of search and recommendation results.}
 
 \item{itemDataIDColName}{Which column of \code{itemData} is with item ID's;
 those ID's are also row names of \code{itemSMR$M}.}
+
+\item{searchColName}{Which column should be used to search \code{itemData}.}
 
 \item{itemListIDsSplitPattern}{A split pattern for the separator of the items list
 and ratings list.}

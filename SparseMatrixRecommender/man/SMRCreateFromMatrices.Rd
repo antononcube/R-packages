@@ -4,13 +4,13 @@
 \alias{SMRCreateFromMatrices}
 \title{Creation of a Sparse Matrix Recommender object with matrix}
 \usage{
-SMRCreateFromMatrices(matrices, tagTypes = NULL,
+SMRCreateFromMatrices(matrices, tagTypes = names(matrices),
   itemColumnName = "Item")
 }
 \arguments{
 \item{matrices}{A list of matrices to be spliced into a metadata matrix.}
 
-\item{tagTypes}{Optional vector of matrix names. If NULL the names \code{matrices} are used.}
+\item{tagTypes}{Vector of matrix names.}
 
 \item{itemColumnName}{The column name of recommender items (in data and recommendations).}
 }

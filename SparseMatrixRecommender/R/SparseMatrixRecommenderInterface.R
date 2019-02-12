@@ -140,9 +140,10 @@ SMRMakeUI <- function( itemSMR ) {
 #' @param itemSMR A time series recommender.
 #' @param itemData A data frame with rows corresponding to items (to be recommended.)
 #' @param itemDataColNames Which column names of \code{itemData} should be used in 
-#' the search and recommendation results.
+#' the table displays of search and recommendation results.
 #' @param itemDataIDColName Which column of \code{itemData} is with item ID's;
 #' those ID's are also row names of \code{itemSMR$M}.
+#' @param searchColName Which column should be used to search \code{itemData}.
 #' @param itemListIDsSplitPattern  A split pattern for the separator of the items list
 #' and ratings list.
 #' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be 
