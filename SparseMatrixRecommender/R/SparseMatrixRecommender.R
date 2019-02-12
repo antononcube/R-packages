@@ -191,70 +191,88 @@ SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemCol
   res
 }
 
+#' Empty specification
+#' @description Creates an empty specification data frame for the creation of 
+#' a sparse matrix recommender.
+#' @param nrow Number of rows.
+#' @return A data frame.
+#' @details See \code{\link{SMRCreateFromSpecification}}.
+#' @family Creation functions
+#' @export
+SMREmptySpecification <- function( nrow = 1 ) {
+  
+  data.frame( "ColumnName" = rep(NA, nrow),
+              "ValueColumnName" = rep("None", nrow),
+              "GlobalWeightFunction" = rep("None", nrow), 
+              "LocalWeightFunction" = rep("None", nrow),
+              "NormalizerFunction" = rep("None", nrow),
+              "NormalizeByMax" = rep(FALSE, nrow),
+              stringsAsFactors = FALSE)
+  
+}
+
 #' Creation of a Sparse Matrix Recommender object from a specification
 #' @description Creates a sparse matrix recommender from transactions-like data
 #' and a meta-data specification.
 #' @param data A transactions-like data frame.
 #' @param metaDataSpec A data frame with specifications of which columns of
 #' \code{data} to be used and with what weight functions.
-#' @param itemCol The name of the column containing the unique items.
-#' @return SMR object.
+#' @param itemColumnName The name of the column containing the unique items.
+#' @details The specification data frame is expected to have the columns names:
+#' "ColumnName", "ValueColumnName", "GlobalWeightFunction", "LocalWeightFunction", "NormalizerFunction", "NormalizeByMax".
+#' The NA values of "ValueColumnName" replaced with "None". (I.e do not use "None" as column name of \code{data}.)
+#' See \code{\link{SMREmptySpecification}}.
+#' @return An SMR object.
 #' @family Creation functions
 #' @export
-SMRCreateFromSpecification <- function( data, metaDataSpec, itemCol ) {
+SMRCreateFromSpecification <- function( data, metaDataSpec, itemColumnName ) {
   
   if( class(data) != "data.frame" || class(metaDataSpec) != "data.frame" ) {
     stop("The first and second arguments are expected to be data frames.")
   }
   
-  if(.verbose){
-    cat("\t\tCreate item-tag matrices for meta data types.\n")
-  }
-  
   matrices <- purrr::map(as.character(metaDataSpec$ColumnName), 1, function(x){
-    SMRCreateItemTagMatrix( dataRows = data, tagType = x, itemColumnName = itemCol, sparse = T)
+    SMRCreateItemTagMatrix( dataRows = data, tagType = x, itemColumnName = itemColumnName, sparse = T)
   })
   
-  
-  if(.verbose){
-    cat("\t\tApply weight terms to each tag sub-matrix\n")
-  }
   
   if( !( "ValueColumnName" %in% colnames(metaDataSpec) ) ) {
     metaDataSpec <- cbind( metaDataSpec, ValueColumnName = NA )
   }
   
+  metaDataSpec$ValueColumnName[ is.na(metaDataSpec$ValueColumnName) ] <- "None"
   
   matrices <-
     purrr::map( split( metaDataSpec, metaDataSpec[, c("ColumnName", "ValueColumnName")]), function(x) {
       
-      if ( is.null(x$ValueColumnName) || is.na(x$ValueColumnName) ) {
-        smat <- SMRCreateItemTagMatrix( dataRows = data, tagType = x$ColumnName[[1]], itemColumnName = itemCol, sparse = TRUE )
+      if ( is.null(x$ValueColumnName) || is.na(x$ValueColumnName) || x$ValueColumnName %in% c("NULL", "None") ) {
+        smat <- SMRCreateItemTagMatrix( dataRows = data, tagType = x$ColumnName[[1]], itemColumnName = itemColumnName, sparse = TRUE )
       } else {
-        smat <- xtabs( as.formula( paste( x$ValueColumnName[[1]], "~", itemCol, "+", x$ColumnName[[1]] ) ), data = data, sparse = TRUE )
+        smat <- xtabs( as.formula( paste( x$ValueColumnName[[1]], "~", itemColumnName, "+", x$ColumnName[[1]] ) ), data = data, sparse = TRUE )
       }
       
       smat <- SMRApplyTermWeightFunctions( smat,
                                            x$GlobalWeightFunction[[1]],
                                            x$LocalWeightFunction[[1]],
-                                           x$NormalizingFunction[[1]] )
+                                           x$NormalizerFunction[[1]] )
       
-      if ( !is.null(x$NormalizeByMax[[1]]) && metaDataSpec$NormalizeByMax[[1]] ) {
+      if ( is.logical(x$NormalizeByMax[[1]]) && metaDataSpec$NormalizeByMax[[1]] ) {
         smat <- smat / max( smat )
       }
       
       smat
     })
-  
+
   names(matrices) <- gsub( "\\.NA$", "", names(matrices) )
+  names(matrices) <- gsub( "\\.None$", "", names(matrices) )
   
   allRowIDs <- unique( unlist( purrr::map(matrices, function(x) rownames(x) ) ) )
   
   nms <- names(matrices)
-  matrices <- purrr::map( matrices, function(x) ImposeRowIDs( rowIDs = allRowIDs, smat = x) )
+  matrices <- purrr::map( matrices, function(x) SMRImposeRowIDs( rowIDs = allRowIDs, smat = x) )
   names(matrices) <- nms
   
-  SMRCreateFromMatrices( matrices = matrices, tagTypes = names(matrices), itemColumnName = itemCol )
+  SMRCreateFromMatrices( matrices = matrices, tagTypes = names(matrices), itemColumnName = itemColumnName )
 }
 
 #' Apply tag weights
