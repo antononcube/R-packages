@@ -41,6 +41,7 @@ test_that("SMR objects", {
   expect_equal( names(smr1), c("M", "M01", "TagTypeRanges","TagTypes",      
                                "ItemColumnName", "TagToIndexRules", "ItemToIndexRules") )
   expect_equal( names(smr1), names(smr2) )
+  expect_equal( names(smr1), names(smr3) )
   
   expect_is( smr1$M, "dgCMatrix" ) 
   expect_is( smr2$M, "dgCMatrix" ) 
