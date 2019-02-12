@@ -152,13 +152,13 @@ SMRCreate <- function(dataRows, tagTypes, itemColumnName ){
 #' Creation of a Sparse Matrix Recommender object with matrix
 #' @description Creates a sparse matrix recommender from a list of matrices and a corresponding list of tag types.
 #' @param matrices A list of matrices to be spliced into a metadata matrix.
-#' @param tagTypes Optional vector of matrix names. If NULL the names \code{matrices} are used.
+#' @param tagTypes Vector of matrix names.
 #' @param itemColumnName The column name of recommender items (in data and recommendations).
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
 #' @return SMR object.
 #' @family Creation functions
 #' @export
-SMRCreateFromMatrices <- function( matrices, tagTypes = NULL, itemColumnName = "Item" ){
+SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemColumnName = "Item" ){
   
   if( is.null(tagTypes) ) { 
     tagTypes <- names(matrices)
@@ -226,7 +226,7 @@ SMRCreateFromSpecification <- function( data, metaDataSpec, itemCol ) {
   
   
   matrices <-
-    dlply( metaDataSpec, c("ColumnName", "ValueColumnName"), function(x) {
+    purrr::map( split( metaDataSpec, metaDataSpec[, c("ColumnName", "ValueColumnName")]), function(x) {
       
       if ( is.null(x$ValueColumnName) || is.na(x$ValueColumnName) ) {
         smat <- SMRCreateItemTagMatrix( dataRows = data, tagType = x$ColumnName[[1]], itemColumnName = itemCol, sparse = TRUE )
@@ -244,7 +244,7 @@ SMRCreateFromSpecification <- function( data, metaDataSpec, itemCol ) {
       }
       
       smat
-    }, .progress = .progress )
+    })
   
   names(matrices) <- gsub( "\\.NA$", "", names(matrices) )
   
