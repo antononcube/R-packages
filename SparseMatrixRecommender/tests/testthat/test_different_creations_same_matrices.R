@@ -1,6 +1,6 @@
 context("Sparse matrix recommender creation")
-#library(SparseMatrixRecommender)
-devtools::load_all()
+library(SparseMatrixRecommender)
+#devtools::load_all()
 
 ## When creating the submatrices SMRCreateFromSpecificaiton
 ## sorts the obtained names (because it uses split.)
