@@ -258,7 +258,10 @@ SMRCreateFromSpecification <- function( data, metaDataSpec, itemColumnName ) {
                                            x$NormalizerFunction[[1]] )
       
       if ( is.logical(x$NormalizeByMax[[1]]) && metaDataSpec$NormalizeByMax[[1]] ) {
-        smat <- smat / max( smat )
+        smMax <- max( smat, na.rm = T )
+        if( smMax > 0 ) { 
+          smat <- smat / smMax
+        }
       }
       
       smat
