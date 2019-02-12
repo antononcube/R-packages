@@ -59,10 +59,82 @@ SMRApplyGlobalWeightFunction <- function( docTermMat, globalWeightFunction, norm
   SMRApplyTermWeightFunctions( docTermMat, globalWeightFunction, NULL, normalizerFunction )
 }
 
-#' Document-term matrix term re-weighting.
-#' @description Applies the global weight functions like Inverse Document Frequency (IDF) to the entries of a sparse matrix.
+#' Global weights for a document-term matrix.
+#' @description Computes the global weights with a function specification.
 #' @param docTermMat A document-term sparse matrix (dgCMatrix).
-#' @param globalWeightFunction A global weight function ID (a string, one of "IDF", "GFIDF", "Normal", "None").
+#' @param globalWeightFunction A global weight function ID.
+#' @return Sparse matrix
+#' @details  The implemented global weight function ID's are "IDF", "GFIDF", "Normal", "Binary", "Entropy", "Sum", "None".
+#' @family Document-term matrix functions
+#' @export
+SMRGlobalTermFunctionWeights <- function( docTermMat, globalWeightFunction = "None" ) {
+  
+  if ( class(docTermMat) != "dgCMatrix" || nrow(docTermMat) < 1 || ncol(docTermMat) < 1 ) {
+    stop( "The argument docTermMat is expected to be a sparse matrix with number of rows and columns greater than zero", call.=TRUE)
+  }
+  
+  mat <- docTermMat
+  
+  if ( globalWeightFunction == "IDF" ) {
+    
+    # The following line seem to work, but gives messages. Using a direct access assignment instead.
+    # mat[ mat>0 ] <- 1
+    mat@x <- rep(1,length(mat@x))
+    globalWeights <- colSums(mat)
+    globalWeights[ globalWeights == 0 ] <- 1
+    globalWeights <- log( nrow(mat) / globalWeights )
+    
+    # restore the original matrix
+    mat <- docTermMat
+    
+  } else if ( globalWeightFunction == "GFIDF" ) {
+    
+    freqSums <- colSums(mat)
+    mat@x <- rep(1,length(mat@x))
+    globalWeights <- colSums(mat)
+    globalWeights[ globalWeights == 0 ] <- 1
+    globalWeights <- freqSums / globalWeights
+    
+    # restore the original matrix
+    mat <- docTermMat
+    
+  } else if ( globalWeightFunction == "Normal" ) {
+    
+    globalWeights <- sqrt( colSums( mat*mat ) )
+    globalWeights[ globalWeights == 0 ] <- 1
+    globalWeights <- 1 / globalWeights
+    
+  } else if ( globalWeightFunction == "Binary" || globalWeightFunction == "None" ) {
+    
+    globalWeights <- rep(1, ncol(mat) )
+    
+  } else if ( globalWeightFunction == "ColumnStochastic" || globalWeightFunction == "Sum" ) {
+    
+    globalWeights <- colSums(mat)
+    globalWeights[ globalWeights == 0 ] <- 1
+    globalWeights <- 1 / globalWeights
+    
+  } else if ( globalWeightFunction == "Entropy" ) {
+    
+    gfs <- colSums(mat)
+    gfs[ gfs == 0 ] <- 1
+    pmat <- mat %*% Diagonal( ncol(mat), 1 / gfs )
+    lpmat <- pmat
+    lpmat@x <- log( lpmat@x + 1 )
+    globalWeights <- 1 + colSums( pmat * lpmat ) / log( nrow(mat) )
+    
+  } else {
+    stop( "Unknown global weight function specification for the argument globalWeightFunction.", call.=TRUE)
+  }
+ 
+  globalWeights 
+}
+
+#' Document-term matrix term re-weighting.
+#' @description Applies the term weight functions -- like Inverse Document Frequency (IDF) -- 
+#' to the entries of a sparse matrix.
+#' @param docTermMat A document-term sparse matrix (dgCMatrix).
+#' @param globalWeightFunction A global weight function ID.
 #' @param localWeightFunction A global weight function ID (a string, one of "Binary", "TermFrequency", "Log", "None").
 #' @param normalizerFunction A normalization weight function ID (a string, one of "Cosine", "Sum", "None"),
 #' @return Sparse matrix
@@ -83,58 +155,8 @@ SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL
   if ( is.null(localWeightFunction) ) { localWeightFunction = "None" }
   if ( is.null(normalizerFunction) ) { normalizerFunction = "None" }
 
-  if ( globalWeightFunction == "IDF" ) {
-
-    # The following line seem to work, but gives messages. Using a direct access assignment instead.
-    # mat[ mat>0 ] <- 1
-    mat@x <- rep(1,length(mat@x))
-    globalWeights <- colSums(mat)
-    globalWeights[ globalWeights == 0 ] <- 1
-    globalWeights <- log( nrow(mat) / globalWeights )
-
-    # restore the original matrix
-    mat <- docTermMat
-
-  } else if ( globalWeightFunction == "GFIDF" ) {
-
-    freqSums <- colSums(mat)
-    mat@x <- rep(1,length(mat@x))
-    globalWeights <- colSums(mat)
-    globalWeights[ globalWeights == 0 ] <- 1
-    globalWeights <- freqSums / globalWeights
-
-    # restore the original matrix
-    mat <- docTermMat
-
-  } else if ( globalWeightFunction == "Normal" ) {
-
-    globalWeights <- sqrt( colSums( mat*mat ) )
-    globalWeights[ globalWeights == 0 ] <- 1
-    globalWeights <- 1 / globalWeights
-
-  } else if ( globalWeightFunction == "Binary" || globalWeightFunction == "None" ) {
-
-    globalWeights <- rep(1, ncol(mat) )
-
-  } else if ( globalWeightFunction == "ColumnStochastic" || globalWeightFunction == "Sum" ) {
-
-    globalWeights <- colSums(mat)
-    globalWeights[ globalWeights == 0 ] <- 1
-    globalWeights <- 1 / globalWeights
-
-  } else if ( globalWeightFunction == "Entropy" ) {
-
-    gfs <- colSums(mat)
-    gfs[ gfs == 0 ] <- 1
-    pmat <- mat %*% Diagonal( ncol(mat), 1 / gfs )
-    lpmat <- pmat
-    lpmat@x <- log( lpmat@x + 1 )
-    globalWeights <- 1 + colSums( pmat * lpmat ) / log( nrow(mat) )
-
-  } else {
-    stop( "Unknown global weight function specification for the argument globalWeightFunction.", call.=TRUE)
-  }
-
+  globalWeights <- SMRGlobalTermFunctionWeights( mat, globalWeightFunction = globalWeightFunction )
+  
   # local weights
   if( missing(localWeightFunction) || is.null(localWeightFunction) ) {
 
