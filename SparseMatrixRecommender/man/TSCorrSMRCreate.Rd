@@ -37,6 +37,7 @@ Time series recommender creation
 Other Creation functions: \code{\link{SMRCreateFromMatrices}},
   \code{\link{SMRCreateFromSpecification}},
   \code{\link{SMRCreateItemTagMatrix}},
-  \code{\link{SMRCreate}}
+  \code{\link{SMRCreate}},
+  \code{\link{SMREmptySpecification}}
 }
 \concept{Creation functions}

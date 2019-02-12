@@ -26,6 +26,7 @@ An S3 object is returned that is list with class attribute set to "SMR".
 Other Creation functions: \code{\link{SMRCreateFromMatrices}},
   \code{\link{SMRCreateFromSpecification}},
   \code{\link{SMRCreateItemTagMatrix}},
+  \code{\link{SMREmptySpecification}},
   \code{\link{TSCorrSMRCreate}}
 }
 \concept{Creation functions}

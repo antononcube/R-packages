@@ -4,7 +4,7 @@
 \alias{SMRCreateFromSpecification}
 \title{Creation of a Sparse Matrix Recommender object from a specification}
 \usage{
-SMRCreateFromSpecification(data, metaDataSpec, itemCol)
+SMRCreateFromSpecification(data, metaDataSpec, itemColumnName)
 }
 \arguments{
 \item{data}{A transactions-like data frame.}
@@ -12,18 +12,26 @@ SMRCreateFromSpecification(data, metaDataSpec, itemCol)
 \item{metaDataSpec}{A data frame with specifications of which columns of
 \code{data} to be used and with what weight functions.}
 
-\item{itemCol}{The name of the column containing the unique items.}
+\item{itemColumnName}{The name of the column containing the unique items.}
 }
 \value{
-SMR object.
+An SMR object.
 }
 \description{
 Creates a sparse matrix recommender from transactions-like data
 and a meta-data specification.
 }
+\details{
+The specification data frame is expected to have the columns names:
+"ColumnName", "ValueColumnName", "GlobalWeightFunction", "LocalWeightFunction", "NormalizerFunction", "NormalizeByMax".
+The NA values of "ValueColumnName" replaced with "None". (I.e do not use "None" as column name of \code{data}.)
+See \code{\link{SMREmptySpecification}}.
+}
 \seealso{
 Other Creation functions: \code{\link{SMRCreateFromMatrices}},
   \code{\link{SMRCreateItemTagMatrix}},
-  \code{\link{SMRCreate}}, \code{\link{TSCorrSMRCreate}}
+  \code{\link{SMRCreate}},
+  \code{\link{SMREmptySpecification}},
+  \code{\link{TSCorrSMRCreate}}
 }
 \concept{Creation functions}

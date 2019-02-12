@@ -24,6 +24,8 @@ Convert to contingency matrix from item consumption "transactions" (e.g. instanc
 \seealso{
 Other Creation functions: \code{\link{SMRCreateFromMatrices}},
   \code{\link{SMRCreateFromSpecification}},
-  \code{\link{SMRCreate}}, \code{\link{TSCorrSMRCreate}}
+  \code{\link{SMRCreate}},
+  \code{\link{SMREmptySpecification}},
+  \code{\link{TSCorrSMRCreate}}
 }
 \concept{Creation functions}
