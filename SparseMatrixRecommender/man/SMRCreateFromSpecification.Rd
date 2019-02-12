@@ -24,7 +24,8 @@ and a meta-data specification.
 \details{
 The specification data frame is expected to have the columns names:
 "ColumnName", "ValueColumnName", "GlobalWeightFunction", "LocalWeightFunction", "NormalizerFunction", "NormalizeByMax".
-The NA values of "ValueColumnName" replaced with "None". (I.e do not use "None" as column name of \code{data}.)
+The NA values of "ValueColumnName" are replaced with "None". 
+(I.e. do not use "None" as a "value" column name of \code{data}.)
 See \code{\link{SMREmptySpecification}}.
 }
 \seealso{
