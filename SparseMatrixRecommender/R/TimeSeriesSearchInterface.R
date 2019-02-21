@@ -224,7 +224,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
       
       valueColumnName <- input$svecValueColName
       searchVecPlotDF2 <- 
-        ddply( recResSVecExtended(), "ItemName", function(x) {
+        purrr::map_df( split( recResSVecExtended(), recResSVecExtended()$ItemName), function(x) {
           vec = searchVecPlotDF()$Value
           vec = ( vec - min(vec) ) / ( max(vec) - min(vec) ) 
           vec = vec * (max(x[[valueColumnName]]) - min(x[[valueColumnName]])) + min(x[[valueColumnName]])
