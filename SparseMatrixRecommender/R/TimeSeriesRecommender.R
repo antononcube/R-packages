@@ -165,8 +165,18 @@ TSCorrSMRCreate <- function( timeSeriesMatrix, smr,
                ClassLabelsMat = classLabelMatrix,
                CorrelationMethod = correlationMethod, 
                SMRNRecs = smrNRecs, 
-               ItemIDtoNameRules = itemIDtoNameRules,
-               TIBNameToTIBRules = tibNameToTIBRules )
+               ItemIDtoNameRules = 
+                 if( !is.null(itemIDtoNameRules) ) { 
+                   itemIDtoNameRules 
+                 } else {   
+                   setNames( rownames(smr$M), rownames(smr$M) ) 
+                 },
+               TIBNameToTIBRules = 
+                 if( !is.null(tibNameToTIBRules) ) {
+                   tibNameToTIBRules
+                 } else {
+                   setNames( 1:ncol(timeSeriesMatrix), colnames(timeSeriesMatrix))
+                 } )
   class(obj) <- "TSCorrSMR"
   obj
 }
@@ -222,6 +232,11 @@ Recommendations.TSCorrSMR <- function( x, historyItems, historyRatings, nrecs, r
   }
   recs
 }
+
+
+##===========================================================
+## Classify
+##===========================================================
 
 #' Classification with time series recommender
 #' @description Specialization of \code{ClassifyByProfileVector} for time series recommender objects.
