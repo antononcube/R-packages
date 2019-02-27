@@ -10,7 +10,7 @@ ParetoLawPlotForColumns(data, columnNames = colnames(data),
 \arguments{
 \item{data}{A data frame.}
 
-\item{columnNames}{A list of column names corresponding to categrical columns in \code{data}.}
+\item{columnNames}{A list of column names corresponding to categorical columns in \code{data}.}
 
 \item{...}{Arguments for \code{ggplot2::facet_wrap}.}
 }

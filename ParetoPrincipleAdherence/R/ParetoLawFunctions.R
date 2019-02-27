@@ -161,7 +161,7 @@ ParetoLawData <- function( dataVec, weightsVec = NULL ) {
 #' Pareto statistics for specified columns.
 #' @description Apply \code{\link{ParetoLawData}} over a list of names.
 #' @param data A data frame.
-#' @param columnNames A list of column names corresponding to categrical columns in \code{data}.
+#' @param columnNames A list of column names corresponding to categorical columns in \code{data}.
 #' @export
 ParetoLawDataForColumns <- function( data, columnNames ) {
   res <- purrr::map(columnNames, function(c) {t<-ParetoLawData(data[[c]]); cbind(1:length(t[,1]), t[,2])})
@@ -175,7 +175,7 @@ ParetoLawDataForColumns <- function( data, columnNames ) {
 #' @param data A data frame.
 #' @param colName The column name of items to be counted.
 #' @param paretoFraction A number between 0 and 1 specifying the Pareto fraction.
-#' @return A data frame with columns c( "Item", "Score", "CumSums" ).
+#' @return A data frame with columns c( "Item", "Score", "ParetoFraction" ).
 #' @family Pareto items
 #' @export
 ParetoItems <- function( data, colName, paretoFraction ) {
@@ -191,7 +191,7 @@ ParetoItems <- function( data, colName, paretoFraction ) {
 
   paretoItemsCount <- paretoItemsCount[ paretoItemsCount[[1]] %in% paretoItems, ]
   paretoItemsCount <- paretoItemsCount[ order(- paretoItemsCount$freq), ]
-  names(paretoItemsCount) <- c( "Item", "Score", "CumSums" )
+  names(paretoItemsCount) <- c( "Item", "Score", "ParetoFraction" )
 
   paretoItemsCount
 }
@@ -211,7 +211,7 @@ ParetoPositions <- function( dataVec, paretoFraction = 1 ) {
   cumSums <- cumsum( paretoItemsCount[,2] ) / sum( paretoItemsCount[,2] )
   paretoItemsCount <- cbind( paretoItemsCount, ParetoFraction = cumSums )
 
-  paretoItems <- paretoItemsCount[[1]][ paretoItemsCount$CumSums <= paretoFraction ]
+  paretoItems <- paretoItemsCount[[1]][ paretoItemsCount$ParetoFraction <= paretoFraction ]
 
   paretoItemsCount <- paretoItemsCount[ paretoItemsCount[[1]] %in% paretoItems, ]
   paretoItemsCount <- paretoItemsCount[ order( -paretoItemsCount$Score ), ]
@@ -224,7 +224,7 @@ ParetoPositions <- function( dataVec, paretoFraction = 1 ) {
 #' @description Apply \code{\link{ParetoLawData}} function over a list of names
 #' and make a multi-panel ggplot.
 #' @param data A data frame.
-#' @param columnNames A list of column names corresponding to categrical columns in \code{data}.
+#' @param columnNames A list of column names corresponding to categorical columns in \code{data}.
 #' @param ... Arguments for \code{ggplot2::facet_wrap}.
 #' @details This function make the Pareto plots over a wide form data frame.
 #' The function \code{\link{ParetoLawLongFormPlot}} makes the plots over long form data.

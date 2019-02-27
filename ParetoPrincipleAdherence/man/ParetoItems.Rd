@@ -14,7 +14,7 @@ ParetoItems(data, colName, paretoFraction)
 \item{paretoFraction}{A number between 0 and 1 specifying the Pareto fraction.}
 }
 \value{
-A data frame with columns c( "Item", "Score", "CumSums" ).
+A data frame with columns c( "Item", "Score", "ParetoFraction" ).
 }
 \description{
 Finds the Pareto items in a column of a data frame.

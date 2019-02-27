@@ -9,7 +9,7 @@ ParetoLawDataForColumns(data, columnNames)
 \arguments{
 \item{data}{A data frame.}
 
-\item{columnNames}{A list of column names corresponding to categrical columns in \code{data}.}
+\item{columnNames}{A list of column names corresponding to categorical columns in \code{data}.}
 }
 \description{
 Apply \code{\link{ParetoLawData}} over a list of names.
