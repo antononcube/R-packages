@@ -20,7 +20,7 @@ and make a multi-panel ggplot.
 }
 \details{
 This function make the Pareto plots over a wide form data frame.
-The function \code{\link{ParetoLawLongFormPlot}} makes the plots over long form data.
+The function \code{\link{ParetoLawPlot}} makes the plots over long form data.
 
 Pareto plots
 }

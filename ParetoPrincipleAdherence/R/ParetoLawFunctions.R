@@ -227,7 +227,7 @@ ParetoPositions <- function( dataVec, paretoFraction = 1 ) {
 #' @param columnNames A list of column names corresponding to categorical columns in \code{data}.
 #' @param ... Arguments for \code{ggplot2::facet_wrap}.
 #' @details This function make the Pareto plots over a wide form data frame.
-#' The function \code{\link{ParetoLawLongFormPlot}} makes the plots over long form data.
+#' The function \code{\link{ParetoLawPlot}} makes the plots over long form data.
 #' @details Pareto plots
 #' @export
 ParetoLawPlotForColumns <- function( data, columnNames = colnames(data), weights = NULL, ... ) {
