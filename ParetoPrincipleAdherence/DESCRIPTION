@@ -1,0 +1,24 @@
+Package: ParetoPrincipleAdherence
+Type: Package
+Title: Pareto Principle adherence functions
+Version: 1.0.0
+Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+                  role = c("aut", "cre"))
+Maintainer: Anton Antonov <antononcube@gmail.com>
+Description: This R package provides a collection of functions for
+    making Pareto Principle adherence plots and computing related data.
+License: GPL-3
+Language: en-US
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/antononcube/R-packages/tree/master/ParetoPrincipleAdherence
+RoxygenNote: 6.1.1
+Imports:
+    dplyr,
+    ggplot2,
+    purrr
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
