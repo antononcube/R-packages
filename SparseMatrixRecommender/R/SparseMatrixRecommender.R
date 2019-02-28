@@ -327,7 +327,7 @@ SMRApplyTagTypeWeights <- function( smr, weights ) {
   if( is.null(names(weights)) ) {
     
     if ( length(weights) < length(smr$TagTypes) ) {
-      weights <- rep(weights, length(smr$TagTypes) )
+      weights <- rep_len(weights, length.out = length(smr$TagTypes) )
     } else if ( length(weights) > length(smr$TagTypes) ) {
       weights <- weights[1:length(smr$TagTypes)]
     }
@@ -335,7 +335,7 @@ SMRApplyTagTypeWeights <- function( smr, weights ) {
     weights <- setNames( weights, smr$TagTypes )
     
   } else {
-    
+
     if( length(weights) == 0 || mean(names(weights) %in% smr$TagTypes) < 1 ) {
       stop( "The names of the weights are expected to be known tag types.", call. = TRUE )
     }
@@ -345,9 +345,12 @@ SMRApplyTagTypeWeights <- function( smr, weights ) {
     weights <- tw
   }
   
-  #wvec <- unlist(mlply(cbind(smr$TagTypeRanges,W=weights), function(Begin,End,W) rep(W,End-Begin+1)))
-  wvec <- purrr::map_dbl( smr$TagTypes, function(tt) rep( weights[tt], smr$TagTypeRanges[tt,]$End - smr$TagTypeRanges[tt,]$Begin + 1 ) )
+  weights <- weights[smr$TagTypes]
+  names(weights) <- NULL
   
+  #wvec <- unlist(mlply(cbind(smr$TagTypeRanges,W=weights), function(Begin,End,W) rep(W,End-Begin+1)))
+  wvec <- purrr::map( 1:length(smr$TagTypes), function(i) rep( weights[i], smr$TagTypeRanges[i,]$End - smr$TagTypeRanges[i,]$Begin + 1 ) )
+  wvec <- do.call(c, wvec)
   SMRApplyTagWeights( smr, wvec )
 }
 
