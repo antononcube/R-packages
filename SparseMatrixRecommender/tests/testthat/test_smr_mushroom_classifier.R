@@ -1,6 +1,6 @@
 context("Sparse matrix recommender mushroom classifier")
-#library(SparseMatrixRecommender)
-devtools::load_all()
+library(SparseMatrixRecommender)
+
 
 ## Here we separate the indices of the data.
 set.seed(6404)
