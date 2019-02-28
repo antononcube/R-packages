@@ -312,18 +312,42 @@ SMRNormalizeSubMatricesByMaxEntry <- function( smr ) {
 #' @description Changes the weights of tag types of a sparse matrix recommender object.
 #' @param smr A sparse matrix recommender object (list with named elements).
 #' @param weights A list/vector of weights to be applied.
-#' @details Note tag types should have "significance factors" not "weights".
+#' @details 
+#' If \code{weights} does not have names it is going to replicated to match 
+#' the length of \code{smr$TagTypes}.
+#' If \code{weights} has names the missing tag types are (if any) 
+#' are set to have weight 1.
+#' Note that the result of this function is a sparse matrix not an SMR object.
+#' (The function name probably have to be changed for consistency: 
+#' tag types should have "significance factors" not "weights".)
 #' @return Sparse Matrix.
 #' @export
 SMRApplyTagTypeWeights <- function( smr, weights ) {
-  if ( length(weights) < length(smr$TagTypes) ) {
-    weights <- rep(weights, length(smr$TagTypes) )
-  } else if ( length(weights) > length(smr$TagTypes) ) {
-    weights <- weights[1:length(smr$TagTypes)]
+  
+  if( is.null(names(weights)) ) {
+    
+    if ( length(weights) < length(smr$TagTypes) ) {
+      weights <- rep(weights, length(smr$TagTypes) )
+    } else if ( length(weights) > length(smr$TagTypes) ) {
+      weights <- weights[1:length(smr$TagTypes)]
+    }
+    
+    weights <- setNames( weights, smr$TagTypes )
+    
+  } else {
+    
+    if( length(weights) == 0 || mean(names(weights) %in% smr$TagTypes) < 1 ) {
+      stop( "The names of the weights are expected to be known tag types.", call. = TRUE )
+    }
+    
+    tw <- setNames( rep(1,length(smr$TagTypes)), smr$TagTypes )
+    tw[names(weights)] <- weights
+    weights <- tw
   }
+  
   #wvec <- unlist(mlply(cbind(smr$TagTypeRanges,W=weights), function(Begin,End,W) rep(W,End-Begin+1)))
-  wvec <- purrr::map( 1:nrow(smr$TagTypeRanges), function(i) rep( weights[i], smr$TagTypeRanges[i,]$End - smr$TagTypeRanges[i,]$Begin + 1 ) )
-  wvec <- do.call( c, wvec )
+  wvec <- purrr::map_dbl( smr$TagTypes, function(tt) rep( weights[tt], smr$TagTypeRanges[tt,]$End - smr$TagTypeRanges[tt,]$Begin + 1 ) )
+  
   SMRApplyTagWeights( smr, wvec )
 }
 
@@ -536,9 +560,12 @@ SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
 #' @param profileVec A sparse matrix with 1 row (a row from a sparse matrix).
 #' @param nTopNNs Number of top nearest neighbors to be used in the derive the classification.
 #' @param voting Should simple voting be used or a weighted sum?
+#' @param maxNumberOfLabels The maximum number of labels to be returned; 
+#' if NULL all found labels are returned.
 #' @return A list of scored tags.
 #' @export
-SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs, voting = FALSE, dropZeroScoredLabels = TRUE ) {
+SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs, 
+                                        voting = FALSE, dropZeroScoredLabels = TRUE, maxNumberOfLabels = NULL ) {
   
   recs <- SMRRecommendationsByProfileVector( smr = smr, profileVec = profileVec, nrecs = nTopNNs )
   
@@ -552,12 +579,19 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs, votin
     clMat@x[ clMat@x > 0 ] <- 1
     recs$Score <- 1
   }
-  s <- (recs$Score / max(recs$Score) ) %*% clMat[ recs$Item, , drop=F]
-  s <- data.frame( Score = s[1,], Label = colnames(s) )
+  s <- (recs$Score / max(recs$Score, na.rm = T) ) %*% clMat[ recs$Item, , drop=F]
+  s <- data.frame( Score = s[1,], Label = colnames(s), stringsAsFactors = FALSE )
   s <- s[ order(-s[,1]), ]
+
+  if( dropZeroScoredLabels ) { 
+    s <- s[ s$Score > 0, ] 
+  }
   
-  if( dropZeroScoredLabels ) { s[ s$Score > 0, ] }
-  else { s }
+  if( is.numeric(maxNumberOfLabels) ) {
+    s <- s[ min( maxNumberOfLabels, nrow(s) ), ]
+  }
+  
+  s
 }
 
 #' Profile vector calculation

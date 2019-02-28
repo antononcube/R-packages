@@ -18,5 +18,11 @@ Sparse Matrix.
 Changes the weights of tag types of a sparse matrix recommender object.
 }
 \details{
-Note tag types should have "significance factors" not "weights".
+If \code{weights} does not have names it is going to replicated to match 
+the length of \code{smr$TagTypes}.
+If \code{weights} has names the missing tag types are (if any) 
+are set to have weight 1.
+Note that the result of this function is a sparse matrix not an SMR object.
+(The function name probably have to be changed for consistency: 
+tag types should have "significance factors" not "weights".)
 }

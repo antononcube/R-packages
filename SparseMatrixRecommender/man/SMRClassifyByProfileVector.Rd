@@ -5,7 +5,8 @@
 \title{Classification with a profile vector}
 \usage{
 SMRClassifyByProfileVector(smr, tagType, profileVec, nTopNNs,
-  voting = FALSE, dropZeroScoredLabels = TRUE)
+  voting = FALSE, dropZeroScoredLabels = TRUE,
+  maxNumberOfLabels = NULL)
 }
 \arguments{
 \item{tagType}{Tag type for which the classification is done.}
@@ -15,6 +16,9 @@ SMRClassifyByProfileVector(smr, tagType, profileVec, nTopNNs,
 \item{nTopNNs}{Number of top nearest neighbors to be used in the derive the classification.}
 
 \item{voting}{Should simple voting be used or a weighted sum?}
+
+\item{maxNumberOfLabels}{The maximum number of labels to be returned; 
+if NULL all found labels are returned.}
 
 \item{smar}{A sparse matrix recommender.}
 }
