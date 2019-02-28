@@ -591,7 +591,7 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
   }
   
   if( is.numeric(maxNumberOfLabels) ) {
-    s <- s[ min( maxNumberOfLabels, nrow(s) ), ]
+    s <- s[ 1:min( maxNumberOfLabels, nrow(s) ), ]
   }
   
   s
