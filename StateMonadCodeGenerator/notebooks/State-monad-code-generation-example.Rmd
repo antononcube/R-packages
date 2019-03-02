@@ -1,0 +1,67 @@
+---
+title: "State monad code generation example"
+author: Anton Antonov
+date: 2019-03-02
+output: html_notebook
+---
+
+# Introduction
+
+## Installation
+
+Install with following command.
+
+```{r}
+
+```
+
+## Package load
+
+```{r}
+library(StateMonadCodeGenerator)
+```
+
+# Generate State monad code
+
+```{r}
+rCodeFileName <- "~/R-packages/StateMonadCodeGenerator/generated-code/StMon.R"
+genCode <- 
+  GenerateStateMonadCode( outputFile = rCodeFileName, 
+                          monadName = "StMon", 
+                          memberNames = c("Data", "RegressionFunctions", "Outliers"), 
+                          monadObjectArgumentName = "qrObj"  )
+```
+
+## Additional code changes
+
+Additional code changes might be required after the generation.
+For example, changing the code to use the correct class functions for the monad members
+in the setter and taker functions.
+
+## Parsing the code
+
+We load the code by parsing the generated code lines.
+
+```{r}
+eval(parse( text = genCode ))
+```
+
+Alternatively, if we specified a valid file name to `GenerateStateMonadCode`
+we can use that file.
+
+```{r}
+source(rCodeFileName)
+```
+
+# Experiments with the generated code
+
+```{r}
+StMonUnit() %>% 
+  StMonSetData( runif(n = 120, min = 10, max = 30) ) %>% 
+  StMonTakeData
+```
+
+
+# References
+
+[1] Anton Antonov, Monad code generation

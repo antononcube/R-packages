@@ -1,0 +1,17 @@
+---
+title: "Generate package data"
+author: Anton Antonov
+date: 2019-03-02
+output: html_notebook
+---
+
+```{r}
+library(devtools)
+```
+
+```{r}
+textMStateCoreFunctions <- readLines( "~/R-packages/StateMonadCodeGenerator/stencil-code/MStateCoreFunctions.R")
+textMStateSetMember <-  readLines( "~/R-packages/StateMonadCodeGenerator/stencil-code/MStateSetMember.R")
+textMStateTakeMember <-  readLines( "~/R-packages/StateMonadCodeGenerator/stencil-code/MStateTakeMember.R")
+usethis::use_data( textMStateCoreFunctions, textMStateSetMember, textMStateTakeMember, overwrite = T)
+```
