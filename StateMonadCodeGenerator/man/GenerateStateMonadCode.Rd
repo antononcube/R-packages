@@ -24,5 +24,7 @@ Generate State monad code.
 There are several stencil code files that are read and the corresponding names
 replaced. If \code{memberNames} is not NULL then those names are used the setters and takers
 are generated and state monad unit S3 object has \code{memberNames} as element names.
+If \code{memberNames} is a character vector with named elements,
+then element names are the member names and the values are member classes (like "numeric", "list", etc.)
 If \code{outputFile} (of course) no code is written.
 }

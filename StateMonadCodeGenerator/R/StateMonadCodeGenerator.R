@@ -34,6 +34,8 @@ NULL
 #' @details There are several stencil code files that are read and the corresponding names
 #' replaced. If \code{memberNames} is not NULL then those names are used the setters and takers
 #' are generated and state monad unit S3 object has \code{memberNames} as element names.
+#' If \code{memberNames} is a character vector with named elements,
+#' then element names are the member names and the values are member classes (like "numeric", "list", etc.)
 #' If \code{outputFile} (of course) no code is written.
 #' @export
 GenerateStateMonadCode <- function( monadName,  memberNames = NULL, monadObjectArgumentName = NULL, outputFile = NULL ) {
@@ -67,18 +69,38 @@ GenerateStateMonadCode <- function( monadName,  memberNames = NULL, monadObjectA
                      x = resCode,
                      fixed = TRUE)
 
-    ## Generate setters and takers
-    resCode <-
-      c( resCode,
-         do.call( c,
-                  purrr::map( memberNames,
-                              function(x) GenerateSetterCode( monadName = monadName, memberName = x, monadObjectArgumentName = monadObjectArgumentName ) )
-         ),
-         do.call( c,
-                  purrr::map( memberNames,
-                              function(x) GenerateTakerCode( monadName = monadName, memberName = x, monadObjectArgumentName = monadObjectArgumentName ) )
-         )
+    ## Generate setters
+    if( !is.null(names(memberNames)) ) {
+
+      setterResCode <-
+        do.call( c,
+                 purrr::map( names(memberNames),
+                             function(x) GenerateSetterCode( monadName = monadName,
+                                                             memberName = x,
+                                                             memberClassName = memberNames[[x]],
+                                                             monadObjectArgumentName = monadObjectArgumentName ) )
+        )
+
+    } else {
+
+      setterResCode <-
+        do.call( c,
+                 purrr::map( memberNames,
+                             function(x) GenerateSetterCode( monadName = monadName,
+                                                             memberName = x,
+                                                             monadObjectArgumentName = monadObjectArgumentName ) )
+        )
+
+    }
+
+    ## Generate takers
+    takerResCode <-
+      do.call( c,
+               purrr::map( memberNames,
+                           function(x) GenerateTakerCode( monadName = monadName, memberName = x, monadObjectArgumentName = monadObjectArgumentName ) )
       )
+
+    resCode <- c( resCode, setterResCode, takerResCode)
   }
 
   if( is.character(outputFile) ) {
@@ -93,7 +115,7 @@ GenerateStateMonadCode <- function( monadName,  memberNames = NULL, monadObjectA
 #' @param monadName The monad name (to be used as function prefix); a string.
 #' @param memberName The name of the monad member.
 #' @param monadObjectArgumentName The monad object name used in the generated functions code.
-#' @param memberClassName Member class name (lile "character", "numeric", "list", etc.)
+#' @param memberClassName Member class name (like "character", "numeric", "list", etc.)
 #' @export
 GenerateSetterCode <- function( monadName, memberName, monadObjectArgumentName = NULL, memberClassName = NULL ) {
 

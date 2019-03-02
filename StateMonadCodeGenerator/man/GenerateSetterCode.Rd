@@ -14,7 +14,7 @@ GenerateSetterCode(monadName, memberName, monadObjectArgumentName = NULL,
 
 \item{monadObjectArgumentName}{The monad object name used in the generated functions code.}
 
-\item{memberClassName}{Member class name (lile "character", "numeric", "list", etc.)}
+\item{memberClassName}{Member class name (like "character", "numeric", "list", etc.)}
 }
 \description{
 Generate State monad setter code.

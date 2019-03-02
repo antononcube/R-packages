@@ -11,8 +11,8 @@ output: html_notebook
 
 Install with following command.
 
-```{r}
-
+```{r, eval=FALSE}
+devtools::install_github( "antononcube/R-packages", subdir = "StateMonadCodeGenerator")
 ```
 
 ## Package load
@@ -28,7 +28,7 @@ rCodeFileName <- "~/R-packages/StateMonadCodeGenerator/generated-code/StMon.R"
 genCode <- 
   GenerateStateMonadCode( outputFile = rCodeFileName, 
                           monadName = "StMon", 
-                          memberNames = c("Data", "RegressionFunctions", "Outliers"), 
+                          memberNames = c("Data" = "numeric", "RegressionFunctions" = "list", "Outliers" = "list" ), 
                           monadObjectArgumentName = "qrObj"  )
 ```
 
