@@ -192,6 +192,19 @@ ParetoForVariables <- function( data, columnNames, normalizeQ = TRUE ) {
 ## Plot functions
 ##===========================================================
 
+#' Pareto plot for a vector.
+#' @param data A character, factor, or numerical vector.
+#' @export
+ParetoPlot <- function( data ) {
+
+  if( !( is.character(data) || is.factor(data) || is.numeric(data) ) ) {
+    stop( "The argument data is expected to be a character, factor, or numerical vector.", call. = TRUE )
+  }
+
+  ParetoPlotForVariables( data.frame(Variable = paste(class(data), collapse = " "), Value = data) )
+}
+
+
 #' Pareto plot for variables.
 #' @description Make a plot that demonstrates the adherence to the Pareto law of a
 #' a data frame with item names and weight values.

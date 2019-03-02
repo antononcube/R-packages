@@ -15,7 +15,10 @@ This notebook shows examples of the adherence of different datasets to the [Pare
 devtools::install_github( "antononcube/R-packages", subdir = "ParetoPrincipleAdherence")
 ```
 
-# The diamonds dataset
+# Examples
+
+
+## The diamonds dataset
 
 ```{r}
 data("diamonds")
