@@ -242,7 +242,7 @@ ParetoPlotForVariables <- function( data, normalizeQ = TRUE, separatedPlotsQ = T
         pdf <- ParetoForWeightedItems( data = x$Value, normalizeQ = normalizeQ )
 
         pres <- data.frame( Variable = x$Variable[[1]],
-                            Item = pdf$Item,
+                            Item = as.character(pdf$Item),
                             Index = 1:nrow(pdf),
                             ParetoFraction = pdf$ParetoFraction,
                             stringsAsFactors = FALSE )
@@ -310,13 +310,46 @@ ParetoPlotForColumns <- function( data, columnNames = colnames(data),
     stop( "The argument columnNames is expected to be a non-empty character vector with column names of the argument data.", call. = TRUE )
   }
 
-  ## Instead of using reshape2 or tidyr.
-  dfLongForm <-
-    purrr::map_dfr( columnNames, function(x) {
-      data.frame( Variable = x, Value = data[[x]], stringsAsFactors = FALSE )
+  ## Very similar to the code above, but I did not figure out a good refactoring.
+  qdf <-
+    purrr::map_df( columnNames, function(x) {
+
+      pdf <- ParetoForWeightedItems( data = data[[x]], normalizeQ = normalizeQ )
+
+      pres <- data.frame( Variable = x,
+                          Item = as.character(pdf$Item),
+                          Index = 1:nrow(pdf),
+                          ParetoFraction = pdf$ParetoFraction,
+                          stringsAsFactors = FALSE )
+
+      cbind( pres,
+             p10 = 0.1*nrow(pres), p20 = 0.2*nrow(pres), p30 = 0.3*nrow(pres),  p40 = 0.4*nrow(pres),  p50 = 0.5*nrow(pres) )
+
     })
 
-  ParetoPlotForVariables( data = dfLongForm,
-                          normalizeQ = normalizeQ, separatedPlotsQ = separatedPlotsQ,
-                          main = main, scales = scales, nrow = nrow, ncol = ncol )
+
+  if( separatedPlotsQ ) {
+
+    ggplot2::ggplot(qdf) +
+      ggplot2::geom_line(  ggplot2::aes( x = Index, y = ParetoFraction ) ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p10), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p20), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p30), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p40), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p50), linetype = 3 ) +
+      ggplot2::facet_wrap( ~ Variable, scales = scales, nrow = nrow, ncol = ncol ) +
+      ggplot2::theme( ... )
+
+  } else {
+
+    ggplot2::ggplot(qdf) +
+      ggplot2::geom_line(  ggplot2::aes( x = Index, y = ParetoFraction, color = Variable ) ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p10), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p20), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p30), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p40), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p50), linetype = 3 ) +
+      ggplot2::theme( ... )
+
+  }
 }

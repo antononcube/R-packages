@@ -29,17 +29,9 @@ summary(diamonds)
 ```
 
 ```{r}
-plot(ParetoForNumericalVector(trees$Height))
+ParetoPlotForColumns(data = diamonds, columnNames = c("carat", "cut", "color", "clarity", "price"), normalizeQ = F, scales = "free", nrow = 2 )
 ```
 
-
-```{r}
-ParetoPlotForColumns(data = diamonds, columnNames = c("carat", "price") )
-```
-
-```{r}
-ParetoPlotForColumns(data = diamonds, columnNames = c("cut", "color", "clarity"), scales = "free" )
-```
 
 # References
 
