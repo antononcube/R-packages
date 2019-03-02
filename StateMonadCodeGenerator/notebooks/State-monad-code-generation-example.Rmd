@@ -7,9 +7,16 @@ output: html_notebook
 
 # Introduction
 
+In this notebook we demonstrate 
+[State monad](https://en.wikipedia.org/wiki/Monad_(functional_programming)#State_monads) 
+code generation and a pipeline usage.
+
+For more details on monad code generation see [1, 1a].
+
+
 ## Installation
 
-Install with following command.
+Install the code generation package with following command.
 
 ```{r, eval=FALSE}
 devtools::install_github( "antononcube/R-packages", subdir = "StateMonadCodeGenerator")
@@ -57,11 +64,19 @@ source(rCodeFileName)
 
 ```{r}
 StMonUnit() %>% 
-  StMonSetData( runif(n = 120, min = 10, max = 30) ) %>% 
+  StMonSetData( runif(n = 10, min = 10, max = 30) ) %>% 
   StMonTakeData
 ```
 
 
 # References
 
-[1] Anton Antonov, Monad code generation
+[1] Anton Antonov, 
+["Monad code generation and extension"](https://mathematicaforprediction.wordpress.com/2017/06/23/monad-code-generation-and-extension/),
+(2017),
+[MathematicaForPrediction at WordPress](https://mathematicaforprediction.wordpress.com).
+
+[1a] Anton Antonov, 
+["Monad code generation and extension"](https://github.com/antononcube/MathematicaForPrediction/blob/master/MarkdownDocuments/Monad-code-generation-and-extension.md),
+(2017),
+[MathematicaForPrediction at GitHub](https://github.com/antononcube/MathematicaForPrediction).
