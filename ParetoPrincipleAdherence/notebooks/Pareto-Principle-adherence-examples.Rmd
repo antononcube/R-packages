@@ -1,0 +1,46 @@
+---
+title: "Pareto Principle adherence examples"
+author: Anton Antonov
+date: 2019-03-01
+output: html_notebook
+---
+
+# Introduction
+
+This notebook shows examples of the adherence of different datasets to the [Pareto Principle](https://en.wikipedia.org/wiki/Pareto_principle).
+
+## Package installation
+
+```{r}
+devtools::install_github( "antononcube/R-packages", subdir = "ParetoPrincipleAdherence")
+```
+
+# The diamonds dataset
+
+```{r}
+data("diamonds")
+```
+
+```{r}
+summary(diamonds)
+```
+
+```{r}
+plot(ParetoForNumericalVector(trees$Height))
+```
+
+
+```{r}
+ParetoPlotForColumns(data = diamonds, columnNames = c("carat", "price") )
+```
+
+```{r}
+ParetoPlotForColumns(data = diamonds, columnNames = c("cut", "color", "clarity"), scales = "free" )
+```
+
+# References
+
+\[1\] Anton Antonov, 
+["Pareto principle adherence examples"](https://mathematicaforprediction.wordpress.com/2016/11/17/pareto-principle-adherence-examples/), 
+(2016),
+[MathematicaForPrediction at WordPress](https://mathematicaforprediction.wordpress.com/).
