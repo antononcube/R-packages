@@ -13,18 +13,19 @@ or a categorical vector.}
 \item{normalizeQ}{Should the Pareto statistic be normalized with the total or not?}
 }
 \value{
-A data frame with columns c( "Item", "ParetoFraction" ).
+A data frame with columns \code{c("Item", "ParetoFraction")}.
 }
 \description{
-The Pareto fractions are given for each weighted item.
+Compute the Pareto position and fraction for each weighted item.
 The items are sorted in descending order according to their weight.
+(That gives the Pareto positions.)
 The Pareto fractions are derived as ratios between the cumulative sum of the weights
 and the total weight.
 }
 \details{
 If \code{data} is a character vector then the weights of the elements are assumed 1.
 If \code{data} is a numerical vector with named elements that vector is turned into
-item-weight data frame.
+a item-weight data frame.
 If \code{data} is a numerical vector without named elements that vector is turned into
-item-weight data frame with the items being vector's indexes.
+a item-weight data frame with the items being vector's indexes.
 }

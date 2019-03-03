@@ -15,7 +15,7 @@ ParetoForVariables(data, columnNames = colnames(data),
 \item{normalizeQ}{Should the Pareto statistic be normalized with the total or not?}
 }
 \value{
-A data frame with columns c( "Variable", "Item", "ParetoFraction" ).
+A data frame with columns \code{c("Variable", "Item", "ParetoFraction")}.
 }
 \description{
 Computes the Pareto statistic for each of the specified columns.

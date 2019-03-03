@@ -12,7 +12,7 @@ ParetoForCategoricalVector(data, normalizeQ = TRUE)
 \item{normalizeQ}{Should the Pareto statistic be normalized with the total or not?}
 }
 \value{
-A data frame with columns c( "Item", "ParetoFraction" ).
+A data frame with columns \code{c("Item", "ParetoFraction")}.
 }
 \description{
 A synonym/shortcut for \code{\link{ParetoForWeightedItems}}.

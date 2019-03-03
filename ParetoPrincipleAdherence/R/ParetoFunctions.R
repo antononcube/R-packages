@@ -21,11 +21,18 @@
 ##
 ##=======================================================================================
 ##
-## This R script has function definitions for Pareto Principle adherence verification
+## This R package has function definitions for Pareto Principle adherence verification
 ## and analysis.
-## Instead of "Pareto Principle" the phrase "Pareto law" is used.
 ##
-## TODO: Better function names.
+## The phrase "Pareto statistic" for a vector V means the formula:
+##
+##   cumsum(rev(sort(V))) / sum(V) .
+##
+## The initial version of this package was based on the source code file:
+##
+##   https://github.com/antononcube/MathematicaForPrediction/blob/master/R/ParetoLawFunctions.R
+##
+## The current version of the package code is a completely revised system of function signatures.
 ##
 ## Date started: April, 2014
 ## Updated: February 2015, March, 2015, January 2016, February 2019
@@ -107,7 +114,7 @@ ParetoForNumericalVector <- function( data, normalizeQ = TRUE ) {
 #' @description A synonym/shortcut for \code{\link{ParetoForWeightedItems}}.
 #' @param data A character or factor vector.
 #' @param normalizeQ Should the Pareto statistic be normalized with the total or not?
-#' @return A data frame with columns c( "Item", "ParetoFraction" ).
+#' @return A data frame with columns \code{c("Item", "ParetoFraction")}.
 #' @export
 ParetoForCategoricalVector <- function( data, normalizeQ = TRUE ) {
 
@@ -123,19 +130,20 @@ ParetoForCategoricalVector <- function( data, normalizeQ = TRUE ) {
 }
 
 #' Pareto statistic for weighted items.
-#' @description The Pareto fractions are given for each weighted item.
+#' @description Compute the Pareto position and fraction for each weighted item.
 #' The items are sorted in descending order according to their weight.
+#' (That gives the Pareto positions.)
 #' The Pareto fractions are derived as ratios between the cumulative sum of the weights
 #' and the total weight.
 #' @param data A data frame with columns "Item" and "Weight", a numerical vector,
 #' or a categorical vector.
 #' @param normalizeQ Should the Pareto statistic be normalized with the total or not?
-#' @return A data frame with columns c( "Item", "ParetoFraction" ).
+#' @return A data frame with columns \code{c("Item", "ParetoFraction")}.
 #' @details If \code{data} is a character vector then the weights of the elements are assumed 1.
 #' If \code{data} is a numerical vector with named elements that vector is turned into
-#' item-weight data frame.
+#' a item-weight data frame.
 #' If \code{data} is a numerical vector without named elements that vector is turned into
-#' item-weight data frame with the items being vector's indexes.
+#' a item-weight data frame with the items being vector's indexes.
 #' @export
 ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
 
@@ -164,7 +172,7 @@ ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
 #' @param data A data frame.
 #' @param columnNames The column names of the variables.
 #' @param normalizeQ Should the Pareto statistic be normalized with the total or not?
-#' @return A data frame with columns c( "Variable", "Item", "ParetoFraction" ).
+#' @return A data frame with columns \code{c("Variable", "Item", "ParetoFraction")}.
 #' @details This function works on wide form data.
 #' (The function \code{\link{ParetoForWeightedItems}} works on long form data.)
 #' Note that the specified columns can be a mix of categorical and numerical columns.
@@ -192,8 +200,52 @@ ParetoForVariables <- function( data, columnNames = colnames(data), normalizeQ =
 ## Plot functions
 ##===========================================================
 
+#' Plot points with a Pareto frame.
+#' @description  Plot the points of a vector and overlay a Pareto grid
+#' (without computing the Pareto statistic.)
+#' @param data A numerical vector.
+#' @param main A string for the title of the plot.
+#' @param xlab Label for the x-axis.
+#' @param ylab Label for the y-axis.
+#' @param xFraction The Pareto fraction for the x-axis.
+#' @param yFraction The Pareto fraction for the y-axis.
+#' @param showParetoTicksQ Should the Pareto ticks be shown or not?
+#' @param ... Additional parameters for \code{\link{base::plot}}.
+#' @details This plot can be used when the Pareto statistic is
+#' computed with some other functions.
+#' (Or for for ad hoc Pareto computations.)
+#' @family Pareto plots
+#' @export
+ParetoFramePlot <- function( data, main = NULL, xlab = "Index", ylab = "ParetoFraction",
+                             xFraction = 0.2, yFraction = 0.8, showParetoTicksQ = TRUE, ... ) {
+
+  data <- sort(data)
+
+  if( ! is.numeric(data) ) {
+    stop( "The argument data is expected to be a numerical vector.", call. = TRUE )
+  }
+
+  plot( data, type='l', main=main, xlab=xlab, ylab=ylab, ... )
+  grid()
+  ## grid(nx=4,ny=4)
+  vticks <- c( xFraction*length(data) )
+  hticks <- c( yFraction )
+
+  if( showParetoTicksQ ) {
+    axis( side = 3, at = vticks, labels = as.character(xFraction) )
+    axis( side = 4, at = hticks )
+  }
+
+  abline( v = vticks, h = hticks, col = "red", lty = "dotted" )
+}
+
+
+
 #' Pareto plot for a vector.
+#' @description Computes the Pareto statistic for a vector and plots it.
 #' @param data A character, factor, or numerical vector.
+#' @details This function is a shortcut to \code{\link{ParetoPlotForVariables}}.
+#' @family Pareto plots
 #' @export
 ParetoPlot <- function( data ) {
 

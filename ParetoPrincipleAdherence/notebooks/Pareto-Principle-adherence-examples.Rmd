@@ -11,7 +11,7 @@ This notebook shows examples of the adherence of different datasets to the [Pare
 
 ## Package installation
 
-```{r}
+```{r, eval=T}
 devtools::install_github( "antononcube/R-packages", subdir = "ParetoPrincipleAdherence")
 ```
 
@@ -30,6 +30,22 @@ summary(diamonds)
 
 ```{r}
 ParetoPlotForColumns(data = diamonds, columnNames = c("carat", "cut", "color", "clarity", "price"), normalizeQ = F, scales = "free", nrow = 2 )
+```
+
+Here we compute the Pareto statistic for a selected column:
+
+```{r}
+qDF <- ParetoForWeightedItems( diamonds$price )
+qDF %>% dplyr::filter( ParetoFraction < 0.02 )
+```
+
+Using the above result in the following plot we can see 
+that ~ 30% of the diamonds correspond to 70% of the total of prices.
+
+```{r}
+ParetoFramePlot( qDF$ParetoFraction, 
+                 sub = "Pareto Principle for diamond prices", 
+                 xFraction = 0.3, yFraction = 0.7, showParetoTicksQ = T )
 ```
 
 

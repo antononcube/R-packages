@@ -10,5 +10,12 @@ ParetoPlot(data)
 \item{data}{A character, factor, or numerical vector.}
 }
 \description{
-Pareto plot for a vector.
+Computes the Pareto statistic for a vector and plots it.
 }
+\details{
+This function is a shortcut to \code{\link{ParetoPlotForVariables}}.
+}
+\seealso{
+Other Pareto plots: \code{\link{ParetoFramePlot}}
+}
+\concept{Pareto plots}
