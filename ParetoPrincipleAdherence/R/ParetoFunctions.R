@@ -169,7 +169,7 @@ ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
 #' (The function \code{\link{ParetoForWeightedItems}} works on long form data.)
 #' Note that the specified columns can be a mix of categorical and numerical columns.
 #' @export
-ParetoForVariables <- function( data, columnNames = names(data), normalizeQ = TRUE ) {
+ParetoForVariables <- function( data, columnNames = colnames(data), normalizeQ = TRUE ) {
 
   if( sum(columnNames %in% colnames(data)) < length(columnNames) ) {
     warning( "Some of the specified column names are unknown.", call. = TRUE )

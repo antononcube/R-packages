@@ -4,7 +4,8 @@
 \alias{ParetoForVariables}
 \title{Pareto for variables.}
 \usage{
-ParetoForVariables(data, columnNames, normalizeQ = TRUE)
+ParetoForVariables(data, columnNames = colnames(data),
+  normalizeQ = TRUE)
 }
 \arguments{
 \item{data}{A data frame.}
@@ -20,7 +21,7 @@ A data frame with columns c( "Variable", "Item", "ParetoFraction" ).
 Computes the Pareto statistic for each of the specified columns.
 }
 \details{
-This function works on the wide form the data.
-The function \code{\link{ParetoForWeightedItems}} works on the long form.
-Note that specified columns can be a mix of categorical and numerical.
+This function works on wide form data.
+(The function \code{\link{ParetoForWeightedItems}} works on long form data.)
+Note that the specified columns can be a mix of categorical and numerical columns.
 }

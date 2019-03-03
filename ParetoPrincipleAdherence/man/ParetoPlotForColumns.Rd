@@ -32,7 +32,7 @@ Apply \code{\link{ParetoLawData}} function over a list of names
 and make a multi-panel ggplot.
 }
 \details{
-This function make the Pareto plots over a wide form data frame.
+This function makes the Pareto plots over a wide form data frame.
 The function \code{\link{ParetoPlotForVariables}} makes the plots over long form data.
 
 Pareto plots
