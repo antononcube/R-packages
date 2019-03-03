@@ -165,11 +165,11 @@ ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
 #' @param columnNames The column names of the variables.
 #' @param normalizeQ Should the Pareto statistic be normalized with the total or not?
 #' @return A data frame with columns c( "Variable", "Item", "ParetoFraction" ).
-#' @details This function works on the wide form the data.
-#' The function \code{\link{ParetoForWeightedItems}} works on the long form.
-#' Note that specified columns can be a mix of categorical and numerical.
+#' @details This function works on wide form data.
+#' (The function \code{\link{ParetoForWeightedItems}} works on long form data.)
+#' Note that the specified columns can be a mix of categorical and numerical columns.
 #' @export
-ParetoForVariables <- function( data, columnNames, normalizeQ = TRUE ) {
+ParetoForVariables <- function( data, columnNames = names(data), normalizeQ = TRUE ) {
 
   if( sum(columnNames %in% colnames(data)) < length(columnNames) ) {
     warning( "Some of the specified column names are unknown.", call. = TRUE )
@@ -293,7 +293,7 @@ ParetoPlotForVariables <- function( data, normalizeQ = TRUE, separatedPlotsQ = T
 #' @param nrow Sames as \code{nrow} of \code{\link{ggplot2::facet_wrap}}.
 #' @param ncol Sames as \code{ncol} of \code{\link{ggplot2::facet_wrap}}.
 #' @param ... Parameters for \code{\link{ggplot2::theme}}
-#' @details This function make the Pareto plots over a wide form data frame.
+#' @details This function makes the Pareto plots over a wide form data frame.
 #' The function \code{\link{ParetoPlotForVariables}} makes the plots over long form data.
 #' @details Pareto plots
 #' @export
