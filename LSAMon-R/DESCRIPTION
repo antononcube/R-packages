@@ -1,0 +1,27 @@
+Package: LSAMon
+Type: Package
+Title: Latent Semantic Analysis Monad
+Version: 0.6.0
+Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+                  role = c("aut", "cre"))
+Maintainer: Anton Antonov <antononcube@gmail.com>
+Description: This package implements in R a software monad for Latent Semantic Analysis workflows.
+License: GPL-3
+Language: en-US
+Encoding: UTF-8
+LazyData: true
+URL: https://github.com/antononcube/packages/
+RoxygenNote: 6.1.1
+Imports:
+    magrittr,
+    purrr,
+    SnowballC,
+    lattice,
+    irlba,
+    NonNegativeMatrixFactorization,
+    SparseMatrixRecommender
+Suggests: 
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
