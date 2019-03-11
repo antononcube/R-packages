@@ -94,13 +94,29 @@ GenerateStateMonadCode <- function( monadName,  memberNames = NULL, monadObjectA
     }
 
     ## Generate takers
-    takerResCode <-
-      do.call( c,
-               purrr::map( memberNames,
-                           function(x) GenerateTakerCode( monadName = monadName, memberName = x, monadObjectArgumentName = monadObjectArgumentName ) )
-      )
+    if( !is.null(names(memberNames)) ) {
 
-    resCode <- c( resCode, setterResCode, takerResCode)
+      takerResCode <-
+        do.call( c,
+                 purrr::map( names(memberNames),
+                             function(x) GenerateTakerCode( monadName = monadName,
+                                                            memberName = x,
+                                                            monadObjectArgumentName = monadObjectArgumentName ) )
+        )
+
+    } else {
+
+      takerResCode <-
+        do.call( c,
+                 purrr::map( memberNames,
+                             function(x) GenerateTakerCode( monadName = monadName,
+                                                            memberName = x,
+                                                            monadObjectArgumentName = monadObjectArgumentName ) )
+        )
+
+    }
+
+    resCode <- c( resCode, setterResCode, takerResCode )
   }
 
   if( is.character(outputFile) ) {
