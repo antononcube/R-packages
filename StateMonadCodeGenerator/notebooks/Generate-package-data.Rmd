@@ -10,8 +10,8 @@ library(devtools)
 ```
 
 ```{r}
-textMStateCoreFunctions <- readLines( "~/R-packages/StateMonadCodeGenerator/stencil-code/MStateCoreFunctions.R")
-textMStateSetMember <-  readLines( "~/R-packages/StateMonadCodeGenerator/stencil-code/MStateSetMember.R")
-textMStateTakeMember <-  readLines( "~/R-packages/StateMonadCodeGenerator/stencil-code/MStateTakeMember.R")
+textMStateCoreFunctions <- readLines( "~/R-packages/StateMonadCodeGenerator/code-stencils/MStateCoreFunctions.R")
+textMStateSetMember <-  readLines( "~/R-packages/StateMonadCodeGenerator/code-stencils/MStateSetMember.R")
+textMStateTakeMember <-  readLines( "~/R-packages/StateMonadCodeGenerator/code-stencils/MStateTakeMember.R")
 usethis::use_data( textMStateCoreFunctions, textMStateSetMember, textMStateTakeMember, overwrite = T)
 ```

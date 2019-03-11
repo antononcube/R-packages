@@ -23,7 +23,6 @@ MStateFailureQ <- function(x) { mean(is.na(x)) }
 
 #' Make a MState Unit
 #' @description Creates a monad object.
-#' @param data A vector or a two-column matrix or data frame.
 #' @return An S3 class "MState". In other words, a list with the attribute "class" set to "MState".
 #' @export
 MStateUnit <- function( ) {
@@ -36,7 +35,7 @@ MStateUnit <- function( ) {
 
 
 ##===========================================================
-## Setters and getters
+## Value setter and getter
 ##===========================================================
 
 #' Set the value in a MState object.
