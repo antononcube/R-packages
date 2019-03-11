@@ -51,20 +51,24 @@ LSAMonFailureQ <- function(x) { mean(is.na(x)) }
 
 #' Make a LSAMon Unit
 #' @description Creates a monad object.
-#' @param data A vector or a two-column matrix or data frame.
+#' @param documents A character vector, a list of strings, or NULL.
 #' @return An S3 class "LSAMon". In other words, a list with the attribute "class" set to "LSAMon".
 #' @export
-LSAMonUnit <- function( ) {
+LSAMonUnit <- function( documents = NULL ) {
 
-  res <- list( Value = NULL, Documents = NULL, DocumentTermMatrix = NULL, Terms = NULL, WeightedDocumentTermMatrix = NULL, W = NULL, H = NULL, TopicColumnPositions = NULL, AutomaticTopicNames = NULL )
+  res <- list( Value = NULL, character = NULL, matrix = NULL, character = NULL, matrix = NULL, matrix = NULL, matrix = NULL, integer = NULL, character = NULL )
   attr(res, "class") <- "LSAMon"
+
+  if( !is.null(documents) ) {
+    res %>% LSAMonSetDocuments( documents )
+  }
 
   res
 }
 
 
 ##===========================================================
-## Setters and getters
+## Value setter and getter
 ##===========================================================
 
 #' Set the value in a LSAMon object.
@@ -166,8 +170,8 @@ LSAMonSetDocuments <- function( lsaObj, Documents ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(Documents) || is.CLASSNAME(Documents)) ) {
-    warning("The argument Documents is expected to be NULL or a CLASSNAME.", call. = TRUE)
+  if( !( is.null(Documents) || is.character(Documents)) ) {
+    warning("The argument Documents is expected to be NULL or a character.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -191,8 +195,8 @@ LSAMonSetDocumentTermMatrix <- function( lsaObj, DocumentTermMatrix ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(DocumentTermMatrix) || is.CLASSNAME(DocumentTermMatrix)) ) {
-    warning("The argument DocumentTermMatrix is expected to be NULL or a CLASSNAME.", call. = TRUE)
+  if( !( is.null(DocumentTermMatrix) || is.matrix(DocumentTermMatrix)) ) {
+    warning("The argument DocumentTermMatrix is expected to be NULL or a matrix.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -216,8 +220,8 @@ LSAMonSetTerms <- function( lsaObj, Terms ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(Terms) || is.CLASSNAME(Terms)) ) {
-    warning("The argument Terms is expected to be NULL or a CLASSNAME.", call. = TRUE)
+  if( !( is.null(Terms) || is.character(Terms)) ) {
+    warning("The argument Terms is expected to be NULL or a character.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -241,8 +245,8 @@ LSAMonSetWeightedDocumentTermMatrix <- function( lsaObj, WeightedDocumentTermMat
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(WeightedDocumentTermMatrix) || is.CLASSNAME(WeightedDocumentTermMatrix)) ) {
-    warning("The argument WeightedDocumentTermMatrix is expected to be NULL or a CLASSNAME.", call. = TRUE)
+  if( !( is.null(WeightedDocumentTermMatrix) || is.matrix(WeightedDocumentTermMatrix)) ) {
+    warning("The argument WeightedDocumentTermMatrix is expected to be NULL or a matrix.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -266,8 +270,8 @@ LSAMonSetW <- function( lsaObj, W ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(W) || is.CLASSNAME(W)) ) {
-    warning("The argument W is expected to be NULL or a CLASSNAME.", call. = TRUE)
+  if( !( is.null(W) || is.matrix(W)) ) {
+    warning("The argument W is expected to be NULL or a matrix.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -291,8 +295,8 @@ LSAMonSetH <- function( lsaObj, H ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(H) || is.CLASSNAME(H)) ) {
-    warning("The argument H is expected to be NULL or a CLASSNAME.", call. = TRUE)
+  if( !( is.null(H) || is.matrix(H)) ) {
+    warning("The argument H is expected to be NULL or a matrix.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -316,8 +320,8 @@ LSAMonSetTopicColumnPositions <- function( lsaObj, TopicColumnPositions ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(TopicColumnPositions) || is.CLASSNAME(TopicColumnPositions)) ) {
-    warning("The argument TopicColumnPositions is expected to be NULL or a CLASSNAME.", call. = TRUE)
+  if( !( is.null(TopicColumnPositions) || is.integer(TopicColumnPositions)) ) {
+    warning("The argument TopicColumnPositions is expected to be NULL or a integer.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -341,8 +345,8 @@ LSAMonSetAutomaticTopicNames <- function( lsaObj, AutomaticTopicNames ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(AutomaticTopicNames) || is.CLASSNAME(AutomaticTopicNames)) ) {
-    warning("The argument AutomaticTopicNames is expected to be NULL or a CLASSNAME.", call. = TRUE)
+  if( !( is.null(AutomaticTopicNames) || is.character(AutomaticTopicNames)) ) {
+    warning("The argument AutomaticTopicNames is expected to be NULL or a character.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -528,6 +532,7 @@ LSAMonTakeAutomaticTopicNames <- function( lsaObj, functionName = "LSAMonTakeAut
 }
 
 
+
 ##===========================================================
 ## Make document-term matrix
 ##===========================================================
@@ -647,7 +652,7 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "Entr
   }
 
   wDocTermMat <-
-    SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = wDocTermMat,
+    SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = docTermMat,
                                                           globalWeightFunction = globalWeightFunction,
                                                           localWeightFunction = localWeightFunction,
                                                           normalizerFunction = normalizerFunction )
@@ -696,18 +701,28 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
     )
   }
 
+  if( !( is.numeric(numberOfTopics) && numberOfTopics > 0 ) ) {
+    warning( "The argument numberOfTopics is expected to be a positive integer.", call. = T)
+    return(LSAMonFailureSymbol)
+  }
+
   if( is.null(minNumberOfDocumentsPerTerm) ) {
     minNumberOfDocumentsPerTerm <- floor( 0.05 * nrow(wDocTermMat) )
+  }
+
+  if( !( is.numeric(minNumberOfDocumentsPerTerm) && numberOfTopics >= 0 ) ) {
+    warning( "The argument minNumberOfDocumentsPerTerm is expected to be a non-negative integer or NULL.", call. = T)
+    return(LSAMonFailureSymbol)
   }
 
   wDocTermMat01 <- wDocTermMat
   wDocTermMat01@x[wDocTermMat01@x > 0] <- 1
 
-  wDocTermMat <- wDocTermMat[ colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm ]
+  wDocTermMat <- wDocTermMat[ , colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm ]
 
   resNNMF <-
     NonNegativeMatrixFactorization::NNMF( V = wDocTermMat,
-                                          k = numberOfTopics,
+                                          k = as.integer(numberOfTopics),
                                           maxSteps = maxSteps,
                                           tolerance = tolerance,
                                           profiling = profiling )
@@ -718,6 +733,65 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
   lsaObj
 }
 
+
+##===========================================================
+## Basis vector interpretation
+##===========================================================
+
+#' Basis vectors interpretation.
+#' @description Interpret specified basis vectors.
+#' @param lsaObj A LSAMon object.
+#' @param basisVectorIndexes Basis vectors to be interpretted.
+#' If NULL all indexes are taken.
+#' @param n Number of (top) coordinates per basis vector.
+#' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
+#' @return A LSAMon object.
+#' @details This function is based on
+#' \code{\link{NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct} and
+#' \code{\link{NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation}}.
+#' The obtained list of data frames is assigned to \code{lsaObj$Value}.
+#' @export
+LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 12, orderBySignificanceQ = TRUE ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonBasisVectorInterpretation", logicalResult = T ) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  if( is.null(vectorIndices) ){
+    vectorIndices <- 1:nrow(lsaObj$H)
+  }
+
+  if( !( is.numeric(vectorIndices) && mean( vectorIndices > 0 ) == 1 ) ) {
+    warning( "The argument vectorIndices is expected to be a vector of non-negative integers or NULL.", call. = T)
+    return(LSAMonFailureSymbol)
+  }
+
+  nres <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( lsaObj$W, lsaObj$H, normalizeLeft = FALSE )
+
+  topicSFactors <- sqrt( colSums( nres$W * nres$W ) )
+
+  if( orderBySignificanceQ ) {
+    nres$W <- nres$W[ , rev(order(topicSFactors)) ]
+    nres$H <- nres$H[ rev(order(topicSFactors)), ]
+    topicSFactors <- topicSFactors[ rev(order(topicSFactors)) ]
+  }
+
+  topics <-
+    purrr::map_df( vectorIndices, function(i) {
+
+      basisVec <- NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation( nres$H[i,], n, colnames(nres$H) )
+
+      data.frame( Rank = i, SignificanceFactor = topicSFactors[i],
+                  Tertm = names(basisVec), Coefficient = basisVec,
+                  stringsAsFactors = F)
+    })
+
+  lsaObj$Value <- topics
+
+  lsaObj
+}
 
 ##===========================================================
 ## Statistical thesauri
@@ -735,14 +809,12 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
 #' \code{\link{NonNegativeMatrixFactorization::NearestWords}}.
 #' The obtained list of thesaurus entries is assigned to \code{lsaObj$Value}.
 #' @export
-LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12 ) {
+LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  H <- lsaObj %>% LSAMonTakeH()
 
-  if( is.null(H) ) {
-    warning("Cannot find lsaObj$H .", call. = TRUE )
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonBasisVectorInterpretation", logicalResult = T ) ) {
     return(LSAMonFailureSymbol)
   }
 
@@ -751,12 +823,13 @@ LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12 ) {
       searchWords,
       function(word) {
 
-        if ( sword %in% colnames(H) ) {
-          cbind( SearchTerm = sword,
-                 Word = NonNegativeMatrixFactorization::NearestWords( nres$H, sword, fixed = fixed, n = n ),
+        if ( word %in% colnames(lsaObj$H) ) {
+          cbind( SearchTerm = word,
+                 Word = NonNegativeMatrixFactorization::NearestWords( lsaObj$H, word, fixed = fixed, n = n ),
                  stringsAsFactors = FALSE )
         } else { NULL }
       })
+  names(res) <- searchWords
 
   lsaObj$Value <- res
 

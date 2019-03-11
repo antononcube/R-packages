@@ -21,7 +21,14 @@ library(StateMonadCodeGenerator)
 
 ```{r}
 GenerateStateMonadCode( monadName = "LSAMon", 
-                        memberNames = c("Documents", "DocumentTermMatrix", "Terms", "WeightedDocumentTermMatrix", "W", "H", "TopicColumnPositions", "AutomaticTopicNames"), 
+                        memberNames = c("Documents" = "character", 
+                                        "DocumentTermMatrix" = "matrix", 
+                                        "Terms" = "character", 
+                                        "WeightedDocumentTermMatrix" = "matrix", 
+                                        "W" = "matrix", 
+                                        "H" = "matrix",
+                                        "TopicColumnPositions" = "integer", 
+                                        "AutomaticTopicNames" = "character"), 
                         monadObjectArgumentName = "lsaObj", 
                         outputFile = "LSAMon-core.R")
 ```
