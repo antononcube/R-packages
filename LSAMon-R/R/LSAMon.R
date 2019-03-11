@@ -22,6 +22,7 @@
 
 
 #' @import purrr
+#' @import Matrix
 #' @import magrittr
 #' @import irlba
 #' @import NonNegativeMatrixFactorization
@@ -718,7 +719,7 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
   wDocTermMat01 <- wDocTermMat
   wDocTermMat01@x[wDocTermMat01@x > 0] <- 1
 
-  wDocTermMat <- wDocTermMat[ , colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm ]
+  wDocTermMat <- wDocTermMat[ , Matrix::colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm ]
 
   resNNMF <-
     NonNegativeMatrixFactorization::NNMF( V = wDocTermMat,
