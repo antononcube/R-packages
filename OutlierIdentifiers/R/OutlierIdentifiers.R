@@ -49,20 +49,20 @@
 
 #' Hampel identifier parameters.
 #' @description Find an Hampel outlier threshold for a data vector.
-#' @param dataVec A data vector.
+#' @param data A data vector.
 #' @export
-HampelIdentifierParameters <- function( dataVec ) {
-  x0 <- median(dataVec, na.rm = TRUE )
-  md <- 1.4826 * median(abs(dataVec - x0), na.rm = TRUE );
+HampelIdentifierParameters <- function( data ) {
+  x0 <- median(data, na.rm = TRUE )
+  md <- 1.4826 * median(abs(data - x0), na.rm = TRUE );
   c(x0 - md, x0 + md)
 }
 
 #' Quartile identifier parameters
 #' @description Find an Quartile outlier for a data vector.
-#' @param dataVec A data vector.
+#' @param data A data vector.
 #' @export
-QuartileIdentifierParameters <- function( dataVec ) {
-  res <- quantile( dataVec, c( 1/4, 1/2, 3/4 ), na.rm = TRUE )
+QuartileIdentifierParameters <- function( data ) {
+  res <- quantile( data, c( 1/4, 1/2, 3/4 ), na.rm = TRUE )
   xL <- res[[1]]
   x0 <- res[[2]]
   xU <- res[[3]]
@@ -71,14 +71,14 @@ QuartileIdentifierParameters <- function( dataVec ) {
 
 #' SPLUS quartile identifier parameters
 #' @description Find an SPLUS Quartile outlier for a data vector.
-#' @param dataVec A data vector.
+#' @param data A data vector.
 #' @export
-SPLUSQuartileIdentifierParameters <- function( dataVec ) {
-  if ( length(dataVec) <=4 ) {
-    xL <- min(dataVec, na.rm = TRUE )
-    xU <- max(dataVec, na.rm = TRUE )
+SPLUSQuartileIdentifierParameters <- function( data ) {
+  if ( length(data) <=4 ) {
+    xL <- min(data, na.rm = TRUE )
+    xU <- max(data, na.rm = TRUE )
   } else {
-    res <- quantile( dataVec, c( 1/4, 3/4 ), na.rm = TRUE )
+    res <- quantile( data, c( 1/4, 3/4 ), na.rm = TRUE )
     xL <- res[[1]]
     xU <- res[[2]]
   }
@@ -88,59 +88,68 @@ SPLUSQuartileIdentifierParameters <- function( dataVec ) {
 
 #' Outlier identifier.
 #' @description Find an outlier threshold for a data vector.
-#' @param dataVec A data vector.
-#' @param lowerAndUpperThresholds outlier identifier parameters
+#' @param data A data vector.
+#' @param identifier An outlier identifier function.
+#' @param lowerAndUpperThresholds Outlier identifier parameters.
+#' @return A numeric vector of outliers.
+#' @details The outlier identifier function \code{identifier}
+#' should return a list or tuple of two numbers \code{c(lowerThreshold, upperThreshold)}.
 #' @export
-OutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
-  dataVec[ dataVec <= lowerAndUpperThresholds[[1]] | dataVec >= lowerAndUpperThresholds[[2]] ]
+OutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data) ) {
+  if( !is.numeric(data) ) {
+    stop( "The argument data is expected to be a numeric vector.", call. = TRUE )
+  }
+  data[ data <= lowerAndUpperThresholds[[1]] | data >= lowerAndUpperThresholds[[2]] ]
 }
 
 #' Top outlier identifier.
 #' @description Find the top outliers for a data vector
-#' @param dataVec A data vector.
-#' @param lowerAndUpperThresholds outlier identifier parameters
+#' @param data A data vector.
+#' @param identifier An outlier identifier function.
+#' @param lowerAndUpperThresholds Outlier identifier parameters.
 #' @export
-TopOutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
-  dataVec[dataVec >= lowerAndUpperThresholds[[2]] ]
+TopOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data) ) {
+  data[data >= lowerAndUpperThresholds[[2]] ]
 }
 
 #' Bottom outlier identifier.
 #' @description Find the bottom outliers for a data vector.
-#' @param dataVec data vector
-#' @param lowerAndUpperThresholds outlier identifier parameters
+#' @param data data vector
+#' @param identifier An outlier identifier function.
+#' @param lowerAndUpperThresholds Outlier identifier parameters.
 #' @export
-BottomOutlierIdentifier <- function( dataVec, lowerAndUpperThresholds ) {
-  dataVec[dataVec <= lowerAndUpperThresholds[[1]] ]
+BottomOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data) ) {
+  data[data <= lowerAndUpperThresholds[[1]] ]
 }
 
 #' Outlier positions finder.
 #' @description Find the outlier positions in a data vector.
-#' @param dataVec A data vector.
-#' @param outlierIdentifier An outlier identifier function.
+#' @param data A data vector.
+#' @param identifier An outlier identifier function.
+#' @param lowerAndUpperThresholds Outlier identifier parameters.
 #' @export
-OutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
-  cls <- outlierIdentifier(dataVec)
-  which( dataVec <= cls[[1]] | dataVec >= cls[[2]] )
+OutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data) ) {
+  which( data <= lowerAndUpperThresholds[[1]] | data >= lowerAndUpperThresholds[[2]] )
 }
 
 #' Top outlier positions finder.
 #' @description Find the top outlier positions in a data vector.
-#' @param dataVec A data vector.
-#' @param outlierIdentifier An outlier identifier function.
+#' @param data A data vector.
+#' @param identifier An outlier identifier function.
+#' @param lowerAndUpperThresholds Outlier identifier parameters.
 #' @export
-TopOutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
-  cls <- outlierIdentifier(dataVec)
-  which( dataVec >= cls[[2]] )
+TopOutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data)  ) {
+  which( data >= lowerAndUpperThresholds[[2]] )
 }
 
 #' Bottom outlier positions finder.
 #' @description Find the bottom outlier positions in a data vector.
-#' @param dataVec A data vector.
-#' @param outlierIdentifier An outlier identifier function.
+#' @param data A data vector.
+#' @param identifier An outlier identifier function.
+#' @param lowerAndUpperThresholds Outlier identifier parameters.
 #' @export
-BottomOutlierPosition <- function( dataVec, outlierIdentifier = HampelIdentifierParameters ) {
-  cls <- outlierIdentifier(dataVec)
-  which( dataVec <= cls[[1]] )
+BottomOutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data)  ) {
+  which( data <= lowerAndUpperThresholds[[1]] )
 }
 
 
