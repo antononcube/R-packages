@@ -4,10 +4,10 @@
 \alias{QuartileIdentifierParameters}
 \title{Quartile identifier parameters}
 \usage{
-QuartileIdentifierParameters(dataVec)
+QuartileIdentifierParameters(data)
 }
 \arguments{
-\item{dataVec}{A data vector.}
+\item{data}{A data vector.}
 }
 \description{
 Find an Quartile outlier for a data vector.

@@ -4,13 +4,23 @@
 \alias{OutlierIdentifier}
 \title{Outlier identifier.}
 \usage{
-OutlierIdentifier(dataVec, lowerAndUpperThresholds)
+OutlierIdentifier(data, identifier,
+  lowerAndUpperThresholds = identifier(data))
 }
 \arguments{
-\item{dataVec}{A data vector.}
+\item{data}{A data vector.}
 
-\item{lowerAndUpperThresholds}{outlier identifier parameters}
+\item{identifier}{An outlier identifier function.}
+
+\item{lowerAndUpperThresholds}{Outlier identifier parameters.}
+}
+\value{
+A numeric vector of outliers.
 }
 \description{
 Find an outlier threshold for a data vector.
+}
+\details{
+The outlier identifier function \code{identifier}
+should return a list or tuple of two numbers \code{c(lowerThreshold, upperThreshold)}.
 }

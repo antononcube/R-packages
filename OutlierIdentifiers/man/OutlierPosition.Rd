@@ -4,12 +4,15 @@
 \alias{OutlierPosition}
 \title{Outlier positions finder.}
 \usage{
-OutlierPosition(dataVec, outlierIdentifier = HampelIdentifierParameters)
+OutlierPosition(data, identifier = SPLUSQuartileIdentifierParameters,
+  lowerAndUpperThresholds = identifier(data))
 }
 \arguments{
-\item{dataVec}{A data vector.}
+\item{data}{A data vector.}
 
-\item{outlierIdentifier}{An outlier identifier function.}
+\item{identifier}{An outlier identifier function.}
+
+\item{lowerAndUpperThresholds}{Outlier identifier parameters.}
 }
 \description{
 Find the outlier positions in a data vector.

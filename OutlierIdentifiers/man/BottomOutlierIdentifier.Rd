@@ -4,12 +4,15 @@
 \alias{BottomOutlierIdentifier}
 \title{Bottom outlier identifier.}
 \usage{
-BottomOutlierIdentifier(dataVec, lowerAndUpperThresholds)
+BottomOutlierIdentifier(data, identifier,
+  lowerAndUpperThresholds = identifier(data))
 }
 \arguments{
-\item{dataVec}{data vector}
+\item{data}{data vector}
 
-\item{lowerAndUpperThresholds}{outlier identifier parameters}
+\item{identifier}{An outlier identifier function.}
+
+\item{lowerAndUpperThresholds}{Outlier identifier parameters.}
 }
 \description{
 Find the bottom outliers for a data vector.

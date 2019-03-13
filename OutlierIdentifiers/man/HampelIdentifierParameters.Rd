@@ -4,10 +4,10 @@
 \alias{HampelIdentifierParameters}
 \title{Hampel identifier parameters.}
 \usage{
-HampelIdentifierParameters(dataVec)
+HampelIdentifierParameters(data)
 }
 \arguments{
-\item{dataVec}{A data vector.}
+\item{data}{A data vector.}
 }
 \description{
 Find an Hampel outlier threshold for a data vector.
