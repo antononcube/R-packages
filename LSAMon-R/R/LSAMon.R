@@ -196,8 +196,8 @@ LSAMonSetDocumentTermMatrix <- function( lsaObj, DocumentTermMatrix ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(DocumentTermMatrix) || is.matrix(DocumentTermMatrix)) ) {
-    warning("The argument DocumentTermMatrix is expected to be NULL or a matrix.", call. = TRUE)
+  if( !( is.null(DocumentTermMatrix) || ( "dgCMatrix" %in% class(DocumentTermMatrix) ) ) ) {
+    warning("The argument DocumentTermMatrix is expected to be NULL or a sparse matrix of type 'dgCMatrix'.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
