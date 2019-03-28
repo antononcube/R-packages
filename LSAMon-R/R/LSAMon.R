@@ -697,8 +697,14 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
   if( is.null(wDocTermMat) ) {
     return(
       lsaObj %>%
-        LSAMonApplyTermWeightFunctions() %>%
-        LSAMonTopicExtraction( numberOfTopics, minNumberOfDocumentsPerTerm, maxSteps, tolerance, profiling )
+        LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
+                                        localWeightFunction = "None",
+                                        normalizerFunction = "Cosine" ) %>%
+        LSAMonTopicExtraction( numberOfTopics = numberOfTopics,
+                               minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm,
+                               maxSteps = maxSteps,
+                               tolerance = tolerance,
+                               profiling = profiling )
     )
   }
 
