@@ -1,0 +1,76 @@
+---
+title: "Ingest text data"
+author: "Anton Antonov"
+output: html_notebook
+---
+
+```{r}
+library(readtext)
+library(usethis)
+library(devtools)
+```
+
+# Introduction
+
+# Ingest files
+
+```{r}
+textHamlet <- readtext::readtext( file = "~/Datasets/Text/hamlet.txt" )
+```
+```{r}
+#lines <- strsplit(textHamlet$text, split = "\\n")
+lines <- readLines(textConnection(textHamlet$text))
+
+i <- cumsum(lines == '')
+
+res <- by(lines, i, paste, collapse='\n')
+```
+
+```{r}
+res[[156]]
+```
+
+## From StackEchange 
+
+See [https://stackoverflow.com/a/38959061](https://stackoverflow.com/a/38959061).
+
+```{r}
+oracle <- readLines(textConnection(textHamlet$text))
+nvec <- length(oracle)
+breaks <- which(! nzchar(oracle))
+nbreaks <- length(breaks)
+if (breaks[nbreaks] < nvec) {
+  breaks <- c(breaks, nvec + 1L)
+  nbreaks <- nbreaks + 1L
+}
+if (nbreaks > 0L) {
+  oracle <- mapply(function(a,b) paste(oracle[a:b], collapse = " "),
+                   c(1L, 1L + breaks[-nbreaks]),
+                   breaks - 1L)
+}
+oracle <- oracle[ oracle != " " & oracle != "" ]
+```
+
+### Further massaging 
+
+```{r}
+oracle <- gsub( "\\s+", " ", oracle)
+oracle <- gsub( "^\\s+", "", oracle)
+oracle <- gsub( "\\s+$", "", oracle)
+oracle
+```
+
+```{r}
+summary(nchar(oracle))
+```
+
+```{r}
+textHamlet <- oracle
+```
+
+## Make the data
+
+```{r}
+usethis::use_data(textHamlet)
+```
+
