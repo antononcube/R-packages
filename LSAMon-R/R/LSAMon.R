@@ -52,16 +52,16 @@ LSAMonFailureQ <- function(x) { mean(is.na(x)) }
 
 #' Make a LSAMon Unit
 #' @description Creates a monad object.
-#' @param documents A character vector, a list of strings, or NULL.
+#' @param Documents A character vector, a list of strings, or NULL.
 #' @return An S3 class "LSAMon". In other words, a list with the attribute "class" set to "LSAMon".
 #' @export
-LSAMonUnit <- function( documents = NULL ) {
+LSAMonUnit <- function( Documents = NULL ) {
 
-  res <- list( Value = NULL, character = NULL, matrix = NULL, character = NULL, matrix = NULL, matrix = NULL, matrix = NULL, integer = NULL, character = NULL )
+  res <- list( Value = NULL, Documents = NULL, DocumentTermMatrix = NULL, Terms = NULL, WeightedDocumentTermMatrix = NULL, W = NULL, H = NULL, TopicColumnPositions = NULL, AutomaticTopicNames = NULL )
   attr(res, "class") <- "LSAMon"
 
-  if( !is.null(documents) ) {
-    res %>% LSAMonSetDocuments( documents )
+  if( !is.null(Documents) ) {
+    res <- res %>% LSAMonSetDocuments( Documents = Documents )
   }
 
   res
