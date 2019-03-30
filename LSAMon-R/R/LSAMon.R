@@ -791,7 +791,7 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
       basisVec <- NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation( nres$H[i,], n, colnames(nres$H) )
 
       data.frame( Rank = i, SignificanceFactor = topicSFactors[i],
-                  Tertm = names(basisVec), Coefficient = basisVec,
+                  Term = names(basisVec), Coefficient = basisVec,
                   stringsAsFactors = F)
     })
 
