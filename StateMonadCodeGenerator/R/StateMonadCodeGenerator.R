@@ -63,11 +63,17 @@ GenerateStateMonadCode <- function( monadName,  memberNames = NULL, monadObjectA
   if( is.character(memberNames) ) {
 
     ## Modify MStateUnit
-    listOfNULLs <- paste( memberNames, "=", rep_len("NULL", length(memberNames)), collapse = ", " )
+    if( !is.null(names(memberNames)) ) {
+      listOfNULLs <- paste( names(memberNames), "=", rep_len("NULL", length(memberNames)), collapse = ", " )
+    } else {
+      listOfNULLs <- paste( memberNames, "=", rep_len("NULL", length(memberNames)), collapse = ", " )
+    }
+
     resCode <- gsub( pattern = "res <- list( Value = NULL )",
                      replacement = paste( "res <- list( Value = NULL,", listOfNULLs, ")", collapse = " "),
                      x = resCode,
                      fixed = TRUE)
+
 
     ## Generate setters
     if( !is.null(names(memberNames)) ) {
