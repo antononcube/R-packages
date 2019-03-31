@@ -103,6 +103,10 @@ NNMF <- function( V, k, maxSteps = 200, nonNegativeQ = TRUE, epsilon = 10^-9., r
      W@x[ W@x < 0  ] <- 0
   }
 
+  ## Sometimes colnames(H) is NULL. Here we make sure they are same as colnames(V).
+  rownames(W) <- rownames(V)
+  colnames(H) <- colnames(V)
+
   list( W = W, H = H )
 }
 
