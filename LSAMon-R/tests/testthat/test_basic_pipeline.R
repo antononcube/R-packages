@@ -2,9 +2,11 @@ context("Basic pipeline")
 library(LSAMon)
 
 lsaObj <-
-  LSAMonUnit( tolower(textHamlet) ) %>%
-  LSAMonMakeDocumentTermMatrix( stopWords = NULL, splitPattern = "\\W") %>%
-  LSAMonApplyTermWeightFunctions()
+  LSAMonUnit( Documents = textHamlet ) %>%
+  LSAMonMakeDocumentTermMatrix( stopWords = NULL, stemWordsQ = FALSE, splitPattern = "\\W") %>%
+  LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
+                                  localWeightFunction = "None",
+                                  normalizerFunction = "Cosine" )
 
 ## Tests
 test_that("Sanity check", {
@@ -12,6 +14,9 @@ test_that("Sanity check", {
   expect_true( length( intersect( c("Value", "Documents", "DocumentTermMatrix", "W", "H"), names(lsaObj) ) ) == 5 )
 })
 
+## Note that with this code lines and corresponding test below
+## we test that the monad (function LSAMonMakeDocumentTermMatrix)
+## converts the text(s) to lower case and removes empty words.
 words <- unique(c(unlist(strsplit(tolower(textHamlet), "\\W"))))
 words <- words[ nchar(words) > 0 ]
 
@@ -20,6 +25,7 @@ test_that("Document-term matrix check", {
   expect_true( mean(words %in% colnames(lsaObj %>% LSAMonTakeDocumentTermMatrix) ) == 1 )
 })
 
+## Topic extraction
 lsaObj <-
   lsaObj %>%
   LSAMonTopicExtraction( minNumberOfDocumentsPerTerm = 1, numberOfTopics = 60, maxSteps = 6, profiling = FALSE )
