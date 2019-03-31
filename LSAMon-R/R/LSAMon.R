@@ -741,6 +741,9 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
   lsaObj$W <- resNNMF$W
   lsaObj$H <- resNNMF$H
 
+  # assertthat::assert_that( mean( rownames(lsaObj$W) == rownames(wDocTermMat) ) == 1 )
+  # assertthat::assert_that( mean( colnames(lsaObj$H) == colnames(wDocTermMat) ) == 1 )
+
   lsaObj
 }
 
