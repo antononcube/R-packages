@@ -571,6 +571,10 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "\\W", stemWord
     return(LSAMonFailureSymbol)
   }
 
+  if( is.null(stemWordsQ) ) {
+    stemWordsQ <- FALSE
+  }
+
   if( !( is.null(stopWords) || is.character(stopWords) ) ) {
     warning("The argument stopWords is expected to be a character vector or NULL.", call. = TRUE )
     return(LSAMonFailureSymbol)
