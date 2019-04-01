@@ -14,7 +14,7 @@ LSAMonBasisVectorInterpretation(lsaObj, vectorIndices = NULL, n = 12,
 
 \item{orderBySignificanceQ}{Should the basis vectors be ordered by their significance?}
 
-\item{basisVectorIndexes}{Basis vectors to be interpretted.
+\item{basisVectorIndexes}{Basis vectors to be interpreted.
 If NULL all indexes are taken.}
 }
 \value{
@@ -22,4 +22,13 @@ A LSAMon object.
 }
 \description{
 Interpret specified basis vectors.
+}
+\details{
+This function is based on
+\code{\link{NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct}} and
+\code{\link{NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation}}.
+The obtained long form data frame is assigned to \code{lsaObj$Value}.
+Wide form can be produced with
+\code{reshape2::dcast( data = lsaObj$Value, formula = TermRank ~ TopicRank, value.var = "Term" )}.
+(Note that some columns are dropped.)
 }

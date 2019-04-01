@@ -15,6 +15,8 @@ LSAMonTopicExtraction(lsaObj, numberOfTopics,
 
 \item{minNumberOfDocumentsPerTerm}{Minimal number of documents for the terms
 to be considered in the topics.}
+
+\item{maxSteps}{Maximum iteration steps.}
 }
 \value{
 A LSAMon object.

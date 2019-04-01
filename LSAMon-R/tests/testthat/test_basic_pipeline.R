@@ -44,5 +44,5 @@ test_that("Topic extraction", {
   expect_true( ncol(lsaObj %>% LSAMonTakeH) == ncol(lsaObj %>% LSAMonTakeDocumentTermMatrix) )
 
   expect_is( dfTopic, "data.frame" )
-  expect_true( length( intersect( c("Rank", "SignificanceFactor", "Term", "Coefficient"), colnames(dfTopic) ) ) == 4 )
+  expect_true( length( intersect( c("TopicRank", "TopicSignificanceFactor", "Term", "TermCoefficient", "TermRank"), colnames(dfTopic) ) ) == 5 )
 })

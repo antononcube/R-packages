@@ -246,8 +246,8 @@ LSAMonSetWeightedDocumentTermMatrix <- function( lsaObj, WeightedDocumentTermMat
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(WeightedDocumentTermMatrix) || is.matrix(WeightedDocumentTermMatrix)) ) {
-    warning("The argument WeightedDocumentTermMatrix is expected to be NULL or a matrix.", call. = TRUE)
+  if( !( is.null(WeightedDocumentTermMatrix) || ( "dgCMatrix" %in% class(WeightedDocumentTermMatrix) ) ) ) {
+    warning("The argument WeightedDocumentTermMatrix is expected to be NULL or a sparse matrix of type 'dgCMatrix'.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -682,7 +682,7 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "Entr
 #' @param numberOfTopics Number of topics to be extracted.
 #' @param minNumberOfDocumentsPerTerm Minimal number of documents for the terms
 #' to be considered in the topics.
-#' @param maxSteps
+#' @param maxSteps Maximum iteration steps.
 #' @return A LSAMon object.
 #' @details The obtained factor matrices are assigned to \code{lsaObj$W} and \code{lsaObj$H}.
 #' The parameters \code{maxSteps, tolerance, profiling} are
@@ -755,15 +755,18 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
 #' Basis vectors interpretation.
 #' @description Interpret specified basis vectors.
 #' @param lsaObj A LSAMon object.
-#' @param basisVectorIndexes Basis vectors to be interpretted.
+#' @param basisVectorIndexes Basis vectors to be interpreted.
 #' If NULL all indexes are taken.
 #' @param n Number of (top) coordinates per basis vector.
 #' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
 #' @return A LSAMon object.
 #' @details This function is based on
-#' \code{\link{NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct} and
+#' \code{\link{NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct}} and
 #' \code{\link{NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation}}.
-#' The obtained list of data frames is assigned to \code{lsaObj$Value}.
+#' The obtained long form data frame is assigned to \code{lsaObj$Value}.
+#' Wide form can be produced with
+#' \code{reshape2::dcast( data = lsaObj$Value, formula = TermRank ~ TopicRank, value.var = "Term" )}.
+#' (Note that some columns are dropped.)
 #' @export
 LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 12, orderBySignificanceQ = TRUE ) {
 
@@ -797,8 +800,11 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
 
       basisVec <- NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation( nres$H[i,], n, colnames(nres$H) )
 
-      data.frame( Rank = i, SignificanceFactor = topicSFactors[i],
-                  Term = names(basisVec), Coefficient = basisVec,
+      data.frame( TopicRank = i,
+                  TopicSignificanceFactor = topicSFactors[i],
+                  Term = names(basisVec),
+                  TermCoefficient = basisVec,
+                  TermRank = 1:length(basisVec),
                   stringsAsFactors = F)
     })
 
@@ -815,7 +821,7 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
 #' @description Derive a statistical thesaurus for specified words.
 #' @param lsaObj A LSAMon object.
 #' @param searchWords A character vector with words to to find statistical
-#' tesauri for. The words can be patterns.
+#' thesauri for. The words can be patterns.
 #' @param n Number of words in each thesaurus entry.
 #' @param fixed Should \code{searchWords} be considered fixed or pattern strings?
 #' @return A LSAMon object.
