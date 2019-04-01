@@ -1,6 +1,6 @@
 # Outlier Identifiers
 
-This script of R functions re-implements this Mathematica package:
+This script of R functions re-implements the Mathematica package [[AAp1](https://github.com/antononcube/MathematicaForPrediction/blob/master/OutlierIdentifiers.m)].
 
 It was easier for me to implement in R the one-dimensional outlier detection functions
 in [AAp1] than to comprehend the signatures of the different R-libraries that provide/do
