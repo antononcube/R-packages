@@ -828,7 +828,7 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
 #' Statistical thesaurus derivation.
 #' @description Derive a statistical thesaurus for specified words.
 #' @param lsaObj A LSAMon object.
-#' @param searchWords A character vector with words to to find statistical
+#' @param searchWords A character vector with words to find statistical
 #' thesauri for. The words can be patterns.
 #' @param n Number of words in each thesaurus entry.
 #' @param fixed Should \code{searchWords} be considered fixed or pattern strings?
@@ -865,3 +865,50 @@ LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRU
 }
 
 
+##===========================================================
+## Topic representation
+##===========================================================
+
+#' Topic representation.
+#' @description Find the topic representation corresponding to a list of tags.
+#' Each monad document is expected to have a tag.
+#' One tag might correspond to multiple documents.
+#' @param lsaObj A LSAMon object.
+#' @param tags A character vector with tags that correspond to the documents.
+#' If NULL the documents ordinal numbers or ID's are used.
+#' @param minThreshold The minimum topic weight.
+#' @return The result is a tag-topic contingency matrix that is assigned to
+#' \code{lsaObj$Value}.
+#' @export
+LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001 ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj,
+                                  memberName = "W",
+                                  functionName = "LSAMonTopicRepresentation",
+                                  logicalResult = T) ) {
+
+    return(LSAMonFailureSymbol)
+  }
+
+  wMat <- lsaObj %>% LSAMonTakeW()
+  wMat <- as( wMat, "sparseMatrix" )
+
+  if( ! ( is.vector(tags) && length(tags) == nrow(wMat) ) ) {
+    warning( "The argument tags is expected to be a vector with length equal to the number of documents.", call. = T )
+    return(LSAMonFailureSymbol)
+  }
+
+  dfTriplets <- setNames( SMRSparseMatrixToTriplets( wMat ), c( "DocumentIndex", "TopicIndex", "Weight" ) )
+
+  dfTriplets <- dfTriplets[ dfTriplets$Weight > minThreshold, ]
+
+  dfTriplets <- cbind( dfTriplets, Tag = tags[ dfTriplets$DocumentIndex ], stringsAsFactors = FALSE )
+
+  res <- xtabs( ~ Tag + TopicIndex, dfTriplets, sparse = T )
+
+  lsaObj$Value <- res
+
+  lsaObj
+}
