@@ -28,7 +28,7 @@ test_that("Document-term matrix check", {
 ## Topic extraction
 lsaObj <-
   lsaObj %>%
-  LSAMonTopicExtraction( minNumberOfDocumentsPerTerm = 1, numberOfTopics = 60, maxSteps = 6, profiling = FALSE )
+  LSAMonTopicExtraction( numberOfTopics = 60, minNumberOfDocumentsPerTerm = 1, maxSteps = 6, profiling = FALSE )
 
 dfTopic <-
   lsaObj %>%
