@@ -645,7 +645,7 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "\\W", stemWord
 #' document-term matrix \code{lsaObj$DocumentTermMatrix}.
 #' The obtained matrix is assigned to \code{lsaObj$WeightedDocumentTermMatrix}.
 #' @export
-LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "Entropy", localWeightFunction = "None", normalizerFunction = "Cosine" ) {
+LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF", localWeightFunction = "None", normalizerFunction = "Cosine" ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -696,21 +696,28 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  wDocTermMat <- lsaObj %>% LSAMonTakeWeightedDocumentTermMatrix()
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj,
+                                  memberName = "WeightedDocumentTermMatrix",
+                                  functionName = "LSAMonTopicExtraction",
+                                  logicalResult = T) ) {
 
-  if( is.null(wDocTermMat) ) {
-    return(
+    warning( "Continuing by invoking LSAMonApplyTermWeightFunctions first.", call. = T )
+
+    lsaObj <-
       lsaObj %>%
-        LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
-                                        localWeightFunction = "None",
-                                        normalizerFunction = "Cosine" ) %>%
-        LSAMonTopicExtraction( numberOfTopics = numberOfTopics,
-                               minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm,
-                               maxSteps = maxSteps,
-                               tolerance = tolerance,
-                               profiling = profiling )
-    )
+      LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
+                                      localWeightFunction = "None",
+                                      normalizerFunction = "Cosine" ) %>%
+      LSAMonTopicExtraction( numberOfTopics = numberOfTopics,
+                             minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm,
+                             maxSteps = maxSteps,
+                             tolerance = tolerance,
+                             profiling = profiling )
+
+    return(lsaObj)
   }
+
+  wDocTermMat <- lsaObj %>% LSAMonTakeWeightedDocumentTermMatrix()
 
   if( !( is.numeric(numberOfTopics) && numberOfTopics > 0 ) ) {
     warning( "The argument numberOfTopics is expected to be a positive integer.", call. = T)
@@ -725,6 +732,7 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
     warning( "The argument minNumberOfDocumentsPerTerm is expected to be a non-negative integer or NULL.", call. = T)
     return(LSAMonFailureSymbol)
   }
+
 
   wDocTermMat01 <- wDocTermMat
   wDocTermMat01@x[wDocTermMat01@x > 0] <- 1
