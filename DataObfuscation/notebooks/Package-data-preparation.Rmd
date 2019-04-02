@@ -1,0 +1,37 @@
+---
+title: "Package data preparation"
+author: "Anton Antonov"
+date: 2019-04-01
+output: html_notebook
+---
+
+
+```{r}
+mintBubblesTransactions <- read.csv( file = "~/Datasets/Mint-bubbles/transactions.csv", stringsAsFactors = F )
+
+mintBubblesTransactions$Date <- as.Date( mintBubblesTransactions$Date, format = "%m/%d/%Y" )
+
+dfMB <- mintBubblesTransactions
+dfMB <- dfMB[ , grep( "^Description$", names(dfMB), invert=T ) ]
+names(dfMB) <- gsub( "Original\\.Description", "Description", names(dfMB) )
+
+dfMB <- dfMB[ , grep( "Labels|Notes", names(dfMB), invert = T) ] 
+```
+
+```{r}
+summary(as.data.frame(unclass(dfMB)))
+```
+
+```{r}
+dfMintBubblesTransactions <- dfMB
+```
+
+```{r}
+dim(dfMintBubblesTransactions)
+```
+
+## Make the data
+
+```{r, eval=F}
+usethis::use_data(dfMintBubblesTransactions)
+```

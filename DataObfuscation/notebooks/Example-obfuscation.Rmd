@@ -1,0 +1,45 @@
+---
+title: "Example obfuscation"
+author: "Anton Antonov"
+output: html_notebook
+---
+
+# Introduction
+
+This document aims at giving basic guidelines for doing data obfuscation with the package 
+"DataObfuscation".
+
+# Package load
+
+```{r}
+devtools::load_all()
+```
+
+# The data 
+
+The package comes with a certain transactions data.
+
+```{r}
+summary(as.data.frame(unclass(dfMintBubblesTransactions)),maxsum = 20)
+```
+
+# Descriptions obfuscation
+
+```{r}
+res <-
+  ObfuscateDescriptions( descriptions = dfMintBubblesTransactions$Description, 
+                         mappedWords = c( "Angela" = "LANDLORD", "AMAZON" = "NETFLIX" ), 
+                         preservedWords = c("CANADA", "SAN"), 
+                         randomWordsQ = TRUE, randomWordLengthsQ = FALSE )
+```
+
+```{r}
+grep("Angela", dfMintBubblesTransactions$Description, value = T )
+grep("LANDLORD", res, value = T )
+```
+
+```{r}
+grep("CANADA", dfMintBubblesTransactions$Description, value = T )
+grep("CANADA", res, value = T )
+```
+
