@@ -968,7 +968,11 @@ SMRSparseMatrixToTriplets <- function( smat ) {
   triplets <- summary(smat)
   
   # Rules
-  if( !is.null(colnames(smat)) && !is.null(rownames(smat)) ) {
+  if( !is.null(rownames(smat)) || !is.null(colnames(smat)) ) {
+    
+    if( is.null(rownames(smat)) ) { rownames(smat) <- 1:nrow(smat) }
+    if( is.null(colnames(smat)) ) { colnames(smat) <- 1:ncol(smat) }
+    
     rowRules <- 1:nrow(smat)
     names(rowRules) <- rownames( smat )
     colRules <- 1:ncol(smat)
@@ -977,7 +981,7 @@ SMRSparseMatrixToTriplets <- function( smat ) {
     triplets$j <- names( colRules[ triplets$j ] )
   }
   
-  triplets
+  as.data.frame(triplets, stringsAsFactors=FALSE)
 }
 
 #' Impose row ID's
@@ -1291,7 +1295,7 @@ predict.SMR <- function( smr, data, type = "decision", normalized = TRUE, ... ) 
         recs <- SMRClassifyByProfileVector( smr = smr, tagType = tagType, profileVec = pvec,
                                             nTopNNs = nTopNNs, voting = voting,
                                             dropZeroScoredLabels = dropZeroScoredLabels)
-        
+
         if( normalized && sum(recs$Score) > 0 ) { recs$Score <- recs$Score / sum(recs$Score)}
         
         cbind( Index = i, recs )
