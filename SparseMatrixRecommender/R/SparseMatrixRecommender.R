@@ -963,24 +963,17 @@ SMRTripletsToSparseMatrix <-  function( triplets ) {
 #' @family Sparse matrix transformation functions
 #' @export
 SMRSparseMatrixToTriplets <- function( smat ) {
-  # Use summary() over sparse matrix.
-  # Then using rules over the indices.
+
   triplets <- summary(smat)
   
-  # Rules
-  if( !is.null(rownames(smat)) || !is.null(colnames(smat)) ) {
-    
-    if( is.null(rownames(smat)) ) { rownames(smat) <- 1:nrow(smat) }
-    if( is.null(colnames(smat)) ) { colnames(smat) <- 1:ncol(smat) }
-    
-    rowRules <- 1:nrow(smat)
-    names(rowRules) <- rownames( smat )
-    colRules <- 1:ncol(smat)
-    names(colRules) <- colnames( smat )
-    triplets$i <- names( rowRules[ triplets$i ] )
-    triplets$j <- names( colRules[ triplets$j ] )
+  if( !is.null(rownames(smat)) ) {
+    triplets$i <- rownames(smat)[ triplets$i ]
   }
-  
+   
+  if( !is.null(colnames(smat)) ) {
+    triplets$j <- colnames(smat)[ triplets$j ]
+  }
+
   as.data.frame(triplets, stringsAsFactors=FALSE)
 }
 
