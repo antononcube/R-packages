@@ -4,12 +4,12 @@
 \alias{LSAMonSetDocuments}
 \title{Set Documents.}
 \usage{
-LSAMonSetDocuments(lsaObj, Documents)
+LSAMonSetDocuments(lsaObj, documents)
 }
 \arguments{
 \item{lsaObj}{An LSAMon object.}
 
-\item{Documents}{A list of regression objects.}
+\item{documents}{A list of documents.}
 }
 \value{
 An LSAMon object.
@@ -18,18 +18,18 @@ An LSAMon object.
 Sets Documents into the monad object.
 }
 \seealso{
-Other Set/Take functions: \code{\link{LSAMonSetAutomaticTopicNames}},
-  \code{\link{LSAMonSetDocumentTermMatrix}},
+Other Set/Take functions: \code{\link{LSAMonSetDocumentTermMatrix}},
   \code{\link{LSAMonSetH}}, \code{\link{LSAMonSetTerms}},
   \code{\link{LSAMonSetTopicColumnPositions}},
+  \code{\link{LSAMonSetTopicNames}},
   \code{\link{LSAMonSetValue}},
   \code{\link{LSAMonSetWeightedDocumentTermMatrix}},
   \code{\link{LSAMonSetW}},
-  \code{\link{LSAMonTakeAutomaticTopicNames}},
   \code{\link{LSAMonTakeDocumentTermMatrix}},
   \code{\link{LSAMonTakeDocuments}},
   \code{\link{LSAMonTakeH}}, \code{\link{LSAMonTakeTerms}},
   \code{\link{LSAMonTakeTopicColumnPositions}},
+  \code{\link{LSAMonTakeTopicNames}},
   \code{\link{LSAMonTakeValue}},
   \code{\link{LSAMonTakeWeightedDocumentTermMatrix}},
   \code{\link{LSAMonTakeW}}

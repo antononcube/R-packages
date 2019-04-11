@@ -9,7 +9,7 @@ LSAMonStatisticalThesaurus(lsaObj, searchWords, n = 12, fixed = TRUE)
 \arguments{
 \item{lsaObj}{A LSAMon object.}
 
-\item{searchWords}{A character vector with words to to find statistical
+\item{searchWords}{A character vector with words to find statistical
 thesauri for. The words can be patterns.}
 
 \item{n}{Number of words in each thesaurus entry.}

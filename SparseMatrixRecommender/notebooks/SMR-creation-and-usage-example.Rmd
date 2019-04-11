@@ -6,8 +6,8 @@ output: html_notebook
 ---
 
 ```{r}
-library(SparseMatrixRecommender)
-#devtools::load_all()
+#library(SparseMatrixRecommender)
+devtools::load_all()
 ```
 
 # Introduction

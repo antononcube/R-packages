@@ -21,8 +21,15 @@ smrTitanic <- SMRCreate( dfTitanic,
 ```
 
 
-```{r}
+```{r, eval=F}
 SMRCreateSearchInterface( itemSMR = smrTitanic, itemData = dfTitanic, itemDataIDColName = "id", searchColName = "id", itemListIDsSplitPattern = " " )
+```
+
+```{r}
+smat <- smrTitanic$M
+# rownames(smat) <- NULL
+# colnames(smat) <- NULL
+SMRSparseMatrixToTriplets( smat )
 ```
 
 # Mushroom

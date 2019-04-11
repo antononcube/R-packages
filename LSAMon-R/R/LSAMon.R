@@ -52,16 +52,16 @@ LSAMonFailureQ <- function(x) { mean(is.na(x)) }
 
 #' Make a LSAMon Unit
 #' @description Creates a monad object.
-#' @param Documents A character vector, a list of strings, or NULL.
+#' @param documents A character vector, a list of strings, or NULL.
 #' @return An S3 class "LSAMon". In other words, a list with the attribute "class" set to "LSAMon".
 #' @export
-LSAMonUnit <- function( Documents = NULL ) {
+LSAMonUnit <- function( documents = NULL ) {
 
   res <- list( Value = NULL, Documents = NULL, DocumentTermMatrix = NULL, Terms = NULL, WeightedDocumentTermMatrix = NULL, W = NULL, H = NULL, TopicColumnPositions = NULL, AutomaticTopicNames = NULL )
   attr(res, "class") <- "LSAMon"
 
-  if( !is.null(Documents) ) {
-    res <- res %>% LSAMonSetDocuments( Documents = Documents )
+  if( !is.null(documents) ) {
+    res <- res %>% LSAMonSetDocuments( documents = documents )
   }
 
   res
@@ -163,20 +163,20 @@ LSAMonEchoFunctionValue <- function( lsaObj, f ) {
 #' Set Documents.
 #' @description Sets Documents into the monad object.
 #' @param lsaObj An LSAMon object.
-#' @param Documents A list of regression objects.
+#' @param documents A list of documents.
 #' @return An LSAMon object.
 #' @family Set/Take functions
 #' @export
-LSAMonSetDocuments <- function( lsaObj, Documents ) {
+LSAMonSetDocuments <- function( lsaObj, documents ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(Documents) || is.character(Documents)) ) {
+  if( !( is.null(documents) || is.character(documents)) ) {
     warning("The argument Documents is expected to be NULL or a character.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
-  lsaObj$Documents <- Documents
+  lsaObj$Documents <- documents
 
   lsaObj
 }
@@ -188,20 +188,21 @@ LSAMonSetDocuments <- function( lsaObj, Documents ) {
 #' Set DocumentTermMatrix.
 #' @description Sets DocumentTermMatrix into the monad object.
 #' @param lsaObj An LSAMon object.
-#' @param DocumentTermMatrix A list of regression objects.
+#' @param documentTermMatrix A document term sparse matrix.
+#' (Of type \code{dgCMatrix}.)
 #' @return An LSAMon object.
 #' @family Set/Take functions
 #' @export
 LSAMonSetDocumentTermMatrix <- function( lsaObj, DocumentTermMatrix ) {
 
-  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+  if( LSAMonFailureQ(lsaObj) ) { return(documentTermMatrix) }
 
-  if( !( is.null(DocumentTermMatrix) || ( "dgCMatrix" %in% class(DocumentTermMatrix) ) ) ) {
-    warning("The argument DocumentTermMatrix is expected to be NULL or a sparse matrix of type 'dgCMatrix'.", call. = TRUE)
+  if( !( is.null(documentTermMatrix) || ( "dgCMatrix" %in% class(documentTermMatrix) ) ) ) {
+    warning("The argument documentTermMatrix is expected to be NULL or a sparse matrix of type 'dgCMatrix'.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
-  lsaObj$DocumentTermMatrix <- DocumentTermMatrix
+  lsaObj$DocumentTermMatrix <- documentTermMatrix
 
   lsaObj
 }
@@ -213,20 +214,20 @@ LSAMonSetDocumentTermMatrix <- function( lsaObj, DocumentTermMatrix ) {
 #' Set Terms.
 #' @description Sets Terms into the monad object.
 #' @param lsaObj An LSAMon object.
-#' @param Terms A list of regression objects.
+#' @param terms A list of terms.
 #' @return An LSAMon object.
 #' @family Set/Take functions
 #' @export
-LSAMonSetTerms <- function( lsaObj, Terms ) {
+LSAMonSetTerms <- function( lsaObj, terms ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(Terms) || is.character(Terms)) ) {
-    warning("The argument Terms is expected to be NULL or a character.", call. = TRUE)
+  if( !( is.null(terms) || is.character(terms)) ) {
+    warning("The argument terms is expected to be NULL or a character.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
-  lsaObj$Terms <- Terms
+  lsaObj$Terms <- terms
 
   lsaObj
 }
@@ -238,20 +239,21 @@ LSAMonSetTerms <- function( lsaObj, Terms ) {
 #' Set WeightedDocumentTermMatrix.
 #' @description Sets WeightedDocumentTermMatrix into the monad object.
 #' @param lsaObj An LSAMon object.
-#' @param WeightedDocumentTermMatrix A list of regression objects.
+#' @param weightedDocumentTermMatrix A weighted document term sparse matrix.
+#' (Of type \code{dgCMatrix}.)
 #' @return An LSAMon object.
 #' @family Set/Take functions
 #' @export
-LSAMonSetWeightedDocumentTermMatrix <- function( lsaObj, WeightedDocumentTermMatrix ) {
+LSAMonSetWeightedDocumentTermMatrix <- function( lsaObj, weightedDocumentTermMatrix ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(WeightedDocumentTermMatrix) || ( "dgCMatrix" %in% class(WeightedDocumentTermMatrix) ) ) ) {
-    warning("The argument WeightedDocumentTermMatrix is expected to be NULL or a sparse matrix of type 'dgCMatrix'.", call. = TRUE)
+  if( !( is.null(weightedDocumentTermMatrix) || ( "dgCMatrix" %in% class(weightedDocumentTermMatrix) ) ) ) {
+    warning("The argument weightedDocumentTermMatrix is expected to be NULL or a sparse matrix of type 'dgCMatrix'.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
-  lsaObj$WeightedDocumentTermMatrix <- WeightedDocumentTermMatrix
+  lsaObj$WeightedDocumentTermMatrix <- weightedDocumentTermMatrix
 
   lsaObj
 }
@@ -313,45 +315,61 @@ LSAMonSetH <- function( lsaObj, H ) {
 #' Set TopicColumnPositions.
 #' @description Sets TopicColumnPositions into the monad object.
 #' @param lsaObj An LSAMon object.
-#' @param TopicColumnPositions A list of regression objects.
+#' @param topicColumnPositions A list of integer vectors.
 #' @return An LSAMon object.
 #' @family Set/Take functions
 #' @export
-LSAMonSetTopicColumnPositions <- function( lsaObj, TopicColumnPositions ) {
+LSAMonSetTopicColumnPositions <- function( lsaObj, topicColumnPositions ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(TopicColumnPositions) || is.integer(TopicColumnPositions)) ) {
-    warning("The argument TopicColumnPositions is expected to be NULL or a integer.", call. = TRUE)
+  if( !( is.null(topicColumnPositions) || is.integer(topicColumnPositions)) ) {
+    warning("The argument topicColumnPositions is expected to be NULL or a integer.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
-  lsaObj$TopicColumnPositions <- TopicColumnPositions
+  lsaObj$TopicColumnPositions <- topicColumnPositions
 
   lsaObj
 }
 
 ##===========================================================
-## AutomaticTopicNames setter
+## TopicNames setter
 ##===========================================================
 
 #' Set AutomaticTopicNames.
 #' @description Sets AutomaticTopicNames into the monad object.
 #' @param lsaObj An LSAMon object.
-#' @param AutomaticTopicNames A list of regression objects.
+#' @param topicNames A list of topic names.
 #' @return An LSAMon object.
 #' @family Set/Take functions
 #' @export
-LSAMonSetAutomaticTopicNames <- function( lsaObj, AutomaticTopicNames ) {
+LSAMonSetTopicNames <- function( lsaObj, topicNames ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(AutomaticTopicNames) || is.character(AutomaticTopicNames)) ) {
-    warning("The argument AutomaticTopicNames is expected to be NULL or a character.", call. = TRUE)
+  if( !( is.null(topicNames) || is.character(topicNames) ) ) {
+    warning("The argument topicNames is expected to be NULL or a character.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
-  lsaObj$AutomaticTopicNames <- AutomaticTopicNames
+  if( !LSAMonMemberPresenceCheck( lsaObj, memberName = "W", memberPrettyName = "W", functionName = functionName,  logicalResult = TRUE) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj, memberName = "H", memberPrettyName = "H", functionName = functionName,  logicalResult = TRUE) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  if( is.character(topicNames) ) {
+    if( length(topicNames) == nrow(lsaObj$H) ) {
+      colnames(lsaObj$W) <- topicNames
+      rownames(lsaObj$H) <- topicNames
+    } else {
+      warning("If a character vector the argument topicNames is expected to have length that equals the number of rows of lsaObj$H", call. = T )
+      return(LSAMonFailureSymbol)
+    }
+  }
 
   lsaObj
 }
@@ -511,7 +529,7 @@ LSAMonTakeTopicColumnPositions <- function( lsaObj, functionName = "LSAMonTakeTo
 }
 
 ##===========================================================
-## AutomaticTopicNames Taker
+## TopicNames Taker
 ##===========================================================
 
 #' Take AutomaticTopicNames.
@@ -521,15 +539,15 @@ LSAMonTakeTopicColumnPositions <- function( lsaObj, functionName = "LSAMonTakeTo
 #' @return A list of functions or \code{LSAMonFailureSymbol}.
 #' @family Set/Take functions
 #' @export
-LSAMonTakeAutomaticTopicNames <- function( lsaObj, functionName = "LSAMonTakeAutomaticTopicNames" ) {
+LSAMonTakeTopicNames <- function( lsaObj, functionName = "LSAMonTakeTopicNames" ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !LSAMonMemberPresenceCheck( lsaObj, memberName = "AutomaticTopicNames", memberPrettyName = "AutomaticTopicNames", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !LSAMonMemberPresenceCheck( lsaObj, memberName = "H", memberPrettyName = "H", functionName = functionName,  logicalResult = TRUE) ) {
     return(LSAMonFailureSymbol)
   }
 
-  lsaObj$AutomaticTopicNames
+  rownames(lsaObj$H)
 }
 
 
@@ -683,15 +701,22 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' @param minNumberOfDocumentsPerTerm Minimal number of documents for the terms
 #' to be considered in the topics.
 #' @param maxSteps Maximum iteration steps.
+#' @param tolerance Tolerance for the relative norm difference.
+#' @param profilingQ Should the computation be profiled?
+#' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
+#' @param automaticTopicNamesQ Should the extracted topics be given automatic names?
 #' @return A LSAMon object.
 #' @details The obtained factor matrices are assigned to \code{lsaObj$W} and \code{lsaObj$H}.
-#' The parameters \code{maxSteps, tolerance, profiling} are
+#' The parameters \code{maxSteps, tolerance, profilingQ} are
 #' for the function \code{\link{NonNegativeMatrixFactorization::NNMF}}.
 #' If \code{is.null(minNumberOfDocumentsPerTerm)} then the following formula is used:
 #' \code{minNumberOfDocumentsPerTerm = floor(0.05*nrow(lsaObj$DocumentTermMatrix))}.
+#' The automatic topic name is derived from topic's index and topic's top three words.
+#' (The later is to ensure topic name uniqueness.)
 #' @export
 LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPerTerm = NULL,
-                                   maxSteps = 12, tolerance = 0.01, profiling = TRUE) {
+                                   maxSteps = 12, tolerance = 0.01, profilingQ = TRUE,
+                                   orderBySignificanceQ = TRUE, automaticTopicNamesQ = TRUE) {
 
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
@@ -712,7 +737,7 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
                              minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm,
                              maxSteps = maxSteps,
                              tolerance = tolerance,
-                             profiling = profiling )
+                             profilingQ = profilingQ )
 
     return(lsaObj)
   }
@@ -733,21 +758,60 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
     return(LSAMonFailureSymbol)
   }
 
-
+  ## Restrict the document-term matrix.
   wDocTermMat01 <- wDocTermMat
   wDocTermMat01@x[wDocTermMat01@x > 0] <- 1
 
   wDocTermMat <- wDocTermMat[ , Matrix::colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm ]
 
+  ## Find NNMF decomposition.
   resNNMF <-
     NonNegativeMatrixFactorization::NNMF( V = wDocTermMat,
                                           k = as.integer(numberOfTopics),
                                           maxSteps = maxSteps,
                                           tolerance = tolerance,
-                                          profiling = profiling )
+                                          profilingQ = profilingQ )
 
+  ## Order by significance.
+  if( orderBySignificanceQ ) {
+    resNNMF <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( resNNMF$W, resNNMF$H, normalizeLeft = FALSE )
+
+    topicSFactors <- sqrt( colSums( resNNMF$W * resNNMF$W ) )
+
+    if( orderBySignificanceQ ) {
+      resNNMF$W <- resNNMF$W[ , rev(order(topicSFactors)) ]
+      resNNMF$H <- resNNMF$H[ rev(order(topicSFactors)), ]
+      topicSFactors <- topicSFactors[ rev(order(topicSFactors)) ]
+    }
+  }
+
+  ## Assign to lsaObj.
   lsaObj$W <- resNNMF$W
   lsaObj$H <- resNNMF$H
+
+  # Automatic topic naming.
+  if( automaticTopicNamesQ ) {
+
+    tLog <- floor(log10(nrow(lsaObj$H)))+1
+
+    res <-
+      purrr::map_chr( 1:nrow(lsaObj$H), function(i) {
+        cInd <- formatC(i, width = tLog, flag = "0")
+        paste( c( cInd, colnames(lsaObj$H)[ order(-lsaObj$H[i,])[ 1:min(3,ncol(lsaObj$H)) ] ] ), collapse = "." )
+      })
+
+    colnames(lsaObj$W) <- res
+    rownames(lsaObj$H) <- res
+
+  } else {
+
+    colnames(lsaObj$W) <- 1:ncol(lsaObj$W)
+    rownames(lsaObj$H) <- 1:nrow(lsaObj$H)
+
+  }
+
+  ## This place-holder is not used.
+  lsaObj$AutomaticTopicNames <- NULL
 
   # assertthat::assert_that( mean( rownames(lsaObj$W) == rownames(wDocTermMat) ) == 1 )
   # assertthat::assert_that( mean( colnames(lsaObj$H) == colnames(wDocTermMat) ) == 1 )
@@ -809,7 +873,8 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
       basisVec <- NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation( nres$H[i,], n, colnames(nres$H) )
 
       data.frame( TopicRank = i,
-                  TopicSignificanceFactor = topicSFactors[i],
+                  TopicName = rownames(nres$H)[[i]],
+                  TopicSignificanceFactor = topicSFactors[[i]],
                   Term = names(basisVec),
                   TermCoefficient = basisVec,
                   TermRank = 1:length(basisVec),

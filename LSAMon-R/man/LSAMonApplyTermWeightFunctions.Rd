@@ -4,7 +4,7 @@
 \alias{LSAMonApplyTermWeightFunctions}
 \title{Apply term-weight functions.}
 \usage{
-LSAMonApplyTermWeightFunctions(lsaObj, globalWeightFunction = "Entropy",
+LSAMonApplyTermWeightFunctions(lsaObj, globalWeightFunction = "IDF",
   localWeightFunction = "None", normalizerFunction = "Cosine")
 }
 \arguments{

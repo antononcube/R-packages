@@ -4,10 +4,10 @@
 \alias{LSAMonUnit}
 \title{Make a LSAMon Unit}
 \usage{
-LSAMonUnit(Documents = NULL)
+LSAMonUnit(documents = NULL)
 }
 \arguments{
-\item{Documents}{A character vector, a list of strings, or NULL.}
+\item{documents}{A character vector, a list of strings, or NULL.}
 }
 \value{
 An S3 class "LSAMon". In other words, a list with the attribute "class" set to "LSAMon".

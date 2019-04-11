@@ -4,12 +4,13 @@
 \alias{LSAMonSetWeightedDocumentTermMatrix}
 \title{Set WeightedDocumentTermMatrix.}
 \usage{
-LSAMonSetWeightedDocumentTermMatrix(lsaObj, WeightedDocumentTermMatrix)
+LSAMonSetWeightedDocumentTermMatrix(lsaObj, weightedDocumentTermMatrix)
 }
 \arguments{
 \item{lsaObj}{An LSAMon object.}
 
-\item{WeightedDocumentTermMatrix}{A list of regression objects.}
+\item{weightedDocumentTermMatrix}{A weighted document term sparse matrix.
+(Of type \code{dgCMatrix}.)}
 }
 \value{
 An LSAMon object.
@@ -18,17 +19,17 @@ An LSAMon object.
 Sets WeightedDocumentTermMatrix into the monad object.
 }
 \seealso{
-Other Set/Take functions: \code{\link{LSAMonSetAutomaticTopicNames}},
-  \code{\link{LSAMonSetDocumentTermMatrix}},
+Other Set/Take functions: \code{\link{LSAMonSetDocumentTermMatrix}},
   \code{\link{LSAMonSetDocuments}},
   \code{\link{LSAMonSetH}}, \code{\link{LSAMonSetTerms}},
   \code{\link{LSAMonSetTopicColumnPositions}},
+  \code{\link{LSAMonSetTopicNames}},
   \code{\link{LSAMonSetValue}}, \code{\link{LSAMonSetW}},
-  \code{\link{LSAMonTakeAutomaticTopicNames}},
   \code{\link{LSAMonTakeDocumentTermMatrix}},
   \code{\link{LSAMonTakeDocuments}},
   \code{\link{LSAMonTakeH}}, \code{\link{LSAMonTakeTerms}},
   \code{\link{LSAMonTakeTopicColumnPositions}},
+  \code{\link{LSAMonTakeTopicNames}},
   \code{\link{LSAMonTakeValue}},
   \code{\link{LSAMonTakeWeightedDocumentTermMatrix}},
   \code{\link{LSAMonTakeW}}

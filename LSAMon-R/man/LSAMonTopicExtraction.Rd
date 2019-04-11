@@ -6,7 +6,8 @@
 \usage{
 LSAMonTopicExtraction(lsaObj, numberOfTopics,
   minNumberOfDocumentsPerTerm = NULL, maxSteps = 12,
-  tolerance = 0.01, profiling = TRUE)
+  tolerance = 0.01, profilingQ = TRUE, orderBySignificanceQ = TRUE,
+  automaticTopicNamesQ = TRUE)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}
@@ -17,6 +18,14 @@ LSAMonTopicExtraction(lsaObj, numberOfTopics,
 to be considered in the topics.}
 
 \item{maxSteps}{Maximum iteration steps.}
+
+\item{tolerance}{Tolerance for the relative norm difference.}
+
+\item{profilingQ}{Should the computation be profiled?}
+
+\item{orderBySignificanceQ}{Should the basis vectors be ordered by their significance?}
+
+\item{automaticTopicNamesQ}{Should the extracted topics be given automatic names?}
 }
 \value{
 A LSAMon object.
@@ -27,8 +36,10 @@ Non Negative Matrix Factorization (NNMF).
 }
 \details{
 The obtained factor matrices are assigned to \code{lsaObj$W} and \code{lsaObj$H}.
-The parameters \code{maxSteps, tolerance, profiling} are
+The parameters \code{maxSteps, tolerance, profilingQ} are
 for the function \code{\link{NonNegativeMatrixFactorization::NNMF}}.
 If \code{is.null(minNumberOfDocumentsPerTerm)} then the following formula is used:
 \code{minNumberOfDocumentsPerTerm = floor(0.05*nrow(lsaObj$DocumentTermMatrix))}.
+The automatic topic name is derived from topic's index and topic's top three words.
+(The later is to ensure topic name uniqueness.)
 }
