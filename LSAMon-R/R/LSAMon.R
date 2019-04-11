@@ -965,7 +965,22 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
     return(LSAMonFailureSymbol)
   }
 
-  dfTriplets <- setNames( SMRSparseMatrixToTriplets( wMat ), c( "DocumentIndex", "TopicIndex", "Weight" ) )
+  if( is.null( names(tags) ) ) {
+
+    rownames(wMat) <- NULL
+
+  } else if ( length( intersect( rownames(wMat), names(tags) ) ) == 0 ) {
+
+    warning( "None of the tags correspond to document ID's.", call. = T )
+    return(LSAMonFailureSymbol)
+
+  } else if ( length( setdiff( rownames(wMat), names(tags) ) ) > 0 ) {
+
+    warning( "Some document ID's do not have corresponding tags.", call. = T )
+
+  }
+
+  dfTriplets <- setNames( SparseMatrixRecommender::SMRSparseMatrixToTriplets( wMat ), c( "DocumentIndex", "TopicIndex", "Weight" ) )
 
   dfTriplets <- dfTriplets[ dfTriplets$Weight > minThreshold, ]
 
