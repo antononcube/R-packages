@@ -1,0 +1,141 @@
+---
+title: "Topics extraction from the play \"Hamplet\""
+author: "Anton Antonov"
+date: 2019-04-02
+output: html_notebook
+---
+
+```{r}
+library(LSAMon)
+library(magrittr)
+library(Matrix)
+library(stopwords)
+library(lattice)
+library(OutlierIdentifiers)
+```
+
+# Introduction
+
+# Topic extraction
+
+```{r}
+lsaObj <-
+  LSAMonUnit( textHamlet ) %>% 
+  LSAMonMakeDocumentTermMatrix( stopWords = stopwords::stopwords() ) %>% 
+  LSAMonTopicExtraction( numberOfTopics = 30, minNumberOfDocumentsPerTerm = 1, maxSteps = 20 )
+```
+
+# The extracted topics
+
+```{r}
+lsaObj <-
+  lsaObj %>% 
+  LSAMonBasisVectorInterpretation( n = 20 )
+dfTopics <- lsaObj %>% LSAMonTakeValue
+```
+
+```{r}
+res <- dfTopics %>% dplyr::filter( TopicRank == 12 ) %>% dplyr::select( TermCoefficient )
+OutlierPosition(res$TermCoefficient, SPLUSQuartileIdentifierParameters)
+```
+
+```{r}
+dfTopics %>% dplyr::filter(TopicRank == 12 )
+```
+
+
+```{r}
+sFactorsDF <- dfTopics %>% dplyr::select( TopicRank, TopicSignificanceFactor ) %>% unique()
+lattice::xyplot( TopicSignificanceFactor ~ TopicRank, sFactorsDF )
+```
+
+```{r}
+dfTopicsWideForm <- 
+  reshape2::dcast( data = dfTopics, formula = TermRank ~ TopicName, value.var = "Term" )
+dfTopicsWideForm
+```
+
+```{r}
+lsaObj %>% LSAMonTakeTopicNames
+```
+
+
+```{r}
+pairs <- expand.grid( names(dfTopicsWideForm), names(dfTopicsWideForm), stringsAsFactors = F)
+res <- purrr::map2_dbl( pairs$Var1, pairs$Var2,
+                        function(x,y) { 
+                          if( x == y ) { 0 } else { length(intersect( dfTopicsWideForm[[x]], dfTopicsWideForm[[y]] ) ) } 
+                        })
+qMat <- matrix(res, nrow = ncol(dfTopicsWideForm) )
+rownames(qMat) <- colnames(dfTopicsWideForm)
+colnames(qMat) <- colnames(dfTopicsWideForm)
+d3heatmap::d3heatmap(qMat, Rowv = F, Colv = F, scale = "none", colors = "Blues")
+```
+
+```{r}
+summary(as.numeric(qMat))
+```
+
+## Statistical thesaurus extraction
+
+
+```{r}
+lsaObj <-
+  lsaObj %>% 
+  LSAMonStatisticalThesaurus( searchWords = sort(c("king", "sword", "god", "skull", "poison")) )
+nnsDF <- dplyr::bind_rows( lsaObj %>% LSAMonTakeValue )
+nnsDF
+```
+
+
+```{r}
+nnsDF2 <- 
+  nnsDF %>% 
+  dplyr::group_by( SearchTerm ) %>% 
+  dplyr::arrange( Word.Distance ) %>% 
+  dplyr::mutate( Rank = dplyr::row_number()) %>% 
+  dplyr::select( SearchTerm, Rank, Word.Word )
+reshape2::dcast( formula = SearchTerm ~ Rank, data = nnsDF2, value.var = "Word.Word" )
+```
+
+# Topics representation
+
+### W matrix
+
+```{r}
+d3heatmap::d3heatmap( lsaObj %>% LSAMonTakeW, scale = "row", colors = "Blues" )
+```
+
+```{r}
+qMat <- (lsaObj %>% LSAMonTakeW) %*% t(lsaObj %>% LSAMonTakeW)
+d3heatmap::d3heatmap( qMat, colors = "Blues" )
+```
+
+### Representation
+
+```{r}
+summary((lsaObj %>% LSAMonTakeW)@x)
+```
+
+```{r}
+tags <- 1:nrow( lsaObj %>% LSAMonTakeW )
+tags <- tags %/% 5
+#tags <- setNames( tags, rownames(lsaObj %>% LSAMonTakeW) )
+tags
+```
+
+```{r}
+lsaObj <- lsaObj %>% LSAMonTopicRepresentation( tags = tags, minThreshold = 0.001 )
+qMat <- as.matrix(lsaObj %>% LSAMonTakeValue)
+d3heatmap::d3heatmap( qMat, Rowv = TRUE, Colv = TRUE, scale = "col", colors = "Blues" )
+```
+```{r}
+names(tags)
+```
+
+```{r}
+dfTopicsWideForm
+```
+
+
+
