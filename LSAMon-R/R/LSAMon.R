@@ -905,7 +905,7 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
     return(LSAMonFailureSymbol)
   }
 
-  nres <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( lsaObj$W, lsaObj$H, normalizeLeft = FALSE )
+  nres <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( lsaObj$W, lsaObj$H, normalizeLeftQ = FALSE )
 
   topicSFactors <- sqrt( colSums( nres$W * nres$W ) )
 
@@ -990,10 +990,11 @@ LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRU
 #' @param tags A character vector with tags that correspond to the documents.
 #' If NULL the documents ordinal numbers or ID's are used.
 #' @param minThreshold The minimum topic weight.
+#' @param normalizeLeftQ Should the left matrix multiplication factor be normalized?
 #' @return The result is a tag-topic contingency matrix that is assigned to
 #' \code{lsaObj$Value}.
 #' @export
-LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001 ) {
+LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001, normalizeLeftQ = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -1005,7 +1006,9 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
     return(LSAMonFailureSymbol)
   }
 
-  wMat <- lsaObj %>% LSAMonTakeW()
+  nres <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( lsaObj$W, lsaObj$H, normalizeLeftQ = normalizeLeftQ )
+
+  wMat <- nres$W
   wMat <- as( wMat, "sparseMatrix" )
 
   if( ! ( is.vector(tags) && length(tags) == nrow(wMat) ) ) {
@@ -1030,7 +1033,7 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
 
   dfTriplets <- setNames( SparseMatrixRecommender::SMRSparseMatrixToTriplets( wMat ), c( "DocumentIndex", "TopicIndex", "Weight" ) )
 
-  dfTriplets <- dfTriplets[ dfTriplets$Weight > minThreshold, ]
+  dfTriplets <- dfTriplets[ abs(dfTriplets$Weight) > minThreshold, ]
 
   dfTriplets <- cbind( dfTriplets, Tag = tags[ dfTriplets$DocumentIndex ], stringsAsFactors = FALSE )
 

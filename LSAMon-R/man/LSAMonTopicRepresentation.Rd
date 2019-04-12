@@ -4,7 +4,8 @@
 \alias{LSAMonTopicRepresentation}
 \title{Topic representation.}
 \usage{
-LSAMonTopicRepresentation(lsaObj, tags = NULL, minThreshold = 0.001)
+LSAMonTopicRepresentation(lsaObj, tags = NULL, minThreshold = 0.001,
+  normalizeLeftQ = TRUE)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}
@@ -13,6 +14,8 @@ LSAMonTopicRepresentation(lsaObj, tags = NULL, minThreshold = 0.001)
 If NULL the documents ordinal numbers or ID's are used.}
 
 \item{minThreshold}{The minimum topic weight.}
+
+\item{normalizeLeftQ}{Should the left matrix multiplication factor be normalized?}
 }
 \value{
 The result is a tag-topic contingency matrix that is assigned to
