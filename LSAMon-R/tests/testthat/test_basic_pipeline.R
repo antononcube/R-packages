@@ -2,7 +2,7 @@ context("Basic pipeline")
 library(LSAMon)
 
 lsaObj <-
-  LSAMonUnit( Documents = textHamlet ) %>%
+  LSAMonUnit( documents = textHamlet ) %>%
   LSAMonMakeDocumentTermMatrix( stopWords = NULL, stemWordsQ = FALSE, splitPattern = "\\W") %>%
   LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
                                   localWeightFunction = "None",

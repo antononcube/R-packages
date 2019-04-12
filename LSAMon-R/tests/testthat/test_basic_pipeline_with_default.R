@@ -4,12 +4,12 @@ library(LSAMon)
 set.seed(1289)
 
 lsaObj1 <-
-  LSAMonUnit( Documents = textHamlet ) %>%
+  LSAMonUnit( documents = textHamlet ) %>%
   LSAMonMakeDocumentTermMatrix( stopWords = NULL, stemWordsQ = FALSE, splitPattern = "\\W") %>%
   LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
                                   localWeightFunction = "None",
                                   normalizerFunction = "Cosine" ) %>%
-  LSAMonTopicExtraction( numberOfTopics = 60, minNumberOfDocumentsPerTerm = NULL, maxSteps = 6, profiling = FALSE )
+  LSAMonTopicExtraction( numberOfTopics = 60, minNumberOfDocumentsPerTerm = NULL, method = "NNMF", maxSteps = 6, profiling = FALSE )
 
 
 set.seed(1289)
