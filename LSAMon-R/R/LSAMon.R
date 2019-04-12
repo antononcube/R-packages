@@ -701,10 +701,15 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' @param minNumberOfDocumentsPerTerm Minimal number of documents for the terms
 #' to be considered in the topics.
 #' @param maxSteps Maximum iteration steps.
+#' If NULL appropriate default values for the different methods are used.
+#' (For NNMF 12, for SVD 1000.)
 #' @param tolerance Tolerance for the relative norm difference.
 #' @param profilingQ Should the computation be profiled?
 #' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
 #' @param automaticTopicNamesQ Should the extracted topics be given automatic names?
+#' @param ... Additional parameters for the matrix decomposition funcitons.
+#' See \code{\link{irlba::irlba}} and \code{\link{NonNegativeMatrixFactorization::NNMF}}.
+#' Note that some of those overlap with some of function's arguments.
 #' @return A LSAMon object.
 #' @details The obtained factor matrices are assigned to \code{lsaObj$W} and \code{lsaObj$H}.
 #' The parameters \code{maxSteps, tolerance, profilingQ} are
@@ -715,8 +720,10 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' (The later is to ensure topic name uniqueness.)
 #' @export
 LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPerTerm = NULL,
-                                   maxSteps = 12, tolerance = 0.01, profilingQ = TRUE,
-                                   orderBySignificanceQ = TRUE, automaticTopicNamesQ = TRUE) {
+                                   method = "NNMF",
+                                   maxSteps = NULL, tolerance = 0.01, profilingQ = TRUE,
+                                   orderBySignificanceQ = TRUE, automaticTopicNamesQ = TRUE,
+                                   ...) {
 
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
@@ -735,9 +742,13 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
                                       normalizerFunction = "Cosine" ) %>%
       LSAMonTopicExtraction( numberOfTopics = numberOfTopics,
                              minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm,
+                             method = method,
                              maxSteps = maxSteps,
                              tolerance = tolerance,
-                             profilingQ = profilingQ )
+                             profilingQ = profilingQ,
+                             orderBySignificanceQ = orderBySignificanceQ,
+                             automaticTopicNamesQ = automaticTopicNamesQ,
+                             ... )
 
     return(lsaObj)
   }
@@ -764,30 +775,67 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
 
   wDocTermMat <- wDocTermMat[ , Matrix::colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm ]
 
-  ## Find NNMF decomposition.
-  resNNMF <-
-    NonNegativeMatrixFactorization::NNMF( V = wDocTermMat,
-                                          k = as.integer(numberOfTopics),
-                                          maxSteps = maxSteps,
-                                          tolerance = tolerance,
-                                          profilingQ = profilingQ )
+  ## Topic extraction.
+  if( tolower(method) %in% tolower(c( "irlba", "SVD")) ) {
 
-  ## Order by significance.
-  if( orderBySignificanceQ ) {
-    resNNMF <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( resNNMF$W, resNNMF$H, normalizeLeft = FALSE )
+    if( is.null(maxSteps) ) { maxSteps = 1000 }
 
-    topicSFactors <- sqrt( colSums( resNNMF$W * resNNMF$W ) )
+    ## Find SVD decomposition.
+    resSVD <-
+      irlba::irlba( A = wDocTermMat,
+                    nv = as.integer(numberOfTopics),
+                    maxit = maxSteps,
+                    tol = tolerance,
+                    ... )
 
+    ## Re-fit the result to monad's data interpretation.
+    W <- Matrix( resSVD$u, sparse = TRUE )
+    S <- Diagonal( x = resSVD$d, n = length(resSVD$d) )
+    H <- Matrix( t(resSVD$v), sparse = TRUE )
+    H <- S %*% H
+
+    rownames(W) <- rownames(wDocTermMat)
+    colnames(H) <- colnames(wDocTermMat)
+
+    ## Assign to lsaObj.
+    lsaObj$W <- W
+    lsaObj$H <- H
+
+  } else if( tolower(method) %in% tolower(c( "NNMF", "NonNegativeMatrixfactorization")) ){
+
+    if( is.null(maxSteps) ) { maxSteps = 12 }
+
+    ## Find NNMF decomposition.
+    resNNMF <-
+      NonNegativeMatrixFactorization::NNMF( V = wDocTermMat,
+                                            k = as.integer(numberOfTopics),
+                                            maxSteps = maxSteps,
+                                            tolerance = tolerance,
+                                            profilingQ = profilingQ )
+
+    ## Order by significance.
     if( orderBySignificanceQ ) {
-      resNNMF$W <- resNNMF$W[ , rev(order(topicSFactors)) ]
-      resNNMF$H <- resNNMF$H[ rev(order(topicSFactors)), ]
-      topicSFactors <- topicSFactors[ rev(order(topicSFactors)) ]
-    }
-  }
+      resNNMF <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( resNNMF$W, resNNMF$H, normalizeLeft = FALSE )
 
-  ## Assign to lsaObj.
-  lsaObj$W <- resNNMF$W
-  lsaObj$H <- resNNMF$H
+      topicSFactors <- sqrt( colSums( resNNMF$W * resNNMF$W ) )
+
+      if( orderBySignificanceQ ) {
+        resNNMF$W <- resNNMF$W[ , rev(order(topicSFactors)) ]
+        resNNMF$H <- resNNMF$H[ rev(order(topicSFactors)), ]
+        topicSFactors <- topicSFactors[ rev(order(topicSFactors)) ]
+      }
+    }
+
+    ## Assign to lsaObj.
+    lsaObj$W <- resNNMF$W
+    lsaObj$H <- resNNMF$H
+
+  } else {
+
+    warning( "The expected values for the argument method are 'NNMF' and 'SVD'.", call. = T )
+    return(LSAMonFailureSymbol)
+
+  }
 
   # Automatic topic naming.
   if( automaticTopicNamesQ ) {

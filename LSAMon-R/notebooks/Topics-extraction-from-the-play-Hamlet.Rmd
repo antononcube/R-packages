@@ -14,6 +14,11 @@ library(lattice)
 library(OutlierIdentifiers)
 ```
 
+```{r}
+method <- "NNMF"
+maxSteps <- 30
+```
+
 # Introduction
 
 # Topic extraction
@@ -22,8 +27,9 @@ library(OutlierIdentifiers)
 lsaObj <-
   LSAMonUnit( textHamlet ) %>% 
   LSAMonMakeDocumentTermMatrix( stopWords = stopwords::stopwords() ) %>% 
-  LSAMonTopicExtraction( numberOfTopics = 30, minNumberOfDocumentsPerTerm = 1, maxSteps = 20 )
+  LSAMonTopicExtraction( numberOfTopics = 30, minNumberOfDocumentsPerTerm = 2, maxSteps = maxSteps, method = method )
 ```
+
 
 # The extracted topics
 
@@ -127,7 +133,7 @@ tags
 ```{r}
 lsaObj <- lsaObj %>% LSAMonTopicRepresentation( tags = tags, minThreshold = 0.001 )
 qMat <- as.matrix(lsaObj %>% LSAMonTakeValue)
-d3heatmap::d3heatmap( qMat, Rowv = TRUE, Colv = TRUE, scale = "col", colors = "Blues" )
+d3heatmap::d3heatmap( qMat, Rowv = FALSE, Colv = TRUE, scale = "col", colors = "Blues" )
 ```
 ```{r}
 names(tags)

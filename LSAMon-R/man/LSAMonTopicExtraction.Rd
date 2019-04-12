@@ -5,9 +5,9 @@
 \title{Topic extraction.}
 \usage{
 LSAMonTopicExtraction(lsaObj, numberOfTopics,
-  minNumberOfDocumentsPerTerm = NULL, maxSteps = 12,
-  tolerance = 0.01, profilingQ = TRUE, orderBySignificanceQ = TRUE,
-  automaticTopicNamesQ = TRUE)
+  minNumberOfDocumentsPerTerm = NULL, method = "NNMF",
+  maxSteps = NULL, tolerance = 0.01, profilingQ = TRUE,
+  orderBySignificanceQ = TRUE, automaticTopicNamesQ = TRUE, ...)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}
@@ -17,7 +17,9 @@ LSAMonTopicExtraction(lsaObj, numberOfTopics,
 \item{minNumberOfDocumentsPerTerm}{Minimal number of documents for the terms
 to be considered in the topics.}
 
-\item{maxSteps}{Maximum iteration steps.}
+\item{maxSteps}{Maximum iteration steps.
+If NULL appropriate default values for the different methods are used.
+(For NNMF 12, for SVD 1000.)}
 
 \item{tolerance}{Tolerance for the relative norm difference.}
 
@@ -26,6 +28,10 @@ to be considered in the topics.}
 \item{orderBySignificanceQ}{Should the basis vectors be ordered by their significance?}
 
 \item{automaticTopicNamesQ}{Should the extracted topics be given automatic names?}
+
+\item{...}{Additional parameters for the matrix decomposition funcitons.
+See \code{\link{irlba::irlba}} and \code{\link{NonNegativeMatrixFactorization::NNMF}}.
+Note that some of those overlap with some of function's arguments.}
 }
 \value{
 A LSAMon object.
