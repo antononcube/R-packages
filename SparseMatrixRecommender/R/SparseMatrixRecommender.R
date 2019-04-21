@@ -1015,6 +1015,80 @@ SMRImposeColumnIDs <- function( colIDs, smat ) {
 }
 
 
+#' Converts an integer sparse matrix to incidence matrix.
+#' @description Replaces each a column of a integer matrix with number of columns
+#' corresponding to the integer values.
+#' The matrix [[2,3],[1,2]] is converted to [[0,0,1,0,0,0,0,1],[0,1,0,0,0,0,1,0]] .
+#' @param mat an integer matrix to be converted to column value incidence matrix.
+#' @param rowNamesQ Should the argument row names be the result matrix row names?
+#' @param colNamesQ Should the column names derived from the argument matrix 
+#' column names be assigned to the result matrix?
+#' @export
+SMRMakeColumnValueIncidenceMatrix <- function( mat, rowNamesQ = TRUE, colNamesQ = TRUE ) {
+  
+  tmat <- as( mat, "dgCMatrix")
+  df <- summary(tmat)
+  df <- data.frame(df)
+  # minInt <- min(mat,na.rm = T); maxInt <- max(mat,na.rm = T)
+  minInt <- min(tmat@x); maxInt <- max(tmat@x)
+  #step <- maxInt - minInt + 1 ## this isincorrect df$j computed as  df$j <- ( df$j - 1 ) * step + df$x
+  step <- maxInt + 1
+  
+  if( min(df$x) < 0 ) {
+    warning( "The non-zero values of the matrix are expected to be non-negative integers.", call. = TRUE)
+  }
+  
+  df$j <- ( df$j - 1 ) * step + df$x + 1
+  ## In other words we are doing this:
+  ## triplets <- ddply( .data = df, .variables = .(i,j),
+  ##                   .fun = function(row) { c(row[[1]], (row[[2]]-1)*step + row[[3]] + 1, 1) })
+  
+  ## Convinient way to check the implmentation:
+  ## resMat <- sparseMatrix( i = df$i, j = df$j, x = df$x, dims = c( nrow(mat), ncol(mat)*step ) )
+  resMat <- sparseMatrix( i = df$i, j = df$j, x = rep(1,length(df$x)), dims = c( nrow(mat), ncol(mat)*step ) )
+  
+  if ( rowNamesQ ) { 
+    rownames(resMat) <- rownames(mat) 
+  }
+  
+  if ( colNamesQ ) { 
+    colnames(resMat) <- as.character(unlist(Map( function(x) { paste(x, 0:maxInt, sep = ".") }, colnames(mat))))
+  }
+  
+  resMat
+}
+
+
+##===========================================================
+## Other transformations
+##===========================================================
+
+#' Categorize to intervals.
+#' @param vec A numerical vector to be categorized.
+#' @param probs A numerical vector to be given to 
+#' the argument \code{probs} of \code{\link{quantile}}.
+#' @param breaks A the breaks to be used.
+#' If NULL \code{quantile} is used.
+#' @param intervalNamesQ Should the intervals be represented with integers or with character names?
+#' @return A character vector.
+#' @export
+SMRCategorizeToIntervals <- function( vec, breaks = NULL, probs = seq(0,1,0.1), intervalNamesQ = FALSE ) {
+  
+  if( missing(breaks) || is.null(breaks) ) {
+    breaks <- unique( quantile( vec, probs, na.rm = T) )
+  }
+  
+  resVec <- findInterval( x = vec, vec = breaks, all.inside = T )
+  
+  if( intervalNamesQ ) {
+    intervalNames <- purrr::map2_chr( breaks[-length(breaks)], breaks[-1], function(x, y) paste0( x, "≤v<", y )) 
+    resVec <- intervalNames[resVec]
+  }
+  
+  resVec
+}
+
+
 ##===========================================================
 ## SMR algebra operations
 ##===========================================================
