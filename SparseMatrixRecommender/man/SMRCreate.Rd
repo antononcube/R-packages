@@ -4,7 +4,8 @@
 \alias{SMRCreate}
 \title{Creation of a Sparse Matrix Recommender object from a transactions data frame}
 \usage{
-SMRCreate(dataRows, tagTypes, itemColumnName)
+SMRCreate(dataRows, tagTypes = names(dataRows)[-1],
+  itemColumnName = names(dataRows)[1])
 }
 \arguments{
 \item{dataRows}{The transaction data frame.}
