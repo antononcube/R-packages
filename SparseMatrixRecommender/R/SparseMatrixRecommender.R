@@ -125,6 +125,14 @@ NULL
 #' @family Creation functions
 #' @export
 SMRCreateItemTagMatrix <- function( dataRows, itemColumnName, tagType, sparse = TRUE ) {
+  
+  if( mean(is.na(dataRows[[tagType]])) == 1 ) {
+    res <- sparseMatrix( i = c(1), j = c(1), x = c(0), dims = c( nrow(dataRows), 1 ) )
+    rownames(res) <- dataRows[[itemColumnName]]
+    colnames(res) <- "NA"
+    return(res)
+  }
+  
   formulaString <- paste("~", itemColumnName, "+", tagType)
   xtabs( formula = as.formula(formulaString), data = dataRows, sparse = sparse )
 }
@@ -138,13 +146,14 @@ SMRCreateItemTagMatrix <- function( dataRows, itemColumnName, tagType, sparse = 
 #' @return SMR object.
 #' @family Creation functions
 #' @export
-SMRCreate <- function(dataRows, tagTypes, itemColumnName ){
+SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName = names(dataRows)[1] ){
+  
   matrices <- purrr::map(tagTypes, function(x){
     SMRCreateItemTagMatrix(dataRows, tagType=x, itemColumnName=itemColumnName)
   })
   
   allRowNames <- sort(unique(unlist(purrr::map( matrices, rownames ))))
-  matrices <-purrr::map( matrices, function(x) SMRImposeRowIDs( rowIDs = allRowNames, smat = x ) )                    
+  matrices <- purrr::map( matrices, function(x) SMRImposeRowIDs( rowIDs = allRowNames, smat = x ) )                    
     
   SMRCreateFromMatrices(matrices, tagTypes, itemColumnName)
 }
@@ -1074,6 +1083,10 @@ SMRMakeColumnValueIncidenceMatrix <- function( mat, rowNamesQ = TRUE, colNamesQ 
 #' @export
 SMRCategorizeToIntervals <- function( vec, breaks = NULL, probs = seq(0,1,0.1), intervalNamesQ = FALSE ) {
   
+  if( !is.vector(vec) ) {
+    stop( "The first argument vec is expected to be a vector.", call. = TRUE )
+  }
+    
   if( missing(breaks) || is.null(breaks) ) {
     breaks <- unique( quantile( vec, probs, na.rm = T) )
   }
