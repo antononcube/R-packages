@@ -2,9 +2,10 @@
 
 ## In brief
 
-This project has different types data to be used for classification, recommendations, regression, and natural language processing.
+This project has different types of data that can be for stastistical learning tasks like
+classification, recommendations, regression, natural language processing, and others.
 
-Most of the data is taken from Mathematica's data functions. See function pages:
+Most of the data is taken from Mathematica's data functions. See the function pages:
 
 - [`FinancialData`](https://reference.wolfram.com/language/ref/FinancialData.html),
 
@@ -12,7 +13,7 @@ Most of the data is taken from Mathematica's data functions. See function pages:
 
 - [`ExampleData`](https://reference.wolfram.com/language/ref/ExampleData.html). 
 
-The data in this repository is already utilized blog posts and other repositories or packages.
+The data in this repository is already utilized in blog posts and other repositories or packages.
 
 ## References
 
