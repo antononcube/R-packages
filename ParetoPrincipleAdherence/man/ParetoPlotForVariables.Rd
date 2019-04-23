@@ -26,8 +26,8 @@ and second column a numerical vector \code{c("Variable", "Value")}.}
 \item{...}{Parameters for \code{\link{ggplot2::theme}}}
 }
 \description{
-Make a plot that demonstrates the adherence to the Pareto law of a
-a data frame with item names and weight values.
+Make a plot that demonstrates the adherence to the Pareto Principle
+of a data frame with item names and weight values.
 }
 \details{
 The data frame \code{data} is split by \code{data$Variable}.
