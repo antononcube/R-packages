@@ -153,7 +153,7 @@ ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
   data <-
     data %>%
     dplyr::group_by( Item ) %>%
-    dplyr::summarise( Weight = sum(Weight) ) %>%
+    dplyr::summarise( Weight = sum(Weight, na.rm = T) ) %>%
     dplyr::ungroup() %>%
     dplyr::arrange(desc(Weight))
 
@@ -258,8 +258,8 @@ ParetoPlot <- function( data ) {
 
 
 #' Pareto plot for variables.
-#' @description Make a plot that demonstrates the adherence to the Pareto law of a
-#' a data frame with item names and weight values.
+#' @description Make a plot that demonstrates the adherence to the Pareto Principle
+#' of a data frame with item names and weight values.
 #' @param data A two column data frame with the first column of a variable name
 #' and second column a numerical vector \code{c("Variable", "Value")}.
 #' @param normalizeQ Should the Pareto cumulative values be normalized or not?
