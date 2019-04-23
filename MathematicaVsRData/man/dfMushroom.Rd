@@ -17,4 +17,12 @@ characteristics of gilled mushrooms in the Agaricus and Lepiota family,
 along with their edibility.
 Each row represents one mushroom.
 }
+\seealso{
+Other MathematicaVsR data: \code{\link{dfDistributionData}},
+  \code{\link{dfFinancialData}},
+  \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
+  \code{\link{dfUSAPresidentsSpeeches}},
+  \code{\link{textHamlet}}
+}
+\concept{MathematicaVsR data}
 \keyword{datasets}

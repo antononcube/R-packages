@@ -6,8 +6,8 @@
 \title{Heteroscedastic distribution data}
 \format{A data frame with 601 rows and 2 columns.
 \describe{
-    \item{X}{x-coordinate}
-    \item{Y}{y-coordinate}
+    \item{X}{x-coordinate.}
+    \item{Y}{y-coordinate.}
 }}
 \usage{
 dfDistributionData
@@ -17,4 +17,12 @@ The data is generated with the code:
 \code{xs <- seq(-3, 3, 0.01)}
 \code{dfDistributionData <- purrr::map_df( xs, function(x) { data.frame( X = x, Y = exp(-x^2) + rnorm( n = 1, mean = 0, sd =  0.15 * sqrt( abs( 1.5 - x) / 1.5 ) ) ) })}.
 }
+\seealso{
+Other MathematicaVsR data: \code{\link{dfFinancialData}},
+  \code{\link{dfMushroom}},
+  \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
+  \code{\link{dfUSAPresidentsSpeeches}},
+  \code{\link{textHamlet}}
+}
+\concept{MathematicaVsR data}
 \keyword{datasets}

@@ -15,4 +15,11 @@ textHamlet
 The text of Shakespeare's play Hamlet is split into parts that
 correspond to the dialogue in the play.
 }
+\seealso{
+Other MathematicaVsR data: \code{\link{dfDistributionData}},
+  \code{\link{dfFinancialData}}, \code{\link{dfMushroom}},
+  \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
+  \code{\link{dfUSAPresidentsSpeeches}}
+}
+\concept{MathematicaVsR data}
 \keyword{datasets}

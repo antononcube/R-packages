@@ -6,11 +6,11 @@
 \title{Titanic survival}
 \format{A data frame with 1309 rows and 5 columns.
 \describe{
-  \item{id}{simple, order derived ID}
-  \item{passengerClass}{passenger class}
-  \item{passengerAge}{passenger age rounded into age groups}
-  \item{passengerSex}{passenger sex}
-  \item{passengerSurvival}{passenger survival}
+  \item{id}{Simple, order derived ID.}
+  \item{passengerClass}{Passenger class.}
+  \item{passengerAge}{Passenger age rounded into age groups.}
+  \item{passengerSex}{Passenger sex.}
+  \item{passengerSurvival}{Passenger survival.}
 }}
 \source{
 \url{https://datarepository.wolframcloud.com/resources/Sample-Data-Titanic-Survival}
@@ -32,4 +32,12 @@ The names of the rest of the columns are self-explanatory.
 The column "passengerAge" has values "rounded" into age-groups, \code{seq(0,80,10)}.
 If the passenger age is unknown/missing the value is -1.
 }
+\seealso{
+Other MathematicaVsR data: \code{\link{dfDistributionData}},
+  \code{\link{dfFinancialData}}, \code{\link{dfMushroom}},
+  \code{\link{dfTemperatureData}},
+  \code{\link{dfUSAPresidentsSpeeches}},
+  \code{\link{textHamlet}}
+}
+\concept{MathematicaVsR data}
 \keyword{datasets}

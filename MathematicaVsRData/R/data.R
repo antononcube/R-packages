@@ -14,13 +14,14 @@
 #'
 #' @format A data frame with 1309 rows and 5 columns.
 #' \describe{
-#'   \item{id}{simple, order derived ID}
-#'   \item{passengerClass}{passenger class}
-#'   \item{passengerAge}{passenger age rounded into age groups}
-#'   \item{passengerSex}{passenger sex}
-#'   \item{passengerSurvival}{passenger survival}
+#'   \item{id}{Simple, order derived ID.}
+#'   \item{passengerClass}{Passenger class.}
+#'   \item{passengerAge}{Passenger age rounded into age groups.}
+#'   \item{passengerSex}{Passenger sex.}
+#'   \item{passengerSurvival}{Passenger survival.}
 #' }
 #' @source \url{https://datarepository.wolframcloud.com/resources/Sample-Data-Titanic-Survival}
+#' @family MathematicaVsR data
 "dfTitanic"
 
 
@@ -33,6 +34,7 @@
 #'
 #' @format A data frame with 8124 rows and 24 columns.
 #' @source \url{https://datahub.io/machine-learning/mushroom}
+#' @family MathematicaVsR data
 "dfMushroom"
 
 
@@ -44,9 +46,10 @@
 #'
 #' @format A data frame with 601 rows and 2 columns.
 #' \describe{
-#'     \item{X}{x-coordinate}
-#'     \item{Y}{y-coordinate}
+#'     \item{X}{x-coordinate.}
+#'     \item{Y}{y-coordinate.}
 #' }
+#' @family MathematicaVsR data
 "dfDistributionData"
 
 
@@ -60,9 +63,10 @@
 #'
 #' @format A data frame with 1461 rows and 2 columns.
 #' \describe{
-#'     \item{Time}{Date as the number of seconds from 1900-01-01 00:00}
-#'     \item{Temperature}{Temperature in Celsius}
+#'     \item{Time}{Date as the number of seconds from 1900-01-01 00:00.}
+#'     \item{Temperature}{Temperature in Celsius.}
 #' }
+#' @family MathematicaVsR data
 "dfTemperatureData"
 
 
@@ -72,9 +76,10 @@
 #'
 #' @format A data frame with 1258 rows and 2 columns.
 #' \describe{
-#'     \item{Time}{Date}
-#'     \item{Value}{Adjusted stock price in US dollars}
+#'     \item{Time}{Date.}
+#'     \item{Value}{Adjusted stock price in US dollars.}
 #' }
+#' @family MathematicaVsR data
 "dfFinancialData"
 
 
@@ -86,6 +91,7 @@
 #' @format A character vector
 #'
 #' @source \url{http://erdani.com/tdpl/hamlet.txt}
+#' @family MathematicaVsR data
 "textHamlet"
 
 
@@ -94,8 +100,15 @@
 #' USA presidents speeches together with related metadata.
 #'
 #' @format A data frame
+#' \describe{
+#'     \item{Date}{Date of the speech.}
+#'     \item{Title}{Title of the speech.}
+#'     \item{Name}{Name of the president that gave the speech.}
+#'     \item{Text}{Text of the speech.}
+#' }
 #'
 #' @source \url{http://www.gutenberg.org/ebooks/925}
+#' @family MathematicaVsR data
 "dfUSAPresidentsSpeeches"
 
 
