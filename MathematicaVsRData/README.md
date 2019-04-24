@@ -13,7 +13,8 @@ Most of the data is taken from Mathematica's data functions. See the function pa
 
 - [`ExampleData`](https://reference.wolfram.com/language/ref/ExampleData.html). 
 
-The data in this repository is already utilized in blog posts and other repositories or packages.
+The data in this repository is already utilized in blog posts and other repositories or packages. 
+(For examples, see [2,3].)
 
 ## References
 
