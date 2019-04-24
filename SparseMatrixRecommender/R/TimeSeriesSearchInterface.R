@@ -122,7 +122,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
                  
                  plotOutput( "searchVectorPlot", height = "150px", width = "550px" ),
                  
-                 plotOutput( "searchVectorNNsPlot",  width = "1200px", height = "800px" )
+                 plotOutput( "searchVectorNNsPlot",  height = "1000px" )
                  
                  
         )

@@ -87,7 +87,7 @@ res
 
 # Interface
 
-Make search vectors (not necessary, created automatically):
+Make search vectors (not necessary, created automatically if not provided):
 
 ```{r, eval=F}
 tsSearchVectors <- MakeTimeSeriesSearchVectors( tsMat = tsMat )
