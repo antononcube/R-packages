@@ -112,3 +112,24 @@
 "dfUSAPresidentsSpeeches"
 
 
+#' S&P 500 stock daily closing values
+#'
+#' S&P 500 stock daily closing values retrieved with Mathematica's function \code{FinancialData}.
+#'
+#' @format A data frame
+#' \describe{
+#'     \item{StockID}{Stock identifier.}
+#'     \item{AbsoluteTime}{Absolute time of the date in seconds from 1900-01-01.}
+#'     \item{Value}{The value of the stock.}
+#'     \item{Date}{The POSIXct date corresponding to \code{dfSP500$AbsoluteTime}.}
+#' }
+#'
+#' @source \url{https://reference.wolfram.com/language/ref/FinancialData.html}
+#'
+#' @details For additional details see \url{https://en.wikipedia.org/wiki/S&P_500_Index} and
+#' \url{https://en.wikipedia.org/wiki/List_of_S&P_500_companies}.
+#'
+#' @family MathematicaVsR data
+"dfSP500"
+
+

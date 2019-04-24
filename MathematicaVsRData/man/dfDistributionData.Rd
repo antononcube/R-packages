@@ -19,7 +19,7 @@ The data is generated with the code:
 }
 \seealso{
 Other MathematicaVsR data: \code{\link{dfFinancialData}},
-  \code{\link{dfMushroom}},
+  \code{\link{dfMushroom}}, \code{\link{dfSP500}},
   \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
   \code{\link{dfUSAPresidentsSpeeches}},
   \code{\link{textHamlet}}

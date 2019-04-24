@@ -23,8 +23,8 @@ USA presidents speeches together with related metadata.
 \seealso{
 Other MathematicaVsR data: \code{\link{dfDistributionData}},
   \code{\link{dfFinancialData}}, \code{\link{dfMushroom}},
-  \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
-  \code{\link{textHamlet}}
+  \code{\link{dfSP500}}, \code{\link{dfTemperatureData}},
+  \code{\link{dfTitanic}}, \code{\link{textHamlet}}
 }
 \concept{MathematicaVsR data}
 \keyword{datasets}

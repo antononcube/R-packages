@@ -19,7 +19,7 @@ Each row represents one mushroom.
 }
 \seealso{
 Other MathematicaVsR data: \code{\link{dfDistributionData}},
-  \code{\link{dfFinancialData}},
+  \code{\link{dfFinancialData}}, \code{\link{dfSP500}},
   \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
   \code{\link{dfUSAPresidentsSpeeches}},
   \code{\link{textHamlet}}

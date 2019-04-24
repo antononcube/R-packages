@@ -21,4 +21,8 @@ test_that("Data tests", {
   expect_is( textHamlet, "character")
   expect_equal( length(textHamlet), 223 )
 
+  expect_is( dfSP500, "data.frame")
+  expect_is( dfSP500$AbsoluteTime, "numeric" )
+  expect_is( dfSP500$Date, "POSIXct" )
+
 })

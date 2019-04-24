@@ -23,7 +23,7 @@ The data was obtained with the Mathematica code:
 \seealso{
 Other MathematicaVsR data: \code{\link{dfDistributionData}},
   \code{\link{dfFinancialData}}, \code{\link{dfMushroom}},
-  \code{\link{dfTitanic}},
+  \code{\link{dfSP500}}, \code{\link{dfTitanic}},
   \code{\link{dfUSAPresidentsSpeeches}},
   \code{\link{textHamlet}}
 }

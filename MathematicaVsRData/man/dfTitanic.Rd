@@ -35,7 +35,7 @@ If the passenger age is unknown/missing the value is -1.
 \seealso{
 Other MathematicaVsR data: \code{\link{dfDistributionData}},
   \code{\link{dfFinancialData}}, \code{\link{dfMushroom}},
-  \code{\link{dfTemperatureData}},
+  \code{\link{dfSP500}}, \code{\link{dfTemperatureData}},
   \code{\link{dfUSAPresidentsSpeeches}},
   \code{\link{textHamlet}}
 }

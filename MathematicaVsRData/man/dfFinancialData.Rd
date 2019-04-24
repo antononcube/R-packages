@@ -17,7 +17,7 @@ GE stock data from 2014-01-01 to 2019-01-01.
 }
 \seealso{
 Other MathematicaVsR data: \code{\link{dfDistributionData}},
-  \code{\link{dfMushroom}},
+  \code{\link{dfMushroom}}, \code{\link{dfSP500}},
   \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
   \code{\link{dfUSAPresidentsSpeeches}},
   \code{\link{textHamlet}}
