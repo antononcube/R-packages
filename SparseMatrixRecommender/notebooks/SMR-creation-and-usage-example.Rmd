@@ -35,6 +35,13 @@ dfTitanic
 summary(as.data.frame(unclass(dfTitanic)))
 ```
 
+```{r}
+smat <- smrTitanic$M
+#rownames(smat) <- NULL
+colnames(smat) <- NULL
+SMRSparseMatrixToTriplets( smat  )
+```
+
 ## Mushroom data
 
 ```{r}
