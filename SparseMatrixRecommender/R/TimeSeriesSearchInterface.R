@@ -197,7 +197,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
       
       ggplot2::ggplot( recResNNsExtended() ) +
         ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = input$nnsValueColName, color = "ItemName" ), na.rm = T ) +
-        ggplot2::facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free" )
+        ggplot2::facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free_y" )
       
     })
     
@@ -235,7 +235,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
       
       ggplot2::ggplot( recResSVecExtended()  ) +
         ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName" ), na.rm = T ) +
-        ggplot2::facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free" ) +
+        ggplot2::facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free_y" ) +
         ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
       
       
