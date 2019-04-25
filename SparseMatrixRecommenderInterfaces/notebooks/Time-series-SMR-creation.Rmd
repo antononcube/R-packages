@@ -1,0 +1,102 @@
+---
+title: "Time series SMR creation"
+author: Anton Antonov
+date: 2019-04-024
+output: html_notebook
+---
+
+```{r}
+library(SparseMatrixRecommender)
+library(SparseMatrixRecommenderInterfaces)
+library(MathematicaVsRData)
+library(shinydashboard)
+```
+
+# Introduction
+
+In this notebook we create a time series search engine based on
+[S&P 500](https://en.wikipedia.org/wiki/S&P_500_Index) 
+stock daily closing values.
+
+# The data
+
+The data is provided by the (data) package 
+[`MathematicaVsRData`](https://github.com/antononcube/R-packages/tree/master/MathematicaVsRData).
+
+
+```{r}
+summary(as.data.frame(unclass(dfSP500)))
+```
+
+# Create TS-SMR
+
+Make a sparse matrix:
+
+```{r}
+system.time(
+  tsMat <- xtabs( Value ~ StockID + Date, dfSP500, sparse = T )
+)
+```
+
+Make the base SMR object:
+
+```{r}
+smrSP500 <- SMRCreateFromMatrices( matrices = c(tsMat), tagTypes = c("TimeSeries"), itemColumnName = "StockID" )
+```
+
+
+Additional derived data for the TS-SMR object (not needed, created automatically if not provided):
+
+```{r, eval=F}
+itemIDtoNameRules <- setNames( rownames(tsMat), rownames(tsMat) )
+nameToItemIDRules <- setNames( rownames(tsMat), rownames(tsMat) )
+tibNameToTIBRules <- setNames( as.POSIXct( colnames(tsMat), format="%Y-%m-%d"), colnames(tsMat) )
+```
+
+Make the TS-SMR object:
+
+```{r}
+tssmrSP500 <- TSCorrSMRCreate( timeSeriesMatrix = tsMat, smr = smrSP500, smrNRecs = 200 )
+```
+
+Here is the S3 class of `tssmr500`:
+
+```{r}
+class(tssmrSP500)
+```
+
+
+# Example recommendations 
+
+## Basic
+
+There is specific implementation `Recommendations.TSCorrSMR`.
+
+```{r}
+searchID <- "AAPL"
+recs <- Recommendations( tssmrSP500, historyItems = searchID, historyRatings = 1, nrecs = 12 )
+recs
+```
+
+## Lower level functions
+
+```{r}
+searchID <- "AAPL"
+res <- TSPSRCorrelationNNs( timeSeriesMat = tsMat, smr = smrSP500, itemIDtoNameRules = tssmrSP500$ItemIDtoNameRules, searchRowID = searchID, nrecs = 12, smr.nrecs = 200 )
+res
+```
+
+# Interface
+
+Make search vectors (not necessary, created automatically if not provided):
+
+```{r, eval=F}
+tsSearchVectors <- MakeTimeSeriesSearchVectors( tsMat = tsMat )
+length(tsSearchVectors)
+```
+
+
+```{r}
+shiny::runApp( TSCorrSMRCreateSearchInterface( tsSMR = tssmrSP500 ) )
+```
+
