@@ -15,7 +15,7 @@ TSCorrSMRCreateSearchInterface(tsSMR, tsSearchVectors = NULL)
 Shiny app object.
 }
 \description{
-Creates Shiny interface for a given time series recommender and 
+Creates Shiny interface for a given time series recommender and
 optional search time series shapes.
 }
 \seealso{

@@ -44,6 +44,7 @@
 
 #' @import DT
 #' @import purrr
+#' @import stringr
 #' @import shiny
 #' @import shinydashboard
 NULL
@@ -53,58 +54,58 @@ NULL
 ##===========================================================
 
 #' Sparse matrix recommender interface UI
-#' @description Creates the Shiny UI function for a sparse matrix recommender interface. 
+#' @description Creates the Shiny UI function for a sparse matrix recommender interface.
 #' @param itemSMR A sparse matrix recommender.
 #' @return Shiny UI object.
 #' @family Time series search interface functions
 #' @export
 SMRMakeUI <- function( itemSMR ) {
-  
+
   shinyUI(
     fluidPage(
-      
+
       titlePanel("Item recommendations interface"),
-      
+
       fluidRow(
-        
+
         column( 3,
                 submitButton( "Update", icon = icon("refresh") ),
-                
+
                 textInput("search", "Search items with:", "A.*"),
-                
+
                 textInput("itemList", "Item list:", rownames(itemSMR$M)[1] ),
-                
+
                 textInput("itemRatings", "Item star ratings:", "3"),
-                
+
                 numericInput("nrecs", "Number of recommendations:", 20)
-                
+
         ),
-        
+
         column( 6,
-                tabsetPanel( 
-                  tabPanel( "Search results", 
+                tabsetPanel(
+                  tabPanel( "Search results",
                             h4("Search results"),
                             DT::dataTableOutput("view")
                   ),
-                  
+
                   tabPanel( "Consumed items list",
                             h4("Consumed items list"),
                             tabsetPanel(
                               tabPanel( "short", DT::dataTableOutput("itemList") ),
-                              tabPanel( "extended", DT::dataTableOutput("itemListData") ) 
+                              tabPanel( "extended", DT::dataTableOutput("itemListData") )
                             )
                   )
-                )              
+                )
         ),
-        
-        column( 3, 
-                textInput("tagTypeSFactors", "Tag type significance factors:", 
+
+        column( 3,
+                textInput("tagTypeSFactors", "Tag type significance factors:",
                           paste( "c(", paste( SMRCurrentTagTypeSignificanceFactors( itemSMR ), collapse = ", " ), ")" ) ),
                 DT::dataTableOutput("significanceFactors")
         )
       ),
-      
-      fluidRow( 
+
+      fluidRow(
         column( 9,
                 h4("Recommendations"),
                 tabsetPanel(
@@ -127,7 +128,7 @@ SMRMakeUI <- function( itemSMR ) {
       )
     )
   )
-  
+
 }
 
 
@@ -136,28 +137,28 @@ SMRMakeUI <- function( itemSMR ) {
 ##===========================================================
 
 #' Sparse matrix recommender interface server function
-#' @description Creates the Shiny server function for a sparse matrix recommender interface. 
+#' @description Creates the Shiny server function for a sparse matrix recommender interface.
 #' @param itemSMR A time series recommender.
 #' @param itemData A data frame with rows corresponding to items (to be recommended.)
-#' @param itemDataColNames Which column names of \code{itemData} should be used in 
+#' @param itemDataColNames Which column names of \code{itemData} should be used in
 #' the table displays of search and recommendation results.
 #' @param itemDataIDColName Which column of \code{itemData} is with item ID's;
 #' those ID's are also row names of \code{itemSMR$M}.
 #' @param searchColName Which column should be used to search \code{itemData}.
 #' @param itemListIDsSplitPattern  A split pattern for the separator of the items list
 #' and ratings list.
-#' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be 
+#' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 #' used if the row ID's have white spaces in them.
 #' @return Shiny server function.
 #' @family SMR interface functions
 #' @export
 SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W" ) {
-  
+
 
   if( is.null(itemDataColNames) ) {
     itemDataColNames <- colnames(itemData)
   }
-  
+
   if( mean( itemDataColNames %in% colnames(itemData) ) < 1 ) {
     stop( "Not all elements of the argument itemDataColNames are column names of itemData.")
   }
@@ -165,31 +166,31 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
   if( is.null(itemDataIDColName) ) {
     itemDataIDColName <- colnames(itemData)[[1]]
   }
-  
+
   if( !( itemDataIDColName %in% colnames(itemData) ) ) {
     stop( "The argument itemDataIDColName is not a column name in itemData.")
   }
-  
+
   if( is.null(searchColName) ) {
     searchColName <- colnames(itemData)[[1]]
   }
-  
+
   if( !( searchColName %in% colnames(itemData) ) ) {
     stop( "The argument searchColName is not a column name in itemData.")
   }
-  
+
   # searchColName <- "title"
   # itemDataIDColName <- "id"
   # itemDataColNames <- c("id", "title", "year", "rated", "imdb_rating" )
-  
+
   if( is.null("itemListIDsSplitPattern") ) {
     itemListIDsSplitPattern <- "\\W"
   }
-  
+
   shinyServer(function(input, output, session) {
-    
+
     tagTypeSFactors <- reactive({
-      
+
       pres <- eval( parse( text= paste( "c(", input$tagTypeSFactors, ")" ) ) )
       if ( is.null( names(pres) ) ) {
         pres <- setNames( c( pres, rep( 0, length(itemSMR$TagTypes) - length(pres) ) ), itemSMR$TagTypes )
@@ -202,14 +203,14 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
       }
       pres
     })
-    
-    
+
+
     itemListIDs <- reactive({
       ss <- strsplit( input$itemList, split = itemListIDsSplitPattern, fixed = FALSE )[[1]]
       ss <- gsub("^[[:space:]]", "", ss)
       ss[ nchar(ss) > 0 ]
     })
-    
+
     itemListRatings <- reactive({
       res <- strsplit( x = input$itemRatings, split = itemListIDsSplitPattern, fixed = FALSE )[[1]]
       res <- as.numeric( res[ nchar(res) > 0 ] )
@@ -220,12 +221,12 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
       }
       res
     })
-    
+
     itemListInds <- reactive({
       which( itemData[[ itemDataIDColName ]] %in% itemListIDs() )
       # pmatch( itemListIDs(), itemData[[ itemDataIDColName ]] )
     })
-    
+
     mHist <- reactive({
       setNames(
         data.frame( Rating = itemListRatings(),
@@ -233,26 +234,26 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
                     stringsAsFactors = FALSE),
         c("Rating", itemSMR$ItemColumnName) )
     })
-    
+
     # selectedProfileTags <- reactive({
     #   as.integer( eval( parse( text = input$selectedProfileTags ) ) )
     # })
-    
+
     selectedProfileTags <- reactive({
       ss <- str_split( input$selectedProfileTags, pattern = ",|\\W")[[1]]
       ss <- ss[ nchar(ss) > 0 ]
       if ( length(ss) == 0 ) { NULL }
       else { as.integer( ss ) }
     })
-    
-    
+
+
     output$significanceFactors <- DT::renderDataTable({ datatable({
       data.frame( TagType = names(tagTypeSFactors()), S.Factor = tagTypeSFactors() )
     }, rownames = FALSE, options = list(pageLength = 8 ) ) })
-    
+
     ## Recommendations
     recommendations <- reactive({
-      
+
       nrecs <- max( 100, input$nrecs )
       itemSMR$M <- SMRApplyTagTypeWeights( itemSMR, tagTypeSFactors()  )
 
@@ -265,18 +266,18 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
         res <- data.frame( Score = res$Score, Index = pmatch( res$Item, rownames(itemSMR$M), nomatch = 0 ), Item = as.character(res$Item), stringsAsFactors=FALSE)
         names(res) <- c("Score", "Index", itemSMR$ItemColumnName)
       }
-      
+
       if ( length( selectedProfileTags() ) > 0 ) {
         res <- SMRReorderRecommendations( itemSMR, res, selectedProfileTags() )
       }
       res[1:input$nrecs,]
     })
-    
+
     userProfile <- reactive({
       itemSMR$M <- SMRApplyTagTypeWeights( itemSMR, tagTypeSFactors() )
       SMRProfileDF( itemSMR, mHist() )
     })
-    
+
     extendedItemData <- reactive({
       ## Extended data
       tags <- purrr::map_chr( 1:nrow(mHist()), function(i) {
@@ -286,26 +287,26 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
       res <- cbind( mHist(), Tags = tags, stringsAsFactors = FALSE )
       res
     })
-    
+
     ## The list of user consumed items
     output$itemList <- DT::renderDataTable({ datatable({
       res <- itemData[ itemListInds(), itemDataColNames ]
       res <- cbind( res, StarRating=itemListRatings() )
       res
     }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE) ) })
-    
+
     output$itemListData <- DT::renderDataTable({ datatable({
       extendedItemData()
     }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE) ) })
-    
+
     ## Using simple title search
     output$view <- DT::renderDataTable({ datatable({
       inds <- grep( pattern=input$search, iconv( itemData[[searchColName]] ), ignore.case=TRUE )
       res <- itemData[ inds, itemDataColNames ]
       res
     }, rownames = FALSE, filter = 'top', options = list(pageLength = 4, autoWidth = FALSE) ) })
-    
-    
+
+
     output$recs <-
       DT::renderDataTable({ datatable({
         ## Do extensions of the recommendations with needed
@@ -314,7 +315,7 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
         ## This is done because merge breaks the order.
         res[ match( resIDs, res[[1]] ), ]
       }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE), selection = list( mode = 'single', selected = c(1)) ) })
-    
+
     output$recsProofs <-
       DT::renderDataTable({ datatable({
         itemSMR$M <- SMRApplyTagTypeWeights( itemSMR, tagTypeSFactors()  )
@@ -330,65 +331,65 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
         res <- cbind( recommendations(), Proofs=proofs, stringsAsFactors = FALSE )
         res[-2]
       }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE) ) })
-    
+
     output$recsScoresPlot <- renderPlot({
       plot( recommendations()$Score, main="Recommendation scores", xlab="recommendations row number", ylab="score")
     })
-    
+
     output$uprofile <- DT::renderDataTable({ datatable({
       itemSMR$M <- SMRApplyTagTypeWeights( itemSMR, tagTypeSFactors() )
       res <- SMRProfileDF( itemSMR, mHist() )
       res$Tag <-  iconv( res$Tag )
       cbind( res, TagType = purrr::map_chr( res$Index, function(x) SMRTagType( itemSMR, x ) ) )
     }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE) ) })
-    
+
     output$uproof <- DT::renderDataTable({ datatable({
       sRow <- input$recs_rows_selected
-      if( is.null(sRow) ) { NULL 
-      } else { 
+      if( is.null(sRow) ) { NULL
+      } else {
         itemID <- recommendations()[sRow,2]
         SMRMetadataProofs( smr = itemSMR, toBeLovedItem = c(itemID), profile = userProfile(), normalizeScores = TRUE)
       }
     }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE) ) })
-    
+
   })
-  
-}  
+
+}
 
 ##===========================================================
 ## Make shiny app
 ##===========================================================
 
-#' Creation of a sparse matrix recommender interface 
+#' Creation of a sparse matrix recommender interface
 #' @param itemSMR A time series recommender.
 #' @param itemData A data frame with rows corresponding to items (to be recommended.)
-#' @param itemDataColNames Which column names of \code{itemData} should be used in 
+#' @param itemDataColNames Which column names of \code{itemData} should be used in
 #' the search and recommendation results.
 #' @param itemDataIDColName Which column of \code{itemData} is with item ID's;
 #' those ID's are also row names of \code{itemSMR$M}.
 #' @param itemListIDsSplitPattern  A split pattern for the separator of the items list
 #' and ratings list.
-#' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be 
+#' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 #' used if the row ID's have white spaces in them.
 #' @return Shiny app
 #' @return Shiny app object.
 #' @family SMR interface functions
 #' @export
 SMRCreateSearchInterface <- function( itemSMR, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W" ) {
-  
+
   res <- length(unlist(strsplit( x = rownames(itemSMR$M), split = itemListIDsSplitPattern, fixed = FALSE )))
-  
+
   if( res != nrow(itemSMR$M) ) {
     stop( "The argument itemListIDsSplitPattern splits the rownames of itemSMR$M.", call. = TRUE )
   }
-  
-  shiny::shinyApp( ui = SMRMakeUI( itemSMR = itemSMR ), 
-                   server = SMRMakeServerFunction( itemSMR = itemSMR, 
-                                                   itemData = itemData, 
+
+  shiny::shinyApp( ui = SMRMakeUI( itemSMR = itemSMR ),
+                   server = SMRMakeServerFunction( itemSMR = itemSMR,
+                                                   itemData = itemData,
                                                    itemDataColNames = itemDataColNames,
                                                    itemDataIDColName = itemDataIDColName,
                                                    searchColName = searchColName,
                                                    itemListIDsSplitPattern = itemListIDsSplitPattern )
   )
-  
+
 }

@@ -13,7 +13,7 @@ SMRMakeServerFunction(itemSMR, itemData, itemDataColNames = NULL,
 
 \item{itemData}{A data frame with rows corresponding to items (to be recommended.)}
 
-\item{itemDataColNames}{Which column names of \code{itemData} should be used in 
+\item{itemDataColNames}{Which column names of \code{itemData} should be used in
 the table displays of search and recommendation results.}
 
 \item{itemDataIDColName}{Which column of \code{itemData} is with item ID's;
@@ -31,7 +31,7 @@ Shiny server function.
 Creates the Shiny server function for a sparse matrix recommender interface.
 }
 \details{
-The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be 
+The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 used if the row ID's have white spaces in them.
 }
 \seealso{
