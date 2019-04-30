@@ -6,7 +6,7 @@
 #' Set MEMBER.
 #' @description Sets MEMBER into the monad object.
 #' @param msObj An MState object.
-#' @param MEMBER A list of regression objects.
+#' @param MEMBER An object member to be set.
 #' @return An MState object.
 #' @family Set/Take functions
 #' @export
