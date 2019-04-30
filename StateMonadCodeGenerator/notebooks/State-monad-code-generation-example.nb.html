@@ -1480,7 +1480,7 @@ window.initializeCodeFolding = function(show) {
   var currentIndex = 1;
 
   // select all R code blocks
-  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan');
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia');
   rCodeBlocks.each(function() {
 
     // create a collapsable div to wrap the code in
@@ -1601,9 +1601,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -1658,8 +1656,6 @@ summary {
 }
 </style>
 
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -1743,6 +1739,15 @@ $(document).ready(function () {
 
 
 
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
 
 <div class="fluid-row" id="header">
 
@@ -1759,8 +1764,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">State monad code generation example</h1>
-<h4 class="author"><em>Anton Antonov</em></h4>
-<h4 class="date"><em>2019-03-02</em></h4>
+<h4 class="author">Anton Antonov</h4>
+<h4 class="date">2019-03-02</h4>
 
 </div>
 
@@ -1785,8 +1790,9 @@ $(document).ready(function () {
 <h2>Package load</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShTdGF0ZU1vbmFkQ29kZUdlbmVyYXRvcilcbmBgYCJ9 -->
-<pre class="r"><code>library(StateMonadCodeGenerator)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShTdGF0ZU1vbmFkQ29kZUdlbmVyYXRvcilcbmxpYnJhcnkobWFncml0dHIpXG5gYGAifQ== -->
+<pre class="r"><code>library(StateMonadCodeGenerator)
+library(magrittr)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1796,8 +1802,8 @@ $(document).ready(function () {
 <h1>Generate State monad code</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuckNvZGVGaWxlTmFtZSA8LSBcIn4vUi1wYWNrYWdlcy9TdGF0ZU1vbmFkQ29kZUdlbmVyYXRvci9nZW5lcmF0ZWQtY29kZS9TdE1vbi5SXCJcbmdlbkNvZGUgPC0gXG4gIEdlbmVyYXRlU3RhdGVNb25hZENvZGUoIG91dHB1dEZpbGUgPSByQ29kZUZpbGVOYW1lLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgbW9uYWROYW1lID0gXCJTdE1vblwiLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgbWVtYmVyTmFtZXMgPSBjKFwiRGF0YVwiID0gXCJudW1lcmljXCIsIFwiUmVncmVzc2lvbkZ1bmN0aW9uc1wiID0gXCJsaXN0XCIsIFwiT3V0bGllcnNcIiA9IFwibGlzdFwiICksIFxuICAgICAgICAgICAgICAgICAgICAgICAgICBtb25hZE9iamVjdEFyZ3VtZW50TmFtZSA9IFwicXJPYmpcIiAgKVxuYGBgIn0= -->
-<pre class="r"><code>rCodeFileName &lt;- &quot;~/R-packages/StateMonadCodeGenerator/generated-code/StMon.R&quot;
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuckNvZGVGaWxlTmFtZSA8LSBcIi9Wb2x1bWVzL01hY2ludG9zaCBIRC9Vc2Vycy9hbnRvbm92L1ItcGFja2FnZXMvU3RhdGVNb25hZENvZGVHZW5lcmF0b3IvZ2VuZXJhdGVkLWNvZGUvU3RNb24uUlwiXG5nZW5Db2RlIDwtIFxuICBHZW5lcmF0ZVN0YXRlTW9uYWRDb2RlKCBvdXRwdXRGaWxlID0gckNvZGVGaWxlTmFtZSwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgIG1vbmFkTmFtZSA9IFwiU3RNb25cIiwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgIG1lbWJlck5hbWVzID0gYyhcIkRhdGFcIiA9IFwibnVtZXJpY1wiLCBcIlJlZ3Jlc3Npb25GdW5jdGlvbnNcIiA9IFwibGlzdFwiLCBcIk91dGxpZXJzXCIgPSBcImxpc3RcIiApLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgbW9uYWRPYmplY3RBcmd1bWVudE5hbWUgPSBcInFyT2JqXCIgIClcbmBgYCJ9 -->
+<pre class="r"><code>rCodeFileName &lt;- &quot;/Volumes/Macintosh HD/Users/antonov/R-packages/StateMonadCodeGenerator/generated-code/StMon.R&quot;
 genCode &lt;- 
   GenerateStateMonadCode( outputFile = rCodeFileName, 
                           monadName = &quot;StMon&quot;, 
@@ -1839,8 +1845,8 @@ genCode &lt;-
   StMonSetData( runif(n = 10, min = 10, max = 30) ) %&gt;% 
   StMonTakeData</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxMi43NDYzMiAxOC42MTAzNiAxMS4xNTQyOCAyMC4zNDU1NCAyNS40ODEwNCAxNy44MzAzOCAxOS45MTA0OSAxNi45Nzk5MSAxMC44MDU4OSAyNi45MTQyMVxuIn0= -->
-<pre><code> [1] 12.74632 18.61036 11.15428 20.34554 25.48104 17.83038 19.91049 16.97991 10.80589 26.91421</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAxMC44OTU2MCAyMC4zNDcxMSAyMi4zNzg4NyAxMi4wMzY0NiAyNy42NjI3MyAxMy4xOTI3NiAxMC44NDYxNSAxMi45ODAxOSAxMC4wNDY2NiAyMy4yNDk4MVxuIn0= -->
+<pre><code> [1] 10.89560 20.34711 22.37887 12.03646 27.66273 13.19276 10.84615 12.98019 10.04666 23.24981</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1852,7 +1858,7 @@ genCode &lt;-
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiU3RhdGUgbW9uYWQgY29kZSBnZW5lcmF0aW9uIGV4YW1wbGUiCmF1dGhvcjogQW50b24gQW50b25vdgpkYXRlOiAyMDE5LTAzLTAyCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCiMgSW50cm9kdWN0aW9uCgpJbiB0aGlzIG5vdGVib29rIHdlIGRlbW9uc3RyYXRlIApbU3RhdGUgbW9uYWRdKGh0dHBzOi8vZW4ud2lraXBlZGlhLm9yZy93aWtpL01vbmFkXyhmdW5jdGlvbmFsX3Byb2dyYW1taW5nKSNTdGF0ZV9tb25hZHMpIApjb2RlIGdlbmVyYXRpb24gYW5kIGEgcGlwZWxpbmUgdXNhZ2UuCgpGb3IgbW9yZSBkZXRhaWxzIG9uIG1vbmFkIGNvZGUgZ2VuZXJhdGlvbiBzZWUgWzEsIDFhXS4KCgojIyBJbnN0YWxsYXRpb24KCkluc3RhbGwgdGhlIGNvZGUgZ2VuZXJhdGlvbiBwYWNrYWdlIHdpdGggZm9sbG93aW5nIGNvbW1hbmQuCgpgYGB7ciwgZXZhbD1GQUxTRX0KZGV2dG9vbHM6Omluc3RhbGxfZ2l0aHViKCAiYW50b25vbmN1YmUvUi1wYWNrYWdlcyIsIHN1YmRpciA9ICJTdGF0ZU1vbmFkQ29kZUdlbmVyYXRvciIpCmBgYAoKIyMgUGFja2FnZSBsb2FkCgpgYGB7cn0KbGlicmFyeShTdGF0ZU1vbmFkQ29kZUdlbmVyYXRvcikKYGBgCgojIEdlbmVyYXRlIFN0YXRlIG1vbmFkIGNvZGUKCmBgYHtyfQpyQ29kZUZpbGVOYW1lIDwtICJ+L1ItcGFja2FnZXMvU3RhdGVNb25hZENvZGVHZW5lcmF0b3IvZ2VuZXJhdGVkLWNvZGUvU3RNb24uUiIKZ2VuQ29kZSA8LSAKICBHZW5lcmF0ZVN0YXRlTW9uYWRDb2RlKCBvdXRwdXRGaWxlID0gckNvZGVGaWxlTmFtZSwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgbW9uYWROYW1lID0gIlN0TW9uIiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgbWVtYmVyTmFtZXMgPSBjKCJEYXRhIiA9ICJudW1lcmljIiwgIlJlZ3Jlc3Npb25GdW5jdGlvbnMiID0gImxpc3QiLCAiT3V0bGllcnMiID0gImxpc3QiICksIAogICAgICAgICAgICAgICAgICAgICAgICAgIG1vbmFkT2JqZWN0QXJndW1lbnROYW1lID0gInFyT2JqIiAgKQpgYGAKCiMjIEFkZGl0aW9uYWwgY29kZSBjaGFuZ2VzCgpBZGRpdGlvbmFsIGNvZGUgY2hhbmdlcyBtaWdodCBiZSByZXF1aXJlZCBhZnRlciB0aGUgZ2VuZXJhdGlvbi4KRm9yIGV4YW1wbGUsIGNoYW5naW5nIHRoZSBjb2RlIHRvIHVzZSB0aGUgY29ycmVjdCBjbGFzcyBmdW5jdGlvbnMgZm9yIHRoZSBtb25hZCBtZW1iZXJzCmluIHRoZSBzZXR0ZXIgYW5kIHRha2VyIGZ1bmN0aW9ucy4KCiMjIFBhcnNpbmcgdGhlIGNvZGUKCldlIGxvYWQgdGhlIGNvZGUgYnkgcGFyc2luZyB0aGUgZ2VuZXJhdGVkIGNvZGUgbGluZXMuCgpgYGB7cn0KZXZhbChwYXJzZSggdGV4dCA9IGdlbkNvZGUgKSkKYGBgCgpBbHRlcm5hdGl2ZWx5LCBpZiB3ZSBzcGVjaWZpZWQgYSB2YWxpZCBmaWxlIG5hbWUgdG8gYEdlbmVyYXRlU3RhdGVNb25hZENvZGVgCndlIGNhbiB1c2UgdGhhdCBmaWxlLgoKYGBge3J9CnNvdXJjZShyQ29kZUZpbGVOYW1lKQpgYGAKCiMgRXhwZXJpbWVudHMgd2l0aCB0aGUgZ2VuZXJhdGVkIGNvZGUKCmBgYHtyfQpTdE1vblVuaXQoKSAlPiUgCiAgU3RNb25TZXREYXRhKCBydW5pZihuID0gMTAsIG1pbiA9IDEwLCBtYXggPSAzMCkgKSAlPiUgCiAgU3RNb25UYWtlRGF0YQpgYGAKCgojIFJlZmVyZW5jZXMKClsxXSBBbnRvbiBBbnRvbm92LCAKWyJNb25hZCBjb2RlIGdlbmVyYXRpb24gYW5kIGV4dGVuc2lvbiJdKGh0dHBzOi8vbWF0aGVtYXRpY2Fmb3JwcmVkaWN0aW9uLndvcmRwcmVzcy5jb20vMjAxNy8wNi8yMy9tb25hZC1jb2RlLWdlbmVyYXRpb24tYW5kLWV4dGVuc2lvbi8pLAooMjAxNyksCltNYXRoZW1hdGljYUZvclByZWRpY3Rpb24gYXQgV29yZFByZXNzXShodHRwczovL21hdGhlbWF0aWNhZm9ycHJlZGljdGlvbi53b3JkcHJlc3MuY29tKS4KClsxYV0gQW50b24gQW50b25vdiwgClsiTW9uYWQgY29kZSBnZW5lcmF0aW9uIGFuZCBleHRlbnNpb24iXShodHRwczovL2dpdGh1Yi5jb20vYW50b25vbmN1YmUvTWF0aGVtYXRpY2FGb3JQcmVkaWN0aW9uL2Jsb2IvbWFzdGVyL01hcmtkb3duRG9jdW1lbnRzL01vbmFkLWNvZGUtZ2VuZXJhdGlvbi1hbmQtZXh0ZW5zaW9uLm1kKSwKKDIwMTcpLApbTWF0aGVtYXRpY2FGb3JQcmVkaWN0aW9uIGF0IEdpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL2FudG9ub25jdWJlL01hdGhlbWF0aWNhRm9yUHJlZGljdGlvbikuCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiU3RhdGUgbW9uYWQgY29kZSBnZW5lcmF0aW9uIGV4YW1wbGUiCmF1dGhvcjogQW50b24gQW50b25vdgpkYXRlOiAyMDE5LTAzLTAyCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCiMgSW50cm9kdWN0aW9uCgpJbiB0aGlzIG5vdGVib29rIHdlIGRlbW9uc3RyYXRlIApbU3RhdGUgbW9uYWRdKGh0dHBzOi8vZW4ud2lraXBlZGlhLm9yZy93aWtpL01vbmFkXyhmdW5jdGlvbmFsX3Byb2dyYW1taW5nKSNTdGF0ZV9tb25hZHMpIApjb2RlIGdlbmVyYXRpb24gYW5kIGEgcGlwZWxpbmUgdXNhZ2UuCgpGb3IgbW9yZSBkZXRhaWxzIG9uIG1vbmFkIGNvZGUgZ2VuZXJhdGlvbiBzZWUgWzEsIDFhXS4KCgojIyBJbnN0YWxsYXRpb24KCkluc3RhbGwgdGhlIGNvZGUgZ2VuZXJhdGlvbiBwYWNrYWdlIHdpdGggZm9sbG93aW5nIGNvbW1hbmQuCgpgYGB7ciwgZXZhbD1GQUxTRX0KZGV2dG9vbHM6Omluc3RhbGxfZ2l0aHViKCAiYW50b25vbmN1YmUvUi1wYWNrYWdlcyIsIHN1YmRpciA9ICJTdGF0ZU1vbmFkQ29kZUdlbmVyYXRvciIpCmBgYAoKIyMgUGFja2FnZSBsb2FkCgpgYGB7cn0KbGlicmFyeShTdGF0ZU1vbmFkQ29kZUdlbmVyYXRvcikKbGlicmFyeShtYWdyaXR0cikKYGBgCgojIEdlbmVyYXRlIFN0YXRlIG1vbmFkIGNvZGUKCmBgYHtyfQpyQ29kZUZpbGVOYW1lIDwtICJ+L1ItcGFja2FnZXMvU3RhdGVNb25hZENvZGVHZW5lcmF0b3IvZ2VuZXJhdGVkLWNvZGUvU3RNb24uUiIKZ2VuQ29kZSA8LSAKICBHZW5lcmF0ZVN0YXRlTW9uYWRDb2RlKCBvdXRwdXRGaWxlID0gckNvZGVGaWxlTmFtZSwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgbW9uYWROYW1lID0gIlN0TW9uIiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgbWVtYmVyTmFtZXMgPSBjKCJEYXRhIiA9ICJudW1lcmljIiwgIlJlZ3Jlc3Npb25GdW5jdGlvbnMiID0gImxpc3QiLCAiT3V0bGllcnMiID0gImxpc3QiICksIAogICAgICAgICAgICAgICAgICAgICAgICAgIG1vbmFkT2JqZWN0QXJndW1lbnROYW1lID0gInFyT2JqIiAgKQpgYGAKCiMjIEFkZGl0aW9uYWwgY29kZSBjaGFuZ2VzCgpBZGRpdGlvbmFsIGNvZGUgY2hhbmdlcyBtaWdodCBiZSByZXF1aXJlZCBhZnRlciB0aGUgZ2VuZXJhdGlvbi4KRm9yIGV4YW1wbGUsIGNoYW5naW5nIHRoZSBjb2RlIHRvIHVzZSB0aGUgY29ycmVjdCBjbGFzcyBmdW5jdGlvbnMgZm9yIHRoZSBtb25hZCBtZW1iZXJzCmluIHRoZSBzZXR0ZXIgYW5kIHRha2VyIGZ1bmN0aW9ucy4KCiMjIFBhcnNpbmcgdGhlIGNvZGUKCldlIGxvYWQgdGhlIGNvZGUgYnkgcGFyc2luZyB0aGUgZ2VuZXJhdGVkIGNvZGUgbGluZXMuCgpgYGB7cn0KZXZhbChwYXJzZSggdGV4dCA9IGdlbkNvZGUgKSkKYGBgCgpBbHRlcm5hdGl2ZWx5LCBpZiB3ZSBzcGVjaWZpZWQgYSB2YWxpZCBmaWxlIG5hbWUgdG8gYEdlbmVyYXRlU3RhdGVNb25hZENvZGVgCndlIGNhbiB1c2UgdGhhdCBmaWxlLgoKYGBge3J9CnNvdXJjZShyQ29kZUZpbGVOYW1lKQpgYGAKCiMgRXhwZXJpbWVudHMgd2l0aCB0aGUgZ2VuZXJhdGVkIGNvZGUKCmBgYHtyfQpTdE1vblVuaXQoKSAlPiUgCiAgU3RNb25TZXREYXRhKCBydW5pZihuID0gMTAsIG1pbiA9IDEwLCBtYXggPSAzMCkgKSAlPiUgCiAgU3RNb25UYWtlRGF0YQpgYGAKCgojIFJlZmVyZW5jZXMKClsxXSBBbnRvbiBBbnRvbm92LCAKWyJNb25hZCBjb2RlIGdlbmVyYXRpb24gYW5kIGV4dGVuc2lvbiJdKGh0dHBzOi8vbWF0aGVtYXRpY2Fmb3JwcmVkaWN0aW9uLndvcmRwcmVzcy5jb20vMjAxNy8wNi8yMy9tb25hZC1jb2RlLWdlbmVyYXRpb24tYW5kLWV4dGVuc2lvbi8pLAooMjAxNyksCltNYXRoZW1hdGljYUZvclByZWRpY3Rpb24gYXQgV29yZFByZXNzXShodHRwczovL21hdGhlbWF0aWNhZm9ycHJlZGljdGlvbi53b3JkcHJlc3MuY29tKS4KClsxYV0gQW50b24gQW50b25vdiwgClsiTW9uYWQgY29kZSBnZW5lcmF0aW9uIGFuZCBleHRlbnNpb24iXShodHRwczovL2dpdGh1Yi5jb20vYW50b25vbmN1YmUvTWF0aGVtYXRpY2FGb3JQcmVkaWN0aW9uL2Jsb2IvbWFzdGVyL01hcmtkb3duRG9jdW1lbnRzL01vbmFkLWNvZGUtZ2VuZXJhdGlvbi1hbmQtZXh0ZW5zaW9uLm1kKSwKKDIwMTcpLApbTWF0aGVtYXRpY2FGb3JQcmVkaWN0aW9uIGF0IEdpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL2FudG9ub25jdWJlL01hdGhlbWF0aWNhRm9yUHJlZGljdGlvbikuCg==</div>
 
 
 
