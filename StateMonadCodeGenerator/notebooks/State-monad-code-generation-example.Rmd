@@ -26,6 +26,7 @@ devtools::install_github( "antononcube/R-packages", subdir = "StateMonadCodeGene
 
 ```{r}
 library(StateMonadCodeGenerator)
+library(magrittr)
 ```
 
 # Generate State monad code

@@ -23,12 +23,11 @@ StMonFailureQ <- function(x) { mean(is.na(x)) }
 
 #' Make a StMon Unit
 #' @description Creates a monad object.
-#' @param data A vector or a two-column matrix or data frame.
 #' @return An S3 class "StMon". In other words, a list with the attribute "class" set to "StMon".
 #' @export
 StMonUnit <- function( ) {
 
-  res <- list( Value = NULL, numeric = NULL, list = NULL, list = NULL )
+  res <- list( Value = NULL, Data = NULL, RegressionFunctions = NULL, Outliers = NULL )
   attr(res, "class") <- "StMon"
 
   res
@@ -36,7 +35,7 @@ StMonUnit <- function( ) {
 
 
 ##===========================================================
-## Setters and getters
+## Value setter and getter
 ##===========================================================
 
 #' Set the value in a StMon object.
@@ -130,7 +129,7 @@ StMonEchoFunctionValue <- function( qrObj, f ) {
 #' Set Data.
 #' @description Sets Data into the monad object.
 #' @param qrObj An StMon object.
-#' @param Data A list of regression objects.
+#' @param Data An object member to be set.
 #' @return An StMon object.
 #' @family Set/Take functions
 #' @export
@@ -155,7 +154,7 @@ StMonSetData <- function( qrObj, Data ) {
 #' Set RegressionFunctions.
 #' @description Sets RegressionFunctions into the monad object.
 #' @param qrObj An StMon object.
-#' @param RegressionFunctions A list of regression objects.
+#' @param RegressionFunctions An object member to be set.
 #' @return An StMon object.
 #' @family Set/Take functions
 #' @export
@@ -180,7 +179,7 @@ StMonSetRegressionFunctions <- function( qrObj, RegressionFunctions ) {
 #' Set Outliers.
 #' @description Sets Outliers into the monad object.
 #' @param qrObj An StMon object.
-#' @param Outliers A list of regression objects.
+#' @param Outliers An object member to be set.
 #' @return An StMon object.
 #' @family Set/Take functions
 #' @export
@@ -199,67 +198,67 @@ StMonSetOutliers <- function( qrObj, Outliers ) {
 }
 
 ##===========================================================
-## numeric Taker
+## Data Taker
 ##===========================================================
 
-#' Take numeric.
-#' @description Takes numeric from the monad object.
+#' Take Data.
+#' @description Takes Data from the monad object.
 #' @param qrObj An StMon object.
 #' @param functionName A string that is a name of this function or a delegating function.
 #' @return A list of functions or \code{StMonFailureSymbol}.
 #' @family Set/Take functions
 #' @export
-StMonTakenumeric <- function( qrObj, functionName = "StMonTakenumeric" ) {
+StMonTakeData <- function( qrObj, functionName = "StMonTakeData" ) {
 
   if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
 
-  if( !StMonMemberPresenceCheck( qrObj, memberName = "numeric", memberPrettyName = "numeric", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !StMonMemberPresenceCheck( qrObj, memberName = "Data", memberPrettyName = "Data", functionName = functionName,  logicalResult = TRUE) ) {
     return(StMonFailureSymbol)
   }
 
-  qrObj$numeric
+  qrObj$Data
 }
 
 ##===========================================================
-## list Taker
+## RegressionFunctions Taker
 ##===========================================================
 
-#' Take list.
-#' @description Takes list from the monad object.
+#' Take RegressionFunctions.
+#' @description Takes RegressionFunctions from the monad object.
 #' @param qrObj An StMon object.
 #' @param functionName A string that is a name of this function or a delegating function.
 #' @return A list of functions or \code{StMonFailureSymbol}.
 #' @family Set/Take functions
 #' @export
-StMonTakelist <- function( qrObj, functionName = "StMonTakelist" ) {
+StMonTakeRegressionFunctions <- function( qrObj, functionName = "StMonTakeRegressionFunctions" ) {
 
   if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
 
-  if( !StMonMemberPresenceCheck( qrObj, memberName = "list", memberPrettyName = "list", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !StMonMemberPresenceCheck( qrObj, memberName = "RegressionFunctions", memberPrettyName = "RegressionFunctions", functionName = functionName,  logicalResult = TRUE) ) {
     return(StMonFailureSymbol)
   }
 
-  qrObj$list
+  qrObj$RegressionFunctions
 }
 
 ##===========================================================
-## list Taker
+## Outliers Taker
 ##===========================================================
 
-#' Take list.
-#' @description Takes list from the monad object.
+#' Take Outliers.
+#' @description Takes Outliers from the monad object.
 #' @param qrObj An StMon object.
 #' @param functionName A string that is a name of this function or a delegating function.
 #' @return A list of functions or \code{StMonFailureSymbol}.
 #' @family Set/Take functions
 #' @export
-StMonTakelist <- function( qrObj, functionName = "StMonTakelist" ) {
+StMonTakeOutliers <- function( qrObj, functionName = "StMonTakeOutliers" ) {
 
   if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
 
-  if( !StMonMemberPresenceCheck( qrObj, memberName = "list", memberPrettyName = "list", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !StMonMemberPresenceCheck( qrObj, memberName = "Outliers", memberPrettyName = "Outliers", functionName = functionName,  logicalResult = TRUE) ) {
     return(StMonFailureSymbol)
   }
 
-  qrObj$list
+  qrObj$Outliers
 }
