@@ -574,11 +574,17 @@ SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
 #' @param voting Should simple voting be used or a weighted sum?
 #' @param maxNumberOfLabels The maximum number of labels to be returned; 
 #' if NULL all found labels are returned.
+#' @param normalizeQ Should the scores be normalized?
+#' (By dividing by the maximum score.)
 #' @return A list of scored tags.
 #' @export
 SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs, 
-                                        voting = FALSE, dropZeroScoredLabels = TRUE, maxNumberOfLabels = NULL ) {
+                                        voting = FALSE, dropZeroScoredLabels = TRUE, maxNumberOfLabels = NULL, normalizeQ = TRUE ) {
   
+  if( !( tagType %in% smr$TagTypes ) ) {
+    stop( "Unknown tag type.", call. = T )
+  }
+    
   recs <- SMRRecommendationsByProfileVector( smr = smr, profileVec = profileVec, nrecs = nTopNNs )
   
   ## Assuming the class labels sub-matrix is relatively small we can do this:
@@ -601,6 +607,10 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
   
   if( is.numeric(maxNumberOfLabels) && maxNumberOfLabels > 0 ) {
     s <- s[ 1:min( maxNumberOfLabels, nrow(s) ), ]
+  }
+  
+  if( normalizeQ && max(s$Score) > 0 ) {
+    s$Score <- s$Score / max(s$Score)
   }
   
   s

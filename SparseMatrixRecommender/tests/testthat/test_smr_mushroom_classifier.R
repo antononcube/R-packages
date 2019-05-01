@@ -47,3 +47,7 @@ test_that("Reasonable classification results", {
   expect_true( confusionMatrix["edible","edible"] / sum(testData[[labelColumnName]] == "edible") > 0.62 )
   expect_true( confusionMatrix["poisonous","poisonous"] / sum(testData[[labelColumnName]] == "poisonous") > 0.62 )
 }) 
+
+test_that("Unknown tag type", {
+  expect_error( SMRClassifyByProfileVector( smr = smr, tagType = "BlahBlah", profileVec = smr$M[12,,drop=R] ), "Unknown tag type." )
+}) 
