@@ -16,7 +16,9 @@ library(OutlierIdentifiers)
 
 ```{r}
 method <- "NNMF"
-maxSteps <- 30
+maxSteps <- 20
+numberOfTopics <- 40
+minNumberOfDocumentsPerTerm <- 15
 ```
 
 # Introduction
@@ -25,9 +27,9 @@ maxSteps <- 30
 
 ```{r}
 lsaObj <-
-  LSAMonUnit( textHamlet ) %>% 
+  LSAMonUnit( textHamlet   ) %>% 
   LSAMonMakeDocumentTermMatrix( stopWords = stopwords::stopwords() ) %>% 
-  LSAMonTopicExtraction( numberOfTopics = 30, minNumberOfDocumentsPerTerm = 2, maxSteps = maxSteps, method = method )
+  LSAMonTopicExtraction( numberOfTopics = numberOfTopics, minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm, maxSteps = maxSteps, method = method )
 ```
 
 
@@ -88,7 +90,7 @@ summary(as.numeric(qMat))
 ```{r}
 lsaObj <-
   lsaObj %>% 
-  LSAMonStatisticalThesaurus( searchWords = sort(c("king", "sword", "god", "skull", "poison")) )
+  LSAMonStatisticalThesaurus( searchWords = sort(c("king", "sword", "god", "ship", "joker", "poison", "queen")) )
 nnsDF <- dplyr::bind_rows( lsaObj %>% LSAMonTakeValue )
 nnsDF
 ```
@@ -108,11 +110,11 @@ reshape2::dcast( formula = SearchTerm ~ Rank, data = nnsDF2, value.var = "Word.W
 
 ### W matrix
 
-```{r}
+```{r, eval=F}
 d3heatmap::d3heatmap( lsaObj %>% LSAMonTakeW, scale = "row", colors = "Blues" )
 ```
 
-```{r}
+```{r, eval=F}
 qMat <- (lsaObj %>% LSAMonTakeW) %*% t(lsaObj %>% LSAMonTakeW)
 d3heatmap::d3heatmap( qMat, colors = "Blues" )
 ```
@@ -127,17 +129,17 @@ summary((lsaObj %>% LSAMonTakeW)@x)
 tags <- 1:nrow( lsaObj %>% LSAMonTakeW )
 tags <- tags %/% 5
 #tags <- setNames( tags, rownames(lsaObj %>% LSAMonTakeW) )
+uniqueTags <- unique(tags)
 tags
 ```
 
 ```{r}
-lsaObj <- lsaObj %>% LSAMonTopicRepresentation( tags = tags, minThreshold = 0.001 )
-qMat <- as.matrix(lsaObj %>% LSAMonTakeValue)
-d3heatmap::d3heatmap( qMat, Rowv = FALSE, Colv = TRUE, scale = "col", colors = "Blues" )
+lsaObj2 <- lsaObj %>% LSAMonTopicRepresentation( tags = tags, minThreshold = 0.005 )
+qMat <- as.matrix(lsaObj2 %>% LSAMonTakeValue)
+qMat <- qMat[ uniqueTags, ]
+d3heatmap::d3heatmap( qMat, Rowv = FALSE, Colv = TRUE, scale = "row", colors = "Blues" )
 ```
-```{r}
-names(tags)
-```
+
 
 ```{r}
 dfTopicsWideForm
