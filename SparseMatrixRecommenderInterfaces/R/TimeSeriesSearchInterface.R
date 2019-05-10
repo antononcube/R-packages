@@ -270,12 +270,12 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
 
       valueColumnName <- input$svecValueColName
       searchVecPlotDF2 <-
-        purrr::map_df( split( recResSVecExtended(), recResSVecExtended()$ItemName), function(x) {
+        purrr::map_df( split( recResSVecExtended(), recResSVecExtended()$ItemName.Score), function(x) {
           vec = searchVecPlotDF()$Value
           vec = ( vec - min(vec) ) / ( max(vec) - min(vec) )
           vec = vec * (max(x[[valueColumnName]]) - min(x[[valueColumnName]])) + min(x[[valueColumnName]])
-          res <- data.frame( Score = 1, TimeIntervalBoundary = searchVecPlotDF()$TimeIntervalBoundary, Value.ma = vec, ItemName = x$ItemName[[1]] )
-          colnames(res) <- c( "Score", "TimeIntervalBoundary", valueColumnName, "ItemName" )
+          res <- data.frame( Score = 1, TimeIntervalBoundary = searchVecPlotDF()$TimeIntervalBoundary, Value.ma = vec, ItemName.Score = x$ItemName.Score[[1]] )
+          colnames(res) <- c( "Score", "TimeIntervalBoundary", valueColumnName, "ItemName.Score" )
           res
         } )
 
