@@ -279,13 +279,15 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
           res
         } )
 
-      ggDF <- recResSVecExtended()
-      facDF <- unique(ggDF[, c("ItemName.Score", "Score")])
-      facDF <- facDF[ order(-facDF$Score), ]
-      ggDF$ItemName.Score <- factor( x = ggDF$ItemName.Score, levels = facDF$ItemName.Score )
+      ggDF2 <- recResSVecExtended()
+      facDF2 <- unique(ggDF2[, c("ItemName.Score", "Score")])
+      facDF2 <- facDF2[ order(-facDF2$Score), ]
+      ggDF2$ItemName.Score <- factor( x = ggDF2$ItemName.Score, levels = facDF2$ItemName.Score )
 
-      ggplot2::ggplot( ggDF  ) +
-        ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName" ), na.rm = T ) +
+      searchVecPlotDF2$ItemName.Score <- factor( x = searchVecPlotDF2$ItemName.Score, levels = facDF2$ItemName.Score )
+
+      ggplot2::ggplot( ggDF2  ) +
+        ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName.Score" ), na.rm = T ) +
         ggplot2::facet_wrap( ~ ItemName.Score, ncol = input$svecNCol, scales = input$svecScales ) +
         ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
 
