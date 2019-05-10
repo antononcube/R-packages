@@ -9,6 +9,8 @@ output: html_notebook
 library(SparseMatrixRecommender)
 library(SparseMatrixRecommenderInterfaces)
 library(MathematicaVsRData)
+library(dplyr)
+library(magrittr)
 library(shinydashboard)
 ```
 
