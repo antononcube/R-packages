@@ -89,7 +89,25 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 
                  selectInput( "searchID", "Entity:", rownames(tsSMR$SMR$M) ),
 
-                 numericInput( "numberOfNNs", "Number of NNs:", 12 ),
+                 fluidRow(
+                   column(width = 4,
+                          numericInput( "numberOfNNs", "Number of NNs:", min = 1, max = 40, step = 1, value = 12 )),
+                   column(width = 4,
+                          selectInput( inputId = "nnsMethod",
+                                       label = "Correlation method:",
+                                       choices = c( "Dot" = "dot", "Pearson" = "pearson", "Spearman" = "spearman", "Kendall" = "kendall" ),
+                                       selected = "pearson" ) )
+                 ),
+
+                 fluidRow(
+                   column(width = 4,
+                          numericInput( "nnsNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = 2 )),
+                   column(width = 4,
+                          selectInput( inputId = "nnsScales",
+                                       label = "Graphics scales:",
+                                       choices = c( "Fixed X & Y" = "fixed", "Free Y" = "free_y", "Free X" = "free_x" ),
+                                       selected = "free_y" ) )
+                 ),
 
                  fluidRow(
                    column(width = 4,
@@ -108,7 +126,25 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 
                  selectInput( "searchVectorName", "Search vector type:", names(tsSearchVectors) ),
 
-                 numericInput( "numberOfSearchResults", "Number of search results:", 12 ),
+                 fluidRow(
+                   column(width = 4,
+                          numericInput( "numberOfSearchResults", "Number of NNs:", min = 1, max = 40, step = 1, value = 12 )),
+                   column(width = 4,
+                          selectInput( inputId = "svecMethod",
+                                       label = "Correlation method:",
+                                       choices = c( "Dot" = "dot", "Pearson" = "pearson", "Spearman" = "spearman", "Kendall" = "kendall" ),
+                                       selected = "pearson" ) )
+                 ),
+
+                 fluidRow(
+                   column(width = 4,
+                          numericInput( "svecNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = 2 )),
+                   column(width = 4,
+                          selectInput( inputId = "svecScales",
+                                       label = "Graphics scales:",
+                                       choices = c( "Fixed X & Y" = "fixed", "Free Y" = "free_y", "Free X" = "free_x" ),
+                                       selected = "free_y" ) )
+                 ),
 
                  fluidRow(
                    column(width = 4,
@@ -153,7 +189,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
 
       TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
                            itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
-                           searchRowID = input$searchID, nrecs = input$numberOfNNs )
+                           searchRowID = input$searchID, nrecs = input$numberOfNNs,
+                           method = input$nnsMethod )
 
     )
 
@@ -161,7 +198,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
 
       TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
                            itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
-                           searchVector = tsSearchVectors[[ input$searchVectorName ]], nrecs = input$numberOfSearchResults )
+                           searchVector = tsSearchVectors[[ input$searchVectorName ]], nrecs = input$numberOfSearchResults,
+                           method = input$svecMethod )
 
     )
 
@@ -169,12 +207,13 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
 
       setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
         # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
-        mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
+        dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
         dplyr::filter( Entity %in% recResNNs()$ItemID ) %>%
         dplyr::inner_join( recResNNs(), by = c("Entity" = "ItemID" ) ) %>%
         dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
         dplyr::group_by( Entity ) %>%
         dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, input$nnsSmoothedWindowSize, align="right", fill=0) ) %>%
+        dplyr::mutate( ItemName.Score = paste( ItemName, Score, sep = " : ") ) %>%
         dplyr::ungroup()
 
     )
@@ -183,12 +222,13 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
 
       setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
         # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
-        mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
+        dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
         dplyr::filter( Entity %in% recResSVec()$ItemID ) %>%
         dplyr::inner_join( recResSVec(), by = c("Entity" = "ItemID" ) ) %>%
         dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
         dplyr::group_by( Entity ) %>%
         dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, input$svecSmoothedWindowSize, align="right", fill=0) ) %>%
+        dplyr::mutate( ItemName.Score = paste( ItemName, Score, sep = " : ") ) %>%
         dplyr::ungroup()
 
     )
@@ -196,9 +236,14 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
     ## Entity NNs plot
     output$entetyNNsPlot <- renderPlot( {
 
-      ggplot2::ggplot( recResNNsExtended() ) +
-        ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = input$nnsValueColName, color = "ItemName" ), na.rm = T ) +
-        ggplot2::facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free_y" )
+      ggDF <- recResNNsExtended()
+      facDF <- unique(ggDF[, c("ItemName.Score", "Score")])
+      facDF <- facDF[ order(-facDF$Score), ]
+      ggDF$ItemName.Score <- factor( x = ggDF$ItemName.Score, levels = facDF$ItemName.Score )
+
+      ggplot2::ggplot( ggDF ) +
+        ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = input$nnsValueColName, color = "ItemName.Score" ), na.rm = T ) +
+        ggplot2::facet_wrap( ~ItemName.Score, ncol = input$nnsNCol, scales = input$nnsScales )
 
     })
 
@@ -234,9 +279,14 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
           res
         } )
 
-      ggplot2::ggplot( recResSVecExtended()  ) +
+      ggDF <- recResSVecExtended()
+      facDF <- unique(ggDF[, c("ItemName.Score", "Score")])
+      facDF <- facDF[ order(-facDF$Score), ]
+      ggDF$ItemName.Score <- factor( x = ggDF$ItemName.Score, levels = facDF$ItemName.Score )
+
+      ggplot2::ggplot( ggDF  ) +
         ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName" ), na.rm = T ) +
-        ggplot2::facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free_y" ) +
+        ggplot2::facet_wrap( ~ ItemName.Score, ncol = input$svecNCol, scales = input$svecScales ) +
         ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
 
 
