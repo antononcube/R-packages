@@ -38,10 +38,16 @@ system.time(
 )
 ```
 
+Normalize matrix:
+
+```{r}
+tsDotMat <- SMRApplyTermWeightFunctions( docTermMat = tsMat, globalWeightFunction = "None", localWeightFunction = "None", normalizerFunction = "Cosine")
+```
+
 Make the base SMR object:
 
 ```{r}
-smrSP500 <- SMRCreateFromMatrices( matrices = c(tsMat), tagTypes = c("TimeSeries"), itemColumnName = "StockID" )
+smrSP500 <- SMRCreateFromMatrices( matrices = c(tsDotMat), tagTypes = c("NormalizedTimeSeries"), itemColumnName = "StockID" )
 ```
 
 
