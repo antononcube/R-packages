@@ -707,7 +707,7 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' @param profilingQ Should the computation be profiled?
 #' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
 #' @param automaticTopicNamesQ Should the extracted topics be given automatic names?
-#' @param ... Additional parameters for the matrix decomposition funcitons.
+#' @param ... Additional parameters for the matrix decomposition functions.
 #' See \code{\link{irlba::irlba}} and \code{\link{NonNegativeMatrixFactorization::NNMF}}.
 #' Note that some of those overlap with some of function's arguments.
 #' @return A LSAMon object.
@@ -988,6 +988,7 @@ LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRU
 #' One tag might correspond to multiple documents.
 #' @param lsaObj A LSAMon object.
 #' @param tags A character vector with tags that correspond to the documents.
+#' The correspondence is ordinal or through the names of \code{tags}.
 #' If NULL the documents ordinal numbers or ID's are used.
 #' @param minThreshold The minimum topic weight.
 #' @param normalizeLeftQ Should the left matrix multiplication factor be normalized?
@@ -1011,6 +1012,10 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
   wMat <- nres$W
   wMat <- as( wMat, "sparseMatrix" )
 
+  if( is.null(tags) ) {
+    tags <- setNames( rownames(wMat), rownames(wMat) )
+  }
+
   if( ! ( is.vector(tags) && length(tags) == nrow(wMat) ) ) {
     warning( "The argument tags is expected to be a vector with length equal to the number of documents.", call. = T )
     return(LSAMonFailureSymbol)
@@ -1018,7 +1023,7 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
 
   if( is.null( names(tags) ) ) {
 
-    rownames(wMat) <- NULL
+    tags <- setNames( tags, rownames(wMat) )
 
   } else if ( length( intersect( rownames(wMat), names(tags) ) ) == 0 ) {
 

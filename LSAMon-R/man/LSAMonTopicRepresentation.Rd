@@ -11,6 +11,7 @@ LSAMonTopicRepresentation(lsaObj, tags = NULL, minThreshold = 0.001,
 \item{lsaObj}{A LSAMon object.}
 
 \item{tags}{A character vector with tags that correspond to the documents.
+The correspondence is ordinal or through the names of \code{tags}.
 If NULL the documents ordinal numbers or ID's are used.}
 
 \item{minThreshold}{The minimum topic weight.}

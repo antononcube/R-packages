@@ -29,7 +29,7 @@ If NULL appropriate default values for the different methods are used.
 
 \item{automaticTopicNamesQ}{Should the extracted topics be given automatic names?}
 
-\item{...}{Additional parameters for the matrix decomposition funcitons.
+\item{...}{Additional parameters for the matrix decomposition functions.
 See \code{\link{irlba::irlba}} and \code{\link{NonNegativeMatrixFactorization::NNMF}}.
 Note that some of those overlap with some of function's arguments.}
 }
