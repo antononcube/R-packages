@@ -990,10 +990,12 @@ LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRU
 #' @param tags A character vector with tags that correspond to the documents.
 #' The correspondence is ordinal or through the names of \code{tags}.
 #' If NULL the documents ordinal numbers or ID's are used.
-#' @param minThreshold The minimum topic weight.
+#' @param minThreshold The minimum absolute topic weight.
 #' @param normalizeLeftQ Should the left matrix multiplication factor be normalized?
 #' @return The result is a tag-topic contingency matrix that is assigned to
 #' \code{lsaObj$Value}.
+#' @details Absolute values have to be considered for dimension reduction
+#' algorithms as SVD and ICA.
 #' @export
 LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001, normalizeLeftQ = TRUE ) {
 

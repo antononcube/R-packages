@@ -14,7 +14,7 @@ LSAMonTopicRepresentation(lsaObj, tags = NULL, minThreshold = 0.001,
 The correspondence is ordinal or through the names of \code{tags}.
 If NULL the documents ordinal numbers or ID's are used.}
 
-\item{minThreshold}{The minimum topic weight.}
+\item{minThreshold}{The minimum absolute topic weight.}
 
 \item{normalizeLeftQ}{Should the left matrix multiplication factor be normalized?}
 }
@@ -26,4 +26,8 @@ The result is a tag-topic contingency matrix that is assigned to
 Find the topic representation corresponding to a list of tags.
 Each monad document is expected to have a tag.
 One tag might correspond to multiple documents.
+}
+\details{
+Absolute values have to be considered for dimension reduction
+algorithms as SVD and ICA.
 }
