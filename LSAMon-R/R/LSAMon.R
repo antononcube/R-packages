@@ -994,7 +994,22 @@ LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRU
 #' @param normalizeLeftQ Should the left matrix multiplication factor be normalized?
 #' @return The result is a tag-topic contingency matrix that is assigned to
 #' \code{lsaObj$Value}.
-#' @details Absolute values have to be considered for dimension reduction
+#' @details
+#' Monad's document collection is given as a character vector \code{texts}.
+#' If \code{texts} does not have element names, i.e. \code{names(texts) == NULL},
+#' they are assigned to be the corresponding indexes.
+#' Those element names of \code{texts} are used as document ID's.
+#' The document ID's are used if \code{tags = NULL} is specified.
+#' When this function is called, it is expected that the dimension reduction is
+#' already computed. Hence, the rownames of the left matrix factor \code{lsaObj$W}
+#' are expected to correspond to the document ID's.
+#' The argument \code{tags} itself is a mapping vector: \code{names(tags)} is
+#' supposed to correspond to the document ID's and the values of \code{tags} are
+#' the tags to be represented with topics.
+#' Using \code{tags=NULL} should produce a matrix derived from matrix
+#' \code{lsaObj$W} by removing all entries from \code{lsaObj$W} that have
+#' absolute values less than \code{minThreshold}.
+#' Absolute values have to be considered for dimension reduction
 #' algorithms as SVD and ICA.
 #' @export
 LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001, normalizeLeftQ = TRUE ) {
@@ -1040,7 +1055,7 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
 
   dfTriplets <- setNames( SparseMatrixRecommender::SMRSparseMatrixToTriplets( wMat ), c( "DocumentIndex", "TopicIndex", "Weight" ) )
 
-  dfTriplets <- dfTriplets[ abs(dfTriplets$Weight) > minThreshold, ]
+  dfTriplets <- dfTriplets[ abs(dfTriplets$Weight) >= minThreshold, ]
 
   dfTriplets <- cbind( dfTriplets, Tag = tags[ dfTriplets$DocumentIndex ], stringsAsFactors = FALSE )
 

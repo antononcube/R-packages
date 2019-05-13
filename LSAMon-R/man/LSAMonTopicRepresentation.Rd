@@ -28,6 +28,20 @@ Each monad document is expected to have a tag.
 One tag might correspond to multiple documents.
 }
 \details{
+Monad's document collection is given as a character vector \code{texts}.
+If \code{texts} does not have element names, i.e. \code{names(texts) == NULL},
+they are assigned to be the corresponding indexes.
+Those element names of \code{texts} are used as document ID's.
+The document ID's are used if \code{tags = NULL} is specified.
+When this function is called, it is expected that the dimension reduction is
+already computed. Hence, the rownames of the left matrix factor \code{lsaObj$W}
+are expected to correspond to the document ID's.
+The argument \code{tags} itself is a mapping vector: \code{names(tags)} is
+supposed to correspond to the document ID's and the values of \code{tags} are
+the tags to be represented with topics.
+Using \code{tags=NULL} should produce a matrix derived from matrix
+\code{lsaObj$W} by removing all entries from \code{lsaObj$W} that have
+absolute values less than \code{minThreshold}.
 Absolute values have to be considered for dimension reduction
 algorithms as SVD and ICA.
 }
