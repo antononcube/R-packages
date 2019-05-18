@@ -905,7 +905,7 @@ SMRHistoryProofs <- function( smr, toBeLovedItem, history, normalizeScores=TRUE 
 }
 
 #' Remove tag types from a sparse matrix recommender
-#' @description Creates an SMR object from a given SMR object by removing specified tag types
+#' @description Creates an SMR object from a given SMR object by removing specified tag types.
 #' @param smr A sparse matrix recommender.
 #' @param removeTagTypes A list of tag types to be removed from \code{smr}.
 #' @return Sparse matrix recommender.
@@ -1147,21 +1147,32 @@ SMRAnnexSubMatrix <- function( smr, newSubMat, newTagType ) {
 #' @description Join two SMR objects.
 #' @param smr1 The first SMR object.
 #' @param smr2 The second SMR object.
+#' @param joinType Join type, one of \code{c("inner", "left", "outer", "same")}.
 #' @param colnamesPrefix1 The prefix to be concatenated to the colnames of the first SMR object.
 #' @param colnamesPrefix2 The prefix to be concatenated to the colnames of the second SMR object.
+#' @details The matrices of the given SMR objects are column bound.
 #' @return Sparse matrix recommender.
 #' @family SMR modification functions
 #' @export
-SMRJoin <- function( smr1, smr2, colnamesPrefix1 = NULL, colnamesPrefix2 = NULL ) {
+SMRJoin <- function( smr1, smr2, joinType = "same", colnamesPrefix1 = NULL, colnamesPrefix2 = NULL ) {
   
-  if ( nrow( smr1$M ) != nrow( smr2$M ) ) {
+  if( joinType == "same" ) {
+    
+    if ( nrow( smr1$M ) != nrow( smr2$M ) ) {
+      ## The rownames should be the same too.
+      stop( "The metadata matrices of the SMR objects have to have the same number of rows.", call. = TRUE )
+    }
+    
     ## The rownames should be the same too.
-    stop( "The metadata matrices of the SMR objects have to have the same number of rows.", call. = TRUE )
-  }
-  
-  ## The rownames should be the same too.
-  if ( mean( rownames( smr1$M ) == rownames( smr2$M ) ) < 1 ) {
-    stop( "The metadata matrices of the SMR objects should have the same rownames.", call. = TRUE )
+    if ( mean( rownames( smr1$M ) == rownames( smr2$M ) ) < 1 ) {
+      stop( "The metadata matrices of the SMR objects should have the same rownames.", call. = TRUE )
+    }
+    
+  } else {
+    
+    stop( "The join types \"inner\", \"left\", \"outer\" are not implemented.", call. = TRUE )
+    ## Note that the rest of the join types -- probably -- can be implemented through the long form 
+    ## representation of the sparse matrices and, say, dplyr::inner_join .
   }
   
   newSMR <- smr1
@@ -1176,10 +1187,17 @@ SMRJoin <- function( smr1, smr2, colnamesPrefix1 = NULL, colnamesPrefix2 = NULL 
   newSMR$M <- cbind( smr1$M, smr2$M )
   newSMR$M01 <- cbind( smr1$M01, smr2$M01 )
   
+  if( length( intersect( colnames(smr1$M), colnames(smr2$M) ) ) != 0 ) {
+    if( !is.null(colnamesPrefix1) && is.null(colnamesPrefix2) || colnamesPrefix1 == colnamesPrefix2 ) {
+      colnamesPrefix1 <- "1."
+      colnamesPrefix2 <- "2."
+    }
+  }
+    
   newSMR$TagTypes <- c( paste( colnamesPrefix1, smr1$TagTypes, sep=""), paste( colnamesPrefix2, smr2$TagTypes, sep="") )
   
-  colnames(newSMR$M) <- c( paste( colnamesPrefix1, colnames(smr1$M), sep="" ), paste( colnamesPrefix2, colnames(smr2$M), sep="" ) )
-  colnames(newSMR$M01) <- c( paste( colnamesPrefix1, colnames(smr1$M01), sep="" ), paste( colnamesPrefix2, colnames(smr2$M01), sep="" ) )
+  colnames(newSMR$M) <- c( paste0( colnamesPrefix1, colnames(smr1$M) ), paste0( colnamesPrefix2, colnames(smr2$M) ) )
+  colnames(newSMR$M01) <- c( paste0( colnamesPrefix1, colnames(smr1$M01) ), paste0( colnamesPrefix2, colnames(smr2$M01) ) )
   
   newSMR
 }

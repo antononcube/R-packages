@@ -4,12 +4,15 @@
 \alias{SMRJoin}
 \title{Join two sparse matrix recommender objects}
 \usage{
-SMRJoin(smr1, smr2, colnamesPrefix1 = NULL, colnamesPrefix2 = NULL)
+SMRJoin(smr1, smr2, joinType = "same", colnamesPrefix1 = NULL,
+  colnamesPrefix2 = NULL)
 }
 \arguments{
 \item{smr1}{The first SMR object.}
 
 \item{smr2}{The second SMR object.}
+
+\item{joinType}{Join type, one of \code{c("inner", "left", "outer", "same")}.}
 
 \item{colnamesPrefix1}{The prefix to be concatenated to the colnames of the first SMR object.}
 
@@ -20,6 +23,9 @@ Sparse matrix recommender.
 }
 \description{
 Join two SMR objects.
+}
+\details{
+The matrices of the given SMR objects are column bound.
 }
 \seealso{
 Other SMR modification functions: \code{\link{SMRAnnexSubMatrix}},
