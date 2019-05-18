@@ -15,7 +15,7 @@ SMRRemoveTagTypes(smr, removeTagTypes)
 Sparse matrix recommender.
 }
 \description{
-Creates an SMR object from a given SMR object by removing specified tag types
+Creates an SMR object from a given SMR object by removing specified tag types.
 }
 \seealso{
 Other SMR modification: \code{\link{SMRRowBind}}
