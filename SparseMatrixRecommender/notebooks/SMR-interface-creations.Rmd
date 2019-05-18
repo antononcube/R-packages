@@ -8,7 +8,11 @@ output: html_notebook
 # Introduction
 
 ```{r}
-devtools::load_all()
+library(SparseMatrixRecommender)
+library(SparseMatrixRecommenderInterfaces)
+library(shiny)
+library(shinydashboard)
+library(DT)
 ```
 
 # Titanic
@@ -41,6 +45,6 @@ smrMushroom <- SMRCreate( dfMushroom,
                           itemColumnName = "id" )
 ```
 
-```{r}
+```{r, eval=F}
 SMRCreateSearchInterface( itemSMR = smrMushroom, itemData = dfMushroom, itemDataIDColName = "id", searchColName = "id", itemListIDsSplitPattern = "\\W" )
 ```
