@@ -1151,30 +1151,58 @@ SMRAnnexSubMatrix <- function( smr, newSubMat, newTagType ) {
 #' @param colnamesPrefix1 The prefix to be concatenated to the colnames of the first SMR object.
 #' @param colnamesPrefix2 The prefix to be concatenated to the colnames of the second SMR object.
 #' @details The matrices of the given SMR objects are column bound.
+#' The argument \code{joinType} says how the rows of the corresponding matrices are changed.
+#' For example, if \code{joinType = "outer"} the union of the rownames of SMR matrices is
+#' is row-imposed first. See \code{\link{SMRImposeRowIDs}}.
 #' @return Sparse matrix recommender.
 #' @family SMR modification functions
 #' @export
 SMRJoin <- function( smr1, smr2, joinType = "same", colnamesPrefix1 = NULL, colnamesPrefix2 = NULL ) {
-  
-  if( joinType == "same" ) {
+
+  if( joinType != "same" ) {
     
-    if ( nrow( smr1$M ) != nrow( smr2$M ) ) {
-      ## The rownames should be the same too.
-      stop( "The metadata matrices of the SMR objects have to have the same number of rows.", call. = TRUE )
+    if( joinType == "outer" ) {
+      
+      allRownames <- unique( c( rownames(smr1$M), rownames(smr2$M) ) )
+      
+    } else if( joinType == "inner" ) {
+      
+      allRownames <- intersect( rownames(smr1$M), rownames(smr2$M) )
+      
+    } else if( joinType == "left") {
+      
+      allRownames <- rownames(smr1$M)
+      
+    } else {
+      
+      stop( paste("Do not know what to do with the joinType value:", joinType ), call. = TRUE )
+      
     }
     
-    ## The rownames should be the same too.
-    if ( mean( rownames( smr1$M ) == rownames( smr2$M ) ) < 1 ) {
-      stop( "The metadata matrices of the SMR objects should have the same rownames.", call. = TRUE )
-    }
+    smr1$M <- SMRImposeRowIDs( rowIDs = allRownames, smat = smr1$M )
+    smr1$M01 <- SMRImposeRowIDs( rowIDs = allRownames, smat = smr1$M01 )
     
-  } else {
+    smr2$M <- SMRImposeRowIDs( rowIDs = allRownames, smat = smr2$M )
+    smr2$M01 <- SMRImposeRowIDs( rowIDs = allRownames, smat = smr2$M01 )
     
-    stop( "The join types \"inner\", \"left\", \"outer\" are not implemented.", call. = TRUE )
-    ## Note that the rest of the join types -- probably -- can be implemented through the long form 
-    ## representation of the sparse matrices and, say, dplyr::inner_join .
+    SMRJoin( smr1 = smr1, smr2 = smr2, joinType = "same", colnamesPrefix1 = colnamesPrefix1, colnamesPrefix2 = colnamesPrefix2 )
+    
   }
   
+  if ( nrow( smr1$M ) != nrow( smr2$M ) ) {
+    ## The rownames should be the same too.
+    stop( "The metadata matrices of the SMR objects have to have the same number of rows.", call. = TRUE )
+  }
+  
+  ## The rownames should be the same too.
+  if ( mean( rownames( smr1$M ) == rownames( smr2$M ) ) < 1 ) {
+    stop( "The metadata matrices of the SMR objects should have the same rownames.", call. = TRUE )
+  }
+  
+  if ( length( intersect( smr1$TagTypes, smr2$TagTypes ) ) > 0 ) {
+    stop( "The tag types of the joined recommenders are expected to be disjoined sets.", call. = TRUE )
+  } 
+    
   newSMR <- smr1
   
   ranges <- smr2$TagTypeRanges

@@ -26,6 +26,9 @@ Join two SMR objects.
 }
 \details{
 The matrices of the given SMR objects are column bound.
+The argument \code{joinType} says how the rows of the corresponding matrices are changed.
+For example, if \code{joinType = "outer"} the union of the rownames of SMR matrices is
+is row-imposed first. See \code{\link{SMRImposeRowIDs}}.
 }
 \seealso{
 Other SMR modification functions: \code{\link{SMRAnnexSubMatrix}},
