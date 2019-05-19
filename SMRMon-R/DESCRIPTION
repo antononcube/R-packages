@@ -1,13 +1,24 @@
 Package: SMRMon
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Sparse Matrix Recommender Monad
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+                  role = c("aut", "cre"))
+Maintainer: Anton Antonov <antononcube@gmail.com>
+Description: This package implements in R a software monad for Sparse Matrix Recommender workflows.
+License: GPL-3
+Language: en-US
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/antononcube/packages/
+RoxygenNote: 6.1.1
+Imports:
+    Matrix,
+    magrittr,
+    SparseMatrixRecommender,
+    SparseMatrixRecommenderInterfaces
 Suggests: 
-    testthat (>= 2.1.0)
+    knitr,
+    rmarkdown,
+    testthat
+VignetteBuilder: knitr
