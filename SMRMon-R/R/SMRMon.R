@@ -728,11 +728,11 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12 ) {
 #' @details The argument \code{data} is expected to have a column with name
 #' \code{smrObj$ItemColumnName} or a inner join column that is specified
 #' with the argument \code{by}.
-#' The name of the function corresponds a Mathematica function (\code{JoinAccross}).
+#' The name of the function corresponds a Mathematica function (\code{JoinAcross}).
 #' @return An SMRMon object.
 #' @family Recommendations computation functions
 #' @export
-SMRMonJoinAccross <- function( smrObj, data, by = smrObj$ItemColumnName ) {
+SMRMonJoinAcross <- function( smrObj, data, by = smrObj$ItemColumnName ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 

@@ -23,7 +23,7 @@ A data frame with columns "Score", "Index", "Item".
 Recommend items based on a sparse matrix and a specified profile indices and scores.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonJoinAccross}},
+Other Recommendations computation functions: \code{\link{SMRMonJoinAcross}},
   \code{\link{SMRMonRecommend}}
 }
 \concept{Recommendations computation functions}
