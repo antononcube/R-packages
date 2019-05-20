@@ -1,0 +1,67 @@
+---
+title: "SMRMon basic usage"
+author: Anton Antonov
+date: "```r Sys.Date()```"
+output: html_notebook
+---
+
+```{r}
+library(SMRMon)
+library(SparseMatrixRecommender)
+library(Matrix)
+library(magrittr)
+```
+
+# Introduction
+
+This notebook contains basic examples of using the R software monad `SMRMon`.
+
+# Creation
+
+Simple creation:
+
+```{r}
+smrObj <-
+  SMRMonUnit( data = dfTitanic ) %>%
+  SMRMonCreate( itemColumnName = "id")
+```
+
+
+# Recommendations by history
+
+```{r}
+smrObj <-
+  smrObj %>% 
+  SMRMonRecommend( history = dfTitanic$id[1:2], nrecs = 6, removeHistoryQ = FALSE ) %>% 
+  SMRMonJoinAccross( dfTitanic ) %>% 
+  SMRMonEchoValue
+```
+
+
+# Recommendations by profile
+
+```{r}
+smrObj <-
+  smrObj %>% 
+  SMRMonRecommendByProfile( profile = c("female", "30", "died"), nrecs = 12 ) %>% 
+  SMRMonJoinAccross( dfTitanic ) %>% 
+  SMRMonEchoValue
+```
+
+```{r}
+smrObj <-
+  smrObj %>% 
+  SMRMonRecommendByProfile( profile = c("female", "30", "died"), nrecs = 12 ) %>% 
+  SMRMonJoinAccross( setNames( dfTitanic, 1:ncol(dfTitanic)), by = c( "id" = "1" ) ) %>% 
+  SMRMonEchoValue()
+```
+
+# Classification
+
+```{r}
+smrObj <-
+  smrObj %>% 
+  SMRMonClassifyByProfile( tagType = "passengerClass", profile = c("female", "died"), nTopNNs = 600 ) %>% 
+  SMRMonEchoValue
+```
+
