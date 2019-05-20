@@ -1,0 +1,69 @@
+---
+title: "SMRMon workflows by natural commands"
+author: Anton Antonov
+date: "```r Sys.Date()```"
+output: html_notebook
+---
+
+```{r}
+library(SMRMon)
+library(SparseMatrixRecommender)
+library(Matrix)
+library(magrittr)
+library(ExternalParsersHookUp)
+```
+
+# Introduction
+
+This notebooks demonstrates the construction of recommender workflows
+using natural language commands.
+
+# Creation
+
+Simple creation:
+
+```{r}
+smrObj <-
+  SMRMonUnit( data = dfTitanic ) %>%
+  SMRMonCreate( itemColumnName = "id")
+```
+
+# Basic pipeline
+
+```{r}
+dfTitanic
+```
+
+```{r}
+smrObj2 <-
+  eval( expr = to_SMRMon_R_command( 
+    "create from dfTitanic; 
+     recommend for history id.5, id.7; 
+     join across recommendations with the data frame dfTitanic; 
+     echo pipeline value" ) )
+```
+
+```{r}
+smrObj2 <- 
+  eval( to_SMRMon_R_command( 
+    "use recommender smrObj2; 
+     recommend for the history id.5, id.7; 
+     echo value" ) )
+```
+
+## By profile
+
+```{r}
+to_SMRMon_R_command("recommend by profile female, died")
+```
+
+```{r}
+smrObj2 <-
+  SMRMonUnit() %>% 
+  eval( expr = to_SMRMon_R_command( 
+    "create from dfTitanic; 
+     recommend by profile female, 30; 
+     extend recommendations with dfTitanic; 
+     show pipeline value" ) )
+```
+
