@@ -137,9 +137,9 @@ SMRCreateItemTagMatrix <- function( dataRows, itemColumnName, tagType, sparse = 
   xtabs( formula = as.formula(formulaString), data = dataRows, sparse = sparse )
 }
 
-#' Creation of a Sparse Matrix Recommender object from a transactions data frame
-#' @description Creates a sparse matrix recommender from transactions data and a list of tag types.
-#' @param dataRows The transaction data frame.
+#' Creation of a SMR object from a transactions data frame
+#' @description Creates a Sparse Matrix Recommender object from transactions data and a list of tag types.
+#' @param dataRows The transactions data frame.
 #' @param tagTypes The name of the column containing the categorical tags.
 #' @param itemColumnName The name of the column containing the unique items.
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
@@ -158,8 +158,8 @@ SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName =
   SMRCreateFromMatrices(matrices, tagTypes, itemColumnName)
 }
 
-#' Creation of a Sparse Matrix Recommender object with matrix
-#' @description Creates a sparse matrix recommender from a list of matrices and a corresponding list of tag types.
+#' Creation of a SMR object with a list of matrices
+#' @description Creates a Sparse Matrix Recommender object from a list of matrices and a corresponding list of tag types.
 #' @param matrices A list of matrices to be spliced into a metadata matrix.
 #' @param tagTypes Vector of matrix names.
 #' @param itemColumnName The column name of recommender items (in data and recommendations).
@@ -504,10 +504,10 @@ SMRRecommendationsDF <- function( smr, history, nrecs, removeHistory=TRUE ) {
 
 #' Recommendations using a profile data frame
 #' @description Recommend items based on a sparse matrix and a specified profile.
-#' @param smar A sparse matrix recommender.
+#' @param smr A sparse matrix recommender.
 #' @param profile A data frame of scored tags, profile of a user with column names c( "Score", "Tag" | "Index" )/
 #' @param nrecs Number of recommendations to be returned,
-#' @return A data frame with columns "Score", "Index", "Item".
+#' @return A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
 #' @family Recommendations computation functions
 #' @export
 SMRRecommendationsByProfileDF <- function( smr, profile, nrecs ) {
@@ -532,7 +532,7 @@ SMRRecommendationsByProfileDF <- function( smr, profile, nrecs ) {
 #' @param profileInds A vector of metadata indices corresponding to the columns of \code{smr$M}.
 #' @param profileRatings A vector of ratings of the profile metadata.
 #' @param nrecs Number of recommendations to be returned.
-#' @return A data frame with columns "Score", "Index", "Item".
+#' @return A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
 #' @family Recommendations computation functions
 #' @export
 SMRRecommendationsByProfile <- function( smr, profileInds, profileRatings, nrecs ) {
@@ -545,7 +545,7 @@ SMRRecommendationsByProfile <- function( smr, profileInds, profileRatings, nrecs
 #' @param smar A sparse matrix recommender.
 #' @param profileVec A sparse matrix with 1 row (a row from a sparse matrix).
 #' @param nrecs Number of recommendations to be returned.
-#' @return A data frame with columns "Score", "Index", "Item".
+#' @return A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
 #' @family Recommendations computation functions
 #' @export
 SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
@@ -561,7 +561,7 @@ SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
   }
   res <- data.frame( Score = recScores[1:nrecs], Index = recInds[1:nrecs], stringsAsFactors = FALSE )
   res <- cbind( res, Item = rownames(smr$M)[recInds[1:nrecs]], stringsAsFactors = FALSE )
-  names(res)<-c( "Score", "Index", "Item" )
+  names(res)<-c( "Score", "Index", smr$ItemColumnName )
   res
 }
 
@@ -591,13 +591,13 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
   ## clMat <- SMRSubMatrix( smr = smr, tagType = tagType )
   ## It can be optimized  using a class label matrix member inside the SMR object.
   ## Hopefully, this is quick enough in most cases:
-  clMat <- smr$M[ recs$Item, smr$TagTypeRanges[tagType, "Begin"] : smr$TagTypeRanges[tagType, "End"], drop=F ]
+  clMat <- smr$M[ recs[[smr$ItemColumnName]], smr$TagTypeRanges[tagType, "Begin"] : smr$TagTypeRanges[tagType, "End"], drop=F ]
   
   if ( voting ) {
     clMat@x[ clMat@x > 0 ] <- 1
     recs$Score <- 1
   }
-  s <- (recs$Score / max(recs$Score, na.rm = T) ) %*% clMat[ recs$Item, , drop=F]
+  s <- (recs$Score / max(recs$Score, na.rm = T) ) %*% clMat[ recs[[smr$ItemColumnName]], , drop=F]
   s <- data.frame( Score = s[1,], Label = colnames(s), stringsAsFactors = FALSE )
   s <- s[ order(-s[,1]), ]
 
@@ -619,7 +619,7 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
 #' Profile vector calculation
 #' @description Calculate profile vector from item history.
 #' @param smr A sparse matrix recommender.
-#' @param itemHistory A data frame with items history with column names c("Rating", "Item").
+#' @param itemHistory A data frame with items history with column names \code{ c("Rating", smr$ItemColumnName)}.
 #' @return Sparse matrix.
 #' @export
 SMRProfileVector <- function( smr, itemHistory ) {
@@ -1595,11 +1595,18 @@ Recommendations.CompositeRecommender <- function( x, historyItems, historyRating
                                                   normalizationType = NULL, mergeFunction = NULL, ... ) {
   
   ## Computing recommendations with each recommender
-  allRecs <- purrr::map( x$Recommenders, function(recObj) Recommendations( recObj,
-                                                                           historyItems = historyItems,
-                                                                           historyRatings = historyRatings,
-                                                                           nrecs = nrecs,
-                                                                           removeHistory = removeHistory, ... ) )
+  allRecs <- 
+    purrr::map( x$Recommenders, function(recObj) {
+      recs <- Recommendations( recObj,
+                               historyItems = historyItems,
+                               historyRatings = historyRatings,
+                               nrecs = nrecs,
+                               removeHistory = removeHistory, ... ) 
+      if( !is.null(recObj$ItemColumnName) ) {
+        names(recs) <- gsub( recObj$ItemColumnName, "Item", names(recs) )
+      }
+      recs
+    })
   
   ## Determine weights for the recommenders
   weights <- x$Weights
@@ -1664,6 +1671,7 @@ Recommendations.CompositeRecommender <- function( x, historyItems, historyRating
   }
   
   allRecsDF <- allRecsDF[ allRecsDF$Score > 0, ]
+  gsub
   ## Note, the merging here is with merge-sum. Other merging can be applied.
   res <- ddply( allRecsDF, "Item", function(x) { data.frame( Score = mergeFunction(x$Score), Item = x$Item[1], stringsAsFactors = FALSE ) } )
   res <- res[ order(-res$Score), ]
