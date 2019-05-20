@@ -4,17 +4,17 @@
 \alias{SMRMonRecommendByProfile}
 \title{Recommendations using a profile}
 \usage{
-SMRMonRecommendByProfile(smr, profile, nrecs = 12)
+SMRMonRecommendByProfile(smrObj, profile, nrecs = 12)
 }
 \arguments{
+\item{smrObj}{An SMRMon object.}
+
 \item{profile}{(Scored) profile tags.
 A data frame with columns \code{c("Score", "Tag")};
 a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
 
 \item{nrecs}{Number of recommendations to be returned.}
-
-\item{smrObj}{An SMRMon object.}
 }
 \value{
 A data frame with columns "Score", "Index", "Item".
@@ -23,6 +23,7 @@ A data frame with columns "Score", "Index", "Item".
 Recommend items based on a sparse matrix and a specified profile indices and scores.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonRecommend}}
+Other Recommendations computation functions: \code{\link{SMRMonJoinAccross}},
+  \code{\link{SMRMonRecommend}}
 }
 \concept{Recommendations computation functions}

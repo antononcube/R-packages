@@ -33,6 +33,8 @@
 #' @import SparseMatrixRecommenderInterfaces
 #' @import Matrix
 #' @import magrittr
+#' @import purrr
+#' @import dplyr
 NULL
 
 ##===========================================================
@@ -145,6 +147,7 @@ SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = me
 #' @param f A function to be applied to \code{smrObj$Value}.
 #' @return A SMRMon object.
 #' @details Prints \code{f(smrObj$Value)}.
+#' @family Echo functions
 #' @export
 SMRMonEchoFunctionValue <- function( smrObj, f ) {
 
@@ -155,6 +158,20 @@ SMRMonEchoFunctionValue <- function( smrObj, f ) {
   smrObj
 }
 
+
+##===========================================================
+## Echo value
+##===========================================================
+
+#' Echo monad's value.
+#' @description Echoes the monad object value.
+#' @param smrObj An SMRMon object.
+#' @return An SMRMon object
+#' @family Echo functions
+#' @export
+SMRMonEchoValue <- function( smrObj ) {
+  SMRMonEchoFunctionValue( smrObj, function(x) x )
+}
 
 
 ##===========================================================
@@ -533,6 +550,7 @@ SMRMonTakeData <- function( smrObj, functionName = "SMRMonTakeData" ) {
   smrObj$Data
 }
 
+
 ##===========================================================
 ## Create from data
 ##===========================================================
@@ -659,7 +677,7 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 #' @return A data frame with columns "Score", "Index", "Item".
 #' @family Recommendations computation functions
 #' @export
-SMRMonRecommendByProfile <- function( smr, profile, nrecs = 12 ) {
+SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12 ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -690,10 +708,124 @@ SMRMonRecommendByProfile <- function( smr, profile, nrecs = 12 ) {
   }
 
   res <- SMRRecommendationsByProfileDF( smr = smrObj,
-                                        profile = data.frame( Score = profileScore, Tag = profileTags, stringsAsFactors = FALSE ),
+                                        profile = data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE ),
                                         nrecs = nrecs )
 
   smrObj$Value <- res
+
+  smrObj
+}
+
+
+##===========================================================
+## Join accross
+##===========================================================
+
+#' Extend recommendations with extra data
+#' @description Joins a recommendations data with a given data frame.
+#' @param smrObj An SMRMon object.
+#' @param data A data frame.
+#' @details The argument \code{data} is expected to have a column with name
+#' \code{smrObj$ItemColumnName} or a inner join column that is specified
+#' with the argument \code{by}.
+#' The name of the function corresponds a Mathematica function (\code{JoinAccross}).
+#' @return An SMRMon object.
+#' @family Recommendations computation functions
+#' @export
+SMRMonJoinAccross <- function( smrObj, data, by = smrObj$ItemColumnName ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  recs <- smrObj %>% SMRMonTakeValue
+
+  if( !is.data.frame(recs) ) {
+    warning( "The element smrObj$Value is expected to be a (recommendations) data frame.", call. = TRUE )
+    return( SMRMonFailureSymbol )
+  }
+
+  if( is.null(names(by)) ) {
+    by <- setNames( c(by), smrObj$ItemColumnName )
+  }
+
+  recs <- dplyr::inner_join( recs, data, by = by )
+  smrObj$Value <- recs
+
+  smrObj
+}
+
+
+
+##===========================================================
+## Classify by profile
+##===========================================================
+
+#' Classification with a profile
+#' @description Classify a profile data frame into the column names of a tag type sub-matrix.
+#' @param smrObj A sparse matrix recommender.
+#' @param tagType Tag type for which the classification is done.
+#' @param profile (Scored) profile tags.
+#' A data frame with columns \code{c("Score", "Tag")};
+#' a numeric vector named elements, the names being items;
+#' a character vector, the correspond ratings assumed all to be 1.
+#' @param nTopNNs Number of top nearest neighbors to be used in the derive the classification.
+#' @param voting Should simple voting be used or a weighted sum?
+#' @param maxNumberOfLabels The maximum number of labels to be returned;
+#' if NULL all found labels are returned.
+#' @param normalizeQ Should the scores be normalized?
+#' (By dividing by the maximum score.)
+#' @details The classification result is a list of scored tags that is assigned
+#' to \code{smrObj$Value}.
+#' This function is based in \code{\link{SMRClassifyByProfileVector}}.
+#' @return An SMRMon object.
+#' @export
+SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs,
+                                     voting = FALSE, dropZeroScoredLabels = TRUE, maxNumberOfLabels = NULL, normalizeQ = TRUE ) {
+
+  ## The following code shares a lot the beginning of SMRMonRecommendByProfile.
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonClassifyByProfile",  logicalResult = TRUE) ) {
+    return(SMRMonFailureSymbol)
+  }
+
+  if( "dgCMatrix" %in% class(profile)  ) {
+
+    profileVec <- profile
+
+  } else {
+
+    if( is.data.frame(profile) && sum( c("Score", "Tag" ) %in% names(profile) ) == 2 ) {
+
+      profileScores <- profile$Score
+      profileTags <- profile$Tag
+
+    } else if( is.numeric(profile) && !is.null(names(profile)) ) {
+
+      profileScores <- setNames( profile, NULL)
+      profileTags <- names(profile)
+
+    } else if( is.character(profile) ) {
+
+      profileScores <- rep_len( 1, length.out = length(profile) )
+      profileTags <- profile
+
+    } else {
+
+      warning( "Unknown profile type.", call. = TRUE )
+      return(SMRMonFailureSymbol)
+
+    }
+
+    profile = data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE )
+
+    profileVec <- SMRProfileDFToVector( smr = smrObj, profileDF = profile )
+  }
+
+  clRes <- SMRClassifyByProfileVector( smr = smrObj, tagType = tagType, profileVec = profileVec,
+                                       nTopNNs = nTopNNs,
+                                       voting = voting, dropZeroScoredLabels = dropZeroScoredLabels, maxNumberOfLabels = maxNumberOfLabels, normalizeQ = normalizeQ )
+
+  smrObj$Value <- clRes
 
   smrObj
 }

@@ -27,6 +27,7 @@ assigned to \code{smrObj$Value}.
 Recommend items based on history of consumption.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonRecommendByProfile}}
+Other Recommendations computation functions: \code{\link{SMRMonJoinAccross}},
+  \code{\link{SMRMonRecommendByProfile}}
 }
 \concept{Recommendations computation functions}

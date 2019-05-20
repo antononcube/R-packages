@@ -20,3 +20,7 @@ Apply a function to the "Value" element/member of the monad object.
 \details{
 Prints \code{f(smrObj$Value)}.
 }
+\seealso{
+Other Echo functions: \code{\link{SMRMonEchoValue}}
+}
+\concept{Echo functions}
