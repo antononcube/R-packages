@@ -542,7 +542,7 @@ SMRRecommendationsByProfile <- function( smr, profileInds, profileRatings, nrecs
 
 #' Recommendations by profile vector
 #' @description Recommend items based on a sparse matrix and specified profile.
-#' @param smar A sparse matrix recommender.
+#' @param smr A sparse matrix recommender.
 #' @param profileVec A sparse matrix with 1 row (a row from a sparse matrix).
 #' @param nrecs Number of recommendations to be returned.
 #' @return A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
@@ -567,7 +567,7 @@ SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
 
 #' Classification with a profile vector
 #' @description Classify a profile vector into the column names of a tag type sub-matrix.
-#' @param smar A sparse matrix recommender.
+#' @param smr A sparse matrix recommender.
 #' @param tagType Tag type for which the classification is done.
 #' @param profileVec A sparse matrix with 1 row (a row from a sparse matrix).
 #' @param nTopNNs Number of top nearest neighbors to be used in the derive the classification.

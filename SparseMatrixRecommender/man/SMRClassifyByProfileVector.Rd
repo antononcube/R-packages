@@ -9,6 +9,8 @@ SMRClassifyByProfileVector(smr, tagType, profileVec, nTopNNs,
   maxNumberOfLabels = NULL, normalizeQ = TRUE)
 }
 \arguments{
+\item{smr}{A sparse matrix recommender.}
+
 \item{tagType}{Tag type for which the classification is done.}
 
 \item{profileVec}{A sparse matrix with 1 row (a row from a sparse matrix).}
@@ -22,8 +24,6 @@ if NULL all found labels are returned.}
 
 \item{normalizeQ}{Should the scores be normalized?
 (By dividing by the maximum score.)}
-
-\item{smar}{A sparse matrix recommender.}
 }
 \value{
 A list of scored tags.
