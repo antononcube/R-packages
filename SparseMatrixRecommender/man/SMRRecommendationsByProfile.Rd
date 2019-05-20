@@ -16,7 +16,7 @@ SMRRecommendationsByProfile(smr, profileInds, profileRatings, nrecs)
 \item{nrecs}{Number of recommendations to be returned.}
 }
 \value{
-A data frame with columns "Score", "Index", "Item".
+A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
 }
 \description{
 Recommend items based on a sparse matrix and a specified profile indices and scores.

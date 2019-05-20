@@ -14,7 +14,7 @@ SMRRecommendationsByProfileVector(smr, profileVec, nrecs)
 \item{smar}{A sparse matrix recommender.}
 }
 \value{
-A data frame with columns "Score", "Index", "Item".
+A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
 }
 \description{
 Recommend items based on a sparse matrix and specified profile.

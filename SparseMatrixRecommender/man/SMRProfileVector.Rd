@@ -9,7 +9,7 @@ SMRProfileVector(smr, itemHistory)
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
-\item{itemHistory}{A data frame with items history with column names c("Rating", "Item").}
+\item{itemHistory}{A data frame with items history with column names \code{ c("Rating", smr$ItemColumnName)}.}
 }
 \value{
 Sparse matrix.

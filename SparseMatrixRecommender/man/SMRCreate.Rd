@@ -2,13 +2,13 @@
 % Please edit documentation in R/SparseMatrixRecommender.R
 \name{SMRCreate}
 \alias{SMRCreate}
-\title{Creation of a Sparse Matrix Recommender object from a transactions data frame}
+\title{Creation of a SMR object from a transactions data frame}
 \usage{
 SMRCreate(dataRows, tagTypes = names(dataRows)[-1],
   itemColumnName = names(dataRows)[1])
 }
 \arguments{
-\item{dataRows}{The transaction data frame.}
+\item{dataRows}{The transactions data frame.}
 
 \item{tagTypes}{The name of the column containing the categorical tags.}
 
@@ -18,7 +18,7 @@ SMRCreate(dataRows, tagTypes = names(dataRows)[-1],
 SMR object.
 }
 \description{
-Creates a sparse matrix recommender from transactions data and a list of tag types.
+Creates a Sparse Matrix Recommender object from transactions data and a list of tag types.
 }
 \details{
 An S3 object is returned that is list with class attribute set to "SMR".
