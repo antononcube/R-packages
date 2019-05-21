@@ -90,7 +90,7 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
 
     recVec <- cor( as.matrix( t(timeSeriesMat) ), searchVector, method = method )
     recVec <- recVec[ order(-recVec[,1]), ,drop=FALSE]
-    recsItemSplit <- setNames( as.data.frame( str_split_fixed( rownames(recVec), pattern = ":", n = 2 ), stringsAsFactors = F), c( "Channel", "ItemID" ) )
+    recsItemSplit <- setNames( as.data.frame( stringr::str_split_fixed( rownames(recVec), pattern = ":", n = 2 ), stringsAsFactors = F), c( "Channel", "ItemID" ) )
     if( mean( nchar( recsItemSplit$ItemID ) ) < 1 ) {
       recsItemSplit <- data.frame( Channel = "None", ItemID = rownames(recVec), stringsAsFactors = FALSE)
     }
@@ -105,12 +105,12 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
     ## Use the SMR object first, and then correlations between the TS matrix rows.
 
     recs <- SMRRecommendationsByProfileVector( smr, searchVectorMat, nrecs = smr.nrecs )
-    recsItemSplit <- setNames( as.data.frame( str_split_fixed( recs$Item, pattern = ":", n = 2 ), stringsAsFactors = F), c( "Channel", "ItemID" ) )
+    recsItemSplit <- setNames( as.data.frame( stringr::str_split_fixed( recs[[smr$ItemColumnName]], pattern = ":", n = 2 ), stringsAsFactors = F), c( "Channel", "ItemID" ) )
     if( mean( nchar( recsItemSplit$ItemID ) ) < 1 ) {
-      recsItemSplit <- data.frame( Channel = "None", ItemID = recs$Item, stringsAsFactors = FALSE)
+      recsItemSplit <- data.frame( Channel = "None", ItemID = recs[[smr$ItemColumnName]], stringsAsFactors = FALSE)
     }
     dotRecs <- cbind( Score = recs$Score, 
-                      Channel.ItemID = recs$Item,
+                      Channel.ItemID = recs[[smr$ItemColumnName]],
                       recsItemSplit, 
                       ItemName = itemIDtoNameRules[ recsItemSplit$ItemID ],
                       stringsAsFactors = FALSE, row.names = NULL ) 
@@ -120,7 +120,7 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
       ## assertthat::assert_that( mean(dotRecs$Channel.ItemID %in% rownames(timeSeriesMat)) == 1 )
       recVec <- cor( as.matrix( t(timeSeriesMat[ dotRecs$Channel.ItemID, ]) ), searchVector, method = method )
       recVec <- recVec[ order(-recVec[,1]), ,drop=FALSE]
-      recsItemSplit <- setNames( as.data.frame( str_split_fixed( rownames(recVec), pattern = ":", n = 2 ), stringsAsFactors = F), c( "Channel", "ItemID" ) )
+      recsItemSplit <- setNames( as.data.frame( stringr::str_split_fixed( rownames(recVec), pattern = ":", n = 2 ), stringsAsFactors = F), c( "Channel", "ItemID" ) )
       if( mean( nchar( recsItemSplit$ItemID ) ) < 1 ) {
         recsItemSplit <- data.frame( Channel = "None", ItemID = rownames(recVec), stringsAsFactors = FALSE)
       }
