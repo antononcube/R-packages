@@ -609,8 +609,8 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
     s <- s[ 1:min( maxNumberOfLabels, nrow(s) ), ]
   }
   
-  if( normalizeQ && max(s$Score) > 0 ) {
-    s$Score <- s$Score / max(s$Score)
+  if( normalizeQ && max(s$Score, na.rm = T) > 0 ) {
+    s$Score <- s$Score / max(s$Score, na.rm = T)
   }
   
   s
