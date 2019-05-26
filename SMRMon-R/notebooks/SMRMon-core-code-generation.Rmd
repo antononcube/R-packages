@@ -23,7 +23,7 @@ library(StateMonadCodeGenerator)
 GenerateStateMonadCode( monadName = "SMRMon", 
                         memberNames = c("M" = "matrix", 
                                         "M01" = "matrix", 
-                                        "TagTypeRange" = "data.frame", 
+                                        "TagTypeRanges" = "data.frame", 
                                         "TagTypes" = "character", 
                                         "ItemColumnName" = "character",
                                         "TagToIndexRules" = "integer", 

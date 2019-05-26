@@ -62,7 +62,7 @@ SMRMonFailureQ <- function(x) { mean(is.na(x)) }
 #' @export
 SMRMonUnit <- function( data = NULL ) {
 
-  res <- list( Value = NULL, M = NULL, M01 = NULL, TagTypeRange = NULL, TagTypes = NULL, ItemColumnName = NULL, TagToIndexRules = NULL, ItemToIndexRules = NULL, Data = NULL )
+  res <- list( Value = NULL, M = NULL, M01 = NULL, TagTypeRanges = NULL, TagTypes = NULL, ItemColumnName = NULL, TagToIndexRules = NULL, ItemToIndexRules = NULL, Data = NULL )
   attr(res, "class") <- "SMR"
 
   res$Data <- data
@@ -225,26 +225,26 @@ SMRMonSetM01 <- function( smrObj, M01 ) {
 }
 
 ##===========================================================
-## TagTypeRange setter
+## TagTypeRanges setter
 ##===========================================================
 
-#' Set TagTypeRange.
-#' @description Sets TagTypeRange into the monad object.
+#' Set TagTypeRanges.
+#' @description Sets TagTypeRanges into the monad object.
 #' @param smrObj An SMRMon object.
-#' @param TagTypeRange An object member to be set.
+#' @param TagTypeRanges An object member to be set.
 #' @return An SMRMon object.
 #' @family Set/Take functions
 #' @export
-SMRMonSetTagTypeRange <- function( smrObj, TagTypeRange ) {
+SMRMonSetTagTypeRanges <- function( smrObj, TagTypeRanges ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !( is.null(TagTypeRange) || is.data.frame(TagTypeRange)) ) {
-    warning("The argument TagTypeRange is expected to be NULL or a data.frame.", call. = TRUE)
+  if( !( is.null(TagTypeRanges) || is.data.frame(TagTypeRanges)) ) {
+    warning("The argument TagTypeRanges is expected to be NULL or a data.frame.", call. = TRUE)
     return(SMRMonFailureSymbol)
   }
 
-  smrObj$TagTypeRange <- TagTypeRange
+  smrObj$TagTypeRanges <- TagTypeRanges
 
   smrObj
 }
@@ -419,25 +419,25 @@ SMRMonTakeM01 <- function( smrObj, functionName = "SMRMonTakeM01" ) {
 }
 
 ##===========================================================
-## TagTypeRange Taker
+## TagTypeRanges Taker
 ##===========================================================
 
-#' Take TagTypeRange.
-#' @description Takes TagTypeRange from the monad object.
+#' Take TagTypeRanges.
+#' @description Takes TagTypeRanges from the monad object.
 #' @param smrObj An SMRMon object.
 #' @param functionName A string that is a name of this function or a delegating function.
 #' @return A list of functions or \code{SMRMonFailureSymbol}.
 #' @family Set/Take functions
 #' @export
-SMRMonTakeTagTypeRange <- function( smrObj, functionName = "SMRMonTakeTagTypeRange" ) {
+SMRMonTakeTagTypeRanges <- function( smrObj, functionName = "SMRMonTakeTagTypeRanges" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "TagTypeRange", memberPrettyName = "TagTypeRange", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "TagTypeRanges", memberPrettyName = "TagTypeRanges", functionName = functionName,  logicalResult = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
-  smrObj$TagTypeRange
+  smrObj$TagTypeRanges
 }
 
 ##===========================================================

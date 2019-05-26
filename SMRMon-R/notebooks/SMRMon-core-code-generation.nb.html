@@ -11,7 +11,7 @@
 
 <meta name="author" content="Anton Antonov" />
 
-<meta name="date" content="2019-05-19" />
+<meta name="date" content="2019-05-26" />
 
 <title>SMRMon core code generation</title>
 
@@ -1765,7 +1765,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">SMRMon core code generation</h1>
 <h4 class="author">Anton Antonov</h4>
-<h4 class="date"><code>2019-05-19</code></h4>
+<h4 class="date"><code>2019-05-26</code></h4>
 
 </div>
 
@@ -1781,8 +1781,9 @@ $(document).ready(function () {
 <p>Here we load the State Monad code generation package:</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShTdGF0ZU1vbmFkQ29kZUdlbmVyYXRvcilcbmBgYCJ9 -->
-<pre class="r"><code>library(StateMonadCodeGenerator)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGlicmFyeShTdGF0ZU1vbmFkQ29kZUdlbmVyYXRvcilcbmBgYFxuYGBgIn0= -->
+<p><code>r</code>r library(StateMonadCodeGenerator)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoicmVwbGFjaW5nIHByZXZpb3VzIGltcG9ydCDigJhtYWdyaXR0cjo6c2V0X25hbWVz4oCZIGJ5IOKAmHB1cnJyOjpzZXRfbmFtZXPigJkgd2hlbiBsb2FkaW5nIOKAmFN0YXRlTW9uYWRDb2RlR2VuZXJhdG9y4oCZXG4ifQ== -->
 <pre><code>replacing previous import ‘magrittr::set_names’ by ‘purrr::set_names’ when loading ‘StateMonadCodeGenerator’</code></pre>
@@ -1791,18 +1792,9 @@ $(document).ready(function () {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuR2VuZXJhdGVTdGF0ZU1vbmFkQ29kZSggbW9uYWROYW1lID0gXCJTTVJNb25cIiwgXG4gICAgICAgICAgICAgICAgICAgICAgICBtZW1iZXJOYW1lcyA9IGMoXCJNXCIgPSBcIm1hdHJpeFwiLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcIk0wMVwiID0gXCJtYXRyaXhcIiwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXCJUYWdUeXBlUmFuZ2VcIiA9IFwiZGF0YS5mcmFtZVwiLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcIlRhZ1R5cGVzXCIgPSBcImNoYXJhY3RlclwiLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcIkl0ZW1Db2x1bW5OYW1lXCIgPSBcImNoYXJhY3RlclwiLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFwiVGFnVG9JbmRleFJ1bGVzXCIgPSBcImludGVnZXJcIiwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXCJJdGVtVG9JbmRleFJ1bGVzXCIgPSBcImludGVnZXJcIixcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcIkRhdGFcIiA9IFwiZGF0YS5mcmFtZVwiKSwgXG4gICAgICAgICAgICAgICAgICAgICAgICBtb25hZE9iamVjdEFyZ3VtZW50TmFtZSA9IFwic21yT2JqXCIsIFxuICAgICAgICAgICAgICAgICAgICAgICAgb3V0cHV0RmlsZSA9IFwiU01STW9uLWNvcmUuUlwiKVxuYGBgIn0= -->
-<pre class="r"><code>GenerateStateMonadCode( monadName = &quot;SMRMon&quot;, 
-                        memberNames = c(&quot;M&quot; = &quot;matrix&quot;, 
-                                        &quot;M01&quot; = &quot;matrix&quot;, 
-                                        &quot;TagTypeRange&quot; = &quot;data.frame&quot;, 
-                                        &quot;TagTypes&quot; = &quot;character&quot;, 
-                                        &quot;ItemColumnName&quot; = &quot;character&quot;,
-                                        &quot;TagToIndexRules&quot; = &quot;integer&quot;, 
-                                        &quot;ItemToIndexRules&quot; = &quot;integer&quot;,
-                                        &quot;Data&quot; = &quot;data.frame&quot;), 
-                        monadObjectArgumentName = &quot;smrObj&quot;, 
-                        outputFile = &quot;SMRMon-core.R&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuR2VuZXJhdGVTdGF0ZU1vbmFkQ29kZSggbW9uYWROYW1lID0gXFxTTVJNb25cXCwgXG4gICAgICAgICAgICAgICAgICAgICAgICBtZW1iZXJOYW1lcyA9IGMoXFxNXFwgPSBcXG1hdHJpeFxcLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcXE0wMVxcID0gXFxtYXRyaXhcXCwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXFxUYWdUeXBlUmFuZ2VcXCA9IFxcZGF0YS5mcmFtZVxcLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcXFRhZ1R5cGVzXFwgPSBcXGNoYXJhY3RlclxcLCBcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcXEl0ZW1Db2x1bW5OYW1lXFwgPSBcXGNoYXJhY3RlclxcLFxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxcVGFnVG9JbmRleFJ1bGVzXFwgPSBcXGludGVnZXJcXCwgXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgXFxJdGVtVG9JbmRleFJ1bGVzXFwgPSBcXGludGVnZXJcXCxcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcXERhdGFcXCA9IFxcZGF0YS5mcmFtZVxcKSwgXG4gICAgICAgICAgICAgICAgICAgICAgICBtb25hZE9iamVjdEFyZ3VtZW50TmFtZSA9IFxcc21yT2JqXFwsIFxuICAgICAgICAgICAgICAgICAgICAgICAgb3V0cHV0RmlsZSA9IFxcU01STW9uLWNvcmUuUlxcKVxuYGBgXG5gYGAifQ== -->
+<p><code>r</code>r GenerateStateMonadCode( monadName = , memberNames = c( = , 01 = ,  = .frame,  = ,  = ,  = ,  = ,  = .frame), monadObjectArgumentName = , outputFile = -core.R)</p>
+<pre><code></code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -1814,7 +1806,7 @@ $(document).ready(function () {
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiU01STW9uIGNvcmUgY29kZSBnZW5lcmF0aW9uIgphdXRob3I6IEFudG9uIEFudG9ub3YKZGF0ZTogImBgYHIgU3lzLkRhdGUoKWBgYCIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBJbnRyb2R1Y3Rpb24KClRoZSBjb2RlIGluIHRoaXMgbm90ZWJvb2sgd2FzIHVzZWQgdG8gZ2VuZXJhdGUgdGhlIGNvcmUgY29kZSBvZiB0aGUgYFNNUk1vbmAgbW9uYWQ7IHNlZSBbMV0uCgpUaGUgUiBkZXNpZ24gYW5kIGltcGxlbWVudGF0aW9uIGZvbGxvd3MgdGhlIGRlc2lnbiBhbmQgaW1wbGVtZW50YXRpb24gb2YgYFNNUk1vbmAgaW4gTWF0aGVtYXRpY2EsIHNlZSBbMl0uCgojIENvZGUgZ2VuZXJhdGlvbgoKSGVyZSB3ZSBsb2FkIHRoZSBTdGF0ZSBNb25hZCBjb2RlIGdlbmVyYXRpb24gcGFja2FnZToKCmBgYHtyfQpsaWJyYXJ5KFN0YXRlTW9uYWRDb2RlR2VuZXJhdG9yKQpgYGAKCmBgYHtyfQpHZW5lcmF0ZVN0YXRlTW9uYWRDb2RlKCBtb25hZE5hbWUgPSAiU01STW9uIiwgCiAgICAgICAgICAgICAgICAgICAgICAgIG1lbWJlck5hbWVzID0gYygiTSIgPSAibWF0cml4IiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiTTAxIiA9ICJtYXRyaXgiLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJUYWdUeXBlUmFuZ2UiID0gImRhdGEuZnJhbWUiLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJUYWdUeXBlcyIgPSAiY2hhcmFjdGVyIiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiSXRlbUNvbHVtbk5hbWUiID0gImNoYXJhY3RlciIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiVGFnVG9JbmRleFJ1bGVzIiA9ICJpbnRlZ2VyIiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiSXRlbVRvSW5kZXhSdWxlcyIgPSAiaW50ZWdlciIsCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiRGF0YSIgPSAiZGF0YS5mcmFtZSIpLCAKICAgICAgICAgICAgICAgICAgICAgICAgbW9uYWRPYmplY3RBcmd1bWVudE5hbWUgPSAic21yT2JqIiwgCiAgICAgICAgICAgICAgICAgICAgICAgIG91dHB1dEZpbGUgPSAiU01STW9uLWNvcmUuUiIpCmBgYAoKCiMgUmVmZXJlbmNlcwoKWzFdIEFudG9uIEFudG9ub3YsIApbU3RhdGUgbW9uYWQgY29kZSBnZW5lcmF0b3JdKGh0dHBzOi8vZ2l0aHViLmNvbS9hbnRvbm9uY3ViZS9SLXBhY2thZ2VzL3RyZWUvbWFzdGVyL1N0YXRlTW9uYWRDb2RlR2VuZXJhdG9yKSwgCigyMDE5KSwKW1ItcGFja2FnZXMgYXQgR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vYW50b25vbmN1YmUvUi1wYWNrYWdlcykuCgpbMl0gQW50b24gQW50b25vdiwgCltNb25hZGljIFNwYXJzZSBNYXRyaXggUmVjb21tZW5kZXIgTWF0aGVtYXRpY2EgcGFja2FnZV0oaHR0cHM6Ly9naXRodWIuY29tL2FudG9ub25jdWJlL01hdGhlbWF0aWNhRm9yUHJlZGljdGlvbi9ibG9iL21hc3Rlci9Nb25hZGljUHJvZ3JhbW1pbmcvTW9uYWRpY1NwYXJzZU1hdHJpeFJlY29tbWVuZGVyLm0pLAooMjAxOCksCltNYXRoZW1hdGljYUZvclByZWRpY3Rpb24gYXQgR2l0SHViXShodHRwczovL2dpdGh1Yi5jb20vYW50b25vbmN1YmUvTWF0aGVtYXRpY2FGb3JQcmVkaWN0aW9uKS4K</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiU01STW9uIGNvcmUgY29kZSBnZW5lcmF0aW9uIgphdXRob3I6IEFudG9uIEFudG9ub3YKZGF0ZTogImBgYHIgU3lzLkRhdGUoKWBgYCIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKIyBJbnRyb2R1Y3Rpb24KClRoZSBjb2RlIGluIHRoaXMgbm90ZWJvb2sgd2FzIHVzZWQgdG8gZ2VuZXJhdGUgdGhlIGNvcmUgY29kZSBvZiB0aGUgYFNNUk1vbmAgbW9uYWQ7IHNlZSBbMV0uCgpUaGUgUiBkZXNpZ24gYW5kIGltcGxlbWVudGF0aW9uIGZvbGxvd3MgdGhlIGRlc2lnbiBhbmQgaW1wbGVtZW50YXRpb24gb2YgYFNNUk1vbmAgaW4gTWF0aGVtYXRpY2EsIHNlZSBbMl0uCgojIENvZGUgZ2VuZXJhdGlvbgoKSGVyZSB3ZSBsb2FkIHRoZSBTdGF0ZSBNb25hZCBjb2RlIGdlbmVyYXRpb24gcGFja2FnZToKCmBgYHtyfQpsaWJyYXJ5KFN0YXRlTW9uYWRDb2RlR2VuZXJhdG9yKQpgYGAKCmBgYHtyfQpHZW5lcmF0ZVN0YXRlTW9uYWRDb2RlKCBtb25hZE5hbWUgPSAiU01STW9uIiwgCiAgICAgICAgICAgICAgICAgICAgICAgIG1lbWJlck5hbWVzID0gYygiTSIgPSAibWF0cml4IiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiTTAxIiA9ICJtYXRyaXgiLCAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJUYWdUeXBlUmFuZ2VzIiA9ICJkYXRhLmZyYW1lIiwgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAiVGFnVHlwZXMiID0gImNoYXJhY3RlciIsIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIkl0ZW1Db2x1bW5OYW1lIiA9ICJjaGFyYWN0ZXIiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIlRhZ1RvSW5kZXhSdWxlcyIgPSAiaW50ZWdlciIsIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIkl0ZW1Ub0luZGV4UnVsZXMiID0gImludGVnZXIiLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIkRhdGEiID0gImRhdGEuZnJhbWUiKSwgCiAgICAgICAgICAgICAgICAgICAgICAgIG1vbmFkT2JqZWN0QXJndW1lbnROYW1lID0gInNtck9iaiIsIAogICAgICAgICAgICAgICAgICAgICAgICBvdXRwdXRGaWxlID0gIlNNUk1vbi1jb3JlLlIiKQpgYGAKCgojIFJlZmVyZW5jZXMKClsxXSBBbnRvbiBBbnRvbm92LCAKW1N0YXRlIG1vbmFkIGNvZGUgZ2VuZXJhdG9yXShodHRwczovL2dpdGh1Yi5jb20vYW50b25vbmN1YmUvUi1wYWNrYWdlcy90cmVlL21hc3Rlci9TdGF0ZU1vbmFkQ29kZUdlbmVyYXRvciksIAooMjAxOSksCltSLXBhY2thZ2VzIGF0IEdpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL2FudG9ub25jdWJlL1ItcGFja2FnZXMpLgoKWzJdIEFudG9uIEFudG9ub3YsIApbTW9uYWRpYyBTcGFyc2UgTWF0cml4IFJlY29tbWVuZGVyIE1hdGhlbWF0aWNhIHBhY2thZ2VdKGh0dHBzOi8vZ2l0aHViLmNvbS9hbnRvbm9uY3ViZS9NYXRoZW1hdGljYUZvclByZWRpY3Rpb24vYmxvYi9tYXN0ZXIvTW9uYWRpY1Byb2dyYW1taW5nL01vbmFkaWNTcGFyc2VNYXRyaXhSZWNvbW1lbmRlci5tKSwKKDIwMTgpLApbTWF0aGVtYXRpY2FGb3JQcmVkaWN0aW9uIGF0IEdpdEh1Yl0oaHR0cHM6Ly9naXRodWIuY29tL2FudG9ub25jdWJlL01hdGhlbWF0aWNhRm9yUHJlZGljdGlvbikuCg==</div>
 
 
 
