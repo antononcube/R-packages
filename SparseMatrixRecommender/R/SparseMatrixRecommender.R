@@ -576,6 +576,8 @@ SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
 #' if NULL all found labels are returned.
 #' @param normalizeQ Should the scores be normalized?
 #' (By dividing by the maximum score.)
+#' @details If \code{dropZeroScoredLabels = TRUE} and the recommendations vector 
+#' has all zero scores then the return value is \code{NA}.
 #' @return A list of scored tags.
 #' @export
 SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs, 
@@ -603,6 +605,10 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
 
   if( dropZeroScoredLabels ) { 
     s <- s[ s$Score > 0, ] 
+  }
+  
+  if( length(s) == 0 ) { 
+    return(NA) 
   }
   
   if( is.numeric(maxNumberOfLabels) && maxNumberOfLabels > 0 ) {

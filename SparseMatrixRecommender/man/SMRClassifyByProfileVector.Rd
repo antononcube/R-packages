@@ -31,3 +31,7 @@ A list of scored tags.
 \description{
 Classify a profile vector into the column names of a tag type sub-matrix.
 }
+\details{
+If \code{dropZeroScoredLabels = TRUE} and the recommendations vector 
+has all zero scores then the return value is \code{NA}.
+}
