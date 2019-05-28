@@ -528,6 +528,7 @@ SMRMonTakeItemToIndexRules <- function( smrObj, functionName = "SMRMonTakeItemTo
   smrObj$ItemToIndexRules
 }
 
+
 ##===========================================================
 ## Data Taker
 ##===========================================================
@@ -550,6 +551,92 @@ SMRMonTakeData <- function( smrObj, functionName = "SMRMonTakeData" ) {
   smrObj$Data
 }
 
+##===========================================================
+## Get property
+##===========================================================
+
+#' Get a member of a SMRMon object
+#' @description Places an SMRMon object member to be the pipeline value.
+#' @param smrObj An SMRMon object.
+#' @param property A string.
+#' @return SMR object.
+#' @details This function simplifies certain workflows.
+#' @family Get functions
+#' @export
+SMRMonGetProperty <- function( smrObj, property ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !is.character(property) ) {
+    warning( "The argument property is expected to be a string.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  res <-
+    if ( tolower(property) %in% tolower( c( "TagTypes") ) ) {
+      smrObj %>% SMRMonTakeTagTypes
+    } else if( tolower(property) %in% tolower( c( "TagTypeRanges") ) ) {
+      smrObj %>% SMRMonTakeTagTypeRanges
+    } else if( tolower(property) %in% tolower( c( "ItemColumnName") ) ) {
+      smrObj %>% SMRMonTakeItemColumnName
+    } else if( tolower(property) %in% tolower( c( "Matrix", "M") ) ) {
+      smrObj %>% SMRMonTakeM
+    } else if( tolower(property) %in% tolower( c( "IncidenceMatrix", "M01") ) ) {
+      smrObj %>% SMRMonTakeM01
+    } else if( tolower(property) %in% tolower( c( "SubMatrices", "SubMatrixes", "ContingencyMatrices", "ContingencyMatrixes") ) ) {
+      setNames(
+        purrr::map( smrObj %>% SMRMonTakeTagTypes, function(tagType) {
+          SMRSubMatrix( smr = smrObj, tagType = tagType )
+        }),
+        smrObj %>% SMRMonTakeTagTypes
+      )
+    }
+
+  smrObj$Value <- res
+
+  smrObj
+}
+
+##===========================================================
+## Get sparse matrix property
+##===========================================================
+
+#' Get a member of a SMRMon object
+#' @description Places an SMRMon object member to be the pipeline value.
+#' @param smrObj An SMRMon object.
+#' @param property A string.
+#' @return SMR object.
+#' @details This function simplifies certain workflows.
+#' @family Get functions
+#' @export
+SMRMonGetMatrixProperty <- function( smrObj, property ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !is.character(property) ) {
+    warning( "The argument property is expected to be a string.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  res <-
+    if ( tolower(property) %in% tolower( c( "tags", "columns" ) ) ) {
+      colnames(smrObj %>% SMRMonTakeM)
+    } else if( tolower(property) %in% tolower( c( "rows") ) ) {
+      rownames(smrObj %>% SMRMonTakeM)
+    } else if( tolower(property) %in% tolower( c( "numberOfColumns") ) ) {
+      ncol(smrObj %>% SMRMonTakeM)
+    } else if( tolower(property) %in% tolower( c( "numberOfRows") ) ) {
+      nrow(smrObj %>% SMRMonTakeM)
+    } else if( tolower(property) %in% tolower( c( "dim", "dimensions") ) ) {
+      dim(smrObj %>% SMRMonTakeM)
+    } else if( tolower(property) %in% tolower( c( "density") ) ) {
+      length((smrObj %>% SMRMonTakeM)@x) / length(smrObj %>% SMRMonTakeM)
+    }
+
+  smrObj$Value <- res
+
+  smrObj
+}
 
 ##===========================================================
 ## Create from data
