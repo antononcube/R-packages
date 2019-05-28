@@ -28,10 +28,32 @@ smrObj <-
   SMRMonCreate( itemColumnName = "id")
 ```
 
+# Additional definitions
+
+```{r, eval=F}
+Perl6SMRMonParsingLib <- function() {
+    file.path("/", "Volumes", "Macintosh HD", "Users", "antonov", "ConversationalAgents", "Packages", "Perl6", "RecommenderWorkflows", "lib")
+}
+```
+
+```{r, eval=F}
+to_SMRMon_R_command <- function(command, parse=TRUE) {
+  pres <- Perl6Command( command = paste0( "say to_SMRMon_R(\"", command, "\")"),
+                        moduleDirectory = Perl6SMRMonParsingLib(),
+                        moduleName = "RecommenderWorkflows" )
+  pres <- gsub( "\\\"", "\"", pres, fixed = T)
+  if(parse) { parse(text = pres) }
+  else { pres }
+}
+```
+
 # Basic pipeline
 
 ```{r}
 dfTitanic
+```
+```{r}
+to_SMRMon_R_command( "recommend for history id.5, id.7 and id.12", parse = F )
 ```
 
 ```{r}
@@ -65,5 +87,28 @@ smrObj2 <-
      recommend by profile female, 30; 
      extend recommendations with dfTitanic; 
      show pipeline value" ) )
+```
+
+## SMR query
+
+```{r}
+to_SMRMon_R_command("show the recommender matrix number of rows")
+```
+```{r}
+to_SMRMon_R_command( 
+    "use recommender smrObj2;
+     display the tag types;
+     show sub matrices", parse = F )
+```
+
+```{r}
+smrObj3 <-
+  eval( to_SMRMon_R_command( 
+    "use recommender smrObj2;
+     display the tag types;
+     show the recommender itemColumnName;
+     show the sparse matrix number of rows;
+     show the sparse matrix number of columns;
+     display the recommender matrix density" ) )
 ```
 
