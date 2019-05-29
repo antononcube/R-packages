@@ -4,7 +4,7 @@
 \alias{predict.SMR}
 \title{Classification with a sparse matrix recommender object}
 \usage{
-\method{predict}{SMR}(smr, data, type = "decision", normalized = TRUE,
+\method{predict}{SMR}(smr, data, type = "decision", normalizedQ = TRUE,
   ...)
 }
 \arguments{
@@ -15,7 +15,9 @@
 \item{type}{What kind of result to be returned?
 The value 'raw' returns a matrix, 'decision' a vector of labels.}
 
-\item{normalized}{should the results be normalized or not if type equals 'raw'.}
+\item{normalizedQ}{Should the results be normalized or not if type equals 'raw'?}
+
+\item{...}{Parameters \code{\link{SMRClassifyByProfileVector}}.}
 }
 \value{
 If \code{type="decision"} -- a vector of scored class labels.
@@ -25,5 +27,8 @@ If \code{type="raw"} or \code{type="scores"} -- a contingency matrix of labels a
 Classify a data frame or matrix using a sparse matrix recommender.
 }
 \details{
-The sparse matrix recommender can have additional parameter tucked-in, see \code{smr['ClassifierParameters']}.
+The sparse matrix recommender \code{smr} can have additional parameters
+tucked-in to \code{smr['ClassifierParameters']}.
+The list \code{smr['ClassifierParameters']} can have elements: 
+"tagType", "nTopNNs", "voting", "dropZeroScoredLabels". (Same as \code{...}.)
 }

@@ -1036,7 +1036,7 @@ SMRImposeRowIDs <- function( rowIDs, smat ) {
 #' @export
 SMRImposeColumnIDs <- function( colIDs, smat ) {
   
-  t( SMRImposeRowIDs( colIDs, t(smat)) )
+  t( SMRImposeRowIDs( rowIDs = colIDs, smat = t(smat) ) )
 }
 
 
@@ -1251,7 +1251,7 @@ SMRRowBindMatrix <- function( smr, smat ) {
     
   } else if ( mean( colnames(smat) %in% colnames(smr$M01) ) == 1 ) {
     ## All of the columns of smat are in smr$M01.
-    smr$M01 <- rbind( smr$M01, SMRImposeColumnIDs( colIDs = colnames(smr$M01), smat ) )
+    smr$M01 <- rbind( smr$M01, SMRImposeColumnIDs( colIDs = colnames(smr$M01), smat = smat ) )
     
   } else {
     stop( "The column names of the specified sparse matrix are not a subset of the column names of the recommender object.", call. = TRUE )
@@ -1284,8 +1284,8 @@ SMRRowBind <- function( smr1, smr2 ) {
         smat1 <- SMRSubMatrix( smr = smr1, tagType = tt)
         smat2 <- SMRSubMatrix( smr = smr2, tagType = tt)
         colIDs <- unique( c(colnames(smat1), colnames(smat2)) )
-        smat1 <- SMRImposeColumnIDs( colIDs = colIDs, smat = smat1)
-        smat2 <- SMRImposeColumnIDs( colIDs = colIDs, smat = smat2)
+        smat1 <- SMRImposeColumnIDs( colIDs = colIDs, smat = smat1 )
+        smat2 <- SMRImposeColumnIDs( colIDs = colIDs, smat = smat2 )
         rbind(smat1, smat2)
       })
     
@@ -1374,22 +1374,31 @@ SMRMatricesToWideDF <- function( smr, tagTypes = NULL, sep = ", ", .progress = "
 #' @param data A matrix or a data frame.
 #' @param type What kind of result to be returned?
 #' The value 'raw' returns a matrix, 'decision' a vector of labels.
-#' @param normalized should the results be normalized or not if type equals 'raw'.
-#' @details The sparse matrix recommender can have additional parameter tucked-in, see \code{smr['ClassifierParameters']}.
+#' @param normalizedQ Should the results be normalized or not if type equals 'raw'?
+#' @param ... Parameters \code{\link{SMRClassifyByProfileVector}}.
+#' @details The sparse matrix recommender \code{smr} can have additional parameters
+#' tucked-in to \code{smr['ClassifierParameters']}.
+#' The list \code{smr['ClassifierParameters']} can have elements: 
+#' "tagType", "nTopNNs", "voting", "dropZeroScoredLabels". (Same as \code{...}.)
 #' @return If \code{type="decision"} -- a vector of scored class labels.
 #' If \code{type="raw"} or \code{type="scores"} -- a contingency matrix of labels and scores.
 #' @export
-predict.SMR <- function( smr, data, type = "decision", normalized = TRUE, ... ) {
+predict.SMR <- function( smr, data, type = "decision", normalizedQ = TRUE, ... ) {
   
-  if( !is.data.frame(data) && !is.matrix(data) ) {
-    stop( "The second argument is expected to be a matrix or a data frame.", call. = TRUE )
+  if( !( is.data.frame(data) || is.matrix(data) || ( "dgCMatrix" %in% class(data) ) ) ) {
+    stop( "The argument data is expected to be a matrix or a data frame.", call. = TRUE )
   }
   
   if( is.data.frame(data) ) {
     dataMat <- SMRCreate( dataRows = data, tagTypes = setdiff( colnames(data), smr$ItemColumnName), itemColumnName = smr$ItemColumnName )
     dataMat <- dataMat$M
+  } else if ( is.matrix(data) ) {
+    dataMat <- as( data, "sparseMatrix" )
+  } else {
+    ## Should be "dgCMatrix".
+    dataMat <- data
   }
-  
+   
   ## There should be a check is dataMat a sparse matrix.
   dataMat <- SMRImposeColumnIDs( colIDs = colnames(smr$M), smat = dataMat )
   
@@ -1438,7 +1447,7 @@ predict.SMR <- function( smr, data, type = "decision", normalized = TRUE, ... ) 
                                             nTopNNs = nTopNNs, voting = voting,
                                             dropZeroScoredLabels = dropZeroScoredLabels)
 
-        if( normalized && sum(recs$Score) > 0 ) { recs$Score <- recs$Score / sum(recs$Score)}
+        if( normalizedQ && sum(recs$Score) > 0 ) { recs$Score <- recs$Score / sum(recs$Score)}
         
         cbind( Index = i, recs )
       } )

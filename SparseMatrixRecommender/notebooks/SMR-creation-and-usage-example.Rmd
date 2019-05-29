@@ -7,6 +7,8 @@ output: html_notebook
 
 ```{r}
 library(SparseMatrixRecommender)
+library(Matrix)
+library(magrittr)
 ```
 
 # Introduction
@@ -158,5 +160,16 @@ clRes2 <- predict( smr2,
 xtabs( ~ Actual + Predicted, data.frame( Actual = testData[[labelColumnName]], Predicted = clRes2, stringsAsFactors = F))
 ```
 
+## Using matrices
+
+```{r}
+smr$M01[1:5,(ncol(smr$M01)-1):ncol(smr$M01)]
+```
+
+```{r}
+predict( smr, 
+         smr$M01[1:5,], 
+         nTopNNs = 20, type = "decision", tagType = labelColumnName )
+```
 
 
