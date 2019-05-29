@@ -1398,7 +1398,7 @@ predict.SMR <- function( smr, data, type = "decision", normalizedQ = TRUE, ... )
     ## Should be "dgCMatrix".
     dataMat <- data
   }
-   
+
   ## There should be a check is dataMat a sparse matrix.
   dataMat <- SMRImposeColumnIDs( colIDs = colnames(smr$M), smat = dataMat )
   
@@ -1453,6 +1453,8 @@ predict.SMR <- function( smr, data, type = "decision", normalizedQ = TRUE, ... )
       } )
     
     as.matrix( xtabs( Score ~ Index + Label, res, sparse = T ) )
+  } else {
+    stop( "The argument type is expected to be one of 'decision', 'raw', 'scores'.", call. = TRUE )
   }
   
 }
