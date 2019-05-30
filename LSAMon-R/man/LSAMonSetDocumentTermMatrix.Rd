@@ -4,7 +4,7 @@
 \alias{LSAMonSetDocumentTermMatrix}
 \title{Set DocumentTermMatrix.}
 \usage{
-LSAMonSetDocumentTermMatrix(lsaObj, DocumentTermMatrix)
+LSAMonSetDocumentTermMatrix(lsaObj, documentTermMatrix)
 }
 \arguments{
 \item{lsaObj}{An LSAMon object.}
