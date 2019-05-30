@@ -917,3 +917,85 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs,
   smrObj
 }
 
+
+##===========================================================
+## Apply tag types
+##===========================================================
+
+#' Apply tag type weights
+#' @description Applies the weights of tag types of a sparse matrix recommender object.
+#' @param smrObj A sparse matrix recommender.
+#' @param weights A list/vector of weights to be applied.
+#' @param default The weight to be used for weights not specified in weights.
+#' @details
+#' If \code{weights} does not have names it is going to replicated to match
+#' the length of \code{smr$TagTypes}.
+#' If \code{weights} has names the missing tag types are (if any)
+#' are set to have the value \code{default}.
+#' @return An SMRMon object.
+#' @export
+SMRMonApplyTagTypeWeights <- function( smrObj, weights, default = 1 ) {
+
+  #default <- if ( is.null(weights$Default) ) { 0 } else { weights$Default }
+
+  if( is.null(names(weights)) ) {
+    weights <- setNames( c( weights, rep( default, length(smrObj$TagTypes) - length(weights) ) ), smrObj$TagTypes )
+  }
+
+  cnames <- intersect( smrObj$TagTypes, names(weights) )
+
+  if( length(cnames) == 0 ) {
+    warning( "The tag types specified in weights are not known.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  diffnames <- setdiff( smrObj$TagTypes, cnames )
+
+  weights <- c( weights[cnames], setNames( rep_len( x = default, length.out = length(diffnames) ), diffnames ) )
+
+  weights <- weights[ smrObj$TagTypes ]
+
+  smrObj$M <- SMRApplyTagTypeWeights( smr = smrObj, weights = weights )
+
+  smrObj
+}
+
+
+##===========================================================
+## Tags nerest neighbors
+##===========================================================
+
+#' Tag nearest neighbors
+#' @description Find nearest neighbors for a given vector of tags.
+#' @param smrObj A sparse matrix recommender.
+#' @param tags Tags for which nearest neighbors are found.
+#' @param tagType The tag type of the nearest neighbors.
+#' @param nrecs Number of nearest neighbors.
+#' @param nrecsProfile Number of recommendations for finding the \code{tags} profile.
+#' @param normalizeQ Should the scores be normalized?
+#' (By dividing by the maximum score.)
+#' @param ... Additional arguments passed to \code{\link{SMRClassifyByProfileVector}}.
+#' @details The result is a list of scored tags that is assigned
+#' to \code{smrObj$Value}.
+#' This function is based in \code{\link{SMRClassifyByProfileVector}}.
+#' The tags to correspond to columns of the SMR object sparse matrix.
+#' (The columns of that matrix assumed to be unique.)
+#' @return An SMRMon object.
+#' @export
+SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsProfile = 100, normalizeQ, ...) {
+
+  prof <- data.frame( Score = 1, Tag = tags, stringsAsFactors = FALSE)
+
+  recs <- SMRRecommendationsByProfileDF( smr = smrObj, profile = prof, nrecs = nrecsProfile )
+
+  prof <- SMRProfileDF( smr = smrObj, itemHistory = setNames( recs[, c("Score", smrObj$ItemColumnName) ], c( "Rating", smrObj$ItemColumnName) ) )
+  profVec <- SMRProfileDFToVector( smr = smrObj, profileDF = prof )
+
+  res <- SMRClassifyByProfileVector( smr = smrObj, tagType = tagType, profileVec = profVec, nTopNNs = nrecsProfile, ... )
+
+  smrObj$Value <- res
+
+  smrObj
+}
+
+
