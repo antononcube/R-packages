@@ -193,7 +193,7 @@ LSAMonSetDocuments <- function( lsaObj, documents ) {
 #' @return An LSAMon object.
 #' @family Set/Take functions
 #' @export
-LSAMonSetDocumentTermMatrix <- function( lsaObj, DocumentTermMatrix ) {
+LSAMonSetDocumentTermMatrix <- function( lsaObj, documentTermMatrix ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(documentTermMatrix) }
 
