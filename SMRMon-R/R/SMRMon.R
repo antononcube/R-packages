@@ -741,7 +741,7 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 
   }
 
-  res <- SMRRecommendations( smr = smrObj, userHistoryItems = historyItems, userRatings = historyRatings, nrecs = nrecs )
+  res <- SMRRecommendations( smr = smrObj, userHistoryItems = historyItems, userRatings = historyRatings, nrecs = nrecs, removeHistory = removeHistoryQ )
 
   smrObj$Value <- res
 
