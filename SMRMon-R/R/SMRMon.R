@@ -936,6 +936,8 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs,
 #' @export
 SMRMonApplyTagTypeWeights <- function( smrObj, weights, default = 1 ) {
 
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
   #default <- if ( is.null(weights$Default) ) { 0 } else { weights$Default }
 
   if( is.null(names(weights)) ) {
@@ -984,6 +986,8 @@ SMRMonApplyTagTypeWeights <- function( smrObj, weights, default = 1 ) {
 #' @export
 SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsProfile = 100, normalizeQ, ...) {
 
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
   prof <- data.frame( Score = 1, Tag = tags, stringsAsFactors = FALSE)
 
   recs <- SMRRecommendationsByProfileDF( smr = smrObj, profile = prof, nrecs = nrecsProfile )
@@ -992,6 +996,63 @@ SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsP
   profVec <- SMRProfileDFToVector( smr = smrObj, profileDF = prof )
 
   res <- SMRClassifyByProfileVector( smr = smrObj, tagType = tagType, profileVec = profVec, nTopNNs = nrecsProfile, ... )
+
+  smrObj$Value <- res
+
+  smrObj
+}
+
+
+##===========================================================
+## Compute Top-K statistic
+##===========================================================
+
+#' Top-K statistic computation
+#' @description Computes the Top-K statistic for a data frame with the scored similarity pairs.
+#' @param smrObj A sparse matrix recommender.
+#' @param testData A data frame with colums \code{c( "Score", "SearchID", smrObj %>% SMRMonTakeItemColumnName )}.
+#' @param ks An integer vector with k's for the Top-K statistic.
+#' @param ... Additional arguments passed to \code{\link{SMRMonRecommend}}.
+#' @details The computation result is assigned to \code{smrObj$Value}.
+#' @return An SMRMon object.
+#' @export
+SMRMonComputeTopK <- function( smrObj, testData, ks, ...) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !( is.data.frame(testData) &&
+         ( sum( colnames(testData) %in% c( "Score", "SearchID", smrObj %>% SMRMonTakeItemColumnName ) ) == 3 ||
+           sum( colnames(testData) %in% c( "SearchID", smrObj %>% SMRMonTakeItemColumnName ) ) == 2 ) ) ) {
+    warning( paste( "The argument testData is expected to be a data frame with column names",
+                    "c( 'Score', 'SearchID',", smrObj %>% SMRMonTakeItemColumnName, ") or",
+                    "c( 'SearchID',", smrObj %>% SMRMonTakeItemColumnName, ") ." ), call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( ! is.numeric(ks) ) {
+    warning( "The argument argument ks is expected to be an integer vector.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Sorting ks.
+  ks <- sort(ks)
+
+  res <-
+    purrr::map_df( split(testData, testData$SearchID ), function(df) {
+
+      if( "Score" %in% colnames(df) ) {
+        df <- df[ order(-df$Score), ]
+      }
+
+      kRecs <- smrObj %>% SMRMonRecommend( history = df$SearchID[1], nrecs = max(ks), ... ) %>% SMRMonTakeValue
+
+      topKStat <-
+        purrr::map_dbl( ks, function(k) {
+          mean( df[[smrObj$ItemColumnName]] %in% kRecs[[smrObj$ItemColumnName]][1:k] )
+        })
+
+      data.frame( SearchID = df$SearchID[1], K = ks, Value = topKStat, stringsAsFactors = FALSE)
+    })
 
   smrObj$Value <- res
 

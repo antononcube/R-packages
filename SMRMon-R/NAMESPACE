@@ -2,6 +2,7 @@
 
 export(SMRMonApplyTagTypeWeights)
 export(SMRMonClassifyByProfile)
+export(SMRMonComputeTopK)
 export(SMRMonCreate)
 export(SMRMonCreateFromMatrices)
 export(SMRMonEchoFunctionValue)
