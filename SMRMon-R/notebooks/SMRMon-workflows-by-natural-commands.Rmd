@@ -30,13 +30,13 @@ smrObj <-
 
 # Additional definitions
 
-```{r, eval=F}
+```{r, eval=T}
 Perl6SMRMonParsingLib <- function() {
     file.path("/", "Volumes", "Macintosh HD", "Users", "antonov", "ConversationalAgents", "Packages", "Perl6", "RecommenderWorkflows", "lib")
 }
 ```
 
-```{r, eval=F}
+```{r, eval=T}
 to_SMRMon_R_command <- function(command, parse=TRUE) {
   pres <- Perl6Command( command = paste0( "say to_SMRMon_R(\"", command, "\")"),
                         moduleDirectory = Perl6SMRMonParsingLib(),
@@ -69,7 +69,7 @@ smrObj2 <-
 smrObj2 <- 
   eval( to_SMRMon_R_command( 
     "use recommender smrObj2; 
-     recommend for the history id.5, id.7; 
+     find top 5 recommendations for the history id.5, id.7; 
      echo value" ) )
 ```
 
@@ -87,6 +87,17 @@ smrObj2 <-
      recommend by profile female, 30; 
      extend recommendations with dfTitanic; 
      show pipeline value" ) )
+```
+
+## Profile finding
+
+
+```{r}
+smrObj3 <- 
+  eval( to_SMRMon_R_command( 
+    "use recommender smrObj2; 
+     compute profile for the history id.5, id.993; 
+     echo value" ) )
 ```
 
 ## SMR query

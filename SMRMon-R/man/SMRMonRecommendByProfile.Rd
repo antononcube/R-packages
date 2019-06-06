@@ -9,7 +9,7 @@ SMRMonRecommendByProfile(smrObj, profile, nrecs = 12)
 \arguments{
 \item{smrObj}{An SMRMon object.}
 
-\item{profile}{(Scored) profile tags.
+\item{profile}{Profile specification.
 A data frame with columns \code{c("Score", "Tag")};
 a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
@@ -17,10 +17,15 @@ a character vector, the correspond ratings assumed all to be 1.}
 \item{nrecs}{Number of recommendations to be returned.}
 }
 \value{
-A data frame with columns "Score", "Index", "Item".
+A SMRMon object
 }
 \description{
 Recommend items based on a sparse matrix and a specified profile indices and scores.
+}
+\details{
+The recommendations result is a
+data frame with columns "Score", "Index", \code{smr$ItemColumnName};
+assigned to \code{smrObj$Value}.
 }
 \seealso{
 Other Recommendations computation functions: \code{\link{SMRMonJoinAcross}},

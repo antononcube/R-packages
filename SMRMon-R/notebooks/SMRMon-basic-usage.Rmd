@@ -33,7 +33,7 @@ smrObj <-
 smrObj <-
   smrObj %>% 
   SMRMonRecommend( history = dfTitanic$id[1:2], nrecs = 6, removeHistoryQ = FALSE ) %>% 
-  SMRMonJoinAccross( dfTitanic ) %>% 
+  SMRMonJoinAcross( dfTitanic ) %>% 
   SMRMonEchoValue
 ```
 
@@ -44,7 +44,7 @@ smrObj <-
 smrObj <-
   smrObj %>% 
   SMRMonRecommendByProfile( profile = c("female", "30", "died"), nrecs = 12 ) %>% 
-  SMRMonJoinAccross( dfTitanic ) %>% 
+  SMRMonJoinAcross( dfTitanic ) %>% 
   SMRMonEchoValue
 ```
 
@@ -52,7 +52,7 @@ smrObj <-
 smrObj <-
   smrObj %>% 
   SMRMonRecommendByProfile( profile = c("female", "30", "died"), nrecs = 12 ) %>% 
-  SMRMonJoinAccross( setNames( dfTitanic, 1:ncol(dfTitanic)), by = c( "id" = "1" ) ) %>% 
+  SMRMonJoinAcross( setNames( dfTitanic, 1:ncol(dfTitanic)), by = c( "id" = "1" ) ) %>% 
   SMRMonEchoValue()
 ```
 
@@ -63,5 +63,30 @@ smrObj <-
   smrObj %>% 
   SMRMonClassifyByProfile( tagType = "passengerClass", profile = c("female", "died"), nTopNNs = 600 ) %>% 
   SMRMonEchoValue
+```
+
+# Tags nearest neighbors
+
+```{r}
+smrObj <-
+  smrObj %>% 
+  SMRMonTagNearestNeighbors( tags = c("20"), tagType = "passengerClass", nrecs = 12, nrecsProfile = 400 ) %>% 
+  SMRMonEchoValue
+```
+
+# Recommendations with progress
+
+```{r}
+ids <- sample(dfTitanic$id, 300)
+  
+pb <- dplyr::progress_estimated(length(ids))
+
+purrr::map_df( ids, function(x) {
+  
+    pb$tick()$print()
+  
+    res <- smrObj %>% SMRMonRecommend( x ) %>% SMRMonTakeValue
+
+  })
 ```
 

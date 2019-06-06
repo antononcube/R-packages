@@ -692,29 +692,28 @@ SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrice
 
 
 ##===========================================================
-## Recommend by history
+## Get history data frame
 ##===========================================================
 
-#' Compute recommendations
-#' @description Recommend items based on history of consumption.
+#' From a history specification into a data frame
+#' @description Transforms a history specification into a data frame.
 #' @param smrObj An SMRMon object.
-#' @param history (Rated) history items.
+#' @param history History specification.
 #' A data frame with columns \code{c("Rating", "Item")};
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
-#' @param nrecs Number of recommendations to be returned.
-#' @param removeHistoryQ Should the history be removed from the recommendations?
-#' @return The recommendations result is a
-#' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @details The result data frame is with columns "Score", \code{smr$ItemColumnName};
 #' assigned to \code{smrObj$Value}.
-#' @family Recommendations computation functions
+#' If \code{history = NULL} then \code{smrObj$Value} is used.
+#' @return A SMRMon object
 #' @export
-SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE ) {
+SMRMonGetHistoryDataFrame <- function( smrObj, history, functionName = "SMRMonGetHistoryDataFrame" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommend",  logicalResult = TRUE) ) {
-    return(SMRMonFailureSymbol)
+  if( is.null(history) ) {
+    history <- smrObj %>% SMRMonTakeValue
   }
 
   if( is.data.frame(history) && sum( c("Rating", "Item", smrObj$ItemColumnName ) %in% names(history) ) == 2 ) {
@@ -736,40 +735,40 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 
   } else {
 
-    warning( "Unknown history type.", call. = TRUE )
+    warning( paste( "Unknown history type from the function", functionName ), call. = TRUE )
     return(SMRMonFailureSymbol)
 
   }
 
-  res <- SMRRecommendations( smr = smrObj, userHistoryItems = historyItems, userRatings = historyRatings, nrecs = nrecs, removeHistory = removeHistoryQ )
-
-  smrObj$Value <- res
+  smrObj$Value <- data.frame( Rating = historyRatings, Item = historyItems, stringsAsFactors = FALSE )
 
   smrObj
 }
 
 
 ##===========================================================
-## Recommend by profile
+## Get profile data frame
 ##===========================================================
 
-#' Recommendations using a profile
-#' @description Recommend items based on a sparse matrix and a specified profile indices and scores.
+#' From a profile specification into a data frame
+#' @description Transforms a profile specification into a data frame.
 #' @param smrObj An SMRMon object.
-#' @param profile (Scored) profile tags.
+#' @param profile Profile specification.
 #' A data frame with columns \code{c("Score", "Tag")};
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
-#' @param nrecs Number of recommendations to be returned.
-#' @return A data frame with columns "Score", "Index", "Item".
-#' @family Recommendations computation functions
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @details The result data frame is with columns "Score", \code{smr$ItemColumnName};
+#' assigned to \code{smrObj$Value}.
+#' If \code{profile = NULL} then \code{smrObj$Value} is used.
+#' @return A SMRMon object
 #' @export
-SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12 ) {
+SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGetProfileDataFrame" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommendByProfile",  logicalResult = TRUE) ) {
-    return(SMRMonFailureSymbol)
+  if( is.null(profile) ) {
+    profile <- smrObj %>% SMRMonTakeValue
   }
 
   if( is.data.frame(profile) && sum( c("Score", "Tag" ) %in% names(profile) ) == 2 ) {
@@ -789,14 +788,131 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12 ) {
 
   } else {
 
-    warning( "Unknown profile type.", call. = TRUE )
+    warning( paste( "Unknown profile type from the function", functionName ), call. = TRUE )
     return(SMRMonFailureSymbol)
 
   }
 
+  smrObj$Value <- data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE )
+
+  smrObj
+}
+
+
+##===========================================================
+## Recommend by history
+##===========================================================
+
+#' Compute recommendations
+#' @description Recommend items based on history of consumption.
+#' @param smrObj An SMRMon object.
+#' @param history History specification.
+#' A data frame with columns \code{c("Rating", "Item")};
+#' a numeric vector named elements, the names being items;
+#' a character vector, the correspond ratings assumed all to be 1.
+#' @param nrecs Number of recommendations to be returned.
+#' @param removeHistoryQ Should the history be removed from the recommendations?
+#' @details The recommendations result is a
+#' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
+#' assigned to \code{smrObj$Value}.
+#' @return A SMRMon object
+#' @family Recommendations computation functions
+#' @export
+SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommend",  logicalResult = TRUE) ) {
+    return(SMRMonFailureSymbol)
+  }
+
+  smrObj <- smrObj %>% SMRMonGetHistoryDataFrame( history = history, functionName = "SMRMonRecommend" )
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  history <- smrObj %>% SMRMonTakeValue
+
+  res <- SMRRecommendations( smr = smrObj, userHistoryItems = history$Item, userRatings = history$Rating, nrecs = nrecs, removeHistory = removeHistoryQ )
+
+  smrObj$Value <- res
+
+  smrObj
+}
+
+
+##===========================================================
+## Recommend by profile
+##===========================================================
+
+#' Recommendations using a profile
+#' @description Recommend items based on a sparse matrix and a specified profile indices and scores.
+#' @param smrObj An SMRMon object.
+#' @param profile Profile specification.
+#' A data frame with columns \code{c("Score", "Tag")};
+#' a numeric vector named elements, the names being items;
+#' a character vector, the correspond ratings assumed all to be 1.
+#' @param nrecs Number of recommendations to be returned.
+#' @details The recommendations result is a
+#' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
+#' assigned to \code{smrObj$Value}.
+#' @return A SMRMon object
+#' @family Recommendations computation functions
+#' @export
+SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12 ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommendByProfile",  logicalResult = TRUE) ) {
+    return(SMRMonFailureSymbol)
+  }
+
+  smrObj <- smrObj %>% SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonRecommendByProfile" )
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  profile <- smrObj %>% SMRMonTakeValue
+
   res <- SMRRecommendationsByProfileDF( smr = smrObj,
-                                        profile = data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE ),
+                                        profile = data.frame( Score = profile$Score, Tag = profile$Tag, stringsAsFactors = FALSE ),
                                         nrecs = nrecs )
+
+  smrObj$Value <- res
+
+  smrObj
+}
+
+
+##===========================================================
+## Find profile
+##===========================================================
+
+#' Profile for a history specification
+#' @description Find the profile that corresponds to a history specification.
+#' @param smrObj An SMRMon object.
+#' @param history History specification.
+#' A data frame with columns \code{c("Rating", "Item")};
+#' a numeric vector named elements, the names being items;
+#' a character vector, the correspond ratings assumed all to be 1.
+#' @details The recommendations result is a
+#' data frame with columns "Score", "Index", "Tag";
+#' assigned to \code{smrObj$Value}.
+#' @return A SMRMon object
+#' @export
+SMRMonProfile <- function( smrObj, history ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonProfile",  logicalResult = TRUE) ) {
+    return(SMRMonFailureSymbol)
+  }
+
+  smrObj <- smrObj %>% SMRMonGetHistoryDataFrame( history = history, functionName = "SMRMonProfile" )
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  history <- smrObj %>% SMRMonTakeValue
+
+  res <- SMRProfileDF( smr = smrObj, itemHistory = history )
 
   smrObj$Value <- res
 

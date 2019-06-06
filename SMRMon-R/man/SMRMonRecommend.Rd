@@ -9,7 +9,7 @@ SMRMonRecommend(smrObj, history, nrecs = 12, removeHistoryQ = FALSE)
 \arguments{
 \item{smrObj}{An SMRMon object.}
 
-\item{history}{(Rated) history items.
+\item{history}{History specification.
 A data frame with columns \code{c("Rating", "Item")};
 a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
@@ -19,12 +19,15 @@ a character vector, the correspond ratings assumed all to be 1.}
 \item{removeHistoryQ}{Should the history be removed from the recommendations?}
 }
 \value{
-The recommendations result is a
-data frame with columns "Score", "Index", \code{smr$ItemColumnName};
-assigned to \code{smrObj$Value}.
+A SMRMon object
 }
 \description{
 Recommend items based on history of consumption.
+}
+\details{
+The recommendations result is a
+data frame with columns "Score", "Index", \code{smr$ItemColumnName};
+assigned to \code{smrObj$Value}.
 }
 \seealso{
 Other Recommendations computation functions: \code{\link{SMRMonJoinAcross}},
