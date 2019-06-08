@@ -32,7 +32,7 @@ library(magrittr)
 # Generate State monad code
 
 ```{r}
-rCodeFileName <- "~/R-packages/StateMonadCodeGenerator/generated-code/StMon.R"
+rCodeFileName <- "../generated-code/StMon.R"
 genCode <- 
   GenerateStateMonadCode( outputFile = rCodeFileName, 
                           monadName = "StMon", 
@@ -67,6 +67,19 @@ source(rCodeFileName)
 StMonUnit() %>% 
   StMonSetData( runif(n = 10, min = 10, max = 30) ) %>% 
   StMonTakeData
+```
+
+```{r}
+obj1 <-
+  StMonUnit() %>% 
+  StMonSetValue( runif(n = 10, min = 10, max = 30) ) %>% 
+  StMonEchoValue %>% 
+  StMonOption( function(x) {
+    res <- x %>% StMonTakeValue
+    x %>% StMonSetValue( res ^ 2 )
+    StMonFailureSymbol
+  }) %>% 
+  StMonEchoValue
 ```
 
 

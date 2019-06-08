@@ -78,10 +78,10 @@ StMonTakeValue <- function( qrObj ) {
 #' @param memberName The name of the member to be checked.
 #' @param memberPrettyName A pretty member name (for messages).
 #' @param functionName The name of the delegating function.
-#' @param logicalResult Should the result be logical value?
+#' @param logicalResultQ Should the result be a logical value?
 #' @return A logical value or an StMon object.
 #' @export
-StMonMemberPresenceCheck <- function( qrObj, memberName, memberPrettyName = memberName, functionName = "", logicalResult = FALSE ) {
+StMonMemberPresenceCheck <- function( qrObj, memberName, memberPrettyName = memberName, functionName = "", logicalResultQ = FALSE ) {
 
   if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
 
@@ -94,9 +94,29 @@ StMonMemberPresenceCheck <- function( qrObj, memberName, memberPrettyName = memb
     res <- FALSE
   }
 
-  if( logicalResult ) { res }
-  else if ( !logicalResult && !res) { StMonFailureSymbol }
+  if( logicalResultQ ) { res }
+  else if ( !logicalResultQ && !res) { StMonFailureSymbol }
   else { qrObj }
+}
+
+
+##===========================================================
+## Echo monad's value
+##===========================================================
+
+#' Echo monad's value.
+#' @description Prints the "Value" element/member of the monad object.
+#' @param qrObj An StMon object.
+#' @return A StMon object.
+#' @details Prints \code{f(qrObj$Value)}.
+#' @export
+StMonEchoValue <- function( qrObj ) {
+
+  if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
+
+  print( qrObj$Value )
+
+  qrObj
 }
 
 
@@ -104,8 +124,9 @@ StMonMemberPresenceCheck <- function( qrObj, memberName, memberPrettyName = memb
 ## Echo function application of over monad's value
 ##===========================================================
 
-#' Function application to monad's value.
-#' @description Apply a function to the "Value" element/member of the monad object.
+#' Echo function application to monad's value.
+#' @description Applies a function to the "Value" element/member of the monad object
+#' and prints the result.
 #' @param qrObj An StMon object.
 #' @param f A function to be applied to \code{qrObj$Value}.
 #' @return A StMon object.
@@ -121,6 +142,30 @@ StMonEchoFunctionValue <- function( qrObj, f ) {
 }
 
 
+##===========================================================
+## Optional function application over monad's object
+##===========================================================
+
+#' Optional function application to monad's object.
+#' @description If monadic failure is obtained from \code{qrObj %>% f}
+#' then returns the original \code{qrObj};
+#' else returns the result of \code{qrObj %>% f}.
+#' @param qrObj An StMon object.
+#' @param f A function to be applied to the monad object.
+#' @return A StMon object.
+#' @details In general \code{f} should return a monad object,
+#' but that is not enforced.
+#' @export
+StMonOption <- function( qrObj, f ) {
+
+  if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
+
+  res <- qrObj %>% f
+
+  if( StMonFailureQ(res) ) { return(qrObj) }
+
+  res
+}
 
 ##===========================================================
 ## Data setter

@@ -78,10 +78,10 @@ MStateTakeValue <- function( msObj ) {
 #' @param memberName The name of the member to be checked.
 #' @param memberPrettyName A pretty member name (for messages).
 #' @param functionName The name of the delegating function.
-#' @param logicalResult Should the result be logical value?
+#' @param logicalResultQ Should the result be a logical value?
 #' @return A logical value or an MState object.
 #' @export
-MStateMemberPresenceCheck <- function( msObj, memberName, memberPrettyName = memberName, functionName = "", logicalResult = FALSE ) {
+MStateMemberPresenceCheck <- function( msObj, memberName, memberPrettyName = memberName, functionName = "", logicalResultQ = FALSE ) {
 
   if( MStateFailureQ(msObj) ) { return(MStateFailureSymbol) }
 
@@ -94,9 +94,29 @@ MStateMemberPresenceCheck <- function( msObj, memberName, memberPrettyName = mem
     res <- FALSE
   }
 
-  if( logicalResult ) { res }
-  else if ( !logicalResult && !res) { MStateFailureSymbol }
+  if( logicalResultQ ) { res }
+  else if ( !logicalResultQ && !res) { MStateFailureSymbol }
   else { msObj }
+}
+
+
+##===========================================================
+## Echo monad's value
+##===========================================================
+
+#' Echo monad's value.
+#' @description Prints the "Value" element/member of the monad object.
+#' @param msObj An MState object.
+#' @return A MState object.
+#' @details Prints \code{f(msObj$Value)}.
+#' @export
+MStateEchoValue <- function( msObj ) {
+
+  if( MStateFailureQ(msObj) ) { return(MStateFailureSymbol) }
+
+  print( msObj$Value )
+
+  msObj
 }
 
 
@@ -104,8 +124,9 @@ MStateMemberPresenceCheck <- function( msObj, memberName, memberPrettyName = mem
 ## Echo function application of over monad's value
 ##===========================================================
 
-#' Function application to monad's value.
-#' @description Apply a function to the "Value" element/member of the monad object.
+#' Echo function application to monad's value.
+#' @description Applies a function to the "Value" element/member of the monad object
+#' and prints the result.
 #' @param msObj An MState object.
 #' @param f A function to be applied to \code{msObj$Value}.
 #' @return A MState object.
@@ -121,3 +142,27 @@ MStateEchoFunctionValue <- function( msObj, f ) {
 }
 
 
+##===========================================================
+## Optional function application over monad's object
+##===========================================================
+
+#' Optional function application to monad's object.
+#' @description If monadic failure is obtained from \code{msObj %>% f}
+#' then returns the original \code{msObj};
+#' else returns the result of \code{msObj %>% f}.
+#' @param msObj An MState object.
+#' @param f A function to be applied to the monad object.
+#' @return A MState object.
+#' @details In general \code{f} should return a monad object,
+#' but that is not enforced.
+#' @export
+MStateOption <- function( msObj, f ) {
+
+  if( MStateFailureQ(msObj) ) { return(MStateFailureSymbol) }
+
+  res <- msObj %>% f
+
+  if( MStateFailureQ(res) ) { return(msObj) }
+
+  res
+}
