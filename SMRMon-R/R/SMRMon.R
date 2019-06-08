@@ -115,10 +115,10 @@ SMRMonTakeValue <- function( smrObj ) {
 #' @param memberName The name of the member to be checked.
 #' @param memberPrettyName A pretty member name (for messages).
 #' @param functionName The name of the delegating function.
-#' @param logicalResult Should the result be logical value?
+#' @param logicalResultQ Should the result be a logical value?
 #' @return A logical value or an SMRMon object.
 #' @export
-SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = memberName, functionName = "", logicalResult = FALSE ) {
+SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = memberName, functionName = "", logicalResultQ = FALSE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -131,8 +131,8 @@ SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = me
     res <- FALSE
   }
 
-  if( logicalResult ) { res }
-  else if ( !logicalResult && !res) { SMRMonFailureSymbol }
+  if( logicalResultQ ) { res }
+  else if ( !logicalResultQ && !res) { SMRMonFailureSymbol }
   else { smrObj }
 }
 
@@ -389,7 +389,7 @@ SMRMonTakeM <- function( smrObj, functionName = "SMRMonTakeM" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -411,7 +411,7 @@ SMRMonTakeM01 <- function( smrObj, functionName = "SMRMonTakeM01" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M01", memberPrettyName = "M01", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M01", memberPrettyName = "M01", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -433,7 +433,7 @@ SMRMonTakeTagTypeRanges <- function( smrObj, functionName = "SMRMonTakeTagTypeRa
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "TagTypeRanges", memberPrettyName = "TagTypeRanges", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "TagTypeRanges", memberPrettyName = "TagTypeRanges", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -455,7 +455,7 @@ SMRMonTakeTagTypes <- function( smrObj, functionName = "SMRMonTakeTagTypes" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "TagTypes", memberPrettyName = "TagTypes", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "TagTypes", memberPrettyName = "TagTypes", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -477,7 +477,7 @@ SMRMonTakeItemColumnName <- function( smrObj, functionName = "SMRMonTakeItemColu
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "ItemColumnName", memberPrettyName = "ItemColumnName", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "ItemColumnName", memberPrettyName = "ItemColumnName", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -499,7 +499,7 @@ SMRMonTakeTagToIndexRules <- function( smrObj, functionName = "SMRMonTakeTagToIn
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "TagToIndexRules", memberPrettyName = "TagToIndexRules", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "TagToIndexRules", memberPrettyName = "TagToIndexRules", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -521,7 +521,7 @@ SMRMonTakeItemToIndexRules <- function( smrObj, functionName = "SMRMonTakeItemTo
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "ItemToIndexRules", memberPrettyName = "ItemToIndexRules", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "ItemToIndexRules", memberPrettyName = "ItemToIndexRules", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -544,12 +544,13 @@ SMRMonTakeData <- function( smrObj, functionName = "SMRMonTakeData" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "Data", memberPrettyName = "Data", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "Data", memberPrettyName = "Data", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
   smrObj$Data
 }
+
 
 ##===========================================================
 ## Get property
@@ -703,12 +704,13 @@ SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrice
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param functionName A string that is a name of this function or a delegating function.
+#' @param warningQ Should a warning be issued if \code{history} is of unknown type?
 #' @details The result data frame is with columns "Score", \code{smr$ItemColumnName};
 #' assigned to \code{smrObj$Value}.
 #' If \code{history = NULL} then \code{smrObj$Value} is used.
 #' @return A SMRMon object
 #' @export
-SMRMonGetHistoryDataFrame <- function( smrObj, history, functionName = "SMRMonGetHistoryDataFrame" ) {
+SMRMonGetHistoryDataFrame <- function( smrObj, history, functionName = "SMRMonGetHistoryDataFrame", warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -735,7 +737,9 @@ SMRMonGetHistoryDataFrame <- function( smrObj, history, functionName = "SMRMonGe
 
   } else {
 
-    warning( paste( "Unknown history type from the function", functionName ), call. = TRUE )
+    if( warningQ ) {
+      warning( paste0( "Unknown history type from the function ", functionName, "." ), call. = TRUE )
+    }
     return(SMRMonFailureSymbol)
 
   }
@@ -758,12 +762,13 @@ SMRMonGetHistoryDataFrame <- function( smrObj, history, functionName = "SMRMonGe
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param functionName A string that is a name of this function or a delegating function.
+#' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
 #' @details The result data frame is with columns "Score", \code{smr$ItemColumnName};
 #' assigned to \code{smrObj$Value}.
 #' If \code{profile = NULL} then \code{smrObj$Value} is used.
 #' @return A SMRMon object
 #' @export
-SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGetProfileDataFrame" ) {
+SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGetProfileDataFrame", warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -788,7 +793,9 @@ SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGe
 
   } else {
 
-    warning( paste( "Unknown profile type from the function", functionName ), call. = TRUE )
+    if(warningQ) {
+      warning( paste0( "Unknown profile type from the function ", functionName, "." ), call. = TRUE )
+    }
     return(SMRMonFailureSymbol)
 
   }
@@ -796,6 +803,108 @@ SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGe
   smrObj$Value <- data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE )
 
   smrObj
+}
+
+
+##===========================================================
+## Predicates
+##===========================================================
+
+#' Is the argument a profile specification.
+#' @description Tests is the argument a profile.
+#' If \code{smrObj$M} is a (recommendation) sparse matrix then the profile tags
+#' are tested are they known columns of \code{smrObj$M}.
+#' @param smrObj An SMRMon object.
+#' @param spec Data to be tested. If NULL \code{smrObj$Value} is tested.
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @param logicalResultQ Should the result be a logical value?
+#' @return SMR object.
+#' @details This function simplifies certain workflows.
+#' @family Predicate functions
+#' @export
+SMRMonProfileSpecificationQ <- function( smrObj, spec, functionName = "SMRMonProfileSpecificationQ", logicalResultQ = FALSE ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  profile <- SMRMonUnit() %>% SMRMonGetProfileDataFrame( spec, functionName = functionName )
+
+  if( SMRMonFailureQ(profile) ) {
+
+    res <- FALSE
+
+  } else {
+
+    if( SMRMonMemberPresenceCheck( smrObj = smrObj, memberName = "M", functionName = functionName, logicalResult = TRUE) ) {
+
+      res <- mean(profile$Tag %in% colnames(smrObj$M))
+
+      if( 0 < res && res < 1 ) {
+        warning( paste0( "Some profile tags are unknown when invoking ", functionName, "."), call. = TRUE )
+        res <- TRUE
+      } else if ( res == 0 ) {
+        warning( paste0( "All profile tags are unknown when invoking ", functionName, "."), call. = TRUE )
+        res <- FALSE
+      } else {
+        res <- TRUE
+      }
+
+    } else {
+      res <- TRUE
+    }
+
+  }
+
+  if( logicalResultQ ) { return(res) }
+
+  smrObj$Value <- profile
+  return(smrObj)
+}
+
+##===========================================================
+## Top recommendations
+##===========================================================
+
+#' Top recommendations
+#' @description Computes the top recommendations for a history or profile argument
+#' or monad's value.
+#' @param smrObj An SMRMon object.
+#' @param spec A history or profle specification.
+#' If NULL \code{smrObj$Value} is (tried to be) used.
+#' @return SMR object.
+#' @details This function simplifies certain workflows.
+#' (Very inefficient implementation at this point.)
+#' @family Recommendations computation functions
+#' @export
+SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12 ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if ( is.null(spec) ) {
+
+    res <- smrObj %>% SMRMonRecommend( smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE )
+
+    if( !SMRMonFailureQ(res) ) { return(res) }
+
+    res <- smrObj %>% SMRMonRecommendByProfile(  smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE )
+
+    if( SMRMonFailureQ(res) ) {
+      warning( "The monad object 'Value' is not a history or profile specification.", call. = TRUE )
+    }
+
+  } else {
+
+    res <- smrObj %>% SMRMonRecommend( spec, nrecs = nrecs )
+
+    if( !SMRMonFailureQ(res) ) { return(res) }
+
+    res <- smrObj %>% SMRMonRecommendByProfile( spec, nrecs = nrecs )
+
+    if( SMRMonFailureQ(res) ) {
+      warning( "The argument spec is not a history or profile specification.", call. = TRUE )
+    }
+  }
+
+  res
 }
 
 
@@ -812,21 +921,22 @@ SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGe
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param nrecs Number of recommendations to be returned.
 #' @param removeHistoryQ Should the history be removed from the recommendations?
+#' @param warningQ Should a warning be issued if \code{history} is of unknown type?
 #' @details The recommendations result is a
 #' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
 #' assigned to \code{smrObj$Value}.
 #' @return A SMRMon object
 #' @family Recommendations computation functions
 #' @export
-SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE ) {
+SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommend",  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommend",  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
-  smrObj <- smrObj %>% SMRMonGetHistoryDataFrame( history = history, functionName = "SMRMonRecommend" )
+  smrObj <- smrObj %>% SMRMonGetHistoryDataFrame( history = history, functionName = "SMRMonRecommend", warningQ = warningQ )
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -852,21 +962,22 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param nrecs Number of recommendations to be returned.
+#' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
 #' @details The recommendations result is a
 #' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
 #' assigned to \code{smrObj$Value}.
 #' @return A SMRMon object
 #' @family Recommendations computation functions
 #' @export
-SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12 ) {
+SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommendByProfile",  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommendByProfile",  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
-  smrObj <- smrObj %>% SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonRecommendByProfile" )
+  smrObj <- smrObj %>% SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonRecommendByProfile", warningQ = warningQ )
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -902,7 +1013,7 @@ SMRMonProfile <- function( smrObj, history ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonProfile",  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonProfile",  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -957,7 +1068,6 @@ SMRMonJoinAcross <- function( smrObj, data, by = smrObj$ItemColumnName ) {
 }
 
 
-
 ##===========================================================
 ## Classify by profile
 ##===========================================================
@@ -987,7 +1097,7 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs,
   ## The following code shares a lot the beginning of SMRMonRecommendByProfile.
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonClassifyByProfile",  logicalResult = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonClassifyByProfile",  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -1174,5 +1284,6 @@ SMRMonComputeTopK <- function( smrObj, testData, ks, ...) {
 
   smrObj
 }
+
 
 
