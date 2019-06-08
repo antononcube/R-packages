@@ -56,6 +56,23 @@ smrObj <-
   SMRMonEchoValue()
 ```
 
+# Profile finding
+
+```{r}
+smrObj <-
+  smrObj %>% 
+  SMRMonProfile( history = "id.993" ) %>% 
+  SMRMonEchoValue()
+```
+
+```{r}
+ smrObj2 <-
+  smrObj %>% 
+  SMRMonGetTopRecommendations( nrecs = 12 ) %>% 
+  SMRMonJoinAcross( dfTitanic ) %>% 
+  SMRMonEchoValue
+```
+
 # Classification
 
 ```{r}
@@ -76,7 +93,7 @@ smrObj <-
 
 # Recommendations with progress
 
-```{r}
+```{r, eval=F}
 ids <- sample(dfTitanic$id, 300)
   
 pb <- dplyr::progress_estimated(length(ids))

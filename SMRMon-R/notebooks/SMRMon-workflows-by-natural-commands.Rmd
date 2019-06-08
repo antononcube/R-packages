@@ -97,6 +97,9 @@ smrObj3 <-
   eval( to_SMRMon_R_command( 
     "use recommender smrObj2; 
      compute profile for the history id.5, id.993; 
+     echo value;
+     find top 5 recommendations;
+     extend recommendations with dfTitanic;
      echo value" ) )
 ```
 
