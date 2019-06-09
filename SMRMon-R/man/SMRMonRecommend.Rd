@@ -4,7 +4,8 @@
 \alias{SMRMonRecommend}
 \title{Compute recommendations}
 \usage{
-SMRMonRecommend(smrObj, history, nrecs = 12, removeHistoryQ = FALSE)
+SMRMonRecommend(smrObj, history, nrecs = 12, removeHistoryQ = FALSE,
+  warningQ = TRUE)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -17,6 +18,8 @@ a character vector, the correspond ratings assumed all to be 1.}
 \item{nrecs}{Number of recommendations to be returned.}
 
 \item{removeHistoryQ}{Should the history be removed from the recommendations?}
+
+\item{warningQ}{Should a warning be issued if \code{history} is of unknown type?}
 }
 \value{
 A SMRMon object
@@ -30,7 +33,8 @@ data frame with columns "Score", "Index", \code{smr$ItemColumnName};
 assigned to \code{smrObj$Value}.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonJoinAcross}},
+Other Recommendations computation functions: \code{\link{SMRMonGetTopRecommendations}},
+  \code{\link{SMRMonJoinAcross}},
   \code{\link{SMRMonRecommendByProfile}}
 }
 \concept{Recommendations computation functions}

@@ -5,7 +5,7 @@
 \title{From a profile specification into a data frame}
 \usage{
 SMRMonGetProfileDataFrame(smrObj, profile,
-  functionName = "SMRMonGetProfileDataFrame")
+  functionName = "SMRMonGetProfileDataFrame", warningQ = TRUE)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -16,6 +16,8 @@ a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
 
 \item{functionName}{A string that is a name of this function or a delegating function.}
+
+\item{warningQ}{Should a warning be issued if \code{profile} is of unknown type?}
 }
 \value{
 A SMRMon object

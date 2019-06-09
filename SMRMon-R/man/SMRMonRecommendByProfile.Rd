@@ -4,7 +4,7 @@
 \alias{SMRMonRecommendByProfile}
 \title{Recommendations using a profile}
 \usage{
-SMRMonRecommendByProfile(smrObj, profile, nrecs = 12)
+SMRMonRecommendByProfile(smrObj, profile, nrecs = 12, warningQ = TRUE)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -15,6 +15,8 @@ a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
 
 \item{nrecs}{Number of recommendations to be returned.}
+
+\item{warningQ}{Should a warning be issued if \code{profile} is of unknown type?}
 }
 \value{
 A SMRMon object
@@ -28,7 +30,8 @@ data frame with columns "Score", "Index", \code{smr$ItemColumnName};
 assigned to \code{smrObj$Value}.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonJoinAcross}},
+Other Recommendations computation functions: \code{\link{SMRMonGetTopRecommendations}},
+  \code{\link{SMRMonJoinAcross}},
   \code{\link{SMRMonRecommend}}
 }
 \concept{Recommendations computation functions}

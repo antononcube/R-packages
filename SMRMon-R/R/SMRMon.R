@@ -861,14 +861,14 @@ SMRMonProfileSpecificationQ <- function( smrObj, spec, functionName = "SMRMonPro
 }
 
 ##===========================================================
-## Top recommendations
+## Get top recommendations
 ##===========================================================
 
-#' Top recommendations
+#' Get top recommendations
 #' @description Computes the top recommendations for a history or profile argument
 #' or monad's value.
 #' @param smrObj An SMRMon object.
-#' @param spec A history or profle specification.
+#' @param spec A history or profile specification.
 #' If NULL \code{smrObj$Value} is (tried to be) used.
 #' @return SMR object.
 #' @details This function simplifies certain workflows.
@@ -1081,6 +1081,8 @@ SMRMonJoinAcross <- function( smrObj, data, by = smrObj$ItemColumnName ) {
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param nTopNNs Number of top nearest neighbors to be used in the derive the classification.
+#' If NULL one hundred top nearest neighbors are used.
+#' (More precisely \code{min( 100, nrow(smrObj$M) )}.)
 #' @param voting Should simple voting be used or a weighted sum?
 #' @param maxNumberOfLabels The maximum number of labels to be returned;
 #' if NULL all found labels are returned.
@@ -1091,7 +1093,7 @@ SMRMonJoinAcross <- function( smrObj, data, by = smrObj$ItemColumnName ) {
 #' This function is based in \code{\link{SMRClassifyByProfileVector}}.
 #' @return An SMRMon object.
 #' @export
-SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs,
+SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
                                      voting = FALSE, dropZeroScoredLabels = TRUE, maxNumberOfLabels = NULL, normalizeQ = TRUE ) {
 
   ## The following code shares a lot the beginning of SMRMonRecommendByProfile.
@@ -1099,6 +1101,10 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs,
 
   if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonClassifyByProfile",  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
+  }
+
+  if( is.null(nTopNNs) ) {
+    nTopNNs <- min( 100, nrow(smrObj$M) )
   }
 
   if( "dgCMatrix" %in% class(profile)  ) {

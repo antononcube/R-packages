@@ -4,7 +4,7 @@
 \alias{SMRMonClassifyByProfile}
 \title{Classification with a profile}
 \usage{
-SMRMonClassifyByProfile(smrObj, tagType, profile, nTopNNs,
+SMRMonClassifyByProfile(smrObj, tagType, profile, nTopNNs = NULL,
   voting = FALSE, dropZeroScoredLabels = TRUE,
   maxNumberOfLabels = NULL, normalizeQ = TRUE)
 }
@@ -18,7 +18,9 @@ A data frame with columns \code{c("Score", "Tag")};
 a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
 
-\item{nTopNNs}{Number of top nearest neighbors to be used in the derive the classification.}
+\item{nTopNNs}{Number of top nearest neighbors to be used in the derive the classification.
+If NULL one hundred top nearest neighbors are used.
+(More precisely \code{min( 100, nrow(smrObj$M) )}.)}
 
 \item{voting}{Should simple voting be used or a weighted sum?}
 
