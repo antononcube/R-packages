@@ -606,11 +606,13 @@ SMRMonGetProperty <- function( smrObj, property ) {
 #' @description Places an SMRMon object member to be the pipeline value.
 #' @param smrObj An SMRMon object.
 #' @param property A string.
+#' @param tagType Tag type string (sub-matrix name) to get the property of.
+#' If NULL the whole recommendation matrix, \code{smrObj$M}, is used.
 #' @return SMR object.
 #' @details This function simplifies certain workflows.
 #' @family Get functions
 #' @export
-SMRMonGetMatrixProperty <- function( smrObj, property ) {
+SMRMonGetMatrixProperty <- function( smrObj, property, tagType = NULL ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -619,19 +621,33 @@ SMRMonGetMatrixProperty <- function( smrObj, property ) {
     return(SMRMonFailureSymbol)
   }
 
+  if( is.null(tagType) ) {
+
+    smat <-smrObj %>% SMRMonTakeM
+
+  } else {
+
+    if( !( tagType %in% smrObj$TagTypes ) ) {
+      warning( paste0( "Unknown tag type: ", tagType, "." ), call. = TRUE )
+      return(SMRMonFailureSymbol)
+    }
+
+    smat <- SMRSubMatrix( smr = smrObj, tagType = tagType )
+  }
+
   res <-
     if ( tolower(property) %in% tolower( c( "tags", "columns" ) ) ) {
-      colnames(smrObj %>% SMRMonTakeM)
+      colnames(smat)
     } else if( tolower(property) %in% tolower( c( "rows") ) ) {
-      rownames(smrObj %>% SMRMonTakeM)
+      rownames(smat)
     } else if( tolower(property) %in% tolower( c( "numberOfColumns") ) ) {
-      ncol(smrObj %>% SMRMonTakeM)
+      ncol(smat)
     } else if( tolower(property) %in% tolower( c( "numberOfRows") ) ) {
-      nrow(smrObj %>% SMRMonTakeM)
+      nrow(smat)
     } else if( tolower(property) %in% tolower( c( "dim", "dimensions") ) ) {
-      dim(smrObj %>% SMRMonTakeM)
+      dim(smat)
     } else if( tolower(property) %in% tolower( c( "density") ) ) {
-      length((smrObj %>% SMRMonTakeM)@x) / length(smrObj %>% SMRMonTakeM)
+      length((smat)@x) / length(smat)
     }
 
   smrObj$Value <- res

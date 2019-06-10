@@ -4,12 +4,15 @@
 \alias{SMRMonGetMatrixProperty}
 \title{Get a member of a SMRMon object}
 \usage{
-SMRMonGetMatrixProperty(smrObj, property)
+SMRMonGetMatrixProperty(smrObj, property, tagType = NULL)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
 
 \item{property}{A string.}
+
+\item{tagType}{Tag type string (sub-matrix name) to get the property of.
+If NULL the whole recommendation matrix, \code{smrObj$M}, is used.}
 }
 \value{
 SMR object.
