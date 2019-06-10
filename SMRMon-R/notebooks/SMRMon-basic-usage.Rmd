@@ -73,6 +73,16 @@ smrObj <-
   SMRMonEchoValue
 ```
 
+# Reduce recommendation matrix by filtering
+
+```{r}
+ smrObj2 <-
+  smrObj %>% 
+  SMRMonGetMatrixProperty( "dimensions" ) %>% SMRMonEchoValue %>% 
+  SMRMonFilterMatrix( profile = c( "3rd", "female" ) ) %>% 
+  SMRMonGetMatrixProperty( "dimensions" ) %>% SMRMonEchoValue
+```
+
 # Classification
 
 ```{r}

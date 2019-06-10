@@ -131,13 +131,15 @@ to_SMRMon_R_command(
 ```{r}
 smrObj3 <-
   eval( to_SMRMon_R_command( 
-    "use recommender smrObj2;
+    "use recommender smrObj;
      display the tag types;
      show the recommender itemColumnName;
      show the sparse matrix number of rows;
      show the sparse matrix number of columns;
      display the recommender matrix density;
      show the sparse matrix columns;
+     filter the recommendation matrix with male, 30, 40;
+     show sparse matrix dimensions;
      show the sub-matrix passengerClass columns;
      show the tag type passengerSurvival density" ) )
 ```
