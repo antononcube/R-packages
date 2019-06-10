@@ -189,8 +189,8 @@ SMRMonSetM <- function( smrObj, M ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !( is.null(M) || is.matrix(M)) ) {
-    warning("The argument M is expected to be NULL or a matrix.", call. = TRUE)
+  if( !( is.null(M) || "dgCMatrix" %in% class(M) ) ) {
+    warning("The argument M is expected to be NULL or a 'dgCMatrix' sparse matrix.", call. = TRUE)
     return(SMRMonFailureSymbol)
   }
 
@@ -214,8 +214,8 @@ SMRMonSetM01 <- function( smrObj, M01 ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !( is.null(M01) || is.matrix(M01)) ) {
-    warning("The argument M01 is expected to be NULL or a matrix.", call. = TRUE)
+  if( !( is.null(M01) ||  "dgCMatrix" %in% class(M) ) ) {
+    warning("The argument M01 is expected to be NULL or a 'dgCMatrix' sparse matrix", call. = TRUE)
     return(SMRMonFailureSymbol)
   }
 
@@ -1206,6 +1206,38 @@ SMRMonApplyTagTypeWeights <- function( smrObj, weights, default = 1 ) {
   weights <- weights[ smrObj$TagTypes ]
 
   smrObj$M <- SMRApplyTagTypeWeights( smr = smrObj, weights = weights )
+
+  smrObj
+}
+
+
+##===========================================================
+## Filter matrix
+##===========================================================
+
+#' Filter recommendation matrix rows
+#' @description Applies a profile filter to the rows of the recommendation matrix.
+#' @param smrObj A sparse matrix recommender.
+#' @param profile A profile specification used to filter with.
+#' @details The matrix can be recovered with tag type
+#' weights application, see \link{\code{SMRMonApplyTagTypeWeights}}.
+#' @return An SMRMon object.
+#' @export
+SMRMonFilterMatrix <- function( smrObj, profile ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  smrObj <- SMRMonGetProfileDataFrame( smrObj = smrObj, profile = profile, functionName = "SMRMonFilterMatrix", warningQ = TRUE )
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  profile <- smrObj %>% SMRMonTakeValue
+
+  profileVec <- SMRProfileDFToVector( smr = smrObj, profileDF = profile )
+
+  svec <- (smrObj %>% SMRMonTakeM) %*% profileVec
+
+  smrObj <-
+    smrObj %>% SMRMonSetM( (smrObj %>% SMRMonTakeM)[ svec[,1] > 0, ] )
 
   smrObj
 }
