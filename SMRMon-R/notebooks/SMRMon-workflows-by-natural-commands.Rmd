@@ -103,6 +103,19 @@ smrObj3 <-
      echo value" ) )
 ```
 
+## Classification
+
+```{r}
+smrObj3 <- 
+  eval( to_SMRMon_R_command( 
+    "use recommender smrObj2; 
+     recommend by profile female, 30;
+     extend recommendations with dfTitanic;
+     echo value;
+     classify to passengerSurvival the profile male, 1st using 30 nns;
+     echo value" ) )
+```
+
 ## SMR query
 
 ```{r}
@@ -123,6 +136,9 @@ smrObj3 <-
      show the recommender itemColumnName;
      show the sparse matrix number of rows;
      show the sparse matrix number of columns;
-     display the recommender matrix density" ) )
+     display the recommender matrix density;
+     show the sparse matrix columns;
+     show the sub-matrix passengerClass columns;
+     show the tag type passengerSurvival density" ) )
 ```
 
