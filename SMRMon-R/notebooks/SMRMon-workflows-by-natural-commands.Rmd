@@ -124,6 +124,7 @@ to_SMRMon_R_command("show the recommender matrix number of rows")
 ```{r}
 to_SMRMon_R_command( 
     "use recommender smrObj2;
+     display properties;
      display the tag types;
      show sub matrices", parse = F )
 ```
@@ -132,6 +133,8 @@ to_SMRMon_R_command(
 smrObj3 <-
   eval( to_SMRMon_R_command( 
     "use recommender smrObj;
+     show recommender matrix properties;
+     show recommender matrix property;
      display the tag types;
      show the recommender itemColumnName;
      show the sparse matrix number of rows;

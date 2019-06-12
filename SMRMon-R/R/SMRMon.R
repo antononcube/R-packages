@@ -591,6 +591,11 @@ SMRMonGetProperty <- function( smrObj, property ) {
         }),
         smrObj %>% SMRMonTakeTagTypes
       )
+    } else if( tolower(property) %in% tolower( c( "properties") ) ) {
+      c( names(smrObj), c( "matrix", "incidenceMatrix", "subMatrices", "properties" ) )
+    } else {
+      warning("Unknown property specification.", call. = TRUE )
+      "Unknown property specification."
     }
 
   smrObj$Value <- res
@@ -648,6 +653,17 @@ SMRMonGetMatrixProperty <- function( smrObj, property, tagType = NULL ) {
       dim(smat)
     } else if( tolower(property) %in% tolower( c( "density") ) ) {
       length((smat)@x) / length(smat)
+    } else if( tolower(property) %in% tolower( c( "tagTypeWeights", "tagTypeSignificanceFactors") ) ) {
+      SMRCurrentTagTypeSignificanceFactors( smrObj )
+    } else if( tolower(property) %in% tolower( c( "properties") ) ) {
+      sort( c( "tags", "columns", "rows",
+               "numberOfColumns", "numberOfRows",
+               "dim", "dimensions", "density",
+               "tagTypeWeights", "tagTypeSignificanceFactors",
+               "properties") )
+    } else {
+      warning("Unknown property specification.", call. = TRUE )
+      "Unknown property specification."
     }
 
   smrObj$Value <- res
