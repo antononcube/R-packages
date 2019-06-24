@@ -138,6 +138,21 @@ SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = me
 
 
 ##===========================================================
+## Echo value
+##===========================================================
+
+#' Echo monad's value.
+#' @description Echoes the monad object value.
+#' @param smrObj An SMRMon object.
+#' @return An SMRMon object
+#' @family Echo functions
+#' @export
+SMRMonEchoValue <- function( smrObj ) {
+  SMRMonEchoFunctionValue( smrObj, function(x) x )
+}
+
+
+##===========================================================
 ## Echo function application of over monad's value
 ##===========================================================
 
@@ -160,17 +175,28 @@ SMRMonEchoFunctionValue <- function( smrObj, f ) {
 
 
 ##===========================================================
-## Echo value
+## Optional function application over monad's object
 ##===========================================================
 
-#' Echo monad's value.
-#' @description Echoes the monad object value.
+#' Optional function application to monad's object.
+#' @description If monadic failure is obtained from \code{smrObj %>% f}
+#' then returns the original \code{smrObj};
+#' else returns the result of \code{smrObj %>% f}.
 #' @param smrObj An SMRMon object.
-#' @return An SMRMon object
-#' @family Echo functions
+#' @param f A function to be applied to the monad object.
+#' @return A SMRMon object.
+#' @details In general \code{f} should return a monad object,
+#' but that is not enforced.
 #' @export
-SMRMonEchoValue <- function( smrObj ) {
-  SMRMonEchoFunctionValue( smrObj, function(x) x )
+SMRMonOption <- function( smrObj, f ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  res <- smrObj %>% f
+
+  if( SMRMonFailureQ(res) ) { return(smrObj) }
+
+  res
 }
 
 
@@ -839,6 +865,71 @@ SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGe
 
 
 ##===========================================================
+## Get profile data frame
+##===========================================================
+
+is.sparseMatrix <- function(x) is(x, 'sparseMatrix')
+
+#' From a profile specification into a vector
+#' @description Transforms a profile specification into a sparse matrix
+#' with one row.
+#' @param smrObj An SMRMon object.
+#' @param profile Profile specification.
+#' A data frame with columns \code{c("Score", "Tag")};
+#' a numeric vector named elements, the names being items;
+#' a character vector, the correspond ratings assumed all to be 1.
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
+#' @details The result profile vector (sparse matrix) is
+#' assigned to \code{smrObj$Value}.
+#' If \code{profile = NULL} then \code{smrObj$Value} is used.
+#' @return A SMRMon object
+#' @export
+SMRMonGetProfileVector <- function( smrObj, profile, functionName = "SMRMonGetProfileVector", warningQ = TRUE ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( is.null(profile) ) {
+    profile <- smrObj %>% SMRMonTakeValue
+  }
+
+  if( is.sparseMatrix( profile ) ) {
+
+    if( !( "dgCMatrix" %in% class(profile)) ) {
+      profile <- as( profile, "dgCMatrix" )
+    }
+
+    if( ncol(profile) != 1 ) {
+      warning( paste0( "The profile vector given to the function ", functionName,
+                       " is expected to be a sparse matrix with one column."),
+               call. = TRUE )
+      return(SMRMonFailureSymbol)
+    }
+
+    if( nrow(profile) != ncol(smrObj$M) ) {
+      warning( paste0( "The profile vector given to the function ", functionName,
+                       " is expected to be a sparse matrix with ", ncol(smrObj$M),
+                       " rows."),
+               call. = TRUE )
+      return(SMRMonFailureSymbol)
+    }
+
+  } else {
+
+    if(warningQ) {
+      warning( paste0( "Unknown profile vector type from the function ", functionName, "." ), call. = TRUE )
+    }
+    return(SMRMonFailureSymbol)
+
+  }
+
+  smrObj$Value <- profile
+
+  smrObj
+}
+
+
+##===========================================================
 ## Predicates
 ##===========================================================
 
@@ -1009,15 +1100,29 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, warningQ = TR
     return(SMRMonFailureSymbol)
   }
 
-  smrObj <- smrObj %>% SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonRecommendByProfile", warningQ = warningQ )
+  if( is.sparseMatrix(profile) ) {
 
-  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+    smrObj <- smrObj %>% SMRMonGetProfileVector( profile = profile, functionName = "SMRMonRecommendByProfile", warningQ = warningQ )
 
-  profile <- smrObj %>% SMRMonTakeValue
+    if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  res <- SMRRecommendationsByProfileDF( smr = smrObj,
-                                        profile = data.frame( Score = profile$Score, Tag = profile$Tag, stringsAsFactors = FALSE ),
-                                        nrecs = nrecs )
+    profile <- smrObj %>% SMRMonTakeValue
+
+    res <- SMRRecommendationsByProfileVector( smr = smrObj, profileVec = profile, nrecs = nrecs )
+
+  } else {
+
+    smrObj <- smrObj %>% SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonRecommendByProfile", warningQ = warningQ )
+
+    if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+    profile <- smrObj %>% SMRMonTakeValue
+
+    res <- SMRRecommendationsByProfileDF( smr = smrObj,
+                                          profile = data.frame( Score = profile$Score, Tag = profile$Tag, stringsAsFactors = FALSE ),
+                                          nrecs = nrecs )
+
+  }
 
   smrObj$Value <- res
 

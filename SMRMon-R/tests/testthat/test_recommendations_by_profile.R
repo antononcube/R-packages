@@ -25,10 +25,19 @@ chRecs <-
   SMRMonRecommendByProfile( profile = c( "female", "survived" ), nrecs = 20 ) %>%
   SMRMonTakeValue
 
-## Recommend by history numeric vector with named elements.
+## Recommend by profile numeric vector with named elements.
 nvRecs <-
   smrObj %>%
   SMRMonRecommendByProfile( profile = setNames( c(1, 1), c( "female", "survived" )), nrecs = 20 ) %>%
+  SMRMonTakeValue
+
+## Recommend by profile sparse matrix / vector.
+
+profVec <- SMRProfileVector( smrObj, itemHistory = data.frame( Score = 1, Tag = c( "id.2", "id.34" ),  stringsAsFactors = F) )
+
+sVecRecs <-
+  smrObj %>%
+  SMRMonRecommendByProfile( profile = profVec, nrecs = 20 ) %>%
   SMRMonTakeValue
 
 ## Tests
@@ -40,13 +49,14 @@ test_that("Profile recommendations by data frame", {
   expect_true( length( intersect( c("Score", "Index", smrObj %>% SMRMonTakeItemColumnName), colnames(dfRecs) ) ) == 3 )
 })
 
-
 test_that("Profile recommendations by character vector", {
   expect_true( nrow(chRecs) == 20  )
   expect_true( ncol(chRecs) == 3 )
 
   expect_is( chRecs, "data.frame" )
   expect_true( length( intersect( c("Score", "Index", smrObj %>% SMRMonTakeItemColumnName), colnames(chRecs) ) ) == 3 )
+
+  expect_equivalent( chRecs$Index, dfRecs$Index )
 })
 
 test_that("Profile recommendations by numeric vector", {
@@ -55,4 +65,14 @@ test_that("Profile recommendations by numeric vector", {
 
   expect_is( nvRecs, "data.frame" )
   expect_true( length( intersect( c("Score", "Index", smrObj %>% SMRMonTakeItemColumnName), colnames(nvRecs) ) ) == 3 )
+
+  expect_equivalent( nvRecs$Index, dfRecs$Index )
+})
+
+test_that("Profile recommendations by sparse matrix / vector", {
+  expect_true( nrow(sVecRecs) == 20  )
+  expect_true( ncol(sVecRecs) == 3 )
+
+  expect_is( sVecRecs, "data.frame" )
+  expect_true( length( intersect( c("Score", "Index", smrObj %>% SMRMonTakeItemColumnName), colnames(sVecRecs) ) ) == 3 )
 })
