@@ -12,7 +12,8 @@ SMRMonRecommendByProfile(smrObj, profile, nrecs = 12, warningQ = TRUE)
 \item{profile}{Profile specification.
 A data frame with columns \code{c("Score", "Tag")};
 a numeric vector named elements, the names being items;
-a character vector, the correspond ratings assumed all to be 1.}
+a character vector, the correspond ratings assumed all to be 1;
+a sparse matrix with 1 column and a number of rows that equals \code{ncol(smrObj$M)}.}
 
 \item{nrecs}{Number of recommendations to be returned.}
 

@@ -1083,7 +1083,8 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 #' @param profile Profile specification.
 #' A data frame with columns \code{c("Score", "Tag")};
 #' a numeric vector named elements, the names being items;
-#' a character vector, the correspond ratings assumed all to be 1.
+#' a character vector, the correspond ratings assumed all to be 1;
+#' a sparse matrix with 1 column and a number of rows that equals \code{ncol(smrObj$M)}.
 #' @param nrecs Number of recommendations to be returned.
 #' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
 #' @details The recommendations result is a
