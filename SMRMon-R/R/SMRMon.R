@@ -178,10 +178,10 @@ SMRMonEchoFunctionValue <- function( smrObj, f ) {
 ## Optional function application over monad's object
 ##===========================================================
 
-#' Optional function application to monad's object.
-#' @description If monadic failure is obtained from \code{smrObj %>% f}
+#' Optional function application to the monad object.
+#' @description If monadic failure is obtained from \code{f(smrObj)}
 #' then returns the original \code{smrObj};
-#' else returns the result of \code{smrObj %>% f}.
+#' else returns the result of \code{f(smrObj)}.
 #' @param smrObj An SMRMon object.
 #' @param f A function to be applied to the monad object.
 #' @return A SMRMon object.
@@ -1342,7 +1342,7 @@ SMRMonApplyTagTypeWeights <- function( smrObj, weights, default = 1 ) {
 #' @param smrObj A sparse matrix recommender.
 #' @param profile A profile specification used to filter with.
 #' @details The matrix can be recovered with tag type
-#' weights application, see \link{\code{SMRMonApplyTagTypeWeights}}.
+#' weights application, see \code{\link{SMRMonApplyTagTypeWeights}}.
 #' @return An SMRMon object.
 #' @export
 SMRMonFilterMatrix <- function( smrObj, profile ) {
@@ -1412,8 +1412,8 @@ SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsP
 #' Top-K statistic computation
 #' @description Computes the Top-K statistic for a data frame with the scored similarity pairs.
 #' @param smrObj A sparse matrix recommender.
-#' @param testData A data frame with colums \code{c( "Score", "SearchID", smrObj %>% SMRMonTakeItemColumnName )}.
-#' @param ks An integer vector with k's for the Top-K statistic.
+#' @param testData A data frame with colums \code{c( "Score", "SearchID", SMRMonTakeItemColumnName(smrObj) )}.
+#' @param ks An integer vector with k-values for the Top-K statistic.
 #' @param ... Additional arguments passed to \code{\link{SMRMonRecommend}}.
 #' @details The computation result is assigned to \code{smrObj$Value}.
 #' @return An SMRMon object.

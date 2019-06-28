@@ -19,5 +19,5 @@ Applies a profile filter to the rows of the recommendation matrix.
 }
 \details{
 The matrix can be recovered with tag type
-weights application, see \link{\code{SMRMonApplyTagTypeWeights}}.
+weights application, see \code{\link{SMRMonApplyTagTypeWeights}}.
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/SMRMon.R
 \name{SMRMonOption}
 \alias{SMRMonOption}
-\title{Optional function application to monad's object.}
+\title{Optional function application to the monad object.}
 \usage{
 SMRMonOption(smrObj, f)
 }
@@ -15,7 +15,9 @@ SMRMonOption(smrObj, f)
 A SMRMon object.
 }
 \description{
-Optional function application to monad's object.
+If monadic failure is obtained from \code{f(smrObj)}
+then returns the original \code{smrObj};
+else returns the result of \code{f(smrObj)}.
 }
 \details{
 In general \code{f} should return a monad object,

@@ -9,7 +9,9 @@ SMRMonComputeTopK(smrObj, testData, ks, ...)
 \arguments{
 \item{smrObj}{A sparse matrix recommender.}
 
-\item{ks}{An integer vector with k's for the Top-K statistic.}
+\item{testData}{A data frame with colums \code{c( "Score", "SearchID", SMRMonTakeItemColumnName(smrObj) )}.}
+
+\item{ks}{An integer vector with k-values for the Top-K statistic.}
 
 \item{...}{Additional arguments passed to \code{\link{SMRMonRecommend}}.}
 }
