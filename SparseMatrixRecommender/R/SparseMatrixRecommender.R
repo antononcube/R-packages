@@ -1131,7 +1131,7 @@ SMRCategorizeToIntervals <- function( vec, breaks = NULL, probs = seq(0,1,0.1), 
 #' in sparse matrix structures. 
 #' @return A numeric vector
 #' @export
-SMREuclideanDistances <- function( smat, vec = colMeans(smat) ) {
+SMRMatrixEuclideanDistances <- function( smat, vec = colMeans(smat) ) {
   
   if( !( is.numeric(vec) && length(vec) == ncol(smat) ) ) {
     stop( paste0( "The argument vec is expected to a numeric vector with length that equals ncol(smat), ", ncol(smat), "." ), call. = TRUE )
@@ -1156,6 +1156,55 @@ SMREuclideanDistances <- function( smat, vec = colMeans(smat) ) {
   sqrt(m)
 }
 
+
+#' Euclidean distances from a reference vector per tag.
+#' @description 
+#' For each tag of \code{tagType} this function does the following steps:
+#' 1) finds the sub-matrix of \code{smr$M} for which the corresponding tag column is not zero,
+#' 2) finds the mean vector of that sub-matrix,
+#' 3) computes the distances of the sub-matrix rows to the mean vector.
+#' If \code{tagType = NULL} then for each element of \code{smr$TagTypes}
+#' the corresponding sub-matrix distances-to-the-mean are computed.
+#' @param smr An SMR object.
+#' @param tagType A string that is one of the tag types of \code{smr}.
+#' If NULL distances for all tag types are computed.
+#' @return A data frame
+#' @export
+SMREuclideanDistances <- function( smr, tagType = NULL, centerFunction = mean ) {
+  
+  if( !( is.null(tagType) || is.character(tagType) && length(tagType) == 1 && tagType %in% smr$TagTypes ) ) {
+    stop( paste0( "The argument tagType is expected to be one of smr$TagTypes, ", smr$TagTypes ), call. = TRUE )
+  }
+  
+  if( is.null(tagType) ) {
+    
+    dfDists <-
+      purrr::map_df( smr$TagTypes, function(tt) {
+        SMREuclideanDistances( smr = smr, tagType = tt )
+      })
+    
+  } else {
+    
+    smat <- SMRSubMatrix( smr, tagType )
+    
+    dfDists <-
+      purrr::map_dfr( colnames(smat), function(x) {
+        
+        smat <- smr$M[ smr$M[,x] > 0, ]
+        
+        res <- SMRMatrixEuclideanDistances( smat, colMeans(smat) )
+        
+        res <- data.frame( TagType = tagType, Tag = x, Item = rownames(smat), Index = (1:nrow(smr$M))[smr$M[,x] > 0], Distance = res, stringsAsFactors = F)
+        
+        names(res) <- gsub( "Item", smr$ItemColumnName, names(res) )
+        
+        res
+      })
+  }
+  
+  dfDists
+}
+  
 
 ##===========================================================
 ## SMR algebra operations
