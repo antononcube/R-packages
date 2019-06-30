@@ -1119,6 +1119,45 @@ SMRCategorizeToIntervals <- function( vec, breaks = NULL, probs = seq(0,1,0.1), 
 
 
 ##===========================================================
+## Class distances functions
+##===========================================================
+
+#' Euclidean distances from a vector.
+#' @description Computes the Euclidean distances of the rows of a sparse matrix
+#' to a specified vector.
+#' @param smat A sparse matrix.
+#' @param vec A numeric vector.
+#' @details The implementation attempts to keep all computational steps
+#' in sparse matrix structures. 
+#' @return A numeric vector
+#' @export
+SMREuclideanDistances <- function( smat, vec = colMeans(smat) ) {
+  
+  if( !( is.numeric(vec) && length(vec) == ncol(smat) ) ) {
+    stop( paste0( "The argument vec is expected to a numeric vector with length that equals ncol(smat), ", ncol(smat), "." ), call. = TRUE )
+  }
+  
+  ## Make the pattern matrix
+  smat01 <- smat; smat01@x[ smat01@x != 0 ] <- 1
+  
+  ## From the pattern matrix and the "mean" vector
+  ## Compute the subtraction sparse matrix.
+  smatVec <- t( t(smat01) * vec)
+  #print( length(smatVec@x) / length(smatVec) )
+  
+  ## Find the Euclidean-distance residuals.
+  vecRes <- sum( vec * vec ) - rowSums( smatVec * smatVec ) 
+  
+  ## Compute the overall differences.
+  m <- ( smat - smatVec )
+  m <- rowSums( m * m ) + vecRes
+  
+  ## Result.
+  sqrt(m)
+}
+
+
+##===========================================================
 ## SMR algebra operations
 ##===========================================================
 
