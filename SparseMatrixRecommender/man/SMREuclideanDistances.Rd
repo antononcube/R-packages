@@ -4,7 +4,7 @@
 \alias{SMREuclideanDistances}
 \title{Euclidean distances from a reference vector per tag.}
 \usage{
-SMREuclideanDistances(smr, tagType = NULL, centerFunction = mean)
+SMREuclideanDistances(smr, tagType = NULL)
 }
 \arguments{
 \item{smr}{An SMR object.}

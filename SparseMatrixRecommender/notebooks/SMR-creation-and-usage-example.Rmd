@@ -9,6 +9,7 @@ output: html_notebook
 library(SparseMatrixRecommender)
 library(Matrix)
 library(magrittr)
+library(ggplot2)
 ```
 
 # Introduction
@@ -126,12 +127,12 @@ prof
 
 ```{r}
 recs <- SMRRecommendationsByProfileDF( smr = smr, profile = prof[, 1:2], nrecs = 12 )
-recs %>% dplyr::inner_join( dfTitanic, by = c("Item" = "id"))
+recs %>% dplyr::inner_join( dfTitanic, by = "id" )
 ```
 
 ```{r}
 recs2 <- SMRRecommendationsByProfileDF( smr = smr2, profile = prof[, 1:2], nrecs = 12 )
-recs2 %>% dplyr::inner_join( dfTitanic, by = c("Item" = "id"))
+recs2 %>% dplyr::inner_join( dfTitanic, by = "id" )
 ```
 
 # Classify
@@ -170,6 +171,23 @@ smr$M01[1:5,(ncol(smr$M01)-1):ncol(smr$M01)]
 predict( smr, 
          smr$M01[1:5,], 
          nTopNNs = 20, type = "decision", tagType = labelColumnName )
+```
+
+# Distances within classes
+
+```{r}
+smr$TagTypes
+```
+
+```{r}
+dfDists <- SMREuclideanDistances( smr, tagType = NULL )
+dfDists
+```
+
+```{r}
+ggplot(dfDists) +
+  geom_histogram( aes(x = Distance), bins = 30 ) +
+  facet_wrap( ~ TagType + Tag, scales = "free_y" )
 ```
 
 

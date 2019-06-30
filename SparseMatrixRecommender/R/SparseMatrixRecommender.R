@@ -1170,7 +1170,7 @@ SMRMatrixEuclideanDistances <- function( smat, vec = colMeans(smat) ) {
 #' If NULL distances for all tag types are computed.
 #' @return A data frame
 #' @export
-SMREuclideanDistances <- function( smr, tagType = NULL, centerFunction = mean ) {
+SMREuclideanDistances <- function( smr, tagType = NULL ) {
   
   if( !( is.null(tagType) || is.character(tagType) && length(tagType) == 1 && tagType %in% smr$TagTypes ) ) {
     stop( paste0( "The argument tagType is expected to be one of smr$TagTypes, ", smr$TagTypes ), call. = TRUE )
@@ -1190,15 +1190,22 @@ SMREuclideanDistances <- function( smr, tagType = NULL, centerFunction = mean ) 
     dfDists <-
       purrr::map_dfr( colnames(smat), function(x) {
         
-        smat <- smr$M[ smr$M[,x] > 0, ]
-        
-        res <- SMRMatrixEuclideanDistances( smat, colMeans(smat) )
-        
-        res <- data.frame( TagType = tagType, Tag = x, Item = rownames(smat), Index = (1:nrow(smr$M))[smr$M[,x] > 0], Distance = res, stringsAsFactors = F)
-        
-        names(res) <- gsub( "Item", smr$ItemColumnName, names(res) )
-        
-        res
+        smat <- smr$M[ smr$M[,x] > 0, , drop = F]
+
+        if( nrow(smat) == 0 ) { 
+          
+          NULL
+          
+        } else { 
+          
+          res <- SMRMatrixEuclideanDistances( smat, colMeans(smat, na.rm = T) )
+          
+          res <- data.frame( TagType = tagType, Tag = x, Item = rownames(smat), Index = (1:nrow(smr$M))[smr$M[,x] > 0], Distance = res, stringsAsFactors = F)
+          
+          names(res) <- gsub( "Item", smr$ItemColumnName, names(res) )
+          
+          res
+        }
       })
   }
   
