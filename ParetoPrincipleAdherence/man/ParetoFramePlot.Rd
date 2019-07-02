@@ -6,10 +6,10 @@
 \usage{
 ParetoFramePlot(data, main = NULL, xlab = "Index",
   ylab = "ParetoFraction", xFraction = 0.2, yFraction = 0.8,
-  showParetoTicksQ = TRUE, ...)
+  showParetoTicksQ = TRUE, computeStatisticQ = FALSE, ...)
 }
 \arguments{
-\item{data}{A numerical vector.}
+\item{data}{A numeric vector.}
 
 \item{main}{A string for the title of the plot.}
 
@@ -23,6 +23,8 @@ ParetoFramePlot(data, main = NULL, xlab = "Index",
 
 \item{showParetoTicksQ}{Should the Pareto ticks be shown or not?}
 
+\item{computeStatisticQ}{Should the Pareto statistic be computed or not?}
+
 \item{...}{Additional parameters for \code{\link{base::plot}}.}
 }
 \description{
@@ -33,6 +35,8 @@ Plot the points of a vector and overlay a Pareto grid
 This plot can be used when the Pareto statistic is
 computed with some other functions.
 (Or for for ad hoc Pareto computations.)
+If \code{computeStatisticQ = FALSE} then \code{data <- cumsum(rev(sort(data))) / sum(data)}
+is executed first.
 }
 \seealso{
 Other Pareto plots: \code{\link{ParetoPlot}}

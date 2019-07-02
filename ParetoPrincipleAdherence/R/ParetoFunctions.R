@@ -110,6 +110,7 @@ ParetoForNumericalVector <- function( data, normalizeQ = TRUE ) {
   res
 }
 
+
 #' Pareto statistic for categorical data.
 #' @description A synonym/shortcut for \code{\link{ParetoForWeightedItems}}.
 #' @param data A character or factor vector.
@@ -128,6 +129,7 @@ ParetoForCategoricalVector <- function( data, normalizeQ = TRUE ) {
 
   ParetoForWeightedItems( data )
 }
+
 
 #' Pareto statistic for weighted items.
 #' @description Compute the Pareto position and fraction for each weighted item.
@@ -150,11 +152,16 @@ ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
   data <- MakeParetoData( data )
 
   ## Aggregation in case we have duplicated names
+  if( length(unique(data$Item)) < nrow(data) ) {
+    data <-
+      data %>%
+      dplyr::group_by( Item ) %>%
+      dplyr::summarise( Weight = sum(Weight, na.rm = T) ) %>%
+      dplyr::ungroup()
+  }
+
   data <-
     data %>%
-    dplyr::group_by( Item ) %>%
-    dplyr::summarise( Weight = sum(Weight, na.rm = T) ) %>%
-    dplyr::ungroup() %>%
     dplyr::arrange(desc(Weight))
 
   pfs <- cumsum(data$Weight)
@@ -195,7 +202,6 @@ ParetoForVariables <- function( data, columnNames = colnames(data), normalizeQ =
 }
 
 
-
 ##===========================================================
 ## Plot functions
 ##===========================================================
@@ -203,26 +209,36 @@ ParetoForVariables <- function( data, columnNames = colnames(data), normalizeQ =
 #' Plot points with a Pareto frame.
 #' @description  Plot the points of a vector and overlay a Pareto grid
 #' (without computing the Pareto statistic.)
-#' @param data A numerical vector.
+#' @param data A numeric vector.
 #' @param main A string for the title of the plot.
 #' @param xlab Label for the x-axis.
 #' @param ylab Label for the y-axis.
 #' @param xFraction The Pareto fraction for the x-axis.
 #' @param yFraction The Pareto fraction for the y-axis.
 #' @param showParetoTicksQ Should the Pareto ticks be shown or not?
+#' @param computeStatisticQ Should the Pareto statistic be computed or not?
 #' @param ... Additional parameters for \code{\link{base::plot}}.
 #' @details This plot can be used when the Pareto statistic is
 #' computed with some other functions.
 #' (Or for for ad hoc Pareto computations.)
+#' If \code{computeStatisticQ = FALSE} then \code{data <- cumsum(rev(sort(data))) / sum(data)}
+#' is executed first.
 #' @family Pareto plots
 #' @export
 ParetoFramePlot <- function( data, main = NULL, xlab = "Index", ylab = "ParetoFraction",
-                             xFraction = 0.2, yFraction = 0.8, showParetoTicksQ = TRUE, ... ) {
+                             xFraction = 0.2, yFraction = 0.8, showParetoTicksQ = TRUE,
+                             computeStatisticQ = FALSE, ... ) {
 
-  data <- sort(data)
 
   if( ! is.numeric(data) ) {
     stop( "The argument data is expected to be a numerical vector.", call. = TRUE )
+  }
+
+
+  if( computeStatisticQ ) {
+    data <- cumsum(rev(sort(data))) / sum(data)
+  } else {
+    data <- sort(data)
   }
 
   plot( data, type='l', main=main, xlab=xlab, ylab=ylab, ... )
@@ -238,7 +254,6 @@ ParetoFramePlot <- function( data, main = NULL, xlab = "Index", ylab = "ParetoFr
 
   abline( v = vticks, h = hticks, col = "red", lty = "dotted" )
 }
-
 
 
 #' Pareto plot for a vector.
