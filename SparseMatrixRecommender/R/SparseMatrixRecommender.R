@@ -1127,33 +1127,50 @@ SMRCategorizeToIntervals <- function( vec, breaks = NULL, probs = seq(0,1,0.1), 
 #' to a specified vector.
 #' @param smat A sparse matrix.
 #' @param vec A numeric vector.
+#' @param method A method for distance computation.
+#' One of "cosine", "euclidean".
 #' @details The implementation attempts to keep all computational steps
 #' in sparse matrix structures. 
+#' Note, with "cosine" we mean "cosine distance", not "cosine similarity".
 #' @return A numeric vector
 #' @export
-SMRMatrixEuclideanDistances <- function( smat, vec = colMeans(smat) ) {
+SMRMatrixDistances <- function( smat, vec = colMeans(smat), method = "euclidean" ) {
   
   if( !( is.numeric(vec) && length(vec) == ncol(smat) ) ) {
     stop( paste0( "The argument vec is expected to a numeric vector with length that equals ncol(smat), ", ncol(smat), "." ), call. = TRUE )
   }
   
-  ## Make the pattern matrix
-  smat01 <- smat; smat01@x[ smat01@x != 0 ] <- 1
-  
-  ## From the pattern matrix and the "mean" vector
-  ## Compute the subtraction sparse matrix.
-  smatVec <- t( t(smat01) * vec)
-  #print( length(smatVec@x) / length(smatVec) )
-  
-  ## Find the Euclidean-distance residuals.
-  vecRes <- sum( vec * vec ) - rowSums( smatVec * smatVec ) 
-  
-  ## Compute the overall differences.
-  m <- ( smat - smatVec )
-  m <- rowSums( m * m ) + vecRes
-  
-  ## Result.
-  sqrt(m)
+  if( tolower(method) %in% c("euclidean", "euclideandistance") ) {
+    ## Make the pattern matrix
+    smat01 <- smat; smat01@x[ smat01@x != 0 ] <- 1
+    
+    ## From the pattern matrix and the "mean" vector
+    ## Compute the subtraction sparse matrix.
+    smatVec <- t( t(smat01) * vec)
+    #print( length(smatVec@x) / length(smatVec) )
+    
+    ## Find the Euclidean-distance residuals.
+    vecRes <- sum( vec * vec ) - rowSums( smatVec * smatVec ) 
+    
+    ## Compute the overall differences.
+    m <- ( smat - smatVec )
+    m <- rowSums( m * m ) + vecRes
+    
+    ## Result.
+    sqrt(m)
+    
+  } else if ( tolower(method) %in% c( "cosine", "cosinedistance" ) ) {
+    
+    smat <- SMRApplyTermWeightFunctions( docTermMat = smat, globalWeightFunction = "None", localWeightFunction = "None", normalizerFunction = "Cosine" )
+    
+    ## This can be optmized with by making vec a sparse matrix first.
+    vec <- vec / sqrt( sum( vec * vec ) ) 
+    
+    1 - smat %*% vec
+    
+  } else {
+    stop( paste0( "The method ", method, " is uknown." ), call. = TRUE )  
+  }
 }
 
 
@@ -1168,9 +1185,11 @@ SMRMatrixEuclideanDistances <- function( smat, vec = colMeans(smat) ) {
 #' @param smr An SMR object.
 #' @param tagType A string that is one of the tag types of \code{smr}.
 #' If NULL distances for all tag types are computed.
+#' @param method A method for distance computation.
+#' One of "cosine", "euclidean".
 #' @return A data frame
 #' @export
-SMREuclideanDistances <- function( smr, tagType = NULL ) {
+SMRDistances <- function( smr, tagType = NULL, method = "euclidean" ) {
   
   if( !( is.null(tagType) || is.character(tagType) && length(tagType) == 1 && tagType %in% smr$TagTypes ) ) {
     stop( paste0( "The argument tagType is expected to be one of smr$TagTypes, ", smr$TagTypes ), call. = TRUE )
@@ -1180,7 +1199,7 @@ SMREuclideanDistances <- function( smr, tagType = NULL ) {
     
     dfDists <-
       purrr::map_df( smr$TagTypes, function(tt) {
-        SMREuclideanDistances( smr = smr, tagType = tt )
+        SMRDistances( smr = smr, tagType = tt, method = method )
       })
     
   } else {
@@ -1198,7 +1217,7 @@ SMREuclideanDistances <- function( smr, tagType = NULL ) {
           
         } else { 
           
-          res <- SMRMatrixEuclideanDistances( smat, colMeans(smat, na.rm = T) )
+          res <- SMRMatrixDistances( smat, colMeans(smat, na.rm = T), method = method )
           
           res <- data.frame( TagType = tagType, Tag = x, Item = rownames(smat), Index = (1:nrow(smr$M))[smr$M[,x] > 0], Distance = res, stringsAsFactors = F)
           
