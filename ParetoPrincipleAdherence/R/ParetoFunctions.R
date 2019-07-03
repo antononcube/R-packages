@@ -151,12 +151,18 @@ ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
 
   data <- MakeParetoData( data )
 
+  ## At this point data is assumed to have the columns c("Item", "Weight").
+  ## assertthat::assert_that( mean( names(data) %in% c("Item", "Weight") ) == 1 )
+
+  ## Just in case. Using sum( Weight, na.rm = T ) makes the very code slow.
+  data <- data[complete.cases(data), ]
+
   ## Aggregation in case we have duplicated names
   if( length(unique(data$Item)) < nrow(data) ) {
     data <-
       data %>%
       dplyr::group_by( Item ) %>%
-      dplyr::summarise( Weight = sum(Weight, na.rm = T) ) %>%
+      dplyr::summarise( Weight = sum(Weight) ) %>%
       dplyr::ungroup()
   }
 
