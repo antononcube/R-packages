@@ -7,11 +7,11 @@ Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
 Maintainer: Anton Antonov <antononcube@gmail.com>
 Description: This package implements in R a software monad for various operations over Geometric Nearest Neighbors (GNN).
     The primary GNN operations are finding nearest points and classification of "membership".
-License: GPL-3
+License: BSD-3
 Language: en-US
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/antononcube/packages/
+URL: https://github.com/antononcube/R-packages/tree/master/GNNMon-R
 RoxygenNote: 6.1.1
 Imports:
     magrittr,
