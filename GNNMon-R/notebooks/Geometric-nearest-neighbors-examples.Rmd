@@ -20,7 +20,8 @@ devtools::load_all()
 # Data
 
 ```{r}
-data <- matrix( c( rnorm( n = 20, mean = 0, sd = 5 ), rnorm( n = 20, mean = 12, sd = 3) ), ncol = 2 )
+set.seed(234)
+data <- matrix( c( rnorm( n = 30, mean = 0, sd = 5 ), rnorm( n = 30, mean = 12, sd = 3) ), ncol = 2 )
 colnames(data) <- c("X", "Y")
 data
 ```
@@ -60,7 +61,7 @@ gnnObj %>%
 
 ```{r}
 gnnObj %>% 
-  GNNMonClassify( points = as.matrix(dfPoints) ) %>% 
+  GNNMonClassify( points = rbind( as.matrix(dfPoints), data[8,]) ) %>% 
   GNNMonTakeValue
 ```
 
