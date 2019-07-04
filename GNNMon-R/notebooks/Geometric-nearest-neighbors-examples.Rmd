@@ -1,0 +1,66 @@
+---
+title: "Geometiric Nearest Neighbors examples"
+author: Anton Antonov
+date: 2019-07-04
+output: html_notebook
+---
+
+```{r}
+library(Matrix)
+library(ggplot2)
+library(OutlierIdentifiers)
+```
+
+```{r, eval=T}
+devtools::load_all()
+```
+
+# Introduction
+
+# Data
+
+```{r}
+data <- matrix( c( rnorm( n = 20, mean = 0, sd = 5 ), rnorm( n = 20, mean = 12, sd = 3) ), ncol = 2 )
+colnames(data) <- c("X", "Y")
+data
+```
+
+# Monad object
+
+```{r}
+gnnObj <- 
+  GNNMonUnit( data ) %>% 
+  GNNMonComputeThresholds( nTopNNs = 3, method = "euclidean", nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters ) %>% 
+  GNNMonEchoValue
+```
+
+# Nearest Neighbors
+
+```{r}
+dfPoints <- data.frame( X = c(-6,2), Y = c(4.5,16) )
+```
+
+```{r}
+qDF <- cbind( as.data.frame(data), Index = 1:nrow(data) )
+ggplot(qDF) +
+  geom_point( aes( x = X, y = Y ) ) +
+  geom_label( aes(x = X, y = Y, label = Index), nudge_x = 0.6) +
+  geom_point( data = dfPoints, aes( x = X , y = Y), color = "red" )
+```
+
+```{r}
+as.numeric(dfPoints[1,])
+```
+
+```{r}
+gnnObj %>% 
+  GNNMonFindNearest( point = as.numeric(dfPoints[2,]), 8 ) %>% 
+  GNNMonTakeValue
+```
+
+```{r}
+gnnObj %>% 
+  GNNMonClassify( points = as.matrix(dfPoints) ) %>% 
+  GNNMonTakeValue
+```
+

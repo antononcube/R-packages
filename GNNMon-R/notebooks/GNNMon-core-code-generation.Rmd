@@ -1,0 +1,46 @@
+---
+title: "GNNMon core code generation"
+author: Anton Antonov
+date: "```r Sys.Date()```"
+output: html_notebook
+---
+
+# Introduction
+
+The code in this notebook was used to generate the core code of the `GNNMon` monad; see [1].
+
+The R design and implementation follows the design and implementation of `GNNMon` in Mathematica, see [2].
+
+# Code generation
+
+Here we load the State Monad code generation package:
+
+```{r}
+library(StateMonadCodeGenerator)
+```
+
+```{r}
+GenerateStateMonadCode( monadName = "GNNMon", 
+                        memberNames = c("Data" = "matrix", 
+                                        "NumberOfNNs" = "numeric",
+                                        "DistanceMethod" = "character",
+                                        "RadiusFunction" = "function",
+                                        "Radius" = "numeric", 
+                                        "LowerThreshold" = "numeric", 
+                                        "UpperThreshold" = "numeric"), 
+                        monadObjectArgumentName = "gnnObj", 
+                        outputFile = "GNNMon-core.R")
+```
+
+
+# References
+
+[1] Anton Antonov, 
+[State monad code generator](https://github.com/antononcube/R-packages/tree/master/StateMonadCodeGenerator), 
+(2019),
+[R-packages at GitHub](https://github.com/antononcube/R-packages).
+
+[2] Anton Antonov, 
+[Monadic latent semantic analysis Mathematica package](https://github.com/antononcube/MathematicaForPrediction/blob/master/MonadicProgramming/MonadicLatentSemanticAnalysis.m),
+(2017),
+[MathematicaForPrediction at GitHub](https://github.com/antononcube/MathematicaForPrediction).
