@@ -1166,7 +1166,8 @@ SMRMatrixDistances <- function( smat, vec = colMeans(smat), method = "euclidean"
     ## This can be optmized with by making vec a sparse matrix first.
     vec <- vec / sqrt( sum( vec * vec ) ) 
     
-    1 - smat %*% vec
+    res <- 1 - smat %*% vec
+    res[,1]
     
   } else {
     stop( paste0( "The method ", method, " is uknown." ), call. = TRUE )  

@@ -22,15 +22,22 @@ dMat <- rsmat - mvecMat
 rdists0 <- sqrt(rowSums(dMat * dMat))
 
 ## Distance with sparse(r) computations.
-dists1 <- SMRMatrixEuclideanDistances( smat = smat, vec = colMeans(smat) )
+dists1 <- SMRMatrixDistances( smat = smat, vec = colMeans(smat), method = "euclidean" )
 
-rdists1 <- SMRMatrixEuclideanDistances( smat = rsmat, vec = colMeans(rsmat) )
+rdists1 <- SMRMatrixDistances( smat = rsmat, vec = colMeans(rsmat), method = "euclidean" )
+
+csmat <- Diagonal( x = 1 / sqrt( rowSums( smat * smat ) ) ) %*% smat
+cvec <- colMeans(smat) 
+cvec <- cvec / sqrt( sum(cvec * cvec) )
+cdists0 <- ( 1 - csmat %*% cvec )[,1]
+
+cdists1 <- SMRMatrixDistances( smat = smat, vec = colMeans(smat), method = "cosine" )
 
 smr2 <- SMRCreate( dfTitanic, itemColumnName = "id" )
 
-dfDists <- SMREuclideanDistances( smr2, tagType = "passengerClass" )
+dfDists <- SMRDistances( smr2, tagType = "passengerClass", method = "euclidean" )
 
-dfAllDists <- SMREuclideanDistances( smr2, tagType = NULL )
+dfAllDists <- SMRDistances( smr2, tagType = NULL, method = "euclidean" )
 
 ## Tests
 
@@ -44,6 +51,15 @@ test_that("Expected structures", {
   
   expect_is( dists1, "numeric" )
   expect_is( rdists1, "numeric" )
+
+  expect_true( length(dists1) == nrow(smat) ) 
+  expect_true( length(rdists1) == nrow(rsmat) ) 
+  
+  expect_is( cdists0, "numeric" )
+  expect_is( cdists1, "numeric" )
+  expect_true( length(cdists1) == nrow(smat) ) 
+  expect_true( length(cdists1) == length(cdists0) ) 
+  
   
   expect_is( dfDists, "data.frame" )
   expect_is( dfAllDists, "data.frame" )
@@ -55,6 +71,8 @@ test_that("Expected equivalences", {
   expect_true( mean( abs( dists0 - dists1 ) < 10^-12 ) == 1 )
   
   expect_true( mean( abs( rdists0 - rdists1 ) < 10^-12 ) == 1 )
+  
+  expect_true( mean( abs( cdists0 - cdists1 ) < 10^-12 ) == 1 )
   
 })
 
