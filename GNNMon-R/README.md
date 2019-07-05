@@ -30,8 +30,9 @@ Make the monad object and compute proximity thresholds:
 
     gnnObj <- 
       GNNMonUnit( data ) %>% 
-      GNNMonComputeThresholds( nTopNNs = 3, method = "euclidean", nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters )
-
+      GNNMonComputeNearestNeighborDistances( nTopNNs = 3, method = "euclidean" ) %>% 
+      GNNMonComputeThresholds( nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters ) %>% 
+      
 Points to test:
 
     dfPoints <- data.frame( X = c(-6, 2), Y = c(4.5, 16) )
