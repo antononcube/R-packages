@@ -9,8 +9,8 @@ GNNMonClassify(gnnObj, points)
 \arguments{
 \item{gnnObj}{A GNNMon object}
 
-\item{points}{A numeric vector (a point) or a matrix with
-number of columns that equals the dimension of monad's points.
+\item{points}{A numeric vector (a point) or a matrix or a data frame
+of points.
 (I.e. \code{ncol(gnnObj$Data)}).}
 }
 \value{
@@ -21,5 +21,7 @@ Classifies a given point as close enough to
 the monad points (TRUE) or too distant (FALSE).
 }
 \details{
+If points is a matrix or a data frame then its number of columns
+should equal the dimension of monad's points.
 The result is assigned to \code{gnnObj$Value}.
 }

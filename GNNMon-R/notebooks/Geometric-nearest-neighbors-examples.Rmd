@@ -103,7 +103,7 @@ gnnObj %>%
 
 ```{r}
 gnnObj %>% 
-  GNNMonClassify( points = rbind( as.matrix(dfPoints), data[8,]) ) %>% 
+  GNNMonClassify( points = rbind( dfPoints, data[8,] ) ) %>% 
   GNNMonTakeValue
 ```
 

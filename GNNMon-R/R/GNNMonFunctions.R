@@ -738,10 +738,13 @@ GNNMonFindNearest <- function( gnnObj, point, n = 12, method = "euclidean" )  {
 #' @description Classifies a given point as close enough to
 #' the monad points (TRUE) or too distant (FALSE).
 #' @param gnnObj A GNNMon object
-#' @param points A numeric vector (a point) or a matrix with
-#' number of columns that equals the dimension of monad's points.
+#' @param points A numeric vector (a point) or a matrix or a data frame
+#' of points.
 #' (I.e. \code{ncol(gnnObj$Data)}).
-#' @details The result is assigned to \code{gnnObj$Value}.
+#' @details
+#' If points is a matrix or a data frame then its number of columns
+#' should equal the dimension of monad's points.
+#' The result is assigned to \code{gnnObj$Value}.
 #' @return A GNNMon object
 #' @export
 GNNMonClassify <- function( gnnObj, points ) {
@@ -756,6 +759,10 @@ GNNMonClassify <- function( gnnObj, points ) {
 
   if( !is.matrix(points) && is.numeric(points) ) {
     points <- matrix( points, nrow = 1 )
+  }
+
+  if( is.data.frame(points) ) {
+    points <- as.matrix( points )
   }
 
   if( !( is.matrix(points) && ncol(points) == ncol(data) ) ) {
