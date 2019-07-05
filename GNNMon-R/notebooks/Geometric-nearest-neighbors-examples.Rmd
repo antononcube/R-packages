@@ -1,21 +1,63 @@
 ---
-title: "Geometiric Nearest Neighbors examples"
+title: "Geometric Nearest Neighbors examples"
 author: Anton Antonov
 date: 2019-07-04
 output: html_notebook
 ---
 
 ```{r}
+library(magrittr)
+library(dplyr)
+library(purrr)
 library(Matrix)
 library(ggplot2)
 library(OutlierIdentifiers)
+library(GNNMon)
 ```
 
-```{r, eval=T}
-devtools::load_all()
-```
+
 
 # Introduction
+
+## In brief
+
+The primary motivation for making this Geometric Nearest Neighbors (GNN) software monad
+(GNNMon) is the implementation of a simple Nearest Neighbors (NN's) classifier that tells 
+does a point belong to a set of points.
+
+That classification functionality can be also used to find outliers in a set points.
+
+## Usage example
+
+Make random data:
+
+```{r}
+set.seed(234)
+data <- matrix( c( rnorm( n = 30, mean = 0, sd = 5 ), rnorm( n = 30, mean = 12, sd = 3) ), ncol = 2 )
+colnames(data) <- c("X", "Y")
+```
+
+Make the monad object and compute proximity thresholds:
+
+```{r}
+gnnObj <- 
+  GNNMonUnit( data ) %>% 
+  GNNMonComputeThresholds( nTopNNs = 3, method = "euclidean", nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters )
+```
+
+Points to test:
+
+```{r}
+dfPoints <- data.frame( X = c(-6, 2), Y = c(4.5, 16) )
+```
+
+Classification of the testing points:
+
+```{r}
+gnnObj %>% 
+  GNNMonClassify( points = as.matrix(dfPoints) ) %>% 
+  GNNMonTakeValue
+```
 
 # Data
 
