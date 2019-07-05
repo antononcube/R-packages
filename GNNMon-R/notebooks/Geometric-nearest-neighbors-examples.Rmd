@@ -16,7 +16,6 @@ library(GNNMon)
 ```
 
 
-
 # Introduction
 
 ## In brief
@@ -42,7 +41,12 @@ Make the monad object and compute proximity thresholds:
 ```{r}
 gnnObj <- 
   GNNMonUnit( data ) %>% 
-  GNNMonComputeThresholds( nTopNNs = 3, method = "euclidean", nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters )
+  GNNMonComputeNearestNeighborDistances( nTopNNs = 3, method = "euclidean" ) %>% 
+  GNNMonComputeThresholds( nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters )
+```
+
+```{r}
+gnnObj %>% GNNMonTakeValue
 ```
 
 Points to test:
@@ -73,7 +77,8 @@ data
 ```{r}
 gnnObj <- 
   GNNMonUnit( data ) %>% 
-  GNNMonComputeThresholds( nTopNNs = 3, method = "euclidean", nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters ) %>% 
+  GNNMonComputeNearestNeighborDistances( nTopNNs = 3, method = "euclidean" ) %>% 
+  GNNMonComputeThresholds( nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters ) %>% 
   GNNMonEchoValue
 ```
 

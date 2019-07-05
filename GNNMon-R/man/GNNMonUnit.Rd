@@ -4,10 +4,7 @@
 \alias{GNNMonUnit}
 \title{Make a GNNMon Unit}
 \usage{
-GNNMonUnit(data)
-}
-\arguments{
-\item{data}{A matrix of points.}
+GNNMonUnit()
 }
 \value{
 An S3 class "GNNMon". In other words, a list with the attribute "class" set to "GNNMon".

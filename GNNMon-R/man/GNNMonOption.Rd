@@ -15,9 +15,7 @@ GNNMonOption(gnnObj, f)
 A GNNMon object.
 }
 \description{
-If monadic failure is obtained from \code{f(gnnObj)}
-then returns the original \code{gnnObj};
-else returns the result of \code{f(gnnObj)}.
+Optional function application to monad's object.
 }
 \details{
 In general \code{f} should return a monad object,

@@ -2,27 +2,23 @@
 % Please edit documentation in R/GNNMonFunctions.R
 \name{GNNMonComputeThresholds}
 \alias{GNNMonComputeThresholds}
-\title{Compute matrix distances.}
+\title{Compute proximity radius thresholds.}
 \usage{
-GNNMonComputeThresholds(gnnObj, nTopNNs = 6, method = "euclidean",
-  nnsRadiusFunction = mean,
+GNNMonComputeThresholds(gnnObj, nnsRadiusFunction = mean,
   thresholdsIdentifier = OutlierIdentifiers::HampelIdentifierParameters)
 }
 \arguments{
 \item{gnnObj}{A GNNMon object}
 
-\item{method}{A string for the distance method.
-One of "euclidean", "cosine".}
+\item{nnsRadiusFunction}{The function used to compute global
+nearest neighbors radius.}
 
 \item{thresholdsIdentifier}{An outliers identification parameters function
 that computes to hyper-sphere thresholds from the NN hyper-spheres radiuses.}
-
-\item{point}{A numeric vector.}
 }
 \value{
 A GNNMon object
 }
 \description{
-Computes the distances of a point to the rows of monad's
-data matrix using a specified method.
+Estimates the upper threshold of proximity radius.
 }
