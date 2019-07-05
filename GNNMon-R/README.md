@@ -16,8 +16,13 @@ Here is an installation command from GitHub's repository:
 
 ## Usage example
 
+Library load:
+
+    library(GNNMon)
+    
 Make random data:
 
+    set.seed(234)
     data <- matrix( c( rnorm( n = 30, mean = 0, sd = 5 ), rnorm( n = 30, mean = 12, sd = 3) ), ncol = 2 )
     colnames(data) <- c("X", "Y")
 
