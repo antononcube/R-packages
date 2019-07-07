@@ -138,6 +138,26 @@ LSAMonMemberPresenceCheck <- function( lsaObj, memberName, memberPrettyName = me
 ## Echo function application of over monad's value
 ##===========================================================
 
+#' Print monad's value.
+#' @description Prints the"Value" element/member of the monad object.
+#' @param lsaObj An LSAMon object.
+#' @return A LSAMon object.
+#' @details Prints \code{flsaObj$Value}.
+#' @export
+LSAMonEchoValue <- function( lsaObj ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  print( lsaObj$Value )
+
+  lsaObj
+}
+
+
+##===========================================================
+## Echo function application of over monad's value
+##===========================================================
+
 #' Function application to monad's value.
 #' @description Apply a function to the "Value" element/member of the monad object.
 #' @param lsaObj An LSAMon object.
@@ -153,7 +173,6 @@ LSAMonEchoFunctionValue <- function( lsaObj, f ) {
 
   lsaObj
 }
-
 
 
 ##===========================================================
@@ -176,10 +195,15 @@ LSAMonSetDocuments <- function( lsaObj, documents ) {
     return(LSAMonFailureSymbol)
   }
 
+  if( is.null( names(documents) ) ) {
+      documents <- setNames( documents, paste( "id", 1:length(documents), sep = "." ) )
+  }
+
   lsaObj$Documents <- documents
 
   lsaObj
 }
+
 
 ##===========================================================
 ## DocumentTermMatrix setter
@@ -604,7 +628,7 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "\\W", stemWord
 
   docIDs <- names(documents)
   if( is.null(docIDs) ) {
-    docIDs <- as.character( 1:length(documents))
+    docIDs <- as.character( 1:length(documents) )
   }
 
   ## Split the documents into words
@@ -1064,4 +1088,120 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
   lsaObj$Value <- res
 
   lsaObj
+}
+
+
+##===========================================================
+## Find most important texts
+##===========================================================
+
+#' Fins most important sentences.
+#' @description Finds the most important texts in the monad.
+#' @param lsaObj A LSAMon object
+#' @param nTop The number of top most important texts.
+#' @details The result is a data frame with columns \code{c("Score", "ID")};
+#' it is assigned to \code{lsaObj$Value}.
+#' @return A LSAMon object
+#' @export
+LSAMonFindMostImportantSentences <- function( lsaObj, nTop = 5 ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj,
+                                  memberName = "WeightedDocumentTermMatrix",
+                                  functionName = "LSAMonTopicRepresentation",
+                                  logicalResult = T) ) {
+
+    return(LSAMonFailureSymbol)
+  }
+
+  wswMat <- lsaObj %>% LSAMonTakeWeightedDocumentTermMatrix
+
+  ## Using Eigenvector decomposition
+  # wstSMat <- wswMat %*% t(wswMat)
+  # eres <- eigen( wstSMat )
+  # svec <- eres$vectors[,1]
+
+  ## Using SVD for most salient statements.
+  svdRes <- irlba::irlba( A = wswMat, nv = nTop )
+
+  svec <- svdRes$u[,1]
+
+  inds <- rev(order(abs(svec)))[ 1 : min(length(svec), nTop) ]
+
+  ## Final result
+  res <- data.frame( Score = abs(svec)[inds], Index = inds, ID = rownames(wswMat)[inds], stringsAsFactors = FALSE )
+
+  lsaObj$Value <- res
+
+  lsaObj
+}
+
+
+##===========================================================
+## Most important sentences (non-monadic)
+##===========================================================
+
+#' Most important sentences.
+#' @description Finds the most important sentences in a list of sentences.
+#' @param sentences A character vector with sentences.
+#' @param nTopSentences The number of top most important sentences
+#' to be returned.
+#' @param globalTermWeightFunction The global term weight function to applied.
+#' @param split A string with a regex split pattern.
+#' With that pattern the sentences are split into words.
+#' @param applyWordStemmingQ Should word stemming be applied or not?
+#' @param minWordLength Minimal word length.
+#' @param stopWords A character vector with stop words to be removed.
+#' @details The result is a data frame with columns \code{c("Score", "Sentence")}.
+#' This is a stand-alone, non-monadic version of \code{\link{LSAMonFindMostImportantTexts}}.
+#' @return A data frame
+#' @export
+MostImportantSentences <- function( sentences,
+                                    nTopSentences = 5,
+                                    globalTermWeightFunction = "IDF",
+                                    split = "\\W",
+                                    applyWordStemmingQ = FALSE,
+                                    minWordLength = 2,
+                                    stopWords = NULL ) {
+
+  if( is.null( names(sentences) ) ) {
+    sentences <- setNames( sentences, paste( "id", 1:length(sentences), sep = "." ) )
+  }
+
+  ## Create a document-term matrix
+  swMat <-
+    SparseMatrixRecommender::SMRMakeDocumentTermMatrix( documents = sentences,
+                                                        ids = names(sentences),
+                                                        split = split,
+                                                        applyWordStemming = applyWordStemmingQ,
+                                                        minWordLength = minWordLength )
+
+  ## Remove stop words. (Note that this done through the columns of the document-term matrix.)
+  if ( !is.null(stopWords) ) {
+    stopWords <- intersect( stopWords, colnames(swMat) )
+    if ( length(stopWords) > 0 ) {
+      swMat[, stopWords ] <- 0
+    }
+  }
+
+  ## Apply LSI weight functions.
+  wswMat <-
+    SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = swMat,
+                                                          globalWeightFunction = globalTermWeightFunction,
+                                                          localWeightFunction = "None",
+                                                          normalizerFunction = "Cosine" )
+
+  ## Using Eigenvector decomposition
+  # wstSMat <- wswMat %*% t(wswMat)
+  # eres <- eigen( wstSMat )
+  # svec <- eres$vectors[,1]
+
+  ## Using SVD for most salient statements.
+  svdRes <- irlba::irlba( A = wswMat, nv = nTopSentences )
+  svec <- svdRes$u[,1]
+  inds <- rev(order(abs(svec)))[ 1 : min(length(svec), nTopSentences) ]
+
+  ## Final result
+  data.frame( Score = abs(svec)[inds], Sentence = sentences[rownames(wswMat)[inds]], stringsAsFactors = FALSE )
 }
