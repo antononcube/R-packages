@@ -1095,7 +1095,7 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
 ## Find most important texts
 ##===========================================================
 
-#' Fins most important sentences.
+#' Fins most important texts.
 #' @description Finds the most important texts in the monad.
 #' @param lsaObj A LSAMon object
 #' @param nTop The number of top most important texts.
@@ -1103,7 +1103,7 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
 #' it is assigned to \code{lsaObj$Value}.
 #' @return A LSAMon object
 #' @export
-LSAMonFindMostImportantSentences <- function( lsaObj, nTop = 5 ) {
+LSAMonFindMostImportantTexts <- function( lsaObj, nTop = 5 ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -1148,9 +1148,9 @@ LSAMonFindMostImportantSentences <- function( lsaObj, nTop = 5 ) {
 #' @param nTopSentences The number of top most important sentences
 #' to be returned.
 #' @param globalTermWeightFunction The global term weight function to applied.
-#' @param split A string with a regex split pattern.
+#' @param splitPattern A string with a regex split pattern.
 #' With that pattern the sentences are split into words.
-#' @param applyWordStemmingQ Should word stemming be applied or not?
+#' @param stemWordsQ Should word stemming be applied or not?
 #' @param minWordLength Minimal word length.
 #' @param stopWords A character vector with stop words to be removed.
 #' @details The result is a data frame with columns \code{c("Score", "Sentence")}.
@@ -1160,48 +1160,20 @@ LSAMonFindMostImportantSentences <- function( lsaObj, nTop = 5 ) {
 MostImportantSentences <- function( sentences,
                                     nTopSentences = 5,
                                     globalTermWeightFunction = "IDF",
-                                    split = "\\W",
-                                    applyWordStemmingQ = FALSE,
+                                    splitPattern = "\\W",
+                                    stemWordsQ = FALSE,
                                     minWordLength = 2,
                                     stopWords = NULL ) {
 
-  if( is.null( names(sentences) ) ) {
-    sentences <- setNames( sentences, paste( "id", 1:length(sentences), sep = "." ) )
-  }
 
-  ## Create a document-term matrix
-  swMat <-
-    SparseMatrixRecommender::SMRMakeDocumentTermMatrix( documents = sentences,
-                                                        ids = names(sentences),
-                                                        split = split,
-                                                        applyWordStemming = applyWordStemmingQ,
-                                                        minWordLength = minWordLength )
+  lsaObj <-
+    LSAMonUnit( sentences ) %>%
+    LSAMonMakeDocumentTermMatrix( splitPattern = splitPattern, stemWordsQ = FALSE, stopWords = NULL ) %>%
+    LSAMonApplyTermWeightFunctions( globalWeightFunction = globalTermWeightFunction, localWeightFunction = "None", normalizerFunction = "Cosine" ) %>%
+    LSAMonFindMostImportantTexts( nTop = nTopSentences )
 
-  ## Remove stop words. (Note that this done through the columns of the document-term matrix.)
-  if ( !is.null(stopWords) ) {
-    stopWords <- intersect( stopWords, colnames(swMat) )
-    if ( length(stopWords) > 0 ) {
-      swMat[, stopWords ] <- 0
-    }
-  }
-
-  ## Apply LSI weight functions.
-  wswMat <-
-    SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = swMat,
-                                                          globalWeightFunction = globalTermWeightFunction,
-                                                          localWeightFunction = "None",
-                                                          normalizerFunction = "Cosine" )
-
-  ## Using Eigenvector decomposition
-  # wstSMat <- wswMat %*% t(wswMat)
-  # eres <- eigen( wstSMat )
-  # svec <- eres$vectors[,1]
-
-  ## Using SVD for most salient statements.
-  svdRes <- irlba::irlba( A = wswMat, nv = nTopSentences )
-  svec <- svdRes$u[,1]
-  inds <- rev(order(abs(svec)))[ 1 : min(length(svec), nTopSentences) ]
+  res <- setNames( (lsaObj %>% LSAMonTakeDocuments )[ lsaObj %>% LSAMonTakeValue %>% dplyr::pull(ID) ], NULL )
 
   ## Final result
-  data.frame( Score = abs(svec)[inds], Sentence = sentences[rownames(wswMat)[inds]], stringsAsFactors = FALSE )
+  cbind( lsaObj %>% LSAMonTakeValue, Sentence = res, stringsAsFactors = FALSE )
 }
