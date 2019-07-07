@@ -5,8 +5,8 @@
 \title{Most important sentences.}
 \usage{
 MostImportantSentences(sentences, nTopSentences = 5,
-  globalTermWeightFunction = "IDF", split = "\\\\W",
-  applyWordStemmingQ = FALSE, minWordLength = 2, stopWords = NULL)
+  globalTermWeightFunction = "IDF", splitPattern = "\\\\W",
+  stemWordsQ = FALSE, minWordLength = 2, stopWords = NULL)
 }
 \arguments{
 \item{sentences}{A character vector with sentences.}
@@ -16,10 +16,10 @@ to be returned.}
 
 \item{globalTermWeightFunction}{The global term weight function to applied.}
 
-\item{split}{A string with a regex split pattern.
+\item{splitPattern}{A string with a regex split pattern.
 With that pattern the sentences are split into words.}
 
-\item{applyWordStemmingQ}{Should word stemming be applied or not?}
+\item{stemWordsQ}{Should word stemming be applied or not?}
 
 \item{minWordLength}{Minimal word length.}
 

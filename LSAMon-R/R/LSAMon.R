@@ -1117,6 +1117,8 @@ LSAMonFindMostImportantTexts <- function( lsaObj, nTop = 5 ) {
 
   wswMat <- lsaObj %>% LSAMonTakeWeightedDocumentTermMatrix
 
+  nTop <- min( nrow(wswMat)-1, nTop )
+
   ## Using Eigenvector decomposition
   # wstSMat <- wswMat %*% t(wswMat)
   # eres <- eigen( wstSMat )
@@ -1127,7 +1129,7 @@ LSAMonFindMostImportantTexts <- function( lsaObj, nTop = 5 ) {
 
   svec <- svdRes$u[,1]
 
-  inds <- rev(order(abs(svec)))[ 1 : min(length(svec), nTop) ]
+  inds <- rev(order(abs(svec)))[ 1 : nTop ]
 
   ## Final result
   res <- data.frame( Score = abs(svec)[inds], Index = inds, ID = rownames(wswMat)[inds], stringsAsFactors = FALSE )
