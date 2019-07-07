@@ -219,7 +219,7 @@ LSAMonSetDocuments <- function( lsaObj, documents ) {
 #' @export
 LSAMonSetDocumentTermMatrix <- function( lsaObj, documentTermMatrix ) {
 
-  if( LSAMonFailureQ(lsaObj) ) { return(documentTermMatrix) }
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
   if( !( is.null(documentTermMatrix) || ( "dgCMatrix" %in% class(documentTermMatrix) ) ) ) {
     warning("The argument documentTermMatrix is expected to be NULL or a sparse matrix of type 'dgCMatrix'.", call. = TRUE)
@@ -575,7 +575,6 @@ LSAMonTakeTopicNames <- function( lsaObj, functionName = "LSAMonTakeTopicNames" 
 }
 
 
-
 ##===========================================================
 ## Make document-term matrix
 ##===========================================================
@@ -893,6 +892,48 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
 
 
 ##===========================================================
+## Take normalized matrix product components
+##===========================================================
+
+#' Take normalized matrix product components.
+#' @description Normalizes the matrix factors and returns a list with them.
+#' @param lsaObj A LSAMon object.
+#' @param normalizeLeftQ Should the left factor be normalized?
+#' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
+#' @return A list of matrices
+#' @export
+LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ = TRUE, orderBySignificanceQ = FALSE ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonTakeNormalizedMatrixProductComponents", logicalResult = T ) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "W", functionName = "LSAMonTakeNormalizedMatrixProductComponents", logicalResult = T ) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  nres <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( lsaObj$W, lsaObj$H, normalizeLeftQ = normalizeLeftQ )
+
+  if( orderBySignificanceQ ) {
+
+    if( normalizeLeftQ ) {
+      topicSFactors <- sqrt( rowSums( nres$H * nres$H ) )
+    } else {
+      topicSFactors <- sqrt( colSums( nres$W * nres$W ) )
+    }
+
+    nres$W <- nres$W[ , rev(order(topicSFactors)) ]
+    nres$H <- nres$H[ rev(order(topicSFactors)), ]
+    topicSFactors <- topicSFactors[ rev(order(topicSFactors)) ]
+  }
+
+  list( W = nres$W, H = nres$H )
+}
+
+
+##===========================================================
 ## Basis vector interpretation
 ##===========================================================
 
@@ -931,6 +972,8 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
 
   nres <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( lsaObj$W, lsaObj$H, normalizeLeftQ = FALSE )
 
+  ## Using these norms to order by significance is only valid only
+  ## if normalizeLeftQ = FALSE in the line above.
   topicSFactors <- sqrt( colSums( nres$W * nres$W ) )
 
   if( orderBySignificanceQ ) {
@@ -957,6 +1000,7 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
 
   lsaObj
 }
+
 
 ##===========================================================
 ## Statistical thesauri
@@ -1167,15 +1211,35 @@ MostImportantSentences <- function( sentences,
                                     minWordLength = 2,
                                     stopWords = NULL ) {
 
+  if( !is.character(sentences) ) {
+    stop( "The argument sentences is expected to be a character vector.", ccall. = TRUE )
+  }
 
+  if( length(sentences) == 0 ) {
+
+    return( NULL )
+
+  } else if( length(sentences) == 1 ) {
+
+    return( data.frame( Score = 1, Index = 1, ID = if( is.null( names(sentences) ) ) { "id1" } else { names(sentences) },
+                        Sentence = sentences,
+                        stringsAsFactors = FALSE ) )
+  }
+
+  ## Using LSAMon.
   lsaObj <-
     LSAMonUnit( sentences ) %>%
     LSAMonMakeDocumentTermMatrix( splitPattern = splitPattern, stemWordsQ = FALSE, stopWords = NULL ) %>%
     LSAMonApplyTermWeightFunctions( globalWeightFunction = globalTermWeightFunction, localWeightFunction = "None", normalizerFunction = "Cosine" ) %>%
     LSAMonFindMostImportantTexts( nTop = nTopSentences )
 
+  if( LSAMonFailureQ(lsaObj) ) {
+    return(NULL)
+  }
+
   res <- setNames( (lsaObj %>% LSAMonTakeDocuments )[ lsaObj %>% LSAMonTakeValue %>% dplyr::pull(ID) ], NULL )
 
   ## Final result
   cbind( lsaObj %>% LSAMonTakeValue, Sentence = res, stringsAsFactors = FALSE )
 }
+
