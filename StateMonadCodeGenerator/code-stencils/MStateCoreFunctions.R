@@ -108,7 +108,7 @@ MStateMemberPresenceCheck <- function( msObj, memberName, memberPrettyName = mem
 #' @description Prints the "Value" element/member of the monad object.
 #' @param msObj An MState object.
 #' @return A MState object.
-#' @details Prints \code{f(msObj$Value)}.
+#' @details Prints \code{msObj$Value}.
 #' @export
 MStateEchoValue <- function( msObj ) {
 
@@ -147,9 +147,9 @@ MStateEchoFunctionValue <- function( msObj, f ) {
 ##===========================================================
 
 #' Optional function application to monad's object.
-#' @description If monadic failure is obtained from \code{msObj %>% f}
+#' @description If monadic failure is obtained from \code{f(msObj)}
 #' then returns the original \code{msObj};
-#' else returns the result of \code{msObj %>% f}.
+#' else returns the result of \code{f(msObj)}.
 #' @param msObj An MState object.
 #' @param f A function to be applied to the monad object.
 #' @return A MState object.
