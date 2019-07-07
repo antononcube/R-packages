@@ -311,18 +311,22 @@ SMRToBagOfWords <- function( text, split = "\\W", punctuationPattern = "[[:punct
 SMRMakeDocumentTermMatrix <- function( documents, ids = NULL, split = "\\W",
                                        applyWordStemming = TRUE, minWordLength = 2 ) {
 
-  if ( is.null(ids) ) { ids = 1:length(documents) }
+  if ( is.null(ids) ) { 
+    ids <- paste0( "id", formatC( x = 1:length(documents), width = ceiling(log10(length(documents))) + 1, flag = "0" ) ) 
+  }
 
   if ( length(documents) != length(ids) ) {
     stop( "The lengths of the arguments 'documents' and 'ids' are expected to be the same.", call. = TRUE )
   }
 
+  minWordLength <- max( minWordLength, 1 )
+  
   ## Split the descriptions into words
   ss <- setNames( strsplit( documents, split = split ), ids )
 
   ## Remove words that are too short
   ss <- ss[ purrr::map(ss, length) > 0 ]
-  ss <- purrr::map( ss, function(x) x[ nchar(x) > minWordLength ] )
+  ss <- purrr::map( ss, function(x) x[ nchar(x) >= minWordLength ] )
 
   ## Convert all words to lower case and apply stemming
   snLoadQ = exists("wordStem")
