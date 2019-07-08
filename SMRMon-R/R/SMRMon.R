@@ -731,11 +731,12 @@ SMRMonCreate <- function( smrObj, data = SMRMonTakeData(smrObj), tagTypes = name
 #' Creation an SMRMon object with a list of matrices.
 #' @description Creates a sparse matrix recommender from a list of matrices and a corresponding list of tag types,
 #' and makes is an SMRMon object.
+#' @param smrObj An SMRMon object.
 #' @param matrices A list of matrices to be spliced into a metadata matrix.
 #' @param tagTypes Vector of matrix names.
 #' @param itemColumnName The column name of recommender items (in data and recommendations).
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
-#' @return SMR object.
+#' @return An SMRMon object.
 #' @family Creation functions
 #' @export
 SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrices), itemColumnName = "Item" ) {
@@ -747,6 +748,66 @@ SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrice
   class(res) <- "SMR"
 
   res
+}
+
+
+##===========================================================
+## Long form
+##===========================================================
+
+#' Long form data frame representation.
+#' @description Creates a long form data frame for the recommendation matrix of an SMRMon object.
+#' @param smrObj An SMRMon object.
+#' @param tagTypesQ Should the tag types be included or not?
+#' @details The result data frame is assigned to \code{smrObj$Value}.
+#' @return An SMRMon object.
+#' @family Data functions
+#' @export
+SMRMonGetLongFormData <- function( smrObj, tagTypesQ = TRUE ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( tagTypesQ ) {
+
+    ## Make a long form for each sub-matrices and cbind the corresponding tag types.
+
+    smat <- smrObj %>% SMRMonTakeM
+
+    smatColNames <-  c( smrObj %>% SMRMonTakeItemColumnName, "Tag", "Value" )
+
+    res <-
+      purrr::map_df( smrObj %>% SMRMonTakeTagTypes, function(tt) {
+
+        m <- SMRSubMatrixOfMatrix( M = smat, ranges = smrObj %>% SMRMonTakeTagTypeRanges, tagType = tt )
+
+        if( is.null(m) || nrow(m) == 0 ) {
+          NULL
+        } else {
+          m <- setNames( SMRSparseMatrixToTriplets( smat = m ), smatColNames )
+          cbind( m, TagType = tt, stringsAsFactors = FALSE )
+        }
+
+      })
+
+    smatColNames <- c( smrObj %>% SMRMonTakeItemColumnName, "TagType", "Tag", "Value" )
+
+    res <-
+      res %>%
+      dplyr::select_at( .vars = smatColNames )
+
+  } else {
+
+    ## Probably faster?
+    smatColNames <- c( smrObj %>% SMRMonTakeItemColumnName, "Tag", "Value" )
+
+    res <- setNames( SMRSparseMatrixToTriplets( smat = smrObj %>% SMRMonTakeM ), smatColNames )
+
+  }
+
+  ## Returned result
+  smrObj$Value <- res %>% dplyr::arrange_at( .vars = smatColNames )
+
+  smrObj
 }
 
 
@@ -982,6 +1043,7 @@ SMRMonProfileSpecificationQ <- function( smrObj, spec, functionName = "SMRMonPro
   smrObj$Value <- profile
   return(smrObj)
 }
+
 
 ##===========================================================
 ## Get top recommendations
@@ -1289,7 +1351,7 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
 
 
 ##===========================================================
-## Apply tag types
+## Apply tag type weights
 ##===========================================================
 
 #' Apply tag type weights
@@ -1366,7 +1428,7 @@ SMRMonFilterMatrix <- function( smrObj, profile ) {
 
 
 ##===========================================================
-## Tags nerest neighbors
+## Tag nerest neighbors
 ##===========================================================
 
 #' Tag nearest neighbors
@@ -1412,7 +1474,7 @@ SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsP
 #' Top-K statistic computation
 #' @description Computes the Top-K statistic for a data frame with the scored similarity pairs.
 #' @param smrObj A sparse matrix recommender.
-#' @param testData A data frame with colums \code{c( "Score", "SearchID", SMRMonTakeItemColumnName(smrObj) )}.
+#' @param testData A data frame with columns \code{c( "Score", "SearchID", SMRMonTakeItemColumnName(smrObj) )}.
 #' @param ks An integer vector with k-values for the Top-K statistic.
 #' @param ... Additional arguments passed to \code{\link{SMRMonRecommend}}.
 #' @details The computation result is assigned to \code{smrObj$Value}.

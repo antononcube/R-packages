@@ -8,6 +8,8 @@ SMRMonCreateFromMatrices(smrObj, matrices, tagTypes = names(matrices),
   itemColumnName = "Item")
 }
 \arguments{
+\item{smrObj}{An SMRMon object.}
+
 \item{matrices}{A list of matrices to be spliced into a metadata matrix.}
 
 \item{tagTypes}{Vector of matrix names.}
@@ -15,7 +17,7 @@ SMRMonCreateFromMatrices(smrObj, matrices, tagTypes = names(matrices),
 \item{itemColumnName}{The column name of recommender items (in data and recommendations).}
 }
 \value{
-SMR object.
+An SMRMon object.
 }
 \description{
 Creates a sparse matrix recommender from a list of matrices and a corresponding list of tag types,
