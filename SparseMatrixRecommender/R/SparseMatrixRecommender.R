@@ -382,7 +382,7 @@ SMRSubMatrix <- function(smr, tagType ){
 #' @return Sparse matrix.
 #' @export
 SMRSubMatrixOfMatrix <- function( M, ranges, tagType ) {
-  M[,ranges[tagType, "Begin"]:ranges[tagType, "End"]]
+  M[,ranges[tagType, "Begin"]:ranges[tagType, "End"], drop = FALSE ]
 }
 
 #' Get current tag type significance factors
