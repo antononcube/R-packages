@@ -4,7 +4,7 @@
 \alias{SMRMonProfile}
 \title{Profile for a history specification}
 \usage{
-SMRMonProfile(smrObj, history)
+SMRMonProfile(smrObj, history, tagTypesQ = FALSE)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -13,6 +13,8 @@ SMRMonProfile(smrObj, history)
 A data frame with columns \code{c("Rating", "Item")};
 a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
+
+\item{tagTypesQ}{Should the tag types be included or not?}
 }
 \value{
 A SMRMon object
@@ -21,7 +23,7 @@ A SMRMon object
 Find the profile that corresponds to a history specification.
 }
 \details{
-The recommendations result is a
-data frame with columns "Score", "Index", "Tag";
-assigned to \code{smrObj$Value}.
+The profile data frame is assigned to \code{smrObj$Value}.
+If \code{tagTypesQ = FALSE} then its are columns "Score", "Index", "Tag".
+If \code{tagTypesQ = TRUE} then its are columns "Score", "Index", "TagType", "Tag".
 }

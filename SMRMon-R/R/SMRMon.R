@@ -1246,12 +1246,14 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, warningQ = TR
 #' A data frame with columns \code{c("Rating", "Item")};
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
-#' @details The recommendations result is a
-#' data frame with columns "Score", "Index", "Tag";
-#' assigned to \code{smrObj$Value}.
+#' @param tagTypesQ Should the tag types be included or not?
+#' @details
+#' The profile data frame is assigned to \code{smrObj$Value}.
+#' If \code{tagTypesQ = FALSE} then its are columns "Score", "Index", "Tag".
+#' If \code{tagTypesQ = TRUE} then its are columns "Score", "Index", "TagType", "Tag".
 #' @return A SMRMon object
 #' @export
-SMRMonProfile <- function( smrObj, history ) {
+SMRMonProfile <- function( smrObj, history, tagTypesQ = FALSE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1266,6 +1268,17 @@ SMRMonProfile <- function( smrObj, history ) {
   history <- smrObj %>% SMRMonTakeValue
 
   res <- SMRProfileDF( smr = smrObj, itemHistory = history )
+
+  if( tagTypesQ ) {
+
+      ttInds <- c( smrObj$TagTypeRanges$Begin, smrObj$TagTypeRanges$End[ nrow(smrObj$TagTypeRanges) ])
+
+      tts <- findInterval( res$Index, ttInds, all.inside = TRUE )
+
+      res <- cbind( res, TagType = rownames(smrObj$TagTypeRanges)[ tts ], stringsAsFactors = FALSE )
+
+      res <- res[ , c( "Score", "Index", "TagType", "Tag") ]
+  }
 
   smrObj$Value <- res
 
