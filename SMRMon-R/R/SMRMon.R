@@ -714,6 +714,8 @@ SMRMonGetMatrixProperty <- function( smrObj, property, tagType = NULL ) {
 #' @export
 SMRMonCreate <- function( smrObj, data = SMRMonTakeData(smrObj), tagTypes = names(data)[-1], itemColumnName = names(data)[1] ) {
 
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
   res <- SMRCreate( dataRows = data, tagTypes = tagTypes, itemColumnName = itemColumnName )
 
   res$Value <- NULL
@@ -741,6 +743,8 @@ SMRMonCreate <- function( smrObj, data = SMRMonTakeData(smrObj), tagTypes = name
 #' @export
 SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrices), itemColumnName = "Item" ) {
 
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
   res <- SMRCreateFromMatrices( matrices = matrices, tagTypes = tagTypes, itemColumnName = itemColumnName )
 
   res$Value <- NULL
@@ -748,6 +752,44 @@ SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrice
   class(res) <- "SMR"
 
   res
+}
+
+
+##===========================================================
+## Apply term-weight functions
+##===========================================================
+
+#' Apply term-weight functions.
+#' @description Re-weight the entries of the recommender matrix (per tag type.)
+#' @param smrObj A SMRMon object.
+#' @param globalWeightFunction Global weight function.
+#' @param localWeightFunction Local weight function.
+#' @param normalizerFunction Normalizer function.
+#' @return A SMRMon object.
+#' @details This function calls
+#' \code{\link{SparseMatrixRecommender::SMRApplyTermWeightFunctions}} for each
+#' sub-matrix of \code{smrObj$M}.
+#' @export
+SMRMonApplyTermWeightFunctions <- function( smrObj, globalWeightFunction = "IDF", localWeightFunction = "None", normalizerFunction = "Cosine" ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommend",  logicalResultQ = TRUE) ) {
+    return(SMRMonFailureSymbol)
+  }
+
+  smats <-
+    purrr::map( setNames( smrObj %>% SMRMonTakeTagTypes, smrObj %>% SMRMonTakeTagTypes), function(tt) {
+
+      SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = SMRSubMatrix( smr = smrObj, tagType = tt ),
+                                                            globalWeightFunction = globalWeightFunction,
+                                                            localWeightFunction = localWeightFunction,
+                                                            normalizerFunction = normalizerFunction )
+    })
+
+  smrObj$M <- do.call( cbind, smats )
+
+  smrObj
 }
 
 
