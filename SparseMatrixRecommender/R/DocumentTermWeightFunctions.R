@@ -174,7 +174,7 @@ SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL
 
     } else if ( localWeightFunction == "Binary" ) {
 
-      mat@x <- rep(1, length(mat@x) )
+      mat@x[ mat@x > 0 ] <- 1
 
     } else if ( localWeightFunction == "Log" || localWeightFunction == "Logarithmic"  ) {
 
