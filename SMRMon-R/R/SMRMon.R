@@ -243,7 +243,7 @@ SMRMonSetM01 <- function( smrObj, M01 ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !( is.null(M01) ||  "dgCMatrix" %in% class(M) ) ) {
+  if( !( is.null(M01) ||  "dgCMatrix" %in% class(M01) ) ) {
     warning("The argument M01 is expected to be NULL or a 'dgCMatrix' sparse matrix", call. = TRUE)
     return(SMRMonFailureSymbol)
   }
@@ -831,7 +831,7 @@ SMRMonGetLongFormData <- function( smrObj, tagTypesQ = TRUE ) {
 
         m <- SMRSubMatrixOfMatrix( M = smat, ranges = smrObj %>% SMRMonTakeTagTypeRanges, tagType = tt )
 
-        if( is.null(m) || nrow(m) == 0 ) {
+        if( is.null(m) || nrow(m) == 0 || sum(m@x) == 0) {
           NULL
         } else {
           m <- setNames( SMRSparseMatrixToTriplets( smat = m ), smatColNames )
@@ -1485,7 +1485,9 @@ SMRMonFilterMatrix <- function( smrObj, profile ) {
   svec <- (smrObj %>% SMRMonTakeM) %*% profileVec
 
   smrObj <-
-    smrObj %>% SMRMonSetM( (smrObj %>% SMRMonTakeM)[ svec[,1] > 0, ] )
+    smrObj %>%
+    SMRMonSetM( (smrObj %>% SMRMonTakeM)[ svec[,1] > 0, ] ) %>%
+    SMRMonSetM01( (smrObj %>% SMRMonTakeM01)[ svec[,1] > 0, ] )
 
   smrObj
 }
