@@ -7,12 +7,14 @@ test_that("Creation with data", {
 
   expect_is( smrObj <- SMRMonUnit( data = dfTitanic ) %>% SMRMonCreate( itemColumnName = "id" ), "SMR" )
 
-  expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data"), names(smrObj) ) ),
+  expect_equal( length( intersect( names(smrObj),
+                                   c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data") ) ),
                 8 )
 
   expect_is( smrObj1 <- SMRMonUnit( ) %>% SMRMonCreate( data = dfTitanic, itemColumnName = "id" ), "SMR" )
 
-  expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data"), names(smrObj1) ) ),
+  expect_equal( length( intersect( names(smrObj1),
+                                   c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data") ) ),
                 8 )
 
 })
@@ -27,12 +29,14 @@ test_that("Creation with matrices", {
 
   expect_is( smrObj2 <- SMRMonUnit( ) %>% SMRMonCreateFromMatrices( matrices = smats, tagTypes = names(dfTitanic)[-1], itemColumnName = names(dfTitanic)[[1]] ), "SMR" )
 
-  expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules" ), names(smrObj2) ) ),
+  expect_equal( length( intersect( names(smrObj2),
+                                   c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules" ) ) ),
                 7 )
 
   expect_is( smrObj3 <- SMRMonUnit( ) %>% SMRMonCreateFromMatrices( matrices = setNames( smats, names(dfTitanic)[-1]), itemColumnName = names(dfTitanic)[[1]] ), "SMR" )
 
-  expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules" ), names(smrObj3) ) ),
+  expect_equal( length( intersect( names(smrObj3),
+                                   c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules" ) ) ),
                 7 )
 
 })
