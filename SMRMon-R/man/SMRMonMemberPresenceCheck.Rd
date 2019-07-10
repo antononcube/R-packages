@@ -6,7 +6,7 @@
 \usage{
 SMRMonMemberPresenceCheck(smrObj, memberName,
   memberPrettyName = memberName, functionName = "",
-  logicalResultQ = FALSE)
+  logicalResultQ = FALSE, warningQ = TRUE)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -18,6 +18,8 @@ SMRMonMemberPresenceCheck(smrObj, memberName,
 \item{functionName}{The name of the delegating function.}
 
 \item{logicalResultQ}{Should the result be a logical value?}
+
+\item{warningQ}{Should a warning be issued or not?}
 }
 \value{
 A logical value or an SMRMon object.
