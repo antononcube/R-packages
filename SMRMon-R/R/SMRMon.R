@@ -116,9 +116,10 @@ SMRMonTakeValue <- function( smrObj ) {
 #' @param memberPrettyName A pretty member name (for messages).
 #' @param functionName The name of the delegating function.
 #' @param logicalResultQ Should the result be a logical value?
+#' @param warningQ Should a warning be issued or not?
 #' @return A logical value or an SMRMon object.
 #' @export
-SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = memberName, functionName = "", logicalResultQ = FALSE ) {
+SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = memberName, functionName = "", logicalResultQ = FALSE, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -127,7 +128,9 @@ SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = me
   if( nchar(functionName) > 0 ) { functionName <- paste0( functionName, ":: ") }
 
   if( is.null(smrObj[[memberName]]) ) {
-    warning( paste0( functionName, paste0("Cannot find ", memberPrettyName, ".") ), call. = TRUE )
+    if( warningQ ) {
+      warning( paste0( functionName, paste0("Cannot find ", memberPrettyName, ".") ), call. = TRUE )
+    }
     res <- FALSE
   }
 
@@ -714,7 +717,8 @@ SMRMonGetMatrixProperty <- function( smrObj, property, tagType = NULL ) {
 #' @export
 SMRMonCreate <- function( smrObj, data = SMRMonTakeData(smrObj), tagTypes = names(data)[-1], itemColumnName = names(data)[1] ) {
 
-  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+  ## We allow anything to be smrObj .
+  ## if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
   res <- SMRCreate( dataRows = data, tagTypes = tagTypes, itemColumnName = itemColumnName )
 
@@ -743,13 +747,18 @@ SMRMonCreate <- function( smrObj, data = SMRMonTakeData(smrObj), tagTypes = name
 #' @export
 SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrices), itemColumnName = "Item" ) {
 
-  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+  ## We allow anything to be smrObj .
+  ## if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
   res <- SMRCreateFromMatrices( matrices = matrices, tagTypes = tagTypes, itemColumnName = itemColumnName )
+  if( is.null(res) ) { return(SMRMonFailureSymbol) }
 
   res$Value <- NULL
-  res$Data <- smrObj %>% SMRMonTakeData
   class(res) <- "SMR"
+
+  if( SMRMonMemberPresenceCheck( smrObj = smrObj, memberName = "Data", logicalResultQ = TRUE, warningQ = FALSE ) ) {
+    res$Data <- smrObj %>% SMRMonTakeData
+  }
 
   res
 }

@@ -1,0 +1,38 @@
+context("Creation pipelines")
+library(SMRMon)
+library(SparseMatrixRecommender)
+
+
+test_that("Creation with data", {
+
+  expect_is( smrObj <- SMRMonUnit( data = dfTitanic ) %>% SMRMonCreate( itemColumnName = "id" ), "SMR" )
+
+  expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data"), names(smrObj) ) ),
+                8 )
+
+  expect_is( smrObj1 <- SMRMonUnit( ) %>% SMRMonCreate( data = dfTitanic, itemColumnName = "id" ), "SMR" )
+
+  expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data"), names(smrObj1) ) ),
+                8 )
+
+})
+
+
+smats <- purrr::map( names(dfTitanic)[-1], function(x) xtabs( formula = as.formula( paste( "~", names(dfTitanic)[[1]], "+", x ) ), data = dfTitanic, sparse = TRUE ) )
+
+test_that("Creation with matrices", {
+
+  expect_error( SMRMonUnit( ) %>% SMRMonCreateFromMatrices( matrices = smats, itemColumnName = "id" ),
+                regexp = "When tagTypes = NULL the elements of the argument matrices are expected to have unique names.*")
+
+  expect_is( smrObj2 <- SMRMonUnit( ) %>% SMRMonCreateFromMatrices( matrices = smats, tagTypes = names(dfTitanic)[-1], itemColumnName = names(dfTitanic)[[1]] ), "SMR" )
+
+  expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules" ), names(smrObj2) ) ),
+                7 )
+
+  expect_is( smrObj3 <- SMRMonUnit( ) %>% SMRMonCreateFromMatrices( matrices = setNames( smats, names(dfTitanic)[-1]), itemColumnName = names(dfTitanic)[[1]] ), "SMR" )
+
+  expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules" ), names(smrObj3) ) ),
+                7 )
+
+})
