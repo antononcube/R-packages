@@ -809,20 +809,32 @@ SMRMonApplyTermWeightFunctions <- function( smrObj, globalWeightFunction = "IDF"
 #' Long form data frame representation.
 #' @description Creates a long form data frame for the recommendation matrix of an SMRMon object.
 #' @param smrObj An SMRMon object.
+#' @param items A character vector of items.
+#' If NULL all elements of \code{rownames(smrObj$M)} are used.
 #' @param tagTypesQ Should the tag types be included or not?
 #' @details The result data frame is assigned to \code{smrObj$Value}.
 #' @return An SMRMon object.
 #' @family Data functions
 #' @export
-SMRMonGetLongFormData <- function( smrObj, tagTypesQ = TRUE ) {
+SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !( is.null(items) || is.character(items) && mean( items %in% rownames(smrObj$M) ) == 1 ) ) {
+    warning( "The argument items is expected a character vector with elements from rownames(smrObj$M).", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( is.null(items) ) {
+    smat <- smrObj %>% SMRMonTakeM
+  } else {
+    smat <- (smrObj %>% SMRMonTakeM)[items, , drop = F]
+  }
 
   if( tagTypesQ ) {
 
     ## Make a long form for each sub-matrices and cbind the corresponding tag types.
 
-    smat <- smrObj %>% SMRMonTakeM
 
     smatColNames <-  c( smrObj %>% SMRMonTakeItemColumnName, "Tag", "Value" )
 
@@ -851,13 +863,67 @@ SMRMonGetLongFormData <- function( smrObj, tagTypesQ = TRUE ) {
     ## Probably faster?
     smatColNames <- c( smrObj %>% SMRMonTakeItemColumnName, "Tag", "Value" )
 
-    res <- setNames( SMRSparseMatrixToTriplets( smat = smrObj %>% SMRMonTakeM ), smatColNames )
+    res <- setNames( SMRSparseMatrixToTriplets( smat = smat ), smatColNames )
 
   }
 
   ## Returned result
   smrObj$Value <- res %>% dplyr::arrange_at( .vars = smatColNames )
 
+  smrObj
+}
+
+
+##===========================================================
+## Summarize item
+##===========================================================
+
+#' Summarize an item
+#' @description Summarizes the recommender matrix data
+#' for a given item.
+#' (A row of the recommender matrix \code{smrObj$M}.)
+#' @param smrObj An SMRMon object.
+#' @param item A string.
+#' (That is one of \code{rownames(smrObj$M)}.)
+#' @details
+#' The result is a list with named elements assigned to \code{smrObj$Value}.
+#' @return A SMRMon object
+#' @export
+SMRMonSummarizeItem <- function( smrObj, item ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( is.null(item) ) {
+    item <- smrObj %>% SMRMonTakeValue
+  }
+
+  if( !( is.character(item) && (item %in% rownames(smrObj$M) ) ) ) {
+    warning( "The value of the argument item is expected to be one of rownames(smrObj$M).", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Tags profile.
+  dfProfile <-
+    smrObj %>%
+    SMRMonGetLongFormData( items = c(item), tagTypesQ = TRUE ) %>%
+    SMRMonTakeValue
+
+  ## Tags summary: number of tags, top tags/outliers.
+  dfTagsSummary <-
+    dfProfile %>%
+    dplyr::group_by_at( .vars = c( smrObj %>% SMRMonTakeItemColumnName, "TagType" ) ) %>%
+    dplyr::arrange( desc(Value) ) %>%
+    dplyr::summarize( NumberOfTags = length(Tag) )
+
+  ## Top tags / tag outliers.
+  ## We assume something like TF-IDF or contingency matrix entries.
+  ## TBD
+
+  ## Number of NNs in the expected vicinity.
+  ## TBD...
+
+  ## Result
+  smrObj$Value <- list( Profile = dfProfile, TagsSummary = dfTagsSummary )
   smrObj
 }
 

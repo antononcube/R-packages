@@ -61,3 +61,16 @@ test_that("Expected data shapes after filtering", {
                 nrow( dfTitanic %>% dplyr::filter( passengerSex == "male" | passengerClass == "1st" ) ) )
 
 })
+
+## Test summarization.
+test_that("Expected data shapes after summarization", {
+
+  expect_is( itemSummary <- smrObj %>% SMRMonSummarizeItem( item = "id.10" ) %>% SMRMonTakeValue, "list" )
+
+  expect_true( mean( c( "Profile", "TagsSummary" ) %in% names(itemSummary) ) == 1 )
+
+  expect_is( itemSummary$Profile, "data.frame" )
+
+  expect_is( itemSummary$TagsSummary, "data.frame" )
+
+})

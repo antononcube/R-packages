@@ -4,10 +4,13 @@
 \alias{SMRMonGetLongFormData}
 \title{Long form data frame representation.}
 \usage{
-SMRMonGetLongFormData(smrObj, tagTypesQ = TRUE)
+SMRMonGetLongFormData(smrObj, items = NULL, tagTypesQ = TRUE)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
+
+\item{items}{A character vector of items.
+If NULL all elements of \code{rownames(smrObj$M)} are used.}
 
 \item{tagTypesQ}{Should the tag types be included or not?}
 }
