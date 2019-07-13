@@ -4,13 +4,15 @@
 \alias{SMRMonSummarizeItem}
 \title{Summarize an item}
 \usage{
-SMRMonSummarizeItem(smrObj, item, nTopTags = 5)
+SMRMonSummarizeItem(smrObj, item, tagTypesQ = TRUE, nTopTags = 5)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
 
 \item{item}{A string.
 (That is one of \code{rownames(smrObj$M)}.)}
+
+\item{tagTypesQ}{Should the tag types be included or not?}
 
 \item{nTopTags}{Number of top tags for the \code{"TagsSummary"}
 element of the result.}

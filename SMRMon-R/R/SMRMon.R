@@ -797,6 +797,7 @@ SMRMonApplyTermWeightFunctions <- function( smrObj, globalWeightFunction = "IDF"
     })
 
   smrObj$M <- do.call( cbind, smats )
+  smrObj$M01 <- smrObj$M
 
   smrObj
 }
@@ -919,13 +920,14 @@ SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE, summa
 #' @param smrObj An SMRMon object.
 #' @param item A string.
 #' (That is one of \code{rownames(smrObj$M)}.)
+#' @param tagTypesQ Should the tag types be included or not?
 #' @param nTopTags Number of top tags for the \code{"TagsSummary"}
 #' element of the result.
 #' @details
 #' The result is a list with named elements assigned to \code{smrObj$Value}.
 #' @return A SMRMon object
 #' @export
-SMRMonSummarizeItem <- function( smrObj, item, nTopTags = 5 ) {
+SMRMonSummarizeItem <- function( smrObj, item, tagTypesQ = TRUE, nTopTags = 5 ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -933,7 +935,7 @@ SMRMonSummarizeItem <- function( smrObj, item, nTopTags = 5 ) {
     item <- smrObj %>% SMRMonTakeValue
   }
 
-  if( !( is.character(item) && (item %in% rownames(smrObj$M) ) ) ) {
+  if( !( is.character(item) && length(item) == 1 && (item %in% rownames(smrObj$M) ) ) ) {
     warning( "The value of the argument item is expected to be one of rownames(smrObj$M).", call. = TRUE )
     return(SMRMonFailureSymbol)
   }
@@ -941,17 +943,23 @@ SMRMonSummarizeItem <- function( smrObj, item, nTopTags = 5 ) {
   ## Tags profile.
   dfProfile <-
     smrObj %>%
-    SMRMonGetLongFormData( items = c(item), tagTypesQ = TRUE ) %>%
+    SMRMonGetLongFormData( items = c(item), tagTypesQ = tagTypesQ ) %>%
     SMRMonTakeValue
 
-  dfProfile <-
-    dfProfile %>%
-    dplyr::arrange( TagType, desc(Value) )
+  if( tagTypesQ ) {
+
+    dfProfile <- dfProfile %>% dplyr::arrange( TagType, desc(Value) )
+
+  } else {
+
+    dfProfile <- dfProfile %>% dplyr::arrange( desc(Value) )
+
+  }
 
   ## Tags summary: number of tags, top tags/outliers.
   dfTagsSummary <-
     smrObj %>%
-    SMRMonGetLongFormData( items = c(item), tagTypesQ = TRUE, summarizeTagsQ = TRUE, nTopTags = nTopTags ) %>%
+    SMRMonGetLongFormData( items = c(item), tagTypesQ = tagTypesQ, summarizeTagsQ = TRUE, nTopTags = nTopTags ) %>%
     SMRMonTakeValue
 
   ## Top tags / tag outliers.
