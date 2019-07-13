@@ -527,7 +527,7 @@ SMRMonMakeServerFunction <- function( smrObj, itemData, itemDataColNames = NULL,
 #' @return Shiny app
 #' @family SMRMon interface functions
 #' @export
-SMRMonCreateSearchInterface <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W", dashboardTheme = NULL ) {
+SMRMonCreateInteractiveInterface <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W", dashboardTheme = NULL ) {
 
   res <- length(unlist(strsplit( x = rownames(smrObj$M), split = itemListIDsSplitPattern, fixed = FALSE )))
 

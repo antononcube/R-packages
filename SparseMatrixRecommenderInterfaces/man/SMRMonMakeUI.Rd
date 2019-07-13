@@ -20,6 +20,6 @@ Shiny UI object.
 Creates the Shiny UI function for a sparse matrix recommender SMRMon interface.
 }
 \seealso{
-Other SMRMon interface functions: \code{\link{SMRMonCreateSearchInterface}}
+Other SMRMon interface functions: \code{\link{SMRMonCreateInteractiveInterface}}
 }
 \concept{SMRMon interface functions}

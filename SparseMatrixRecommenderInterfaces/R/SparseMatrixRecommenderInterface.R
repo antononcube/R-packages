@@ -375,7 +375,7 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
 #' @return Shiny app
 #' @family SMR interface functions
 #' @export
-SMRCreateSearchInterface <- function( itemSMR, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W" ) {
+SMRCreateInteractiveInterface <- function( itemSMR, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W" ) {
 
   res <- length(unlist(strsplit( x = rownames(itemSMR$M), split = itemListIDsSplitPattern, fixed = FALSE )))
 

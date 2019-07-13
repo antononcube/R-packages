@@ -35,7 +35,7 @@ The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 used if the row ID's have white spaces in them.
 }
 \seealso{
-Other SMR interface functions: \code{\link{SMRCreateSearchInterface}},
+Other SMR interface functions: \code{\link{SMRCreateInteractiveInterface}},
   \code{\link{SMRMakeUI}},
   \code{\link{SMRMonMakeServerFunction}}
 }
