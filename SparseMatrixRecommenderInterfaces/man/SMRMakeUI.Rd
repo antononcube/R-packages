@@ -18,6 +18,7 @@ Creates the Shiny UI function for a sparse matrix recommender interface.
 \seealso{
 Other SMR interface functions: \code{\link{SMRCreateInteractiveInterface}},
   \code{\link{SMRMakeServerFunction}},
+  \code{\link{SMRMonMakeSearchServerFunction}},
   \code{\link{SMRMonMakeServerFunction}}
 }
 \concept{SMR interface functions}

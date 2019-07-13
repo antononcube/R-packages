@@ -37,6 +37,7 @@ used if the row ID's have white spaces in them.
 \seealso{
 Other SMR interface functions: \code{\link{SMRCreateInteractiveInterface}},
   \code{\link{SMRMakeServerFunction}},
-  \code{\link{SMRMakeUI}}
+  \code{\link{SMRMakeUI}},
+  \code{\link{SMRMonMakeSearchServerFunction}}
 }
 \concept{SMR interface functions}
