@@ -35,6 +35,14 @@ function(input, output) {
     get(input$smrObjName)
   )
 
+  # dfWideForm <- reactive(
+  #   get(input$dfWideFormName)
+  # )
+
+  smrDataLongForm <- reactive(
+    smrObject2() %>% SMRMonGetLongFormData( tagTypesQ = TRUE ) %>% SMRMonTakeValue
+  )
+
   output$smrSummary <- renderPrint({
     summary( as.data.frame( unclass( SMRSparseMatrixToTriplets( smrObject2() %>% SMRMonTakeM ) ) ) )
   })
@@ -52,35 +60,72 @@ function(input, output) {
   ## Probably not optimal...
   searchResultsLongForm <- reactive({
 
-    smat <-
+    rowInds <- grep( input$searchString, rownames(smrObject2() %>% SMRMonTakeM) )
+
+    if( length( rowInds ) > 0 ) {
+
       smrObject2() %>%
-      SMRMonFilterMatrix( profile = grep( input$searchString, colnames(smrObject2() %>% SMRMonTakeM), value = T ) ) %>%
-      SMRMonTakeM
+        SMRMonSetM( (smrObject2() %>% SMRMonTakeM)[rowInds, ] ) %>%
+        SMRMonGetLongFormData( tagTypesQ = TRUE ) %>%
+        SMRMonTakeValue
 
-    smatColNames <-  c( smrObject2() %>% SMRMonTakeItemColumnName, "Tag", "Value" )
+    } else {
 
-    res <-
-      purrr::map_df( smrObject2() %>% SMRMonTakeTagTypes, function(tt) {
-        m <- SMRSubMatrixOfMatrix( smat, smrObject2() %>% SMRMonTakeTagTypeRanges, tt )
-        if( is.null(m) || nrow(m) == 0 ) {
-          NULL
-        } else {
-          m <- setNames( SMRSparseMatrixToTriplets( m ), smatColNames )
-          cbind( m, TagType = tt, stringsAsFactors = FALSE )
-        }
-      })
-
-    smatColNames <- c( smrObject2() %>% SMRMonTakeItemColumnName, "TagType", "Tag", "Value" )
-
-    res %>%
-      dplyr::select_at( .vars = smatColNames ) %>%
-      dplyr::arrange_at( .vars = smatColNames )
+      smrObject2() %>%
+        SMRMonFilterMatrix( profile = grep( input$searchString, colnames(smrObject2() %>% SMRMonTakeM), value = T ) ) %>%
+        SMRMonGetLongFormData( tagTypesQ = TRUE ) %>%
+        SMRMonTakeValue
+    }
 
   })
 
+  ## OUTPUT: search results table
   output$searchResultsTable <-
     DT::renderDataTable({ datatable({
       searchResultsLongForm()
+    }, rownames = TRUE, filter = 'none', options = list(pageLength = 12, autoWidth = TRUE) ) })
+
+
+  itemListIDs <- reactive({
+    ss <- strsplit( input$itemList, split = ",", fixed = FALSE )[[1]]
+    ss <- gsub("^[[:space:]]", "", ss)
+    ss[ nchar(ss) > 0 ]
+  })
+
+  itemListRatings <- reactive({
+    res <- strsplit( x = input$itemRatings, split = ",", fixed = FALSE )[[1]]
+    res <- as.numeric( res[ nchar(res) > 0 ] )
+    if ( length(res) < length( itemListIDs() ) ) {
+      res <- c( res, rep(3, length( itemListIDs() ) - length(res) ) )
+    } else if ( length(res) > length( itemListIDs() ) ) {
+      res <- res[1:length( itemListIDs() )]
+    }
+    res
+  })
+
+  itemListInds <- reactive({
+    which( itemData[[ itemDataIDColName ]] %in% itemListIDs() )
+    # pmatch( itemListIDs(), itemData[[ itemDataIDColName ]] )
+  })
+
+  mHist <- reactive({
+    setNames(
+      data.frame( Rating = itemListRatings(),
+                  ItemID = as.character( itemListIDs() ),
+                  stringsAsFactors = FALSE),
+      c( "Rating", smrObject2() %>% SMRMonTakeItemColumnName ) )
+  })
+
+  ## OUTPUT: History table
+  output$historyTable <-
+    DT::renderDataTable({ datatable({
+
+      mHist() %>%
+        dplyr::inner_join( smrDataLongForm(), by = smrObject2() %>% SMRMonTakeItemColumnName )
+
+      # mHist() %>%
+      #   dplyr::inner_join( dfWideForm(), by = smrObject2() %>% SMRMonTakeItemColumnName )
+
     }, rownames = TRUE, filter = 'none', options = list(pageLength = 12, autoWidth = TRUE) ) })
 
 
@@ -92,12 +137,53 @@ function(input, output) {
 
     tagTypes <- smrObject2() %>% SMRMonTakeTagTypes
 
-    sliders <-
-      purrr::map( tagTypes, function(tt) {
-        sliderInput( inputId = paste0('slider.', tt ),  label = tt,  min = 0, max = 10, value = 1 )
-      })
+    purrr::map( tagTypes, function(tt) {
+      sliderInput( inputId = paste0('slider.', tt ),  label = tt,  min = 0, max = 10, value = 1 )
+    })
 
   })
+
+  slidersValues <- reactive({
+
+    sliderNames <- paste0( "slider.", smrObject2() %>% SMRMonTakeTagTypes )
+    purrr::map_dbl( setNames( sliderNames, smrObject2() %>% SMRMonTakeTagTypes ), function(x) input[[x]] )
+
+  })
+
+  recommendations <- reactive({
+
+    smrObject2() %>%
+      SMRMonApplyTagTypeWeights( weights = slidersValues(), default = 0 ) %>%
+      SMRMonRecommend( history = mHist(), nrecs = input$nrecs ) %>%
+      SMRMonTakeValue
+
+  })
+
+  ## OUTPUT: recommendations table
+  output$recommendationsTable <-
+    DT::renderDataTable({ datatable({
+
+      recommendations() %>%
+        dplyr::inner_join( dfWideForm(), by = smrObject2() %>% SMRMonTakeItemColumnName )
+
+    }, rownames = TRUE, filter = 'none', options = list(pageLength = 12, autoWidth = TRUE) ) })
+
+  historyProfile <- reactive({
+
+    smrObject2() %>%
+      SMRMonApplyTagTypeWeights( weights = slidersValues(), default = 0 ) %>%
+      SMRMonProfile( history = mHist() ) %>%
+      SMRMonTakeValue
+
+  })
+
+  ## OUTPUT: history profile table
+  output$historyProfileTable <-
+    DT::renderDataTable({ datatable({
+
+      historyProfile()
+
+    }, rownames = TRUE, filter = 'none', options = list(pageLength = 12, autoWidth = TRUE) ) })
 
 
   ##------------------------------------------------------------
@@ -108,6 +194,7 @@ function(input, output) {
     eval( to_SMRMon_R_command( paste0( "use recommender ", input$smrObjName, "; ",  input$smrPropertyQuery ) ) )
   })
 
+  ## OUTPUT: properties query result
   output$propertiesQueryResult <-
     renderPrint({
 

@@ -24,6 +24,7 @@
 library(shiny)
 library(shinydashboard)
 library(DT)
+library(dashboardthemes)
 
 dashboardPage(
   dashboardHeader( title = "SMRMon Dashboard" ),
@@ -33,11 +34,20 @@ dashboardPage(
       menuItem( "SMRMon Object", tabName = "SMRMonObject", icon = icon("map") ),
       menuItem( "Search & history", tabName = "SearchAndHistory", icon = icon("search-plus") ),
       menuItem( "Recommendations", tabName = "Recommendations", icon = icon("blender") ),
-      menuItem( "Statistics", tabName = "Statistics", icon = icon("chart-bar") )
+      menuItem( "Statistics", tabName = "Statistics", icon = icon("chart-bar") ),
+      hr(),
+      menuItem( "Sliders", tabName = "Sliders", icon = icon("sliders-h"),
+                uiOutput( "multiSliders" )
+      )
     )
   ),
 
   dashboardBody(
+    ### Changing theme
+    shinyDashboardThemes(
+      theme = "purple_gradient"
+    ),
+
     tabItems(
 
       ## SMRMon object oboarding
@@ -49,7 +59,11 @@ dashboardPage(
                  box(
                    title = "SMRMon object to experiment with",
 
-                   textInput( inputId = "smrObjName", label = "SMRMon object name:", value = "smrMushroom" )
+                   textInput( inputId = "smrObjName", label = "SMRMon object name:", value = "smrResumes" ),
+
+                   textInput( inputId = "dfWideFormName", label = "Data frame to extend with:", value = "dfResumesWide" ),
+
+                   width = 3
                  ),
 
                  box(
@@ -57,8 +71,9 @@ dashboardPage(
 
                    verbatimTextOutput("smrSummary"),
 
-                   div( DT::dataTableOutput("tagTypeRangesTable"), style = "font-size: 75%; width: 75%")
+                   div( DT::dataTableOutput("tagTypeRangesTable"), style = "font-size: 75%; width: 75%"),
 
+                   width = 6
                  )
 
                )
@@ -71,30 +86,50 @@ dashboardPage(
 
                  h2( "Search and history accumulation" ),
 
-                 box(
-                   title = "Search",
+                 fluidRow(
 
-                   textInput( inputId = "searchString", label = "Search string:",
-                              value = ".*",
-                              placeholder =  "pattern | <tag-type>:<tag>"),
+                   box(
+                     title = "Search",
 
-                   checkboxGroupInput( inputId = "searchTagTypes", label = "Search tag types:",
-                                       choices = as.character(1:10), selected = "1",
-                                       inline = TRUE ),
+                     textInput( inputId = "searchString", label = "Search string:",
+                                value = ".*",
+                                placeholder =  "pattern | <tag-type>:<tag>"),
 
-                   checkboxInput( inputId = "fixedSearhPattern", label = "Fixed ?:", value = T )
+                     checkboxInput( inputId = "fixedSearhPattern", label = "Fixed ?:", value = T ),
+
+                     width = 6
+                   ),
+
+
+                   box(
+                     title = "History items and ratings",
+
+                     textInput( inputId = "itemList", label = "Item list:", value = "10" ),
+
+                     textInput( inputId = "itemRatings", label = "Item star ratings:", value = "3"),
+
+                     width = 6
+                   )
+
                  ),
 
-                 box(
-                   title = "Search results",
+                 fluidRow(
 
-                   DT::dataTableOutput("searchResultsTable")
-                 ),
+                   box(
+                     title = "Search results",
 
-                 box(
-                   title = "History",
+                     DT::dataTableOutput("searchResultsTable"),
 
-                   DT::dataTableOutput("historyTable")
+                     width = 6
+                   ),
+
+                   box(
+                     title = "History",
+
+                     DT::dataTableOutput("historyTable"),
+
+                     width = 6
+                   )
                  )
                )
       ),
@@ -105,21 +140,30 @@ dashboardPage(
 
                  h2( "Recommendations" ),
 
+                 # box(
+                 #   title = "Sliders",
+                 #
+                 #   div( uiOutput( "multiSliders" ), style = "font-size: 90%"),
+                 #
+                 #   width = 3
+                 # ),
+
                  box(
-                   title = "Sliders",
-                   div( uiOutput( "multiSliders" ), style = "font-size: 75%; width: 75%" )
+                   title = "Recommendations (based on history)",
+
+                   numericInput( inputId = "nrecs", label = "Number of Recommendations", min = 1, max = 900, step = 1, value = 12 ),
+
+                   DT::dataTableOutput("recommendationsTable"),
+
+                   width = 6
                  ),
 
                  box(
-                   title = "Profile",
+                   title = "Profile (based on history)",
 
-                   DT::dataTableOutput("profileTable")
-                 ),
+                   DT::dataTableOutput("historyProfileTable"),
 
-                 box(
-                   title = "Recommendations",
-
-                   DT::dataTableOutput("recommendationsTable")
+                   width = 6
                  )
                )
       ),
