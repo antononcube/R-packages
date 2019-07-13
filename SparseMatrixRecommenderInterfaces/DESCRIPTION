@@ -16,6 +16,7 @@ LazyData: true
 RoxygenNote: 6.1.1
 Imports:
     SparseMatrixRecommender (>= 0.9.0),
+    SMRMon (>= 0.1.0),
     ggplot2 (>= 3.1.0),
     Matrix (>= 1.2.0),
     RcppRoll (>= 0.3.0),

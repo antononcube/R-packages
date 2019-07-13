@@ -51,8 +51,6 @@
 #' @import stringr
 #' @import shiny
 #' @import shinydashboard
-#' @import SparseMatrixRecommender
-#' @import SMRMon
 NULL
 
 ##===========================================================
