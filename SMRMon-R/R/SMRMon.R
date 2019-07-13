@@ -812,11 +812,15 @@ SMRMonApplyTermWeightFunctions <- function( smrObj, globalWeightFunction = "IDF"
 #' @param items A character vector of items.
 #' If NULL all elements of \code{rownames(smrObj$M)} are used.
 #' @param tagTypesQ Should the tag types be included or not?
+#' @param summarizeTagsQ Should the tags for each unique
+#' item-and-tag-type pair be summarized or not?
+#' @param nTopTags Number of top tags.
+#' Used when \code{summarizeTagsQ = TRUE}.
 #' @details The result data frame is assigned to \code{smrObj$Value}.
 #' @return An SMRMon object.
 #' @family Data functions
 #' @export
-SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE ) {
+SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE, summarizeTagsQ = FALSE, nTopTags = 5 ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -867,8 +871,38 @@ SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE ) {
 
   }
 
+  res <- res %>% dplyr::arrange_at( .vars = smatColNames )
+
+  ## Summarize tags.
+  if ( summarizeTagsQ ) {
+
+    if( ! is.numeric(nTopTags) ) {
+      nTopTags <- NA
+    }
+
+    if( tagTypesQ ) {
+
+      res <-
+        res %>%
+        dplyr::group_by_at( .vars = c( smrObj %>% SMRMonTakeItemColumnName, "TagType" ) ) %>%
+        dplyr::arrange( desc(Value) ) %>%
+        dplyr::summarize( NumberOfTags = length(Tag), TopTags = paste( Tag[ 1 : min(nTopTags, length(Tag), na.rm = T) ], collapse = ";" ) ) %>%
+        dplyr::ungroup()
+
+    } else {
+
+      res <-
+        res %>%
+        dplyr::group_by_at( .vars = c( smrObj %>% SMRMonTakeItemColumnName ) ) %>%
+        dplyr::arrange( desc(Value) ) %>%
+        dplyr::summarize( NumberOfTags = length(Tag), TopTags = paste( Tag[ 1 : min(nTopTags, length(Tag), na.rm = T)], collapse = ";" ) ) %>%
+        dplyr::ungroup()
+
+    }
+  }
+
   ## Returned result
-  smrObj$Value <- res %>% dplyr::arrange_at( .vars = smatColNames )
+  smrObj$Value <- res
 
   smrObj
 }
@@ -916,11 +950,9 @@ SMRMonSummarizeItem <- function( smrObj, item, nTopTags = 5 ) {
 
   ## Tags summary: number of tags, top tags/outliers.
   dfTagsSummary <-
-    dfProfile %>%
-    dplyr::group_by_at( .vars = c( smrObj %>% SMRMonTakeItemColumnName, "TagType" ) ) %>%
-    dplyr::arrange( desc(Value) ) %>%
-    dplyr::summarize( NumberOfTags = length(Tag), TopTags = paste( Tag[1:min(nTopTags,length(Tag))], collapse = ";" ) ) %>%
-    dplyr::ungroup()
+    smrObj %>%
+    SMRMonGetLongFormData( items = c(item), tagTypesQ = TRUE, summarizeTagsQ = TRUE, nTopTags = nTopTags ) %>%
+    SMRMonTakeValue
 
   ## Top tags / tag outliers.
   ## We assume something like TF-IDF or contingency matrix entries.

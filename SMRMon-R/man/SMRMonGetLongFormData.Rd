@@ -4,7 +4,8 @@
 \alias{SMRMonGetLongFormData}
 \title{Long form data frame representation.}
 \usage{
-SMRMonGetLongFormData(smrObj, items = NULL, tagTypesQ = TRUE)
+SMRMonGetLongFormData(smrObj, items = NULL, tagTypesQ = TRUE,
+  summarizeTagsQ = FALSE, nTopTags = 5)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -13,6 +14,12 @@ SMRMonGetLongFormData(smrObj, items = NULL, tagTypesQ = TRUE)
 If NULL all elements of \code{rownames(smrObj$M)} are used.}
 
 \item{tagTypesQ}{Should the tag types be included or not?}
+
+\item{summarizeTagsQ}{Should the tags for each unique
+item-and-tag-type pair be summarized or not?}
+
+\item{nTopTags}{Number of top tags.
+Used when \code{summarizeTagsQ = TRUE}.}
 }
 \value{
 An SMRMon object.
