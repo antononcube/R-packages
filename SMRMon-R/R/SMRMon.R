@@ -885,11 +885,13 @@ SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE ) {
 #' @param smrObj An SMRMon object.
 #' @param item A string.
 #' (That is one of \code{rownames(smrObj$M)}.)
+#' @param nTopTags Number of top tags for the \code{"TagsSummary"}
+#' element of the result.
 #' @details
 #' The result is a list with named elements assigned to \code{smrObj$Value}.
 #' @return A SMRMon object
 #' @export
-SMRMonSummarizeItem <- function( smrObj, item ) {
+SMRMonSummarizeItem <- function( smrObj, item, nTopTags = 5 ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -908,12 +910,17 @@ SMRMonSummarizeItem <- function( smrObj, item ) {
     SMRMonGetLongFormData( items = c(item), tagTypesQ = TRUE ) %>%
     SMRMonTakeValue
 
+  dfProfile <-
+    dfProfile %>%
+    dplyr::arrange( TagType, desc(Value) )
+
   ## Tags summary: number of tags, top tags/outliers.
   dfTagsSummary <-
     dfProfile %>%
     dplyr::group_by_at( .vars = c( smrObj %>% SMRMonTakeItemColumnName, "TagType" ) ) %>%
     dplyr::arrange( desc(Value) ) %>%
-    dplyr::summarize( NumberOfTags = length(Tag) )
+    dplyr::summarize( NumberOfTags = length(Tag), TopTags = paste( Tag[1:min(nTopTags,length(Tag))], collapse = ";" ) ) %>%
+    dplyr::ungroup()
 
   ## Top tags / tag outliers.
   ## We assume something like TF-IDF or contingency matrix entries.
