@@ -21,8 +21,9 @@
 ##
 ##=======================================================================================
 ##
-## This Shiny interface is made to be used with the recommender system implemented in:
-##  https://github.com/antononcube/MathematicaForPrediction/blob/master/R/SparseMatrixRecommender.R
+## This Shiny interface is made to be used with the recommender system implemented with package:
+##
+##   https://github.com/antononcube/R-packages/tree/master/SparseMatrixRecommender
 ##
 ## The two central objects are:
 ## 1. 'itemData' -- a data frame with rows corresponding to items, and
@@ -47,6 +48,7 @@
 #' @import stringr
 #' @import shiny
 #' @import shinydashboard
+#' @import SparseMatrixRecommender
 NULL
 
 ##===========================================================
@@ -57,7 +59,7 @@ NULL
 #' @description Creates the Shiny UI function for a sparse matrix recommender interface.
 #' @param itemSMR A sparse matrix recommender.
 #' @return Shiny UI object.
-#' @family Time series search interface functions
+#' @family SMR interface functions
 #' @export
 SMRMakeUI <- function( itemSMR ) {
 
@@ -372,7 +374,6 @@ SMRMakeServerFunction <- function( itemSMR, itemData, itemDataColNames = NULL, i
 #' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 #' used if the row ID's have white spaces in them.
 #' @return Shiny app
-#' @return Shiny app object.
 #' @family SMR interface functions
 #' @export
 SMRCreateSearchInterface <- function( itemSMR, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W" ) {
