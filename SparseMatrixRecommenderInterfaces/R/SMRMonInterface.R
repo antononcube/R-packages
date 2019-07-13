@@ -62,11 +62,20 @@ NULL
 #' SMRMon interface UI
 #' @description Creates the Shiny UI function for a sparse matrix recommender SMRMon interface.
 #' @param smrObj A SMRMon object.
+#' @param dashboardTheme A string specifying the dashbaard theme.
+#' See \code{\link{dashboardthemes::shinyDashboardThemes}}.
+#' Ignored if the package \code{dashboardthemes} is not installed.
 #' @return Shiny UI object.
 #' @family SMRMon interface functions
 #' @export
-SMRMonMakeUI <- function( smrObj ) {
+SMRMonMakeUI <- function( smrObj, dashboardTheme = NULL ) {
 
+
+  if( !( is.null(dashboardTheme) ||
+         is.character(dashboardTheme) && length(dashboardTheme) == 1 ) ) {
+    warning( "Ignoring the argument dashboardTheme.", call. = TRUE )
+    dashboardTheme <- NULL
+  }
 
   shinyUI(
     dashboardPage(
@@ -86,10 +95,11 @@ SMRMonMakeUI <- function( smrObj ) {
       ),
 
       dashboardBody(
-        ### Changing theme
-        shinyDashboardThemes(
-          theme = "grey_dark"
-        ),
+
+        ### Changing dashboard theme
+        if( ! is.null(dashboardTheme) && exists("shinyDashboardThemes") ) {
+          dashboardthemes::shinyDashboardThemes( theme = dashboardTheme )
+        },
 
         tabItems(
 
@@ -511,12 +521,15 @@ SMRMonMakeServerFunction <- function( smrObj, itemData, itemDataColNames = NULL,
 #' those ID's are also row names of \code{smrObj$M}.
 #' @param itemListIDsSplitPattern  A split pattern for the separator of the items list
 #' and ratings list.
+#' @param dashboardTheme A string specifying the dashbaard theme.
+#' See \code{\link{dashboardthemes::shinyDashboardThemes}}.
+#' Ignored if the package \code{dashboardthemes} is not installed.
 #' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 #' used if the row ID's have white spaces in them.
 #' @return Shiny app
 #' @family SMRMon interface functions
 #' @export
-SMRMonCreateSearchInterface <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W" ) {
+SMRMonCreateSearchInterface <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W", dashboardTheme = NULL ) {
 
   res <- length(unlist(strsplit( x = rownames(smrObj$M), split = itemListIDsSplitPattern, fixed = FALSE )))
 
@@ -524,7 +537,7 @@ SMRMonCreateSearchInterface <- function( smrObj, itemData, itemDataColNames = NU
     stop( "The argument itemListIDsSplitPattern splits the rownames of smrObj$M.", call. = TRUE )
   }
 
-  shiny::shinyApp( ui = SMRMonMakeUI( smrObj = smrObj ),
+  shiny::shinyApp( ui = SMRMonMakeUI( smrObj = smrObj, dashboardTheme = dashboardTheme ),
                    server = SMRMonMakeServerFunction( smrObj = smrObj,
                                                    itemData = itemData,
                                                    itemDataColNames = itemDataColNames,
