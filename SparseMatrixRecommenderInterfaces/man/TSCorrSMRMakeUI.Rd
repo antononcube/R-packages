@@ -18,8 +18,7 @@ Shiny UI object.
 Creates the Shiny UI function for a time series search interface.
 }
 \seealso{
-Other Time series search interface functions: \code{\link{SMRMakeUI}},
-  \code{\link{TSCorrSMRCreateSearchInterface}},
+Other Time series search interface functions: \code{\link{TSCorrSMRCreateSearchInterface}},
   \code{\link{TSCorrSMRMakeServerFunction}}
 }
 \concept{Time series search interface functions}

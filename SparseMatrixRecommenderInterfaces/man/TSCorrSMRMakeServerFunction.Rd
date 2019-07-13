@@ -18,8 +18,7 @@ Shiny server function.
 Creates the Shiny server function for a time series search interface.
 }
 \seealso{
-Other Time series search interface functions: \code{\link{SMRMakeUI}},
-  \code{\link{TSCorrSMRCreateSearchInterface}},
+Other Time series search interface functions: \code{\link{TSCorrSMRCreateSearchInterface}},
   \code{\link{TSCorrSMRMakeUI}}
 }
 \concept{Time series search interface functions}
