@@ -24,8 +24,6 @@ and ratings list.}
 }
 \value{
 Shiny app
-
-Shiny app object.
 }
 \description{
 Creation of a sparse matrix recommender interface
@@ -35,6 +33,8 @@ The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 used if the row ID's have white spaces in them.
 }
 \seealso{
-Other SMR interface functions: \code{\link{SMRMakeServerFunction}}
+Other SMR interface functions: \code{\link{SMRMakeServerFunction}},
+  \code{\link{SMRMakeUI}},
+  \code{\link{SMRMonMakeServerFunction}}
 }
 \concept{SMR interface functions}

@@ -16,8 +16,8 @@ Shiny UI object.
 Creates the Shiny UI function for a sparse matrix recommender interface.
 }
 \seealso{
-Other Time series search interface functions: \code{\link{TSCorrSMRCreateSearchInterface}},
-  \code{\link{TSCorrSMRMakeServerFunction}},
-  \code{\link{TSCorrSMRMakeUI}}
+Other SMR interface functions: \code{\link{SMRCreateSearchInterface}},
+  \code{\link{SMRMakeServerFunction}},
+  \code{\link{SMRMonMakeServerFunction}}
 }
-\concept{Time series search interface functions}
+\concept{SMR interface functions}
