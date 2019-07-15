@@ -403,10 +403,22 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
 
     collageItemNearestNeigbors <- reactive({
 
-      smrObj %>%
-        SMRMonRecommend( history = input$collageItem, nrecs = 12 ) %>%
-        SMRMonJoinAcross( data = itemData ) %>%
-        SMRMonTakeValue
+      if( sum(grepl( "slider", names(input) )) >= length(smrObj %>% SMRMonTakeTagTypes) ) {
+
+        smrObj %>%
+          SMRMonApplyTagTypeWeights( weights = slidersValues(), default = 0 ) %>%
+          SMRMonRecommend( history = input$collageItem, nrecs = 12 ) %>%
+          SMRMonJoinAcross( data = itemData ) %>%
+          SMRMonTakeValue
+
+      } else {
+
+        smrObj %>%
+          SMRMonRecommend( history = input$collageItem, nrecs = 12 ) %>%
+          SMRMonJoinAcross( data = itemData ) %>%
+          SMRMonTakeValue
+
+      }
 
     })
 
