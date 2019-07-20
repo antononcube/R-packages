@@ -283,7 +283,7 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
     output$tagTypeRangesTable <-
       DT::renderDataTable({ datatable({
         smrObj %>% SMRMonGetProperty( "TagTypeRanges" ) %>% SMRMonTakeValue
-      }, rownames = FALSE, filter = 'none', options = list(pageLength = 12, autoWidth = TRUE) ) })
+      }, rownames = TRUE, filter = 'none', options = list(pageLength = 12, autoWidth = TRUE) ) })
 
     output$itemDataSummary <- renderPrint({
       summary( as.data.frame( unclass( itemData ) ) )
