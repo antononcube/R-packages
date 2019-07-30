@@ -48,6 +48,7 @@
 
 #' @import DT
 #' @import dplyr
+#' @import Matrix
 #' @import purrr
 #' @import stringr
 #' @import shiny
@@ -272,12 +273,14 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
     ## SMRMon object onboarding
     ##------------------------------------------------------------
 
-    smrDataLongForm <- reactive(
-      smrObj %>% SMRMonGetLongFormData( tagTypesQ = TRUE ) %>% SMRMonTakeValue
-    )
+    # smrDataLongForm <- reactive(
+    #   smrObj %>% SMRMonGetLongFormData( tagTypesQ = TRUE ) %>% SMRMonTakeValue
+    # )
 
     output$smrSummary <- renderPrint({
-      summary( as.data.frame( unclass( SMRSparseMatrixToTriplets( smrObj %>% SMRMonTakeM ) ) ) )
+      smat <- smrObj %>% SMRMonTakeM; smat@x[ smat@x > 0 ] <- 1;
+      smat <- (smrObj %>% SMRMonTakeM)[ , order( -colSums(smat) )[1:20] ]
+      summary( setNames( as.data.frame( unclass( SMRSparseMatrixToTriplets( smat ) ) )[, 2:3], c( "Tag", "Weight" ) ) )
     })
 
     output$tagTypeRangesTable <-
@@ -286,7 +289,8 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
       }, rownames = TRUE, filter = 'none', options = list(pageLength = 12, autoWidth = TRUE) ) })
 
     output$itemDataSummary <- renderPrint({
-      summary( as.data.frame( unclass( itemData ) ) )
+      ##summary( as.data.frame( unclass( itemData ) ) )
+      dplyr::glimpse( itemData )
     })
 
 
@@ -318,9 +322,11 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
       sTags <- sTags[ sTags %in% colnames( smrObj %>% SMRMonTakeM ) ]
 
       if( length(sTags) == 0 ) {
-        NULL
-      } else {
 
+        sTags <- grep( paste( sTags, collapse = "|"), colnames(smrObj %>% SMRMonTakeM), ignore.case = TRUE, value = TRUE )
+        if( length(sTags) == 0 ) { NULL }
+
+      } else {
         sTags
       }
 
