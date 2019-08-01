@@ -1265,7 +1265,7 @@ SMRAnnexSubMatrix <- function( smr, newSubMat, newTagType ) {
 }
 
 #' Join two sparse matrix recommender objects
-#' @description Join two SMR objects.
+#' @description Joins (column-binds) two SMR objects.
 #' @param smr1 The first SMR object.
 #' @param smr2 The second SMR object.
 #' @param joinType Join type, one of \code{c("inner", "left", "outer", "same")}.
@@ -1311,7 +1311,7 @@ SMRJoin <- function( smr1, smr2, joinType = "same", colnamesPrefix1 = NULL, coln
   }
   
   if ( nrow( smr1$M ) != nrow( smr2$M ) ) {
-    ## The rownames should be the same too.
+    ## The rownames should be the same too, see below.
     stop( "The metadata matrices of the SMR objects have to have the same number of rows.", call. = TRUE )
   }
   
@@ -1383,6 +1383,8 @@ SMRRowBindMatrix <- function( smr, smat ) {
 #' that is obtained by row-binding the matrices of two sparse matrix recommenders.
 #' @param smr1 The first SMR object.
 #' @param smr2 The second SMR object.
+#' @details The sub-matrices corresponding to each tag type are row-bound 
+#' separately.
 #' @return Sparse matrix recommender.
 #' @family SMR modification
 #' @export

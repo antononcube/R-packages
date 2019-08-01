@@ -22,7 +22,7 @@ SMRJoin(smr1, smr2, joinType = "same", colnamesPrefix1 = NULL,
 Sparse matrix recommender.
 }
 \description{
-Join two SMR objects.
+Joins (column-binds) two SMR objects.
 }
 \details{
 The matrices of the given SMR objects are column bound.

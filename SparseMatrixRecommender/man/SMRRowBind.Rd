@@ -18,6 +18,10 @@ Sparse matrix recommender.
 Returns a sparse matrix recommender object with a matrix
 that is obtained by row-binding the matrices of two sparse matrix recommenders.
 }
+\details{
+The sub-matrices corresponding to each tag type are row-bound 
+separately.
+}
 \seealso{
 Other SMR modification: \code{\link{SMRRemoveTagTypes}}
 }
