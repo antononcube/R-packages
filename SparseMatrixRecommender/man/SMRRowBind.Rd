@@ -4,12 +4,15 @@
 \alias{SMRRowBind}
 \title{Row bind two sparse matrix recommenders}
 \usage{
-SMRRowBind(smr1, smr2)
+SMRRowBind(smr1, smr2, type = "union")
 }
 \arguments{
 \item{smr1}{The first SMR object.}
 
 \item{smr2}{The second SMR object.}
+
+\item{type}{A string specifying how the tags for each sub-matrix
+are derived. One of "union", "intersection", "left", "right".}
 }
 \value{
 Sparse matrix recommender.
@@ -23,6 +26,7 @@ The sub-matrices corresponding to each tag type are row-bound
 separately.
 }
 \seealso{
-Other SMR modification: \code{\link{SMRRemoveTagTypes}}
+Other SMR modification: \code{\link{SMRRemoveTagTypes}},
+  \code{\link{SMRSameTags}}
 }
 \concept{SMR modification}

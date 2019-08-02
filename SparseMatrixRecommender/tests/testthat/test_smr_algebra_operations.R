@@ -38,6 +38,7 @@ smr3left <- SMRJoin( smr1 = smr1, smr2 = smr2, joinType = "left" )
 
 smr3outer <- SMRJoin( smr1 = smr1, smr2 = smr2, joinType = "outer" )
 
+smr4sametags <- SMRSameTags( smrTo = smr1, smrFrom = smr2full )
 
 ## Tests
 
@@ -59,6 +60,11 @@ test_that("SMRJoin using left type", {
 test_that("SMRJoin using outer type", {
   expect_true( mean( sort(rownames(smr3outer$M)) == sort(rownames(smr0$M)) ) == 1 )
 })
+
+test_that("SMRSameTags produces same tags", {
+  expect_true( mean( colnames(smr4sametags$M) == colnames(smr2full$M) ) == 1 )
+})
+
 
 test_that("SMRJoin using outer type of non-disjoined SMR tag types", {
   expect_error( SMRJoin( smr1 = smr1, smr2 = smr2, joinType = "same" ) )

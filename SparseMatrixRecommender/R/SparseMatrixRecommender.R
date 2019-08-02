@@ -1383,12 +1383,19 @@ SMRRowBindMatrix <- function( smr, smat ) {
 #' that is obtained by row-binding the matrices of two sparse matrix recommenders.
 #' @param smr1 The first SMR object.
 #' @param smr2 The second SMR object.
+#' @param type A string specifying how the tags for each sub-matrix
+#' are derived. One of "union", "intersection", "left", "right".
 #' @details The sub-matrices corresponding to each tag type are row-bound 
 #' separately.
 #' @return Sparse matrix recommender.
 #' @family SMR modification
 #' @export
-SMRRowBind <- function( smr1, smr2 ) {
+SMRRowBind <- function( smr1, smr2, type = "union" ) {
+  
+  if( !( type %in% c("union", "intersection", "left", "right" ) ) ) {
+    stop( "The argument type is expected to be one of 'union', 'intersection', 'left', 'right'.", call. = TRUE )
+    return(NULL)
+  }
   
   if( ncol(smr1$M01) == ncol(smr2$M01) && mean( colnames(smr1$M01) == colnames(smr2$M01) ) == 1 ) {
     
@@ -1400,9 +1407,15 @@ SMRRowBind <- function( smr1, smr2 ) {
       purrr::map( smr1$TagTypes, function(tt) {
         smat1 <- SMRSubMatrix( smr = smr1, tagType = tt)
         smat2 <- SMRSubMatrix( smr = smr2, tagType = tt)
-        colIDs <- unique( c(colnames(smat1), colnames(smat2)) )
+        
+        if( type == "union" ) { colIDs <- unique( c(colnames(smat1), colnames(smat2)) ) }
+        else if( type == "intersection" ) { colIDs <- intersect(colnames(smat1), colnames(smat2)) }
+        else if( type == "left" ) { colIDs <- colnames(smat1) }
+        else if( type == "right" ) { colIDs <- colnames(smat2) }
+        
         smat1 <- SMRImposeColumnIDs( colIDs = colIDs, smat = smat1 )
         smat2 <- SMRImposeColumnIDs( colIDs = colIDs, smat = smat2 )
+        
         rbind(smat1, smat2)
       })
     
@@ -1414,6 +1427,56 @@ SMRRowBind <- function( smr1, smr2 ) {
   }
   
 }
+
+
+#' Same tags.
+#' @description Makes the tags of a given sparse matrix recommender object
+#' to be the same as the tags of another one.
+#' @param smrTo The SMR object to be modified.
+#' @param smrFrom The SMR object the tags of which are imposed.
+#' @details The sub-matrices corresponding to each tag type are modified
+#' separately. 
+#' If \code{smrTo} does not have a certain tag type of \code{smrFrom},
+#' then a corresponding empty sub-matrix is created.
+#' @return Sparse matrix recommender.
+#' @family SMR modification
+#' @export
+SMRSameTags <- function( smrTo, smrFrom ) {
+  
+  if( ncol(smrTo$M01) == ncol(smrFrom$M01) && mean( colnames(smrTo$M01) == colnames(smrFrom$M01) ) == 1 ) {
+    
+    smrTo
+    
+  } else {
+    
+    smats <-
+      purrr::map( smrFrom$TagTypes, function(tt) {
+        
+        smatFrom <- SMRSubMatrix( smr = smrFrom, tagType = tt)
+        colIDs <- colnames(smatFrom)
+        
+        if( tt %in% smrTo$TagTypes ) {
+          
+          smatTo <- SMRSubMatrix( smr = smrTo, tagType = tt)
+          smatTo <- SMRImposeColumnIDs( colIDs = colIDs, smat = smatTo )
+          
+        } else {
+          
+          smatTo <- sparseMatrix( i = c(1), j = c(1), x = c(0), dims = c( nrow(smrTo$M), ncol(smatFrom) ) )
+          smatTo <- SMRImposeRowIDs( rowIDs = rownames(smrTo$M), smatTo )
+          smatTo <- SMRImposeColumnIDs( colIDs = colIDs, smat = smatTo )
+          
+        }
+        
+        smatTo
+      })
+    
+    SMRCreateFromMatrices( matrices = smats, tagTypes = smrFrom$TagTypes, itemColumnName = smrTo$ItemColumnName )
+    
+  } 
+  
+}
+
 
 ##===========================================================
 ## Transformations to data frames
