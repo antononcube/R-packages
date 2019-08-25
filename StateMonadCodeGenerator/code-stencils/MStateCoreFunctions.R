@@ -18,6 +18,28 @@ MStateFailureQ <- function(x) { mean(is.na(x)) }
 
 
 ##===========================================================
+## Failure function
+##===========================================================
+
+#' Failure producing function
+#' @description Puts the monad object into a monadic failure.
+#' @param msObj An MState object.
+#' @param message A message to echoed. If NULL no message is echoed.
+#' @return A MState object.
+#' @export
+MStateFailure <- function( msObj, message = NULL ) {
+
+  if( MStateFailureQ(msObj) ) { return(MStateFailureSymbol) }
+
+  if( is.character(message) ) {
+    warning( message, call. = FALSE )
+  }
+
+  MStateFailureSymbol
+}
+
+
+##===========================================================
 ## MState Unit
 ##===========================================================
 

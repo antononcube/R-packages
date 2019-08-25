@@ -7,6 +7,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 <meta name="author" content="Anton Antonov" />
@@ -1485,7 +1486,7 @@ window.initializeCodeFolding = function(show) {
 
     // create a collapsable div to wrap the code in
     var div = $('<div class="collapse r-code-collapse"></div>');
-    if (show)
+    if (show || $(this)[0].classList.contains('fold-show'))
       div.addClass('in');
     var id = 'rcode-643E0F36' + currentIndex++;
     div.attr('id', id);
@@ -1615,7 +1616,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -1713,28 +1713,10 @@ summary {
 }
 </style>
 
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
 <!-- code folding -->
 <style type="text/css">
 .code-folding-btn { margin-bottom: 4px; }
 </style>
-<script>
-$(document).ready(function () {
-  window.initializeSourceEmbed("Generate-package-data.Rmd");
-  window.initializeCodeFolding("show" === "show");
-});
-</script>
 
 
 
@@ -1783,9 +1765,11 @@ library(devtools)</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudXNldGhpczo6dXNlX2RhdGEoIHRleHRNU3RhdGVDb3JlRnVuY3Rpb25zLCB0ZXh0TVN0YXRlU2V0TWVtYmVyLCB0ZXh0TVN0YXRlVGFrZU1lbWJlciwgb3ZlcndyaXRlID0gVClcblxuYGBgIn0= -->
-<pre class="r"><code>usethis::use_data( textMStateCoreFunctions, textMStateSetMember, textMStateTakeMember, overwrite = T)
-</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGV4dE1TdGF0ZUNvcmVGdW5jdGlvbnMgPC0gcmVhZExpbmVzKCBcIi4uL2NvZGUtc3RlbmNpbHMvTVN0YXRlQ29yZUZ1bmN0aW9ucy5SXCIpXG50ZXh0TVN0YXRlU2V0TWVtYmVyIDwtIHJlYWRMaW5lcyggXCIuLi9jb2RlLXN0ZW5jaWxzL01TdGF0ZVNldE1lbWJlci5SXCIpXG50ZXh0TVN0YXRlVGFrZU1lbWJlciA8LSByZWFkTGluZXMoIFwiLi4vY29kZS1zdGVuY2lscy9NU3RhdGVUYWtlTWVtYmVyLlJcIilcbnVzZXRoaXM6OnVzZV9kYXRhKCB0ZXh0TVN0YXRlQ29yZUZ1bmN0aW9ucywgdGV4dE1TdGF0ZVNldE1lbWJlciwgdGV4dE1TdGF0ZVRha2VNZW1iZXIsIG92ZXJ3cml0ZSA9IFQpXG5gYGAifQ== -->
+<pre class="r"><code>textMStateCoreFunctions &lt;- readLines( &quot;../code-stencils/MStateCoreFunctions.R&quot;)
+textMStateSetMember &lt;- readLines( &quot;../code-stencils/MStateSetMember.R&quot;)
+textMStateTakeMember &lt;- readLines( &quot;../code-stencils/MStateTakeMember.R&quot;)
+usethis::use_data( textMStateCoreFunctions, textMStateSetMember, textMStateTakeMember, overwrite = T)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-output-begin eyJkYXRhIjoiXHUwMDFiWzMybeKclFx1MDAxYlszOW0gU2F2aW5nIFx1MDAxYlszNG0ndGV4dE1TdGF0ZUNvcmVGdW5jdGlvbnMnXHUwMDFiWzM5bSwgXHUwMDFiWzM0bSd0ZXh0TVN0YXRlU2V0TWVtYmVyJ1x1MDAxYlszOW0sIFx1MDAxYlszNG0ndGV4dE1TdGF0ZVRha2VNZW1iZXInXHUwMDFiWzM5bSB0byBcdTAwMWJbMzRtJ2RhdGEvdGV4dE1TdGF0ZUNvcmVGdW5jdGlvbnMucmRhJ1x1MDAxYlszOW0sIFx1MDAxYlszNG0nZGF0YS90ZXh0TVN0YXRlU2V0TWVtYmVyLnJkYSdcdTAwMWJbMzltLCBcdTAwMWJbMzRtJ2RhdGEvdGV4dE1TdGF0ZVRha2VNZW1iZXIucmRhJ1x1MDAxYlszOW1cbiJ9 -->
 <pre><code>[32m✔[39m Saving [34m&#39;textMStateCoreFunctions&#39;[39m, [34m&#39;textMStateSetMember&#39;[39m, [34m&#39;textMStateTakeMember&#39;[39m to [34m&#39;data/textMStateCoreFunctions.rda&#39;[39m, [34m&#39;data/textMStateSetMember.rda&#39;[39m, [34m&#39;data/textMStateTakeMember.rda&#39;[39m</code></pre>
@@ -1821,6 +1805,29 @@ $(document).ready(function () {
 });
 
 </script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("Generate-package-data.Rmd");
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

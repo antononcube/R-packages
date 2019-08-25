@@ -82,6 +82,11 @@ obj1 <-
   StMonEchoValue
 ```
 
+```{r}
+obj1 %>% 
+  StMonFailure("Forced failure.")
+```
+
 
 # References
 

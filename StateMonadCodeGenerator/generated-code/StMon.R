@@ -18,6 +18,28 @@ StMonFailureQ <- function(x) { mean(is.na(x)) }
 
 
 ##===========================================================
+## Failure function
+##===========================================================
+
+#' Failure producing function
+#' @description Puts the monad object into a monadic failure.
+#' @param qrObj An StMon object.
+#' @param message A message to echoed. If NULL no message is echoed.
+#' @return A StMon object.
+#' @export
+StMonFailure <- function( qrObj, message = NULL ) {
+
+  if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
+
+  if( is.character(message) ) {
+    warning( message, call. = FALSE )
+  }
+
+  StMonFailureSymbol
+}
+
+
+##===========================================================
 ## StMon Unit
 ##===========================================================
 
@@ -108,7 +130,7 @@ StMonMemberPresenceCheck <- function( qrObj, memberName, memberPrettyName = memb
 #' @description Prints the "Value" element/member of the monad object.
 #' @param qrObj An StMon object.
 #' @return A StMon object.
-#' @details Prints \code{f(qrObj$Value)}.
+#' @details Prints \code{qrObj$Value}.
 #' @export
 StMonEchoValue <- function( qrObj ) {
 
@@ -147,9 +169,9 @@ StMonEchoFunctionValue <- function( qrObj, f ) {
 ##===========================================================
 
 #' Optional function application to monad's object.
-#' @description If monadic failure is obtained from \code{qrObj %>% f}
+#' @description If monadic failure is obtained from \code{f(qrObj)}
 #' then returns the original \code{qrObj};
-#' else returns the result of \code{qrObj %>% f}.
+#' else returns the result of \code{f(qrObj)}.
 #' @param qrObj An StMon object.
 #' @param f A function to be applied to the monad object.
 #' @return A StMon object.
