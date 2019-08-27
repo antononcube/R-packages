@@ -1,4 +1,4 @@
-#' Mint bubbles transations data
+#' Mint bubbles transactions data
 #'
 #' @description Some person's banking financial data.
 #'

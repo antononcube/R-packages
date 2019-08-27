@@ -5,8 +5,8 @@
 \title{Descriptions obfuscation.}
 \usage{
 ObfuscateDescriptions(descriptions, mappedWords = NULL,
-  preservedWords = NULL, randomWords = TRUE,
-  randomWordLengths = TRUE)
+  preservedWords = NULL, randomWordsQ = TRUE,
+  randomWordLengthsQ = TRUE)
 }
 \arguments{
 \item{descriptions}{A character vector.}
