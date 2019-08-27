@@ -47,7 +47,7 @@
 ## Start date: 2016-10-5
 ##---
 
-library(plyr)
+library(purrr)
 library(stringr)
 library(stringi)
 
@@ -99,7 +99,7 @@ ObfuscateDescriptions <- function( descriptions,
 
   ## Word types
   wtypes <-
-    laply( wordsForRandomMapping, function(w) {
+    purrr::map_chr( wordsForRandomMapping, function(w) {
       if ( grepl( pattern = "^[[:upper:]]*$", x = w ) ) { return("upper") }
       if ( grepl( pattern = "^[[:lower:]]*$", x = w ) ) { return("lower") }
       if ( grepl( pattern = "^[[:alpha:]]*$", x = w ) ) { return("alpha") }
@@ -110,7 +110,7 @@ ObfuscateDescriptions <- function( descriptions,
 
   ## Make random words and put them in a data frame.
   wordRulesDF <-
-    ldply( 1:length(wordsForRandomMapping), function(i) {
+    purrr::map_df( 1:length(wordsForRandomMapping), function(i) {
       repeat {
         if ( wtypes[i] == "upper" ) {
           rword <- stri_rand_strings(n=1, length=rLengths[i], pattern="[A-Z]")
