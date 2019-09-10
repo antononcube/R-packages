@@ -742,7 +742,7 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' The automatic topic name is derived from topic's index and topic's top three words.
 #' (The later is to ensure topic name uniqueness.)
 #' @export
-LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPerTerm = NULL,
+LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPerTerm = NULL,
                                    method = "NNMF",
                                    maxSteps = NULL, tolerance = 0.01, profilingQ = TRUE,
                                    orderBySignificanceQ = TRUE, automaticTopicNamesQ = TRUE,
@@ -753,7 +753,7 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
 
   if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj,
                                   memberName = "WeightedDocumentTermMatrix",
-                                  functionName = "LSAMonTopicExtraction",
+                                  functionName = "LSAMonExtractTopics",
                                   logicalResult = T) ) {
 
     warning( "Continuing by invoking LSAMonApplyTermWeightFunctions first.", call. = T )
@@ -763,7 +763,7 @@ LSAMonTopicExtraction <- function( lsaObj, numberOfTopics, minNumberOfDocumentsP
       LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
                                       localWeightFunction = "None",
                                       normalizerFunction = "Cosine" ) %>%
-      LSAMonTopicExtraction( numberOfTopics = numberOfTopics,
+      LSAMonExtractTopics( numberOfTopics = numberOfTopics,
                              minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm,
                              method = method,
                              maxSteps = maxSteps,
@@ -953,11 +953,11 @@ LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ 
 #' \code{reshape2::dcast( data = lsaObj$Value, formula = TermRank ~ TopicRank, value.var = "Term" )}.
 #' (Note that some columns are dropped.)
 #' @export
-LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 12, orderBySignificanceQ = TRUE ) {
+LSAMonInterpretBasisVectors <- function( lsaObj, vectorIndices = NULL, n = 12, orderBySignificanceQ = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonBasisVectorInterpretation", logicalResult = T ) ) {
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonInterpretBasisVectors", logicalResult = T ) ) {
     return(LSAMonFailureSymbol)
   }
 
@@ -1018,12 +1018,12 @@ LSAMonBasisVectorInterpretation <- function( lsaObj, vectorIndices = NULL, n = 1
 #' \code{\link{NonNegativeMatrixFactorization::NearestWords}}.
 #' The obtained list of thesaurus entries is assigned to \code{lsaObj$Value}.
 #' @export
-LSAMonStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRUE ) {
+LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
 
-  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonBasisVectorInterpretation", logicalResult = T ) ) {
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonInterpretBasisVectors", logicalResult = T ) ) {
     return(LSAMonFailureSymbol)
   }
 
