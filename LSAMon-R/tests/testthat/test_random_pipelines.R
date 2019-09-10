@@ -17,14 +17,14 @@ pipelineLevels <-
                     "LSAMonApplyTermWeightFunctions( 'IDF', 'Binary', 'Cosine' )",
                     "LSAMonApplyTermWeightFunctions( 'None', 'None', 'BlahBlah' )" ),
 
-        level4 = c( "LSAMonTopicExtraction( numberOfTopics = 20, minNumberOfDocumentsPerTerm = 2, maxSteps = 100, method = 'SVD' )",
-                    "LSAMonTopicExtraction( numberOfTopics = 20, minNumberOfDocumentsPerTerm = 2, maxSteps = 3, method = 'NNMF' )",
-                    "LSAMonTopicExtraction( maxSteps = 10, method = 'SVD' )",
-                    "LSAMonTopicExtraction( maxSteps = 10, method = 'BlahBlah' )",
-                    "LSAMonTopicExtraction( method = 'BlahBlah' )",
-                    "LSAMonTopicExtraction( numberOfTopics = 'a' )" ),
+        level4 = c( "LSAMonExtractTopics( numberOfTopics = 20, minNumberOfDocumentsPerTerm = 2, maxSteps = 100, method = 'SVD' )",
+                    "LSAMonExtractTopics( numberOfTopics = 20, minNumberOfDocumentsPerTerm = 2, maxSteps = 3, method = 'NNMF' )",
+                    "LSAMonExtractTopics( maxSteps = 10, method = 'SVD' )",
+                    "LSAMonExtractTopics( maxSteps = 10, method = 'BlahBlah' )",
+                    "LSAMonExtractTopics( method = 'BlahBlah' )",
+                    "LSAMonExtractTopics( numberOfTopics = 'a' )" ),
 
-        level5 = c( "LSAMonBasisVectorInterpretation( n = 20 )",
+        level5 = c( "LSAMonInterpretBasisVectors( n = 20 )",
                     "LSAMonTopicRepresentation( tags = tags, minThreshold = 0.005 )",
                     "LSAMonStatisticalThesaurus( searchWords = c('king', 'sword', 'ship', 'poison') )",
                     "LSAMonFindMostImportantTexts( nTop = 8 )" )

@@ -9,7 +9,7 @@ lsaObj1 <-
   LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
                                   localWeightFunction = "None",
                                   normalizerFunction = "Cosine" ) %>%
-  LSAMonTopicExtraction( numberOfTopics = 60, minNumberOfDocumentsPerTerm = NULL, method = "NNMF", maxSteps = 6, profiling = FALSE )
+  LSAMonExtractTopics( numberOfTopics = 60, minNumberOfDocumentsPerTerm = NULL, method = "NNMF", maxSteps = 6, profiling = FALSE )
 
 
 set.seed(1289)
@@ -17,7 +17,7 @@ set.seed(1289)
 lsaObj2 <-
   LSAMonUnit( textHamlet ) %>%
   LSAMonMakeDocumentTermMatrix( "\\W") %>%
-  LSAMonTopicExtraction( 60, maxSteps = 6, profiling = FALSE )
+  LSAMonExtractTopics( 60, maxSteps = 6, profiling = FALSE )
 
 ## Tests
 test_that("Topic extraction left factor", {

@@ -10,7 +10,7 @@ lsaObj <-
   LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF",
                                   localWeightFunction = "None",
                                   normalizerFunction = "Cosine" ) %>%
-  LSAMonTopicExtraction( numberOfTopics = 60, minNumberOfDocumentsPerTerm = 1, method = "SVD", maxSteps = 30, profiling = FALSE )
+  LSAMonExtractTopics( numberOfTopics = 60, minNumberOfDocumentsPerTerm = 1, method = "SVD", maxSteps = 30, profiling = FALSE )
 
 ## tags = NULL tests.
 ## We can say that is the most "standard" usage.
