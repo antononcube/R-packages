@@ -10,7 +10,8 @@ SMRApplyTermWeightFunctions(docTermMat, globalWeightFunction = NULL,
 \arguments{
 \item{docTermMat}{A document-term sparse matrix (dgCMatrix).}
 
-\item{globalWeightFunction}{A global weight function ID.}
+\item{globalWeightFunction}{A global weight function ID or
+a numeric vector with length that equals \code{ncols(docTermMat)}.}
 
 \item{localWeightFunction}{A global weight function ID (a string, one of "Binary", "TermFrequency", "Log", "None").}
 

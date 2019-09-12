@@ -134,7 +134,8 @@ SMRGlobalTermFunctionWeights <- function( docTermMat, globalWeightFunction = "No
 #' @description Applies the term weight functions -- like Inverse Document Frequency (IDF) -- 
 #' to the entries of a sparse matrix.
 #' @param docTermMat A document-term sparse matrix (dgCMatrix).
-#' @param globalWeightFunction A global weight function ID.
+#' @param globalWeightFunction A global weight function ID or
+#' a numeric vector with length that equals \code{ncols(docTermMat)}.
 #' @param localWeightFunction A global weight function ID (a string, one of "Binary", "TermFrequency", "Log", "None").
 #' @param normalizerFunction A normalization weight function ID (a string, one of "Cosine", "Sum", "None"),
 #' @return Sparse matrix
@@ -150,14 +151,27 @@ SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL
   }
 
   mat <- docTermMat
-
+  
   if ( is.null(globalWeightFunction) ) { globalWeightFunction = "None" }
   if ( is.null(localWeightFunction) ) { localWeightFunction = "None" }
   if ( is.null(normalizerFunction) ) { normalizerFunction = "None" }
 
-  globalWeights <- SMRGlobalTermFunctionWeights( mat, globalWeightFunction = globalWeightFunction )
+  # Global weights set-up.
+  if( is.character(globalWeightFunction) ) {
+    
+    globalWeights <- SMRGlobalTermFunctionWeights( docTermMat = mat, globalWeightFunction = globalWeightFunction )
+    
+  } else if ( is.numeric(globalWeightFunction) && length(globalWeightFunction) == ncol(docTermMat) ) {
+    
+    globalWeights <- globalWeightFunction
+    
+  } else {
+    
+    stop( "The argument globalWeightFunction is expected to be a string or a numeric vector with length that equals ncols(docTermMat).", call. = TRUE )
+    
+  }
   
-  # local weights
+  # Local weights application.
   if( missing(localWeightFunction) || is.null(localWeightFunction) ) {
 
     if ( ! ( is.null(globalWeightFunction) || missing(globalWeightFunction) ) ) {
@@ -193,7 +207,7 @@ SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL
     }
   }
 
-  # normalizing
+  # Normalizing.
   if( !( missing(normalizerFunction) || is.null(normalizerFunction) ) ) { ## || normalizerFunc == identity
 
     if( class(normalizerFunction)[[1]]=="character" ) {
@@ -227,7 +241,7 @@ SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL
     }
   }
 
-  # result
+  # Result.
   mat
 }
 
