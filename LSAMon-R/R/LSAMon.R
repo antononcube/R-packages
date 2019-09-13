@@ -665,6 +665,8 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "\\W", stemWord
 
   lsaObj$Documents <- documents
   lsaObj$DocumentTermMatrix <- dtMat
+  lsaObj$StopWords <- stopWords
+  lsaObj$StemWordsQ <- stemWordsQ
 
   lsaObj
 }
@@ -697,13 +699,18 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
     return(LSAMonFailureSymbol)
   }
 
+  globalWeights <- SparseMatrixRecommender::SMRGlobalTermFunctionWeights( docTermMat = docTermMat, globalWeightFunction = globalWeightFunction )
+
   wDocTermMat <-
     SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = docTermMat,
-                                                          globalWeightFunction = globalWeightFunction,
+                                                          globalWeightFunction = globalWeights,
                                                           localWeightFunction = localWeightFunction,
                                                           normalizerFunction = normalizerFunction )
 
   lsaObj$WeightedDocumentTermMatrix <- wDocTermMat
+  lsaObj$GlobalWeights <- globalWeights
+  lsaObj$LocalWeightFunction <- localWeightFunction
+  lsaObj$NormalizerFunction <- normalizerFunction
 
   lsaObj
 }
@@ -1047,12 +1054,72 @@ LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixe
 
 
 ##===========================================================
+## Represent by terms
+##===========================================================
+
+#' Represent by terms.
+#' @description Find the terms representation of a matrix or a document.
+#' @param lsaObj A LSAMon object.
+#' @param query A character vector or a sparse matrix to be represented
+#' in the space of monad's document-term matrix.
+#' @param applyTermWeightFunctionsQ Should the weight term functions
+#' be applied to the result matrix or not?
+#' @return A LSAMon object.
+#' @details This function applies the global weights computed in the
+#' function \code{\link{LSAMonApplyTermWeightFunctions}} and stored in
+#' the monad object together with the names of the local weight function,
+#' and the normalizer function.
+#' @export
+LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = TRUE ) {
+
+  if( is.character(query) ) {
+
+    qmat <-
+      LSAMonUnit( query ) %>%
+      LSAMonMakeDocumentTermMatrix( stemWordsQ = lsaObj$StemWordsQ, stopWords = lsaObj$StopWords ) %>%
+      LSAMonTakeDocumentTermMatrix
+
+    lsaObj %>% LSAMonRepresentByTerms( query = qmat, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ )
+
+  } else if( "dgCMatrix" %in% class(query) ) {
+
+    qmat <- SparseMatrixRecommender::SMRImposeColumnIDs( colIDs = colnames(lsaObj %>% LSAMonTakeDocumentTermMatrix), smat = query )
+
+    if( applyTermWeightFunctionsQ ) {
+
+      if( length( intersect( names(lsaObj), c("GlobalWeights", "LocalWeightFunction", "NormalizerFunction" ) ) ) < 3 ) {
+        warning(
+          paste( "If the argument \"applyTermWeightFunctionsQ\" is TRUE",
+                 "then the monad context is expected to have the elements \"GlobalWeights\", \"LocalWeightFunction\", \"NormalizerFunction\"."),
+          call. = TRUE )
+        return(LSAMonFailureSymbol)
+      }
+
+      qmat <- SparseMatrixRecommender::SMRApplyTermWeightFunctions( qmat, globalWeightFunction = lsaObj$GlobalWeights, lsaObj$LocalWeightFunction, lsaObj$NormalizerFunction )
+
+    }
+
+    if( max(abs(colSums(qmat))) == 0 ) {
+      warning( "The terms of the argument query cannot be found in the document-term matrix.", call. = TRUE )
+    }
+
+    lsaObj$Value <- qmat
+    lsaObj
+
+  } else {
+    warning( "Unknown type of the argument query.", call. = TRUE )
+    return(LSAMonFailureSymbol)
+  }
+}
+
+
+##===========================================================
 ## Topic representation
 ##===========================================================
 
-#' Topic representation.
-#' @description Find the topic representation corresponding to a list of tags.
-#' Each monad document is expected to have a tag.
+#' Topic representation of document tags.
+#' @description Find the topic representation of documents corresponding
+#' to a list of tags. Each monad document is expected to have a tag.
 #' One tag might correspond to multiple documents.
 #' @param lsaObj A LSAMon object.
 #' @param tags A character vector with tags that correspond to the documents.
@@ -1080,13 +1147,13 @@ LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixe
 #' Absolute values have to be considered for dimension reduction
 #' algorithms as SVD and ICA.
 #' @export
-LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001, normalizeLeftQ = TRUE ) {
+LSAMonRepresentDocumentTagsByTopics <- function( lsaObj, tags = NULL, minThreshold = 0.001, normalizeLeftQ = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
   if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj,
                                   memberName = "W",
-                                  functionName = "LSAMonTopicRepresentation",
+                                  functionName = "LSAMonRepresentDocumentTagsByTopics",
                                   logicalResult = T) ) {
 
     return(LSAMonFailureSymbol)
@@ -1139,21 +1206,21 @@ LSAMonTopicRepresentation <- function( lsaObj, tags = NULL, minThreshold = 0.001
 ## Find most important texts
 ##===========================================================
 
-#' Fins most important texts.
-#' @description Finds the most important texts in the monad.
+#' Finds most important documents.
+#' @description Finds the most important documents in the monad.
 #' @param lsaObj A LSAMon object
 #' @param nTop The number of top most important texts.
 #' @details The result is a data frame with columns \code{c("Score", "ID")};
 #' it is assigned to \code{lsaObj$Value}.
 #' @return A LSAMon object
 #' @export
-LSAMonFindMostImportantTexts <- function( lsaObj, nTop = 5 ) {
+LSAMonFindMostImportantDocuments <- function( lsaObj, nTop = 5 ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
   if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj,
                                   memberName = "WeightedDocumentTermMatrix",
-                                  functionName = "LSAMonTopicRepresentation",
+                                  functionName = "LSAMonRepresentDocumentTagsByTopics",
                                   logicalResult = T) ) {
 
     return(LSAMonFailureSymbol)
@@ -1200,7 +1267,7 @@ LSAMonFindMostImportantTexts <- function( lsaObj, nTop = 5 ) {
 #' @param minWordLength Minimal word length.
 #' @param stopWords A character vector with stop words to be removed.
 #' @details The result is a data frame with columns \code{c("Score", "Sentence")}.
-#' This is a stand-alone, non-monadic version of \code{\link{LSAMonFindMostImportantTexts}}.
+#' This is a stand-alone, non-monadic version of \code{\link{LSAMonFindMostImportantDocuments}}.
 #' @return A data frame
 #' @export
 MostImportantSentences <- function( sentences,
@@ -1231,7 +1298,7 @@ MostImportantSentences <- function( sentences,
     LSAMonUnit( sentences ) %>%
     LSAMonMakeDocumentTermMatrix( splitPattern = splitPattern, stemWordsQ = FALSE, stopWords = NULL ) %>%
     LSAMonApplyTermWeightFunctions( globalWeightFunction = globalTermWeightFunction, localWeightFunction = "None", normalizerFunction = "Cosine" ) %>%
-    LSAMonFindMostImportantTexts( nTop = nTopSentences )
+    LSAMonFindMostImportantDocuments( nTop = nTopSentences )
 
   if( LSAMonFailureQ(lsaObj) ) {
     return(NULL)

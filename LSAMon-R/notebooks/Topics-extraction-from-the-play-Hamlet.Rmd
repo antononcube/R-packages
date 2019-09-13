@@ -29,7 +29,7 @@ minNumberOfDocumentsPerTerm <- 15
 lsaObj <-
   LSAMonUnit( textHamlet   ) %>% 
   LSAMonMakeDocumentTermMatrix( stopWords = stopwords::stopwords() ) %>% 
-  LSAMonTopicExtraction( numberOfTopics = numberOfTopics, minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm, maxSteps = maxSteps, method = method )
+  LSAMonExtractTopics( numberOfTopics = numberOfTopics, minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm, maxSteps = maxSteps, method = method )
 ```
 
 
@@ -145,5 +145,42 @@ d3heatmap::d3heatmap( qMat, Rowv = FALSE, Colv = TRUE, scale = "row", colors = "
 dfTopicsWideForm
 ```
 
+# Represent queries by terms
 
+```{r}
+names(lsaObj)
+```
+
+
+```{r}
+qmat <- 
+  lsaObj2 %>% 
+  LSAMonRepresentByTerms( query = c("rotten castle in this country", "hamlet kills the king") ) %>% 
+  LSAMonTakeValue
+```
+
+```{r}
+qmat[ , colSums(qmat) > 0 ]
+```
+
+```{r}
+textHamlet[1:8]
+```
+
+```{r}
+qmat <- 
+  lsaObj2 %>% 
+  LSAMonRepresentByTerms( query = textHamlet[c(6,8)] ) %>% 
+  LSAMonTakeValue
+```
+
+```{r}
+as.matrix(qmat[ , colSums(qmat) > 0 ])
+```
+
+```{r}
+qmat2 <- lsaObj2 %>% LSAMonTakeWeightedDocumentTermMatrix
+qmat2 <- qmat2[c("id.6","id.8"),]
+as.matrix(qmat2[ , colSums(qmat2) > 0 ])
+```
 

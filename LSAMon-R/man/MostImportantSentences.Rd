@@ -33,5 +33,5 @@ Finds the most important sentences in a list of sentences.
 }
 \details{
 The result is a data frame with columns \code{c("Score", "Sentence")}.
-This is a stand-alone, non-monadic version of \code{\link{LSAMonFindMostImportantTexts}}.
+This is a stand-alone, non-monadic version of \code{\link{LSAMonFindMostImportantDocuments}}.
 }
