@@ -17,8 +17,12 @@ smr1 <- SMRCreate( dfTitanic[, c("id", sMatNames)],
 sMats <- purrr::map( sMatNames, function(x) { xtabs( as.formula( paste0("~ id + ", x) ), dfTitanic, sparse = TRUE ) } )
 names(sMats) <- sMatNames
 
-smr2 <- SMRCreateFromMatrices( matrices = sMats, itemColumnName = "id" )
+smr2 <- SMRCreateFromMatrices( matrices = sMats, itemColumnName = "id", imposeSameRowNamesQ = TRUE )
 
+## With matrices with different number of rows.
+sMats[[1]] <- sMats[[1]][1:300,]
+sMats[[2]] <- sMats[[2]][300:800,]
+smr2a <- SMRCreateFromMatrices( matrices = sMats, itemColumnName = "id" )
 
 ## Create SMR with specification
 
@@ -35,15 +39,18 @@ smr3 <- SMRCreateFromSpecification( data = dfTitanic,
 test_that("SMR objects", {
   expect_is( smr1, "SMR" )
   expect_is( smr2, "SMR" )
+  expect_is( smr2a, "SMR" )
   expect_is( smr3, "SMR" )
   
   expect_equal( names(smr1), c("M", "M01", "TagTypeRanges","TagTypes",      
                                "ItemColumnName", "TagToIndexRules", "ItemToIndexRules") )
   expect_equal( names(smr1), names(smr2) )
+  expect_equal( names(smr1), names(smr2a) )
   expect_equal( names(smr1), names(smr3) )
   
   expect_is( smr1$M, "dgCMatrix" ) 
   expect_is( smr2$M, "dgCMatrix" ) 
+  expect_is( smr2a$M, "dgCMatrix" ) 
   expect_is( smr3$M, "dgCMatrix" ) 
 }) 
 

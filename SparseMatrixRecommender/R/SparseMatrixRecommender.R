@@ -152,10 +152,7 @@ SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName =
     SMRCreateItemTagMatrix(dataRows, tagType=x, itemColumnName=itemColumnName)
   })
   
-  allRowNames <- sort(unique(unlist(purrr::map( matrices, rownames ))))
-  matrices <- purrr::map( matrices, function(x) SMRImposeRowIDs( rowIDs = allRowNames, smat = x ) )                    
-    
-  SMRCreateFromMatrices(matrices, tagTypes, itemColumnName)
+  SMRCreateFromMatrices(matrices, tagTypes, itemColumnName, imposeSameRowNamesQ = TRUE )
 }
 
 #' Creation of a SMR object with a list of matrices
@@ -163,11 +160,12 @@ SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName =
 #' @param matrices A list of matrices to be spliced into a metadata matrix.
 #' @param tagTypes Vector of matrix names.
 #' @param itemColumnName The column name of recommender items (in data and recommendations).
+#' @param imposeSameRowNamesQ Should the union of the row names be imposed on each matrix?
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
 #' @return SMR object.
 #' @family Creation functions
 #' @export
-SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemColumnName = "Item" ){
+SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemColumnName = "Item", imposeSameRowNamesQ = TRUE ){
   
   if( is.null(tagTypes) ) { 
     tagTypes <- names(matrices)
@@ -177,7 +175,23 @@ SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemCol
   }
   
   if ( length(matrices) != length(tagTypes)  ) {
-    stop("The same number of matrices and tag types is required.", call.=TRUE)
+    stop("The same number of matrices and tag types is required.", call.=TRUE )
+  }
+
+  # The function is.matrix checks for an R matrix -- on sparse matrices gives FALSE.
+  # if( mean( purrr::map_lgl( matrices, is.matrix ) ) < 1 ) {
+  #   stop("The argument matrices is expected to be a list of matrices.", call. = TRUE )
+  # } 
+  
+  matrices <- purrr::map( matrices, function(x) if( "dgCMatrix" %in% class(x) ) { x } else { as( x, "dgCMatrix" ) } )
+  
+  if( mean( purrr::map_lgl( matrices, function(x) "dgCMatrix" %in% class(x) ) ) < 1 ) {
+    stop("Cannot convert the argument matrices into a list of sparse matrices.", call. = TRUE )
+  } 
+  
+  if( imposeSameRowNamesQ ) {
+    allRowNames <- sort(unique(unlist(purrr::map( matrices, rownames ))))
+    matrices <- purrr::map( matrices, function(x) SMRImposeRowIDs( rowIDs = allRowNames, smat = x ) )                    
   }
   
   m <- do.call(cbind, matrices)

@@ -5,7 +5,7 @@
 \title{Creation of a SMR object with a list of matrices}
 \usage{
 SMRCreateFromMatrices(matrices, tagTypes = names(matrices),
-  itemColumnName = "Item")
+  itemColumnName = "Item", imposeSameRowNamesQ = TRUE)
 }
 \arguments{
 \item{matrices}{A list of matrices to be spliced into a metadata matrix.}
@@ -13,6 +13,8 @@ SMRCreateFromMatrices(matrices, tagTypes = names(matrices),
 \item{tagTypes}{Vector of matrix names.}
 
 \item{itemColumnName}{The column name of recommender items (in data and recommendations).}
+
+\item{imposeSameRowNamesQ}{Should the union of the row names be imposed on each matrix?}
 }
 \value{
 SMR object.
