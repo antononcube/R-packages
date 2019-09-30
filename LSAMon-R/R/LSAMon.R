@@ -642,7 +642,7 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "\\W", stemWord
   ## Remove stop words
   if ( !is.null(stopWords) ) {
     stopWords <- tolower(stopWords)
-    ss <- purrr::map( ss, function(x) setdiff( tolower(x),  stopWords ) )
+    ss <- purrr::map( ss, function(x) { x <- tolower(x); x[ !(x %in% stopWords) ] } )
   }
   ss <- ss[ purrr::map_int(ss, length) > 0 ]
 
