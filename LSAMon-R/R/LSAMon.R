@@ -830,6 +830,7 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
     ## Assign to lsaObj.
     lsaObj$W <- W
     lsaObj$H <- H
+    lsaObj$Method <- "SVD"
 
   } else if( tolower(method) %in% tolower(c( "NNMF", "NonNegativeMatrixfactorization")) ){
 
@@ -859,6 +860,7 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
     ## Assign to lsaObj.
     lsaObj$W <- resNNMF$W
     lsaObj$H <- resNNMF$H
+    lsaObj$Method <- "NNMF"
 
   } else {
 
@@ -1114,7 +1116,70 @@ LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = T
 
 
 ##===========================================================
-## Topic representation
+## Represent by topics
+##===========================================================
+
+#' Represent by topics.
+#' @description Find the topics representation of a matrix or a document.
+#' @param lsaObj A LSAMon object.
+#' @param query A character vector or a sparse matrix to be represented
+#' in the space of monad's document-term matrix.
+#' @param applyTermWeightFunctionsQ Should the weight term functions
+#' be applied to the result matrix or not?
+#' @return A LSAMon object.
+#' @details If the argument query is a sparse matrix then this function
+#' applies first the function \code{\link{LSAMonRepresentByTopics}}.
+#' @export
+LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = TRUE ) {
+
+  if( is.character(query) ) {
+
+    qmat <-
+      LSAMonUnit( query ) %>%
+      LSAMonMakeDocumentTermMatrix( stemWordsQ = lsaObj$StemWordsQ, stopWords = lsaObj$StopWords ) %>%
+      LSAMonTakeDocumentTermMatrix
+
+    lsaObj %>% LSAMonRepresentByTopics( query = qmat, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ )
+
+  } else if( "dgCMatrix" %in% class(query) ) {
+
+    qmat <-
+      lsaObj %>%
+      LSAMonRepresentByTerms( query, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ ) %>%
+      LSAMonTakeValue
+
+    qmat <- SparseMatrixRecommender::SMRImposeColumnIDs( colIDs = colnames(lsaObj %>% LSAMonTakeH), smat = query )
+
+    nnRes <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( W = lsaObj %>% LSAMonTakeW, H = lsaObj %>% LSAMonTakeH, normalizeLeftQ = FALSE )
+
+    if( lsaObj$Method == "NNMF" ) {
+
+      warning( "Topic representation using the pseudo-inverse of the sparse matrix H obtained with the method NNMF is not implemented yet.", call. = TRUE )
+      return(LSAMonFailureSymbol)
+
+    } else if ( lsaObj$Method == "SVD" ) {
+
+      qmat <- qmat %*% t(nnRes$H)
+
+    } else {
+
+      warning( "Unknown lsaObj$Method.", call. = TRUE )
+      return(LSAMonFailureSymbol)
+
+    }
+
+    lsaObj$Value <- qmat
+    lsaObj
+
+  } else {
+    warning( "Unknown type of the argument query.", call. = TRUE )
+    return(LSAMonFailureSymbol)
+  }
+}
+
+
+##===========================================================
+## Represent document tags by topics
 ##===========================================================
 
 #' Topic representation of document tags.
