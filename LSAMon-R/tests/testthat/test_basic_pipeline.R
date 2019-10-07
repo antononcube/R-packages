@@ -32,7 +32,7 @@ lsaObj <-
 
 dfTopic <-
   lsaObj %>%
-  LSAMonBasisVectorInterpretation(vectorIndices = 30, n = 30) %>%
+  LSAMonInterpretBasisVectors(vectorIndices = 30, n = 30) %>%
   LSAMonTakeValue
 
 ## Tests

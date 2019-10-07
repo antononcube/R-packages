@@ -1,7 +1,7 @@
 context("Topic representation tests")
 library(LSAMon)
 
-## See the details for LSAMonTopicRepresentation.
+## See the details for LSAMonRepresentDocumentTagsByTopics
 ## The explanations there are verified below.
 
 lsaObj <-
@@ -17,7 +17,7 @@ lsaObj <-
 
 repWMat <-
   lsaObj %>%
-  LSAMonTopicRepresentation( tags = NULL, minThreshold = 0.01 ) %>%
+  LSAMonRepresentDocumentTagsByTopics( tags = NULL, minThreshold = 0.01 ) %>%
   LSAMonTakeValue()
 
 test_that("Topic representation for document ID's", {
