@@ -234,6 +234,14 @@ SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL
         svec <- purrr::map_dbl( 1:nrow(mat), function(i) { max( mat[i,,drop=FALSE] ) })
         svec <- ifelse( svec > 0, svec, 1 )
         mat <- mat / svec
+        
+      } else if ( normalizerFunction == "AbsMax" || normalizerFunction == "AbsMaximum" ) {
+        
+        warning( "The normalization per row with the argument normalizerFunction set to 'AbsMax' or 'AbsMaximum' is potentially very slow." )
+        
+        svec <- purrr::map_dbl( 1:nrow(mat), function(i) { max( abs(mat[i,,drop=FALSE]) ) })
+        svec <- ifelse( svec > 0, svec, 1 )
+        mat <- mat / svec
 
       } else {
         stop( "Unknown normalizing function specification for the argument normalizerFunction.", call.=TRUE)
