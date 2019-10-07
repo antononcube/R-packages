@@ -183,7 +183,7 @@ tags
 ```
 
 ```{r}
-lsaObj2 <- lsaObj %>% LSAMonTopicRepresentation( tags = tags, minThreshold = 0.005 )
+lsaObj2 <- lsaObj %>% LSAMonRepresentDocumentTagsByTopics( tags = tags, minThreshold = 0.005 )
 qMat <- as.matrix(lsaObj2 %>% LSAMonTakeValue)
 qMat <- qMat[ uniqueTags, ]
 d3heatmap::d3heatmap( qMat, Rowv = FALSE, Colv = TRUE, scale = "row", colors = "Blues" )
@@ -238,7 +238,7 @@ as.matrix(qmat2[ , colSums(qmat2) > 0 ])
 ```{r}
 lsaObj2 <-
   LSAMonUnit( textHamlet   ) %>% 
-  LSAMonMakeDocumentTermMatrix( stemWordsQ = TRUE, stopWords = stopwords::stopwords() ) %>% 
+  LSAMonMakeDocumentTermMatrix( stemWordsQ = FALSE, stopWords = NULL ) %>% 
   LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
   LSAMonExtractTopics( numberOfTopics = 20, minNumberOfDocumentsPerTerm = 10, method = "SVD")
 ```
@@ -264,7 +264,4 @@ cat("\n")
 as.matrix(qmat2)
 ```
 
-```{r}
-textHamlet[c(10)]
-```
 
