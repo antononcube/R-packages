@@ -1102,14 +1102,14 @@ LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = T
     }
 
     if( max(abs(colSums(qmat))) == 0 ) {
-      warning( "The terms of the argument query cannot be found in the document-term matrix.", call. = TRUE )
+      warning( "The terms of the argument \"query\" cannot be found in the document-term matrix.", call. = TRUE )
     }
 
     lsaObj$Value <- qmat
     lsaObj
 
   } else {
-    warning( "Unknown type of the argument query.", call. = TRUE )
+    warning( "Unknown type of the argument \"query\".", call. = TRUE )
     return(LSAMonFailureSymbol)
   }
 }
@@ -1172,7 +1172,7 @@ LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = 
     lsaObj
 
   } else {
-    warning( "Unknown type of the argument query.", call. = TRUE )
+    warning( "Unknown type of the argument \"query\".", call. = TRUE )
     return(LSAMonFailureSymbol)
   }
 }
@@ -1234,7 +1234,7 @@ LSAMonRepresentDocumentTagsByTopics <- function( lsaObj, tags = NULL, minThresho
   }
 
   if( ! ( is.vector(tags) && length(tags) == nrow(wMat) ) ) {
-    warning( "The argument tags is expected to be a vector with length equal to the number of documents.", call. = T )
+    warning( "The argument \"tags\" is expected to be a vector with length equal to the number of documents.", call. = T )
     return(LSAMonFailureSymbol)
   }
 
@@ -1344,7 +1344,7 @@ MostImportantSentences <- function( sentences,
                                     stopWords = NULL ) {
 
   if( !is.character(sentences) ) {
-    stop( "The argument sentences is expected to be a character vector.", ccall. = TRUE )
+    stop( "The argument \"sentences\" is expected to be a character vector.", ccall. = TRUE )
   }
 
   if( length(sentences) == 0 ) {
