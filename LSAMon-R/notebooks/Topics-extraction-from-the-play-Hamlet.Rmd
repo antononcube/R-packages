@@ -240,8 +240,9 @@ lsaObj2 <-
   LSAMonUnit( textHamlet   ) %>% 
   LSAMonMakeDocumentTermMatrix( stemWordsQ = FALSE, stopWords = NULL ) %>% 
   LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
-  LSAMonExtractTopics( numberOfTopics = 20, minNumberOfDocumentsPerTerm = 10, method = "SVD")
+  LSAMonExtractTopics( numberOfTopics = 10, minNumberOfDocumentsPerTerm = 10, method = "SVD" )
 ```
+
 
 ```{r}
 qmat <- 
@@ -251,15 +252,17 @@ qmat <-
 ```
 
 ```{r}
-qmat <- t( SparseMatrixRecommender::SMRApplyTermWeightFunctions( t(qmat), "None", "None", "AbsMax") )
-cat("\n")
+nnRes <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( W = lsaObj2 %>% LSAMonTakeW, H = lsaObj2 %>% LSAMonTakeH, normalizeLeftQ = FALSE )
+W <- nnRes$W
+H <- nnRes$H
+colMaxes <- purrr::map_dbl( 1:ncol(W), function(i) sqrt( sum( W[,i] * W[,i]) ) )
+qmat <- qmat %*% Diagonal( x = 1/colMaxes )
+cat("\n")  
 as.matrix(qmat)
 ```
 
 ```{r}
-qmat2 <- lsaObj2 %>% LSAMonTakeW
-qmat2 <- qmat2[c("id.6","id.8","id.10","id.12"),]
-qmat2 <- t( SparseMatrixRecommender::SMRApplyTermWeightFunctions( t(qmat2), "None", "None", "AbsMax") )
+qmat2 <- W[c("id.6","id.8","id.10","id.12"),]
 cat("\n")
 as.matrix(qmat2)
 ```
