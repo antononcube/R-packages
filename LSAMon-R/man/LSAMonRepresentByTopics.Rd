@@ -22,6 +22,6 @@ A LSAMon object.
 Find the topics representation of a matrix or a document.
 }
 \details{
-If the argument query is a sparse matrix then this function
-applies first the function \code{\link{LSAMonRepresentByTopics}}.
+If the argument \code{query} is a character then this function
+applies first the function \code{\link{LSAMonRepresentByTerms}}.
 }

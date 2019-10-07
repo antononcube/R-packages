@@ -1127,8 +1127,8 @@ LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = T
 #' @param applyTermWeightFunctionsQ Should the weight term functions
 #' be applied to the result matrix or not?
 #' @return A LSAMon object.
-#' @details If the argument query is a sparse matrix then this function
-#' applies first the function \code{\link{LSAMonRepresentByTopics}}.
+#' @details If the argument \code{query} is a character then this function
+#' applies first the function \code{\link{LSAMonRepresentByTerms}}.
 #' @export
 LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = TRUE ) {
 
