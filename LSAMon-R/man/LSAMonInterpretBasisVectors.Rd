@@ -4,18 +4,18 @@
 \alias{LSAMonInterpretBasisVectors}
 \title{Basis vectors interpretation.}
 \usage{
-LSAMonInterpretBasisVectors(lsaObj, vectorIndices = NULL, n = 12,
+LSAMonInterpretBasisVectors(lsaObj, basisVectorIndexes = NULL, n = 12,
   orderBySignificanceQ = TRUE)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}
 
+\item{basisVectorIndexes}{Basis vectors to be interpreted.
+If NULL all indexes are taken.}
+
 \item{n}{Number of (top) coordinates per basis vector.}
 
 \item{orderBySignificanceQ}{Should the basis vectors be ordered by their significance?}
-
-\item{basisVectorIndexes}{Basis vectors to be interpreted.
-If NULL all indexes are taken.}
 }
 \value{
 A LSAMon object.

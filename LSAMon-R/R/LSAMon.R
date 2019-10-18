@@ -962,7 +962,7 @@ LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ 
 #' \code{reshape2::dcast( data = lsaObj$Value, formula = TermRank ~ TopicRank, value.var = "Term" )}.
 #' (Note that some columns are dropped.)
 #' @export
-LSAMonInterpretBasisVectors <- function( lsaObj, vectorIndices = NULL, n = 12, orderBySignificanceQ = TRUE ) {
+LSAMonInterpretBasisVectors <- function( lsaObj, basisVectorIndexes = NULL, n = 12, orderBySignificanceQ = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -970,12 +970,12 @@ LSAMonInterpretBasisVectors <- function( lsaObj, vectorIndices = NULL, n = 12, o
     return(LSAMonFailureSymbol)
   }
 
-  if( is.null(vectorIndices) ){
-    vectorIndices <- 1:nrow(lsaObj$H)
+  if( is.null(basisVectorIndexes) ){
+    basisVectorIndexes <- 1:nrow(lsaObj$H)
   }
 
-  if( !( is.numeric(vectorIndices) && mean( vectorIndices > 0 ) == 1 ) ) {
-    warning( "The argument vectorIndices is expected to be a vector of non-negative integers or NULL.", call. = T)
+  if( !( is.numeric(basisVectorIndexes) && mean( basisVectorIndexes > 0 ) == 1 ) ) {
+    warning( "The argument basisVectorIndexes is expected to be a vector of non-negative integers or NULL.", call. = T)
     return(LSAMonFailureSymbol)
   }
 
@@ -992,7 +992,7 @@ LSAMonInterpretBasisVectors <- function( lsaObj, vectorIndices = NULL, n = 12, o
   }
 
   topics <-
-    purrr::map_df( vectorIndices, function(i) {
+    purrr::map_df( basisVectorIndexes, function(i) {
 
       basisVec <- NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation( nres$H[i,], n, colnames(nres$H) )
 
