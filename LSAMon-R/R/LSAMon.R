@@ -794,7 +794,7 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
     minNumberOfDocumentsPerTerm <- floor( 0.05 * nrow(wDocTermMat) )
   }
 
-  if( !( is.numeric(minNumberOfDocumentsPerTerm) && numberOfTopics >= 0 ) ) {
+  if( !( is.numeric(minNumberOfDocumentsPerTerm) && minNumberOfDocumentsPerTerm >= 0 ) ) {
     warning( "The argument minNumberOfDocumentsPerTerm is expected to be a non-negative integer or NULL.", call. = T)
     return(LSAMonFailureSymbol)
   }
