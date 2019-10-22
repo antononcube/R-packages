@@ -799,11 +799,23 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
     return(LSAMonFailureSymbol)
   }
 
+  if( minNumberOfDocumentsPerTerm > nrow(wDocTermMat) ) {
+    warning( "The argument minNumberOfDocumentsPerTerm is expected not to be greater than the number of rows of the weighted document-term matrix.", call. = T)
+    return(LSAMonFailureSymbol)
+  }
+
   ## Restrict the document-term matrix.
   wDocTermMat01 <- wDocTermMat
   wDocTermMat01@x[wDocTermMat01@x > 0] <- 1
 
-  wDocTermMat <- wDocTermMat[ , Matrix::colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm ]
+  pred <- Matrix::colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm
+
+  if( sum(pred) == 0 ) {
+    warning( "The value of minNumberOfDocumentsPerTerm  produced an empty selection of terms (columns of the weighted document-term matrix.)", call. = T)
+    return(LSAMonFailureSymbol)
+  }
+
+  wDocTermMat <- wDocTermMat[ , pred ]
 
   ## Topic extraction.
   if( tolower(method) %in% tolower(c( "irlba", "SVD")) ) {
