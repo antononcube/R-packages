@@ -810,8 +810,13 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
 
   pred <- Matrix::colSums(wDocTermMat01) >= minNumberOfDocumentsPerTerm
 
-  if( sum(pred) == 0 ) {
-    warning( "The value of minNumberOfDocumentsPerTerm  produced an empty selection of terms (columns of the weighted document-term matrix.)", call. = T)
+  if( sum(pred) <= 1 ) {
+    warning( "The value of minNumberOfDocumentsPerTerm produced an empty or nearly empty selection of terms (columns of the weighted document-term matrix.)", call. = T)
+    return(LSAMonFailureSymbol)
+  }
+
+  if( sum(pred) < numberOfTopics ) {
+    warning( paste0( "The number of terms, ", sum(pred), ", selected with minNumberOfDocumentsPerTerm = ", minNumberOfDocumentsPerTerm, " is less than numberOfTopics = ", numberOfTopics, "."), call. = T)
     return(LSAMonFailureSymbol)
   }
 
@@ -831,9 +836,9 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
                     ... )
 
     ## Re-fit the result to monad's data interpretation.
-    W <- Matrix( resSVD$u, sparse = TRUE )
-    S <- Diagonal( x = resSVD$d, n = length(resSVD$d) )
-    H <- Matrix( t(resSVD$v), sparse = TRUE )
+    W <- Matrix::Matrix( resSVD$u, sparse = TRUE )
+    S <- Matrix::Diagonal( x = resSVD$d, n = length(resSVD$d) )
+    H <- Matrix::Matrix( t(resSVD$v), sparse = TRUE )
     H <- S %*% H
 
     rownames(W) <- rownames(wDocTermMat)
@@ -860,7 +865,7 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
     if( orderBySignificanceQ ) {
       resNNMF <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( resNNMF$W, resNNMF$H, normalizeLeft = FALSE )
 
-      topicSFactors <- sqrt( colSums( resNNMF$W * resNNMF$W ) )
+      topicSFactors <- sqrt( Matrix::colSums( resNNMF$W * resNNMF$W ) )
 
       if( orderBySignificanceQ ) {
         resNNMF$W <- resNNMF$W[ , rev(order(topicSFactors)) ]
@@ -940,9 +945,9 @@ LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ 
   if( orderBySignificanceQ ) {
 
     if( normalizeLeftQ ) {
-      topicSFactors <- sqrt( rowSums( nres$H * nres$H ) )
+      topicSFactors <- sqrt( Matrix::rowSums( nres$H * nres$H ) )
     } else {
-      topicSFactors <- sqrt( colSums( nres$W * nres$W ) )
+      topicSFactors <- sqrt( Matrix::colSums( nres$W * nres$W ) )
     }
 
     nres$W <- nres$W[ , rev(order(topicSFactors)) ]
@@ -995,7 +1000,7 @@ LSAMonInterpretBasisVectors <- function( lsaObj, basisVectorIndexes = NULL, n = 
 
   ## Using these norms to order by significance is only valid only
   ## if normalizeLeftQ = FALSE in the line above.
-  topicSFactors <- sqrt( colSums( nres$W * nres$W ) )
+  topicSFactors <- sqrt( Matrix::colSums( nres$W * nres$W ) )
 
   if( orderBySignificanceQ ) {
     nres$W <- nres$W[ , rev(order(topicSFactors)) ]
@@ -1113,7 +1118,7 @@ LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = T
 
     }
 
-    if( max(abs(colSums(qmat))) == 0 ) {
+    if( max(abs(Matrix::colSums(qmat))) == 0 ) {
       warning( "The terms of the argument \"query\" cannot be found in the document-term matrix.", call. = TRUE )
     }
 
