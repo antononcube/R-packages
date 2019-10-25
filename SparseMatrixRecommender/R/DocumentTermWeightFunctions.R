@@ -146,7 +146,17 @@ SMRGlobalTermFunctionWeights <- function( docTermMat, globalWeightFunction = "No
 #' @export
 SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL, localWeightFunction = NULL, normalizerFunction = NULL ) {
 
-  if ( class(docTermMat) != "dgCMatrix" || nrow(docTermMat) < 1 || ncol(docTermMat) < 1 ) {
+  if ( "dgeMatrix" %in% class(docTermMat) ) {
+    warning( "Converting the argument docTermMat from dgeMatrix to dgCMatrix.", call. = TRUE)
+    docTermMat <- as(docTermMat, "dgCMatrix")
+  }
+  
+  if ( "dgTMatrix" %in% class(docTermMat) ) {
+    warning( "Converting the argument docTermMat from dgTMatrix to dgCMatrix.", call. = TRUE)
+    docTermMat <- as(docTermMat, "dgCMatrix")
+  }
+  
+  if ( !("dgCMatrix" %in% class(docTermMat)) || nrow(docTermMat) < 1 || ncol(docTermMat) < 1 ) {
     stop( "The argument docTermMat is expected to be a sparse matrix with number of rows and columns greater than zero", call.=TRUE)
   }
 
