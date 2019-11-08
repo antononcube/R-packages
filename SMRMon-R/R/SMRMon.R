@@ -1599,8 +1599,8 @@ SMRMonFilterMatrix <- function( smrObj, profile ) {
 
   smrObj <-
     smrObj %>%
-    SMRMonSetM( (smrObj %>% SMRMonTakeM)[ svec[,1] > 0, ] ) %>%
-    SMRMonSetM01( (smrObj %>% SMRMonTakeM01)[ svec[,1] > 0, ] )
+    SMRMonSetM( (smrObj %>% SMRMonTakeM)[ svec[,1] > 0, , drop=F ] ) %>%
+    SMRMonSetM01( (smrObj %>% SMRMonTakeM01)[ svec[,1] > 0, , drop=F ] )
 
   smrObj
 }
@@ -1655,11 +1655,12 @@ SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsP
 #' @param smrObj A sparse matrix recommender.
 #' @param testData A data frame with columns \code{c( "Score", "SearchID", SMRMonTakeItemColumnName(smrObj) )}.
 #' @param ks An integer vector with k-values for the Top-K statistic.
+#' @param type One of "fraction", "count", "incidence".
 #' @param ... Additional arguments passed to \code{\link{SMRMonRecommend}}.
 #' @details The computation result is assigned to \code{smrObj$Value}.
 #' @return An SMRMon object.
 #' @export
-SMRMonComputeTopK <- function( smrObj, testData, ks, ...) {
+SMRMonComputeTopK <- function( smrObj, testData, ks, type = "fraction", ...) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1673,7 +1674,13 @@ SMRMonComputeTopK <- function( smrObj, testData, ks, ...) {
   }
 
   if( ! is.numeric(ks) ) {
-    warning( "The argument argument ks is expected to be an integer vector.", call. = TRUE )
+    warning( "The argument ks is expected to be an integer vector.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  expectedTypes <- c( "fraction", "count", "incidence", "binary" )
+  if( ! ( tolower(type) %in% expectedTypes ) ) {
+    warning( paste( "The argument type is expected to be one of: ", paste(expectedTypes[-length(expectedTypes)], collapse = ", "), "." ), call. = TRUE )
     return(SMRMonFailureSymbol)
   }
 
@@ -1689,10 +1696,31 @@ SMRMonComputeTopK <- function( smrObj, testData, ks, ...) {
 
       kRecs <- smrObj %>% SMRMonRecommend( history = df$SearchID[1], nrecs = max(ks), ... ) %>% SMRMonTakeValue
 
-      topKStat <-
-        purrr::map_dbl( ks, function(k) {
-          mean( df[[smrObj$ItemColumnName]] %in% kRecs[[smrObj$ItemColumnName]][1:k] )
-        })
+      if( type == "fraction" ) {
+
+        topKStat <-
+          purrr::map_dbl( ks, function(k) {
+            mean( df[[smrObj$ItemColumnName]] %in% kRecs[[smrObj$ItemColumnName]][1:k] )
+          })
+
+      } else if (type == "count") {
+
+        topKStat <-
+          purrr::map_dbl( ks, function(k) {
+            sum( df[[smrObj$ItemColumnName]] %in% kRecs[[smrObj$ItemColumnName]][1:k] )
+          })
+
+      } else if (type %in% c( "binary", "incidence") ) {
+
+        topKStat <-
+          purrr::map_dbl( ks, function(k) {
+            sum( df[[smrObj$ItemColumnName]] %in% kRecs[[smrObj$ItemColumnName]][1:k] ) > 0
+          })
+
+      } else {
+        # Should not happen.
+        return(SMRMonFailureSymbol)
+      }
 
       data.frame( SearchID = df$SearchID[1], K = ks, Value = topKStat, stringsAsFactors = FALSE)
     })

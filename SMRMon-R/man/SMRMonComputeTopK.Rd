@@ -4,7 +4,7 @@
 \alias{SMRMonComputeTopK}
 \title{Top-K statistic computation}
 \usage{
-SMRMonComputeTopK(smrObj, testData, ks, ...)
+SMRMonComputeTopK(smrObj, testData, ks, type = "fraction", ...)
 }
 \arguments{
 \item{smrObj}{A sparse matrix recommender.}
@@ -12,6 +12,8 @@ SMRMonComputeTopK(smrObj, testData, ks, ...)
 \item{testData}{A data frame with columns \code{c( "Score", "SearchID", SMRMonTakeItemColumnName(smrObj) )}.}
 
 \item{ks}{An integer vector with k-values for the Top-K statistic.}
+
+\item{type}{One of "fraction", "count", "incidence".}
 
 \item{...}{Additional arguments passed to \code{\link{SMRMonRecommend}}.}
 }
