@@ -1025,9 +1025,11 @@ SMRSparseMatrixToTriplets <- function( smat ) {
 #' @export
 SMRImposeRowIDs <- function( rowIDs, smat ) {
   
+  if( is.null(rowIDs) ) { return(NULL) }
+  
   missingRows <- setdiff( rowIDs, rownames(smat) )
   nMissingRows <- length( missingRows )
-  
+
   if ( nMissingRows > 0 ) {
     # Rows are missing in the matrix
     complMat <- sparseMatrix(i=c(1), j=c(1), x=c(0), dims = c( nMissingRows, ncol(smat) ) )
@@ -1049,7 +1051,7 @@ SMRImposeRowIDs <- function( rowIDs, smat ) {
 #' @family Sparse matrix transformation functions
 #' @export
 SMRImposeColumnIDs <- function( colIDs, smat ) {
-  
+  if( is.null(colIDs) ) { return(NULL) }
   t( SMRImposeRowIDs( rowIDs = colIDs, smat = t(smat) ) )
 }
 
