@@ -6,8 +6,7 @@
 \usage{
 SMRMonCreateSearchInteractiveInterface(smrObj, itemData,
   itemDataColNames = NULL, itemDataIDColName = NULL,
-  searchColName = NULL, itemListIDsSplitPattern = "\\\\W",
-  dashboardTheme = NULL)
+  itemListIDsSplitPattern = "\\\\W", dashboardTheme = NULL)
 }
 \arguments{
 \item{itemData}{A data frame with rows corresponding to items (to be recommended.)}

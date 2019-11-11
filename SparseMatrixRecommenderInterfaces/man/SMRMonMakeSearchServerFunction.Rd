@@ -5,8 +5,7 @@
 \title{SMRMon search interface server function}
 \usage{
 SMRMonMakeSearchServerFunction(smrObj, itemData, itemDataColNames = NULL,
-  itemDataIDColName = NULL, searchColName = NULL,
-  itemListIDsSplitPattern = "\\\\W")
+  itemDataIDColName = NULL, itemListIDsSplitPattern = "\\\\W")
 }
 \arguments{
 \item{smrObj}{A time series recommender.}
@@ -18,8 +17,6 @@ the table displays of search and recommendation results.}
 
 \item{itemDataIDColName}{Which column of \code{itemData} is with item ID's;
 those ID's are also row names of \code{smrObj$M}.}
-
-\item{searchColName}{Which column should be used to search \code{itemData}.}
 
 \item{itemListIDsSplitPattern}{A split pattern for the separator of the items list
 and ratings list.}
