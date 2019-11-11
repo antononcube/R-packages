@@ -10,13 +10,23 @@ randData <- sample( c( randData, randData2, randData3 ) )
 test_that("OutlierIdentifier equivalences", {
 
   expect_equal(
-    OutlierIdentifier( data = randData, identifier = SPLUSQuartileIdentifierParameters ),
-    OutlierIdentifier( data = randData, lowerAndUpperThresholds = SPLUSQuartileIdentifierParameters(randData) )
+    OutlierIdentifier( data = randData, identifier = SPLUSQuartileIdentifierParameters, valueQ = TRUE ),
+    OutlierIdentifier( data = randData, lowerAndUpperThresholds = SPLUSQuartileIdentifierParameters(randData), value = TRUE )
   )
 
   expect_equal(
-    OutlierIdentifier( data = randData, identifier = HampelIdentifierParameters ),
-    OutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData) )
+    OutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = TRUE ),
+    OutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData), valueQ = TRUE )
+  )
+
+  expect_equal(
+    OutlierIdentifier( data = randData, identifier = SPLUSQuartileIdentifierParameters, valueQ = FALSE ),
+    OutlierIdentifier( data = randData, lowerAndUpperThresholds = SPLUSQuartileIdentifierParameters(randData), value = FALSE )
+  )
+
+  expect_equal(
+    OutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = FALSE ),
+    OutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData), valueQ = FALSE )
   )
 
 })
@@ -24,13 +34,23 @@ test_that("OutlierIdentifier equivalences", {
 test_that("TopOutlierIdentifier equivalences", {
 
   expect_equal(
-    TopOutlierIdentifier( data = randData, identifier = QuartileIdentifierParameters ),
-    TopOutlierIdentifier( data = randData, lowerAndUpperThresholds = QuartileIdentifierParameters(randData) )
+    TopOutlierIdentifier( data = randData, identifier = QuartileIdentifierParameters, valueQ = TRUE ),
+    TopOutlierIdentifier( data = randData, lowerAndUpperThresholds = QuartileIdentifierParameters(randData), valueQ = TRUE )
   )
 
   expect_equal(
-    TopOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters ),
-    TopOutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData) )
+    TopOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = TRUE ),
+    TopOutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData), valueQ = TRUE )
+  )
+
+  expect_equal(
+    TopOutlierIdentifier( data = randData, identifier = QuartileIdentifierParameters, valueQ = FALSE ),
+    TopOutlierIdentifier( data = randData, lowerAndUpperThresholds = QuartileIdentifierParameters(randData), valueQ = FALSE )
+  )
+
+  expect_equal(
+    TopOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = FALSE ),
+    TopOutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData), valueQ = FALSE )
   )
 
 })
@@ -38,13 +58,23 @@ test_that("TopOutlierIdentifier equivalences", {
 test_that("BottomOutlierIdentifier equivalences", {
 
   expect_equal(
-    BottomOutlierIdentifier( data = randData, identifier = QuartileIdentifierParameters ),
-    BottomOutlierIdentifier( data = randData, lowerAndUpperThresholds = QuartileIdentifierParameters(randData) )
+    BottomOutlierIdentifier( data = randData, identifier = QuartileIdentifierParameters, valueQ = TRUE ),
+    BottomOutlierIdentifier( data = randData, lowerAndUpperThresholds = QuartileIdentifierParameters(randData), valueQ = TRUE )
   )
 
   expect_equal(
-    BottomOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters ),
-    BottomOutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData) )
+    BottomOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = TRUE ),
+    BottomOutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData), valueQ = TRUE )
+  )
+
+  expect_equal(
+    BottomOutlierIdentifier( data = randData, identifier = QuartileIdentifierParameters, valueQ = FALSE ),
+    BottomOutlierIdentifier( data = randData, lowerAndUpperThresholds = QuartileIdentifierParameters(randData), valueQ = FALSE )
+  )
+
+  expect_equal(
+    BottomOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = FALSE ),
+    BottomOutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData), valueQ = FALSE )
   )
 
 })
