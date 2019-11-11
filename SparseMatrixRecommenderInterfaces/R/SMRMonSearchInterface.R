@@ -85,7 +85,7 @@ SMRMonMakeSearchUI <- function( smrObj, dashboardTheme = NULL ) {
       dashboardSidebar(
         sidebarMenu(
           menuItem( "SMRMon Object", tabName = "SMRMonObject", icon = icon("map") ),
-          menuItem( "Recommendations", tabName = "Recommendations", icon = icon("search-plus") ),
+          menuItem( "Search by profile", tabName = "SearchByProfile", icon = icon("search-plus") ),
           menuItem( "Collage", tabName = "Collage", icon = icon("object-group") ),
           hr(),
           menuItem( "Sliders", tabName = "Sliders", icon = icon("sliders-h"),
@@ -98,10 +98,8 @@ SMRMonMakeSearchUI <- function( smrObj, dashboardTheme = NULL ) {
                                         choices = c( "Profile" = "profile",
                                                      "Tags summary table" = "tagsSummaryTable",
                                                      "Tags summary pie chart" = "tagsSummaryPieChart",
-                                                     "Jobs timeline" = "jobsTimeline",
-                                                     "Companies timeline" = "companiesTimeline",
                                                      "Nearest neighbors" = "nearestNeighbors" ),
-                                        selected = c( "profile")
+                                        selected = c( "profile", "nearestNeighbors")
                     )
           )
         )
@@ -144,20 +142,21 @@ SMRMonMakeSearchUI <- function( smrObj, dashboardTheme = NULL ) {
           ),
 
 
-          ## Recommendations by profile
-          tabItem( tabName = "Recommendations",
+          ## Search/recommendations by profile
+          tabItem( tabName = "SearchByProfile",
 
                    fluidRow(
 
-                     h2( "Recommendations by profile" ),
+                     h2( "Search by profile" ),
 
                      box(
                        title = "Search profile",
 
                        textInput( inputId = "searchProfileString", label = "Search string:",
-                                  value = "",
-                                  placeholder =  "<tag-type>:<tag>"),
+                                  value = ".*",
+                                  placeholder =  "string pattern"),
 
+                       checkboxInput( inputId = "searchPatternFixed", label = ":fixed search pattern", value = FALSE ),
 
                        width = 9
                      )
@@ -228,7 +227,6 @@ SMRMonMakeSearchUI <- function( smrObj, dashboardTheme = NULL ) {
 #' the table displays of search and recommendation results.
 #' @param itemDataIDColName Which column of \code{itemData} is with item ID's;
 #' those ID's are also row names of \code{smrObj$M}.
-#' @param searchColName Which column should be used to search \code{itemData}.
 #' @param itemListIDsSplitPattern  A split pattern for the separator of the items list
 #' and ratings list.
 #' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
@@ -236,7 +234,7 @@ SMRMonMakeSearchUI <- function( smrObj, dashboardTheme = NULL ) {
 #' @return Shiny server function.
 #' @family SMR interface functions
 #' @export
-SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W" ) {
+SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, itemListIDsSplitPattern = "\\W" ) {
 
   if( is.null(itemDataColNames) ) {
     itemDataColNames <- colnames(itemData)
@@ -253,15 +251,6 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
   if( !( itemDataIDColName %in% colnames(itemData) ) ) {
     stop( "The argument itemDataIDColName is not a column name in itemData.")
   }
-
-  if( is.null(searchColName) ) {
-    searchColName <- colnames(itemData)[[1]]
-  }
-
-  if( !( searchColName %in% colnames(itemData) ) ) {
-    stop( "The argument searchColName is not a column name in itemData.")
-  }
-
 
   if( is.null("itemListIDsSplitPattern") ) {
     itemListIDsSplitPattern <- "\\W"
@@ -295,7 +284,7 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
 
 
     ##------------------------------------------------------------
-    ## Recommendations by profile
+    ## Search/recommendations by profile
     ##------------------------------------------------------------
 
     output$multiSliders <- renderUI({
@@ -319,33 +308,46 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
 
       sTags <- strsplit( x = input$searchProfileString, split = itemListIDsSplitPattern )[[1]]
 
-      sTags <- sTags[ sTags %in% colnames( smrObj %>% SMRMonTakeM ) ]
+      if( input$searchPatternFixed ) {
+        ## Fixed search pattern.
+        predInds <- sTags %in% colnames( smrObj %>% SMRMonTakeM )
 
-      if( length(sTags) == 0 ) {
-
-        sTags <- grep( paste( sTags, collapse = "|"), colnames(smrObj %>% SMRMonTakeM), ignore.case = TRUE, value = TRUE )
-        if( length(sTags) == 0 ) { NULL }
+        if( length(predInds) > 0 ) {
+          sTags <- sTags[ predInds ]
+        } else {
+          sTags <- c()
+        }
 
       } else {
-        sTags
+        ## General grep pattern.
+        sTags <- Reduce( function(a,x) c( a, grep( x, colnames( smrObj %>% SMRMonTakeM ), value = T, ignore.case = T )), init = c(), x = sTags )
+
       }
+
+      sTags
 
     })
 
 
     recommendations <- reactive({
 
-      if( sum(grepl( "slider", names(input) )) >= length(smrObj %>% SMRMonTakeTagTypes) ) {
+      localSearchProfile <- searchProfile()
+
+      if( length(localSearchProfile) == 0 ) {
+
+        NULL
+
+      } else if( sum(grepl( "slider", names(input) )) >= length(smrObj %>% SMRMonTakeTagTypes) ) {
 
         smrObj %>%
           SMRMonApplyTagTypeWeights( weights = slidersValues(), default = 0 ) %>%
-          SMRMonRecommendByProfile( profile = searchProfile(), nrecs = input$nrecs ) %>%
+          SMRMonRecommendByProfile( profile = localSearchProfile, nrecs = input$nrecs ) %>%
           SMRMonTakeValue
 
       } else {
 
         smrObj %>%
-          SMRMonRecommendByProfile( profile = searchProfile(), nrecs = input$nrecs ) %>%
+          SMRMonRecommendByProfile( profile = localSearchProfile, nrecs = input$nrecs ) %>%
           SMRMonTakeValue
       }
 
@@ -354,10 +356,12 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
     ## OUTPUT: recommendations table
     output$recommendationsTable <-
       DT::renderDataTable({ datatable({
-
-        recommendations() %>%
-          dplyr::inner_join( itemData, by = smrObj %>% SMRMonTakeItemColumnName )
-
+        if( is.null(recommendations()) ) {
+          NULL
+        } else {
+          recommendations() %>%
+            dplyr::inner_join( itemData, by = smrObj %>% SMRMonTakeItemColumnName )
+        }
       }, rownames = FALSE, filter = 'top', options = list(pageLength = 12, autoWidth = FALSE), selection = list( mode = 'multiple', selected = c(1)) ) })
 
 
@@ -367,7 +371,7 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
 
         sRow <- input$recommendationsTable_rows_selected
 
-        if( is.null(sRow) ) {
+        if( is.null(recommendations()) || is.null(sRow) ) {
 
           NULL
 
@@ -529,7 +533,7 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
 #' @return Shiny app
 #' @family SMRMon interface functions
 #' @export
-SMRMonCreateSearchInteractiveInterface <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, searchColName = NULL, itemListIDsSplitPattern = "\\W", dashboardTheme = NULL ) {
+SMRMonCreateSearchInteractiveInterface <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, itemListIDsSplitPattern = "\\W", dashboardTheme = NULL ) {
 
   res <- length(unlist(strsplit( x = rownames(smrObj$M), split = itemListIDsSplitPattern, fixed = FALSE )))
 
@@ -542,7 +546,6 @@ SMRMonCreateSearchInteractiveInterface <- function( smrObj, itemData, itemDataCo
                                                             itemData = itemData,
                                                             itemDataColNames = itemDataColNames,
                                                             itemDataIDColName = itemDataIDColName,
-                                                            searchColName = searchColName,
                                                             itemListIDsSplitPattern = itemListIDsSplitPattern )
   )
 
