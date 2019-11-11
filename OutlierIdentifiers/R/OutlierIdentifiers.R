@@ -91,15 +91,17 @@ SPLUSQuartileIdentifierParameters <- function( data ) {
 #' @param data A data vector.
 #' @param identifier An outlier identifier function.
 #' @param lowerAndUpperThresholds Outlier identifier parameters.
-#' @return A numeric vector of outliers.
+#' @param valueQ Should values be returned or not?
+#' @return A numeric vector of outliers or a logical vector.
 #' @details The outlier identifier function \code{identifier}
 #' should return a list or tuple of two numbers \code{c(lowerThreshold, upperThreshold)}.
 #' @export
-OutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data) ) {
+OutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data), valueQ = FALSE ) {
   if( !is.numeric(data) ) {
     stop( "The argument data is expected to be a numeric vector.", call. = TRUE )
   }
-  data[ data <= lowerAndUpperThresholds[[1]] | data >= lowerAndUpperThresholds[[2]] ]
+  pred <- data <= lowerAndUpperThresholds[[1]] | data >= lowerAndUpperThresholds[[2]]
+  if( valueQ ) { data[ pred ] } else { pred }
 }
 
 #' Top outlier identifier.
@@ -107,9 +109,12 @@ OutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = ident
 #' @param data A data vector.
 #' @param identifier An outlier identifier function.
 #' @param lowerAndUpperThresholds Outlier identifier parameters.
+#' @param valueQ Should values be returned or not?
+#' @return A numeric vector of outliers or a logical vector.
 #' @export
-TopOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data) ) {
-  data[data >= lowerAndUpperThresholds[[2]] ]
+TopOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data), valueQ = FALSE ) {
+  pred <- data >= lowerAndUpperThresholds[[2]]
+  if( valueQ ) { data[ pred ] } else { pred }
 }
 
 #' Bottom outlier identifier.
@@ -117,9 +122,12 @@ TopOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = id
 #' @param data data vector
 #' @param identifier An outlier identifier function.
 #' @param lowerAndUpperThresholds Outlier identifier parameters.
+#' @param valueQ Should values be returned or not?
+#' @return A numeric vector of outliers or a logical vector.
 #' @export
-BottomOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data) ) {
-  data[data <= lowerAndUpperThresholds[[1]] ]
+BottomOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data), valueQ = FALSE ) {
+  pred <- data <= lowerAndUpperThresholds[[1]]
+  if( valueQ ) { data[ pred ] } else { pred }
 }
 
 #' Outlier positions finder.

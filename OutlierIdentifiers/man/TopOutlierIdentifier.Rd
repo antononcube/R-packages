@@ -5,7 +5,7 @@
 \title{Top outlier identifier.}
 \usage{
 TopOutlierIdentifier(data, identifier,
-  lowerAndUpperThresholds = identifier(data))
+  lowerAndUpperThresholds = identifier(data), valueQ = FALSE)
 }
 \arguments{
 \item{data}{A data vector.}
@@ -13,6 +13,11 @@ TopOutlierIdentifier(data, identifier,
 \item{identifier}{An outlier identifier function.}
 
 \item{lowerAndUpperThresholds}{Outlier identifier parameters.}
+
+\item{valueQ}{Should values be returned or not?}
+}
+\value{
+A numeric vector of outliers or a logical vector.
 }
 \description{
 Find the top outliers for a data vector

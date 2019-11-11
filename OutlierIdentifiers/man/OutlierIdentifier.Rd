@@ -5,7 +5,7 @@
 \title{Outlier identifier.}
 \usage{
 OutlierIdentifier(data, identifier,
-  lowerAndUpperThresholds = identifier(data))
+  lowerAndUpperThresholds = identifier(data), valueQ = FALSE)
 }
 \arguments{
 \item{data}{A data vector.}
@@ -13,9 +13,11 @@ OutlierIdentifier(data, identifier,
 \item{identifier}{An outlier identifier function.}
 
 \item{lowerAndUpperThresholds}{Outlier identifier parameters.}
+
+\item{valueQ}{Should values be returned or not?}
 }
 \value{
-A numeric vector of outliers.
+A numeric vector of outliers or a logical vector.
 }
 \description{
 Find an outlier threshold for a data vector.
