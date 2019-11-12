@@ -603,6 +603,11 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
     
   recs <- SMRRecommendationsByProfileVector( smr = smr, profileVec = profileVec, nrecs = nTopNNs )
   
+  if( sum(recs$Score) == 0. ) {
+    warning( "All scores of the intermediate recommendations are zero.", call. = TRUE )
+    return(NA) 
+  }
+  
   ## Assuming the class labels sub-matrix is relatively small we can do this:
   ## clMat <- SMRSubMatrix( smr = smr, tagType = tagType )
   ## It can be optimized  using a class label matrix member inside the SMR object.
@@ -615,13 +620,13 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
   }
   s <- (recs$Score / max(recs$Score, na.rm = T) ) %*% clMat[ recs[[smr$ItemColumnName]], , drop=F]
   s <- data.frame( Score = s[1,], Label = colnames(s), stringsAsFactors = FALSE )
-  s <- s[ order(-s[,1]), ]
+  s <- s[ order(-s$Score), ]
 
   if( dropZeroScoredLabels ) { 
     s <- s[ s$Score > 0, ] 
   }
   
-  if( length(s) == 0 ) { 
+  if( length(s) == 0 ) {
     return(NA) 
   }
   
