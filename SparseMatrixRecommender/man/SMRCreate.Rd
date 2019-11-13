@@ -5,7 +5,7 @@
 \title{Creation of a SMR object from a transactions data frame}
 \usage{
 SMRCreate(dataRows, tagTypes = names(dataRows)[-1],
-  itemColumnName = names(dataRows)[1])
+  itemColumnName = names(dataRows)[1], ...)
 }
 \arguments{
 \item{dataRows}{The transactions data frame.}
@@ -13,6 +13,8 @@ SMRCreate(dataRows, tagTypes = names(dataRows)[-1],
 \item{tagTypes}{The name of the column containing the categorical tags.}
 
 \item{itemColumnName}{The name of the column containing the unique items.}
+
+\item{...}{Additional parameters for \code{\link{SMRCreateFromMatrices}}.}
 }
 \value{
 SMR object.

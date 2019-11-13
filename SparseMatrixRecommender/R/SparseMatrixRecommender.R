@@ -142,17 +142,18 @@ SMRCreateItemTagMatrix <- function( dataRows, itemColumnName, tagType, sparse = 
 #' @param dataRows The transactions data frame.
 #' @param tagTypes The name of the column containing the categorical tags.
 #' @param itemColumnName The name of the column containing the unique items.
+#' @param ... Additional parameters for \code{\link{SMRCreateFromMatrices}}.
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
 #' @return SMR object.
 #' @family Creation functions
 #' @export
-SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName = names(dataRows)[1] ){
+SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName = names(dataRows)[1], ... ){
   
   matrices <- purrr::map(tagTypes, function(x){
     SMRCreateItemTagMatrix(dataRows, tagType=x, itemColumnName=itemColumnName)
   })
   
-  SMRCreateFromMatrices(matrices, tagTypes, itemColumnName, imposeSameRowNamesQ = TRUE )
+  SMRCreateFromMatrices(matrices, tagTypes, itemColumnName, imposeSameRowNamesQ = TRUE, ... )
 }
 
 #' Creation of a SMR object with a list of matrices
@@ -161,11 +162,14 @@ SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName =
 #' @param tagTypes Vector of matrix names.
 #' @param itemColumnName The column name of recommender items (in data and recommendations).
 #' @param imposeSameRowNamesQ Should the union of the row names be imposed on each matrix?
+#' @param addTagTypesToColumnNamesQ Should the tag types be added as prefixes 
+#' to the column names of the corresponding sub-matrices?
+#' @param sep Separator for the prefixes of the columns names.
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
 #' @return SMR object.
 #' @family Creation functions
 #' @export
-SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemColumnName = "Item", imposeSameRowNamesQ = TRUE ){
+SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemColumnName = "Item", imposeSameRowNamesQ = TRUE, addTagTypesToColumnNamesQ = FALSE, sep = ":" ){
   
   if( is.null(tagTypes) ) { 
     tagTypes <- names(matrices)
@@ -192,6 +196,14 @@ SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemCol
   if( imposeSameRowNamesQ ) {
     allRowNames <- sort(unique(unlist(purrr::map( matrices, rownames ))))
     matrices <- purrr::map( matrices, function(x) SMRImposeRowIDs( rowIDs = allRowNames, smat = x ) )                    
+  }
+  
+  if( addTagTypesToColumnNamesQ ) {
+    matrices <- 
+      purrr::map2( matrices, tagTypes, function(mat, prefix) { 
+        colnames(mat) <- paste0( prefix, sep, colnames(mat) ) 
+        mat
+      })                    
   }
   
   m <- do.call(cbind, matrices)
