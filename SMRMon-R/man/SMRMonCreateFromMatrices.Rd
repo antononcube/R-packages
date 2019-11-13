@@ -5,7 +5,8 @@
 \title{Creation an SMRMon object with a list of matrices.}
 \usage{
 SMRMonCreateFromMatrices(smrObj, matrices, tagTypes = names(matrices),
-  itemColumnName = "Item")
+  itemColumnName = "Item", imposeSameRowNamesQ = TRUE,
+  addTagTypesToColumnNamesQ = FALSE, sep = ":")
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -15,6 +16,13 @@ SMRMonCreateFromMatrices(smrObj, matrices, tagTypes = names(matrices),
 \item{tagTypes}{Vector of matrix names.}
 
 \item{itemColumnName}{The column name of recommender items (in data and recommendations).}
+
+\item{imposeSameRowNamesQ}{Should the union of the row names be imposed on each matrix?}
+
+\item{addTagTypesToColumnNamesQ}{Should the tag types be added as prefixes
+to the column names of the corresponding sub-matrices?}
+
+\item{sep}{Separator for the prefixes of the columns names.}
 }
 \value{
 An SMRMon object.

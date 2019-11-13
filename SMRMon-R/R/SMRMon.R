@@ -711,16 +711,17 @@ SMRMonGetMatrixProperty <- function( smrObj, property, tagType = NULL ) {
 #' @param data The transactions data frame.
 #' @param tagTypes The name of the column containing the categorical tags.
 #' @param itemColumnName The name of the column containing the unique items.
+#' @param ... Additional parameters for \code{\link{SMRMonCreateFromMatrices}}.
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
 #' @return SMR object.
 #' @family Creation functions
 #' @export
-SMRMonCreate <- function( smrObj, data = SMRMonTakeData(smrObj), tagTypes = names(data)[-1], itemColumnName = names(data)[1] ) {
+SMRMonCreate <- function( smrObj, data = SMRMonTakeData(smrObj), tagTypes = names(data)[-1], itemColumnName = names(data)[1], ... ) {
 
   ## We allow anything to be smrObj .
   ## if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  res <- SMRCreate( dataRows = data, tagTypes = tagTypes, itemColumnName = itemColumnName )
+  res <- SMRCreate( dataRows = data, tagTypes = tagTypes, itemColumnName = itemColumnName, ... )
 
   res$Value <- NULL
   res$Data <- data
@@ -741,16 +742,26 @@ SMRMonCreate <- function( smrObj, data = SMRMonTakeData(smrObj), tagTypes = name
 #' @param matrices A list of matrices to be spliced into a metadata matrix.
 #' @param tagTypes Vector of matrix names.
 #' @param itemColumnName The column name of recommender items (in data and recommendations).
+#' @param imposeSameRowNamesQ Should the union of the row names be imposed on each matrix?
+#' @param addTagTypesToColumnNamesQ Should the tag types be added as prefixes
+#' to the column names of the corresponding sub-matrices?
+#' @param sep Separator for the prefixes of the columns names.
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
 #' @return An SMRMon object.
 #' @family Creation functions
 #' @export
-SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrices), itemColumnName = "Item" ) {
+SMRMonCreateFromMatrices <- function( smrObj, matrices, tagTypes = names(matrices), itemColumnName = "Item", imposeSameRowNamesQ = TRUE, addTagTypesToColumnNamesQ = FALSE, sep = ":"  ) {
 
   ## We allow anything to be smrObj .
   ## if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  res <- SMRCreateFromMatrices( matrices = matrices, tagTypes = tagTypes, itemColumnName = itemColumnName )
+  res <- SMRCreateFromMatrices( matrices = matrices,
+                                tagTypes = tagTypes,
+                                itemColumnName = itemColumnName,
+                                imposeSameRowNamesQ = imposeSameRowNamesQ,
+                                addTagTypesToColumnNamesQ = addTagTypesToColumnNamesQ,
+                                sep = sep )
+
   if( is.null(res) ) { return(SMRMonFailureSymbol) }
 
   res$Value <- NULL

@@ -5,7 +5,7 @@
 \title{Make an SMRMon object from a transactions data frame}
 \usage{
 SMRMonCreate(smrObj, data = SMRMonTakeData(smrObj),
-  tagTypes = names(data)[-1], itemColumnName = names(data)[1])
+  tagTypes = names(data)[-1], itemColumnName = names(data)[1], ...)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -15,6 +15,8 @@ SMRMonCreate(smrObj, data = SMRMonTakeData(smrObj),
 \item{tagTypes}{The name of the column containing the categorical tags.}
 
 \item{itemColumnName}{The name of the column containing the unique items.}
+
+\item{...}{Additional parameters for \code{\link{SMRMonCreateFromMatrices}}.}
 }
 \value{
 SMR object.
