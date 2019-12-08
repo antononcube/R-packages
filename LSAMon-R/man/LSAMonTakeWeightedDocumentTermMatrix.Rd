@@ -4,8 +4,10 @@
 \alias{LSAMonTakeWeightedDocumentTermMatrix}
 \title{Take WeightedDocumentTermMatrix.}
 \usage{
-LSAMonTakeWeightedDocumentTermMatrix(lsaObj,
-  functionName = "LSAMonTakeWeightedDocumentTermMatrix")
+LSAMonTakeWeightedDocumentTermMatrix(
+  lsaObj,
+  functionName = "LSAMonTakeWeightedDocumentTermMatrix"
+)
 }
 \arguments{
 \item{lsaObj}{An LSAMon object.}
@@ -19,19 +21,23 @@ A list of functions or \code{LSAMonFailureSymbol}.
 Takes WeightedDocumentTermMatrix from the monad object.
 }
 \seealso{
-Other Set/Take functions: \code{\link{LSAMonSetDocumentTermMatrix}},
-  \code{\link{LSAMonSetDocuments}},
-  \code{\link{LSAMonSetH}}, \code{\link{LSAMonSetTerms}},
-  \code{\link{LSAMonSetTopicColumnPositions}},
-  \code{\link{LSAMonSetTopicNames}},
-  \code{\link{LSAMonSetValue}},
-  \code{\link{LSAMonSetWeightedDocumentTermMatrix}},
-  \code{\link{LSAMonSetW}},
-  \code{\link{LSAMonTakeDocumentTermMatrix}},
-  \code{\link{LSAMonTakeDocuments}},
-  \code{\link{LSAMonTakeH}}, \code{\link{LSAMonTakeTerms}},
-  \code{\link{LSAMonTakeTopicColumnPositions}},
-  \code{\link{LSAMonTakeTopicNames}},
-  \code{\link{LSAMonTakeValue}}, \code{\link{LSAMonTakeW}}
+Other Set/Take functions: 
+\code{\link{LSAMonSetDocumentTermMatrix}()},
+\code{\link{LSAMonSetDocuments}()},
+\code{\link{LSAMonSetH}()},
+\code{\link{LSAMonSetTerms}()},
+\code{\link{LSAMonSetTopicColumnPositions}()},
+\code{\link{LSAMonSetTopicNames}()},
+\code{\link{LSAMonSetValue}()},
+\code{\link{LSAMonSetWeightedDocumentTermMatrix}()},
+\code{\link{LSAMonSetW}()},
+\code{\link{LSAMonTakeDocumentTermMatrix}()},
+\code{\link{LSAMonTakeDocuments}()},
+\code{\link{LSAMonTakeH}()},
+\code{\link{LSAMonTakeTerms}()},
+\code{\link{LSAMonTakeTopicColumnPositions}()},
+\code{\link{LSAMonTakeTopicNames}()},
+\code{\link{LSAMonTakeValue}()},
+\code{\link{LSAMonTakeW}()}
 }
 \concept{Set/Take functions}

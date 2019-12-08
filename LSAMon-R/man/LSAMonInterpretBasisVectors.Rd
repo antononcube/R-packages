@@ -4,8 +4,12 @@
 \alias{LSAMonInterpretBasisVectors}
 \title{Basis vectors interpretation.}
 \usage{
-LSAMonInterpretBasisVectors(lsaObj, basisVectorIndexes = NULL, n = 12,
-  orderBySignificanceQ = TRUE)
+LSAMonInterpretBasisVectors(
+  lsaObj,
+  basisVectorIndexes = NULL,
+  n = 12,
+  orderBySignificanceQ = TRUE
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}

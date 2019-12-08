@@ -4,9 +4,15 @@
 \alias{MostImportantSentences}
 \title{Most important sentences.}
 \usage{
-MostImportantSentences(sentences, nTopSentences = 5,
-  globalTermWeightFunction = "IDF", splitPattern = "\\\\W",
-  stemWordsQ = FALSE, minWordLength = 2, stopWords = NULL)
+MostImportantSentences(
+  sentences,
+  nTopSentences = 5,
+  globalTermWeightFunction = "IDF",
+  splitPattern = "\\\\W",
+  stemWordsQ = FALSE,
+  minWordLength = 2,
+  stopWords = NULL
+)
 }
 \arguments{
 \item{sentences}{A character vector with sentences.}

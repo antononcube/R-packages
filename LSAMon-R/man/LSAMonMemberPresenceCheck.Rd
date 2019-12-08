@@ -4,9 +4,13 @@
 \alias{LSAMonMemberPresenceCheck}
 \title{General member presence check.}
 \usage{
-LSAMonMemberPresenceCheck(lsaObj, memberName,
-  memberPrettyName = memberName, functionName = "",
-  logicalResult = FALSE)
+LSAMonMemberPresenceCheck(
+  lsaObj,
+  memberName,
+  memberPrettyName = memberName,
+  functionName = "",
+  logicalResult = FALSE
+)
 }
 \arguments{
 \item{lsaObj}{An LSAMon object.}

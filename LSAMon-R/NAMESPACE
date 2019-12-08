@@ -2,6 +2,8 @@
 
 export(LSAMonApplyTermWeightFunctions)
 export(LSAMonEchoFunctionValue)
+export(LSAMonEchoStatisticalThesaurus)
+export(LSAMonEchoTopicsTable)
 export(LSAMonEchoValue)
 export(LSAMonExtractStatisticalThesaurus)
 export(LSAMonExtractTopics)

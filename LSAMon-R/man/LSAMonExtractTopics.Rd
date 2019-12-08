@@ -4,10 +4,18 @@
 \alias{LSAMonExtractTopics}
 \title{Topic extraction.}
 \usage{
-LSAMonExtractTopics(lsaObj, numberOfTopics,
-  minNumberOfDocumentsPerTerm = NULL, method = "NNMF",
-  maxSteps = NULL, tolerance = 0.01, profilingQ = TRUE,
-  orderBySignificanceQ = TRUE, automaticTopicNamesQ = TRUE, ...)
+LSAMonExtractTopics(
+  lsaObj,
+  numberOfTopics,
+  minNumberOfDocumentsPerTerm = NULL,
+  method = "NNMF",
+  maxSteps = NULL,
+  tolerance = 0.01,
+  profilingQ = TRUE,
+  orderBySignificanceQ = TRUE,
+  automaticTopicNamesQ = TRUE,
+  ...
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}

@@ -18,20 +18,23 @@ A list of functions or \code{LSAMonFailureSymbol}.
 Takes W from the monad object.
 }
 \seealso{
-Other Set/Take functions: \code{\link{LSAMonSetDocumentTermMatrix}},
-  \code{\link{LSAMonSetDocuments}},
-  \code{\link{LSAMonSetH}}, \code{\link{LSAMonSetTerms}},
-  \code{\link{LSAMonSetTopicColumnPositions}},
-  \code{\link{LSAMonSetTopicNames}},
-  \code{\link{LSAMonSetValue}},
-  \code{\link{LSAMonSetWeightedDocumentTermMatrix}},
-  \code{\link{LSAMonSetW}},
-  \code{\link{LSAMonTakeDocumentTermMatrix}},
-  \code{\link{LSAMonTakeDocuments}},
-  \code{\link{LSAMonTakeH}}, \code{\link{LSAMonTakeTerms}},
-  \code{\link{LSAMonTakeTopicColumnPositions}},
-  \code{\link{LSAMonTakeTopicNames}},
-  \code{\link{LSAMonTakeValue}},
-  \code{\link{LSAMonTakeWeightedDocumentTermMatrix}}
+Other Set/Take functions: 
+\code{\link{LSAMonSetDocumentTermMatrix}()},
+\code{\link{LSAMonSetDocuments}()},
+\code{\link{LSAMonSetH}()},
+\code{\link{LSAMonSetTerms}()},
+\code{\link{LSAMonSetTopicColumnPositions}()},
+\code{\link{LSAMonSetTopicNames}()},
+\code{\link{LSAMonSetValue}()},
+\code{\link{LSAMonSetWeightedDocumentTermMatrix}()},
+\code{\link{LSAMonSetW}()},
+\code{\link{LSAMonTakeDocumentTermMatrix}()},
+\code{\link{LSAMonTakeDocuments}()},
+\code{\link{LSAMonTakeH}()},
+\code{\link{LSAMonTakeTerms}()},
+\code{\link{LSAMonTakeTopicColumnPositions}()},
+\code{\link{LSAMonTakeTopicNames}()},
+\code{\link{LSAMonTakeValue}()},
+\code{\link{LSAMonTakeWeightedDocumentTermMatrix}()}
 }
 \concept{Set/Take functions}

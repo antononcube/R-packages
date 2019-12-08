@@ -4,8 +4,7 @@
 \alias{LSAMonExtractStatisticalThesaurus}
 \title{Statistical thesaurus derivation.}
 \usage{
-LSAMonExtractStatisticalThesaurus(lsaObj, searchWords, n = 12,
-  fixed = TRUE)
+LSAMonExtractStatisticalThesaurus(lsaObj, searchWords, n = 12, fixed = TRUE)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}

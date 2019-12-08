@@ -4,8 +4,11 @@
 \alias{LSAMonTakeNormalizedMatrixProductComponents}
 \title{Take normalized matrix product components.}
 \usage{
-LSAMonTakeNormalizedMatrixProductComponents(lsaObj,
-  normalizeLeftQ = TRUE, orderBySignificanceQ = FALSE)
+LSAMonTakeNormalizedMatrixProductComponents(
+  lsaObj,
+  normalizeLeftQ = TRUE,
+  orderBySignificanceQ = FALSE
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}

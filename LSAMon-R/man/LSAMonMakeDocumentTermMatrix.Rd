@@ -4,8 +4,12 @@
 \alias{LSAMonMakeDocumentTermMatrix}
 \title{Document-term matrix creation.}
 \usage{
-LSAMonMakeDocumentTermMatrix(lsaObj, splitPattern = "\\\\W",
-  stemWordsQ = FALSE, stopWords = NULL)
+LSAMonMakeDocumentTermMatrix(
+  lsaObj,
+  splitPattern = "\\\\W",
+  stemWordsQ = FALSE,
+  stopWords = NULL
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}

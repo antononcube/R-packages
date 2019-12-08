@@ -4,8 +4,12 @@
 \alias{LSAMonRepresentDocumentTagsByTopics}
 \title{Topic representation of document tags.}
 \usage{
-LSAMonRepresentDocumentTagsByTopics(lsaObj, tags = NULL,
-  minThreshold = 0.001, normalizeLeftQ = TRUE)
+LSAMonRepresentDocumentTagsByTopics(
+  lsaObj,
+  tags = NULL,
+  minThreshold = 0.001,
+  normalizeLeftQ = TRUE
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}

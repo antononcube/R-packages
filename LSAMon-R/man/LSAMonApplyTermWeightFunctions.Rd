@@ -4,8 +4,12 @@
 \alias{LSAMonApplyTermWeightFunctions}
 \title{Apply term-weight functions.}
 \usage{
-LSAMonApplyTermWeightFunctions(lsaObj, globalWeightFunction = "IDF",
-  localWeightFunction = "None", normalizerFunction = "Cosine")
+LSAMonApplyTermWeightFunctions(
+  lsaObj,
+  globalWeightFunction = "IDF",
+  localWeightFunction = "None",
+  normalizerFunction = "Cosine"
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}

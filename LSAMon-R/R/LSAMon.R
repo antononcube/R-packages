@@ -1029,6 +1029,48 @@ LSAMonInterpretBasisVectors <- function( lsaObj, basisVectorIndexes = NULL, n = 
 
 
 ##===========================================================
+## Echo topics table
+##===========================================================
+
+#' Echo topics table.
+#' @description Echoes a table of (the calculated) topics.
+#' @param lsaObj A LSAMon object.
+#' @param numberOfTerms Number of terms per topic.
+#' @param wideFormQ Should the topics table be in wide form or not?
+#' @param numberOfTableColumns Number of table columns.
+#' (Dummy argument at this point)
+#' @return A LSAMon object.
+#' @export
+LSAMonEchoTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE, numberOfTableColumns = NA ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  lsaObj <-
+    lsaObj %>%
+    LSAMonInterpretBasisVectors( n = numberOfTerms )
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  dfTopics <- lsaObj %>% LSAMonTakeValue
+
+  if( wideFormQ ) {
+
+    dfTopicsWideForm <-
+      reshape2::dcast( data = dfTopics, formula = TermRank ~ TopicName, value.var = "Term" )
+
+    print(dfTopicsWideForm)
+
+  } else {
+
+    print(dfTopics)
+
+  }
+
+  lsaObj
+}
+
+
+##===========================================================
 ## Statistical thesauri
 ##===========================================================
 
@@ -1073,6 +1115,52 @@ LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixe
 
 
 ##===========================================================
+## Echo statistical thesaurus table
+##===========================================================
+
+#' Echo statistical thesaurus table.
+#' @description Echoes a table of statistical thesaurus entries for specified words.
+#' @param lsaObj A LSAMon object.
+#' @param words Words to find thesaurus entries for.
+#' @param numberOfNearestNeighbors Number of nearest neighbors per specified word.
+#' @param wideFormQ Should the thesaurus table be in wide form or not?
+#' @return A LSAMon object.
+#' @export
+LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  lsaObj <-
+    lsaObj %>%
+    LSAMonExtractStatisticalThesaurus( searchWords = sort(words) )
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  nnsDF <- dplyr::bind_rows( lsaObj %>% LSAMonTakeValue )
+
+  if( wideFormQ ) {
+
+    nnsDF2 <-
+      nnsDF %>%
+      dplyr::group_by( SearchTerm ) %>%
+      dplyr::arrange( Word.Distance ) %>%
+      dplyr::mutate( Rank = dplyr::row_number()) %>%
+      dplyr::select( SearchTerm, Rank, Word.Word )
+    reshape2::dcast( formula = SearchTerm ~ Rank, data = nnsDF2, value.var = "Word.Word" )
+
+    print(nnsDF2)
+
+  } else {
+
+    print(nnsDF)
+
+  }
+
+  lsaObj
+}
+
+
+##===========================================================
 ## Represent by terms
 ##===========================================================
 
@@ -1103,6 +1191,11 @@ LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = T
   } else if( "dgCMatrix" %in% class(query) ) {
 
     qmat <- SparseMatrixRecommender::SMRImposeColumnIDs( colIDs = colnames(lsaObj %>% LSAMonTakeDocumentTermMatrix), smat = query )
+
+    if( is.null(qmat) ) {
+      warning( "The obtained query matrix is NULL.", call. = TRUE )
+      return(LSAMonFailureSymbol)
+    }
 
     if( applyTermWeightFunctionsQ ) {
 
