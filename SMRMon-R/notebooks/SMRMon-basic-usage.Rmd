@@ -23,9 +23,13 @@ Simple creation:
 ```{r}
 smrObj <-
   SMRMonUnit( data = dfTitanic ) %>%
-  SMRMonCreate( itemColumnName = "id")
+  SMRMonCreate( itemColumnName = "id", addTagTypesToColumnNamesQ = FALSE )
 ```
 
+
+```{r}
+colnames(smrObj %>% SMRMonTakeM)
+```
 
 # Recommendations by history
 
@@ -115,5 +119,23 @@ purrr::map_df( ids, function(x) {
     res <- smrObj %>% SMRMonRecommend( x ) %>% SMRMonTakeValue
 
   })
+```
+
+# Turn into an incidence recommender
+
+Convert the recommendation matrix in incidence (0-1) matrix:
+
+```{r}
+smrObj3 <- 
+  smrObj2 %>% 
+  SMRMonApplyTermWeightFunctions( globalWeightFunction = "IDF", localWeightFunction = "None", normalizerFunction = "None" ) 
+smrObj3 %>% 
+  SMRMonTakeM
+```
+
+```{r}
+smrObj3 %>% 
+  SMRMonApplyTermWeightFunctions( globalWeightFunction = "None", localWeightFunction = "Binary", normalizerFunction = "None" ) %>% 
+  SMRMonTakeM
 ```
 

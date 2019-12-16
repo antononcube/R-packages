@@ -4,8 +4,12 @@
 \alias{SMRCreate}
 \title{Creation of a SMR object from a transactions data frame}
 \usage{
-SMRCreate(dataRows, tagTypes = names(dataRows)[-1],
-  itemColumnName = names(dataRows)[1], ...)
+SMRCreate(
+  dataRows,
+  tagTypes = names(dataRows)[-1],
+  itemColumnName = names(dataRows)[1],
+  ...
+)
 }
 \arguments{
 \item{dataRows}{The transactions data frame.}
@@ -26,10 +30,11 @@ Creates a Sparse Matrix Recommender object from transactions data and a list of 
 An S3 object is returned that is list with class attribute set to "SMR".
 }
 \seealso{
-Other Creation functions: \code{\link{SMRCreateFromMatrices}},
-  \code{\link{SMRCreateFromSpecification}},
-  \code{\link{SMRCreateItemTagMatrix}},
-  \code{\link{SMREmptySpecification}},
-  \code{\link{TSCorrSMRCreate}}
+Other Creation functions: 
+\code{\link{SMRCreateFromMatrices}()},
+\code{\link{SMRCreateFromSpecification}()},
+\code{\link{SMRCreateItemTagMatrix}()},
+\code{\link{SMREmptySpecification}()},
+\code{\link{TSCorrSMRCreate}()}
 }
 \concept{Creation functions}

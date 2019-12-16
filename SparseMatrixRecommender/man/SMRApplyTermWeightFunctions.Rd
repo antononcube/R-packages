@@ -4,8 +4,12 @@
 \alias{SMRApplyTermWeightFunctions}
 \title{Document-term matrix term re-weighting.}
 \usage{
-SMRApplyTermWeightFunctions(docTermMat, globalWeightFunction = NULL,
-  localWeightFunction = NULL, normalizerFunction = NULL)
+SMRApplyTermWeightFunctions(
+  docTermMat,
+  globalWeightFunction = NULL,
+  localWeightFunction = NULL,
+  normalizerFunction = NULL
+)
 }
 \arguments{
 \item{docTermMat}{A document-term sparse matrix (dgCMatrix).}
@@ -30,9 +34,10 @@ The implemented local weight function ID's are "Binary", "TermFrequency", "Log",
 The implemented normalization function ID's are "Cosine", "Sum", "None".
 }
 \seealso{
-Other Document-term matrix functions: \code{\link{SMRGlobalTermFunctionWeights}},
-  \code{\link{SMRMakeColumnStochastic}},
-  \code{\link{SMRMakeDocumentTermMatrix}},
-  \code{\link{SMRToBagOfWords}}
+Other Document-term matrix functions: 
+\code{\link{SMRGlobalTermFunctionWeights}()},
+\code{\link{SMRMakeColumnStochastic}()},
+\code{\link{SMRMakeDocumentTermMatrix}()},
+\code{\link{SMRToBagOfWords}()}
 }
 \concept{Document-term matrix functions}

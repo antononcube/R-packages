@@ -4,8 +4,7 @@
 \alias{SMRMakeColumnValueIncidenceMatrix}
 \title{Converts an integer sparse matrix to incidence matrix.}
 \usage{
-SMRMakeColumnValueIncidenceMatrix(mat, rowNamesQ = TRUE,
-  colNamesQ = TRUE)
+SMRMakeColumnValueIncidenceMatrix(mat, rowNamesQ = TRUE, colNamesQ = TRUE)
 }
 \arguments{
 \item{mat}{an integer matrix to be converted to column value incidence matrix.}

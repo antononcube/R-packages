@@ -20,9 +20,10 @@ A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
 Recommend items based on a sparse matrix and a specified profile.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRRecommendationsByProfileVector}},
-  \code{\link{SMRRecommendationsByProfile}},
-  \code{\link{SMRRecommendationsDF}},
-  \code{\link{SMRRecommendations}}
+Other Recommendations computation functions: 
+\code{\link{SMRRecommendationsByProfileVector}()},
+\code{\link{SMRRecommendationsByProfile}()},
+\code{\link{SMRRecommendationsDF}()},
+\code{\link{SMRRecommendations}()}
 }
 \concept{Recommendations computation functions}

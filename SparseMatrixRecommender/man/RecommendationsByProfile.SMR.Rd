@@ -4,8 +4,7 @@
 \alias{RecommendationsByProfile.SMR}
 \title{Specialization of \code{RecommendationsByProfile} for SMR objects}
 \usage{
-\method{RecommendationsByProfile}{SMR}(x, profileTags, profileTagScores,
-  nrecs, ...)
+\method{RecommendationsByProfile}{SMR}(x, profileTags, profileTagScores, nrecs, ...)
 }
 \arguments{
 \item{x}{A recommender object.}

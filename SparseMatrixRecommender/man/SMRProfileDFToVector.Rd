@@ -4,8 +4,7 @@
 \alias{SMRProfileDFToVector}
 \title{Conversion of a profile data frame to a vector}
 \usage{
-SMRProfileDFToVector(smr, profileDF, tagType = NULL,
-  uniqueColumns = TRUE)
+SMRProfileDFToVector(smr, profileDF, tagType = NULL, uniqueColumns = TRUE)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}

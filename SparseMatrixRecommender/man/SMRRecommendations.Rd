@@ -4,8 +4,13 @@
 \alias{SMRRecommendations}
 \title{Compute recommendations}
 \usage{
-SMRRecommendations(smr, userHistoryItems, userRatings, nrecs,
-  removeHistory = TRUE)
+SMRRecommendations(
+  smr,
+  userHistoryItems,
+  userRatings,
+  nrecs,
+  removeHistory = TRUE
+)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
@@ -25,9 +30,10 @@ A data frame with columns "Score", "Index", \code{smr$ItemColumnName}.
 Recommend items based on a sparse matrix and user history of consumption.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRRecommendationsByProfileDF}},
-  \code{\link{SMRRecommendationsByProfileVector}},
-  \code{\link{SMRRecommendationsByProfile}},
-  \code{\link{SMRRecommendationsDF}}
+Other Recommendations computation functions: 
+\code{\link{SMRRecommendationsByProfileDF}()},
+\code{\link{SMRRecommendationsByProfileVector}()},
+\code{\link{SMRRecommendationsByProfile}()},
+\code{\link{SMRRecommendationsDF}()}
 }
 \concept{Recommendations computation functions}

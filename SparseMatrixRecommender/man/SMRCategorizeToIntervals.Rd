@@ -4,8 +4,12 @@
 \alias{SMRCategorizeToIntervals}
 \title{Categorize to intervals.}
 \usage{
-SMRCategorizeToIntervals(vec, breaks = NULL, probs = seq(0, 1, 0.1),
-  intervalNamesQ = FALSE)
+SMRCategorizeToIntervals(
+  vec,
+  breaks = NULL,
+  probs = seq(0, 1, 0.1),
+  intervalNamesQ = FALSE
+)
 }
 \arguments{
 \item{vec}{A numerical vector to be categorized.}

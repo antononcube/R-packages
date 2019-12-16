@@ -4,9 +4,16 @@
 \alias{TSPSRCorrelationNNs}
 \title{Time series recommendations finding}
 \usage{
-TSPSRCorrelationNNs(timeSeriesMat, smr, itemIDtoNameRules,
-  searchRowID = NULL, searchVector = NULL, nrecs = 12,
-  smr.nrecs = 2000, method = "pearson")
+TSPSRCorrelationNNs(
+  timeSeriesMat,
+  smr,
+  itemIDtoNameRules,
+  searchRowID = NULL,
+  searchVector = NULL,
+  nrecs = 12,
+  smr.nrecs = 2000,
+  method = "pearson"
+)
 }
 \arguments{
 \item{timeSeriesMat}{A matrix with time series.}

@@ -20,9 +20,11 @@ a sparse matrix recommender.
 See \code{\link{SMRCreateFromSpecification}}.
 }
 \seealso{
-Other Creation functions: \code{\link{SMRCreateFromMatrices}},
-  \code{\link{SMRCreateFromSpecification}},
-  \code{\link{SMRCreateItemTagMatrix}},
-  \code{\link{SMRCreate}}, \code{\link{TSCorrSMRCreate}}
+Other Creation functions: 
+\code{\link{SMRCreateFromMatrices}()},
+\code{\link{SMRCreateFromSpecification}()},
+\code{\link{SMRCreateItemTagMatrix}()},
+\code{\link{SMRCreate}()},
+\code{\link{TSCorrSMRCreate}()}
 }
 \concept{Creation functions}

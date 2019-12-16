@@ -4,9 +4,14 @@
 \alias{SMRToBagOfWords}
 \title{Conversion to bag of words.}
 \usage{
-SMRToBagOfWords(text, split = "\\\\W",
-  punctuationPattern = "[[:punct:]]", stopWords = NULL,
-  minWordLength = 2, patternToIgnore = NULL)
+SMRToBagOfWords(
+  text,
+  split = "\\\\W",
+  punctuationPattern = "[[:punct:]]",
+  stopWords = NULL,
+  minWordLength = 2,
+  patternToIgnore = NULL
+)
 }
 \arguments{
 \item{text}{The text to be converted.}
@@ -21,9 +26,10 @@ SMRToBagOfWords(text, split = "\\\\W",
 Converts a string into a bag of words.
 }
 \seealso{
-Other Document-term matrix functions: \code{\link{SMRApplyTermWeightFunctions}},
-  \code{\link{SMRGlobalTermFunctionWeights}},
-  \code{\link{SMRMakeColumnStochastic}},
-  \code{\link{SMRMakeDocumentTermMatrix}}
+Other Document-term matrix functions: 
+\code{\link{SMRApplyTermWeightFunctions}()},
+\code{\link{SMRGlobalTermFunctionWeights}()},
+\code{\link{SMRMakeColumnStochastic}()},
+\code{\link{SMRMakeDocumentTermMatrix}()}
 }
 \concept{Document-term matrix functions}

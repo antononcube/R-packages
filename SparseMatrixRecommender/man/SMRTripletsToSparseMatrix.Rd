@@ -16,8 +16,9 @@ A sparse matrix.
 Turns a data frame of three columns (triplets) into a sparse matrix.
 }
 \seealso{
-Other Sparse matrix transformation functions: \code{\link{SMRImposeColumnIDs}},
-  \code{\link{SMRImposeRowIDs}},
-  \code{\link{SMRSparseMatrixToTriplets}}
+Other Sparse matrix transformation functions: 
+\code{\link{SMRImposeColumnIDs}()},
+\code{\link{SMRImposeRowIDs}()},
+\code{\link{SMRSparseMatrixToTriplets}()}
 }
 \concept{Sparse matrix transformation functions}

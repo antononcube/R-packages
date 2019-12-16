@@ -25,7 +25,8 @@ If \code{smrTo} does not have a certain tag type of \code{smrFrom},
 then a corresponding empty sub-matrix is created.
 }
 \seealso{
-Other SMR modification: \code{\link{SMRRemoveTagTypes}},
-  \code{\link{SMRRowBind}}
+Other SMR modification: 
+\code{\link{SMRRemoveTagTypes}()},
+\code{\link{SMRRowBind}()}
 }
 \concept{SMR modification}

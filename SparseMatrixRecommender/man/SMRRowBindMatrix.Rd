@@ -18,7 +18,8 @@ A sparse matrix recommender.
 Row-binds the matrix of a sparse matrix recommender with a sparse matrix.
 }
 \seealso{
-Other SMR modification functions: \code{\link{SMRAnnexSubMatrix}},
-  \code{\link{SMRJoin}}
+Other SMR modification functions: 
+\code{\link{SMRAnnexSubMatrix}()},
+\code{\link{SMRJoin}()}
 }
 \concept{SMR modification functions}

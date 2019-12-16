@@ -4,9 +4,14 @@
 \alias{SMRCreateFromMatrices}
 \title{Creation of a SMR object with a list of matrices}
 \usage{
-SMRCreateFromMatrices(matrices, tagTypes = names(matrices),
-  itemColumnName = "Item", imposeSameRowNamesQ = TRUE,
-  addTagTypesToColumnNamesQ = FALSE, sep = ":")
+SMRCreateFromMatrices(
+  matrices,
+  tagTypes = names(matrices),
+  itemColumnName = "Item",
+  imposeSameRowNamesQ = TRUE,
+  addTagTypesToColumnNamesQ = FALSE,
+  sep = ":"
+)
 }
 \arguments{
 \item{matrices}{A list of matrices to be spliced into a metadata matrix.}
@@ -32,10 +37,11 @@ Creates a Sparse Matrix Recommender object from a list of matrices and a corresp
 An S3 object is returned that is list with class attribute set to "SMR".
 }
 \seealso{
-Other Creation functions: \code{\link{SMRCreateFromSpecification}},
-  \code{\link{SMRCreateItemTagMatrix}},
-  \code{\link{SMRCreate}},
-  \code{\link{SMREmptySpecification}},
-  \code{\link{TSCorrSMRCreate}}
+Other Creation functions: 
+\code{\link{SMRCreateFromSpecification}()},
+\code{\link{SMRCreateItemTagMatrix}()},
+\code{\link{SMRCreate}()},
+\code{\link{SMREmptySpecification}()},
+\code{\link{TSCorrSMRCreate}()}
 }
 \concept{Creation functions}

@@ -26,7 +26,8 @@ The sub-matrices corresponding to each tag type are row-bound
 separately.
 }
 \seealso{
-Other SMR modification: \code{\link{SMRRemoveTagTypes}},
-  \code{\link{SMRSameTags}}
+Other SMR modification: 
+\code{\link{SMRRemoveTagTypes}()},
+\code{\link{SMRSameTags}()}
 }
 \concept{SMR modification}

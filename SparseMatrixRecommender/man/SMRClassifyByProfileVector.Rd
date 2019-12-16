@@ -4,9 +4,16 @@
 \alias{SMRClassifyByProfileVector}
 \title{Classification with a profile vector}
 \usage{
-SMRClassifyByProfileVector(smr, tagType, profileVec, nTopNNs,
-  voting = FALSE, dropZeroScoredLabels = TRUE,
-  maxNumberOfLabels = NULL, normalizeQ = TRUE)
+SMRClassifyByProfileVector(
+  smr,
+  tagType,
+  profileVec,
+  nTopNNs,
+  voting = FALSE,
+  dropZeroScoredLabels = TRUE,
+  maxNumberOfLabels = NULL,
+  normalizeQ = TRUE
+)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}

@@ -21,9 +21,10 @@ Computes the global weights with a function specification.
 The implemented global weight function ID's are "IDF", "GFIDF", "Normal", "Binary", "Entropy", "Sum", "None".
 }
 \seealso{
-Other Document-term matrix functions: \code{\link{SMRApplyTermWeightFunctions}},
-  \code{\link{SMRMakeColumnStochastic}},
-  \code{\link{SMRMakeDocumentTermMatrix}},
-  \code{\link{SMRToBagOfWords}}
+Other Document-term matrix functions: 
+\code{\link{SMRApplyTermWeightFunctions}()},
+\code{\link{SMRMakeColumnStochastic}()},
+\code{\link{SMRMakeDocumentTermMatrix}()},
+\code{\link{SMRToBagOfWords}()}
 }
 \concept{Document-term matrix functions}

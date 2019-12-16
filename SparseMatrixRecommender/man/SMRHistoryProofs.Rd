@@ -22,6 +22,7 @@ A data frame with columns names "Score", <some-item-id>.
 Find the items of the history that are the closest to a recommendation.
 }
 \seealso{
-Other Proof functions: \code{\link{SMRMetadataProofs}}
+Other Proof functions: 
+\code{\link{SMRMetadataProofs}()}
 }
 \concept{Proof functions}

@@ -29,10 +29,11 @@ The NA values of "ValueColumnName" are replaced with "None".
 See \code{\link{SMREmptySpecification}}.
 }
 \seealso{
-Other Creation functions: \code{\link{SMRCreateFromMatrices}},
-  \code{\link{SMRCreateItemTagMatrix}},
-  \code{\link{SMRCreate}},
-  \code{\link{SMREmptySpecification}},
-  \code{\link{TSCorrSMRCreate}}
+Other Creation functions: 
+\code{\link{SMRCreateFromMatrices}()},
+\code{\link{SMRCreateItemTagMatrix}()},
+\code{\link{SMRCreate}()},
+\code{\link{SMREmptySpecification}()},
+\code{\link{TSCorrSMRCreate}()}
 }
 \concept{Creation functions}

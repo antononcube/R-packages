@@ -4,8 +4,14 @@
 \alias{Recommendations.TSCorrSMR}
 \title{Time series recommendations calculation}
 \usage{
-\method{Recommendations}{TSCorrSMR}(x, historyItems, historyRatings, nrecs,
-  removeHistory = TRUE, ...)
+\method{Recommendations}{TSCorrSMR}(
+  x,
+  historyItems,
+  historyRatings,
+  nrecs,
+  removeHistory = TRUE,
+  ...
+)
 }
 \value{
 A data frame with columns "Score", "Item".

@@ -4,8 +4,7 @@
 \alias{ClassifyByProfileVector.TSCorrSMR}
 \title{Classification with time series recommender}
 \usage{
-\method{ClassifyByProfileVector}{TSCorrSMR}(x, profileVec, nTopNNs,
-  voting = FALSE)
+\method{ClassifyByProfileVector}{TSCorrSMR}(x, profileVec, nTopNNs, voting = FALSE)
 }
 \arguments{
 \item{x}{A time series recommender object ("TSCorrSMR").}

@@ -4,8 +4,7 @@
 \alias{ClassifyByProfileVector.SMR}
 \title{Classification using a profile vector}
 \usage{
-\method{ClassifyByProfileVector}{SMR}(x, tagType, profileVec, nTopNNs,
-  voting = FALSE)
+\method{ClassifyByProfileVector}{SMR}(x, tagType, profileVec, nTopNNs, voting = FALSE)
 }
 \arguments{
 \item{x}{A recommender object.}

@@ -16,9 +16,10 @@ Sparse matrix
 Makes the matrix argument a column stochastic matrix (the sum of each column is 1).
 }
 \seealso{
-Other Document-term matrix functions: \code{\link{SMRApplyTermWeightFunctions}},
-  \code{\link{SMRGlobalTermFunctionWeights}},
-  \code{\link{SMRMakeDocumentTermMatrix}},
-  \code{\link{SMRToBagOfWords}}
+Other Document-term matrix functions: 
+\code{\link{SMRApplyTermWeightFunctions}()},
+\code{\link{SMRGlobalTermFunctionWeights}()},
+\code{\link{SMRMakeDocumentTermMatrix}()},
+\code{\link{SMRToBagOfWords}()}
 }
 \concept{Document-term matrix functions}

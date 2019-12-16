@@ -9,8 +9,6 @@ SMRTagType(smr, tag)
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
-\item{tag}{A tag (string) for which we want to find the tag type.}
-
 \item{tag}{A type ID (string) or NULL.}
 }
 \description{

@@ -18,7 +18,8 @@ Sparse matrix recommender.
 Creates an SMR object from a given SMR object by removing specified tag types.
 }
 \seealso{
-Other SMR modification: \code{\link{SMRRowBind}},
-  \code{\link{SMRSameTags}}
+Other SMR modification: 
+\code{\link{SMRRowBind}()},
+\code{\link{SMRSameTags}()}
 }
 \concept{SMR modification}

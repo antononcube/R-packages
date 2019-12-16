@@ -24,7 +24,7 @@ the maiden voyage of the RMS Titanic in 1912 (the ships crew are not included),
 along with the passengers age, sex and class (which serves as a proxy for economic status).
 }
 \details{
-Each row represents one person.
+Each row represents one person. 
 
 The columns describe different attributes about the person. 
 The first column "id" has simple ID's derived from ordering the data (in some way.)   

@@ -4,8 +4,7 @@
 \alias{ConsumptionProfile.SMR}
 \title{Calculation of a consumption profile with an SMR object}
 \usage{
-\method{ConsumptionProfile}{SMR}(x, historyItems, historyRatings,
-  allColumns = FALSE, ...)
+\method{ConsumptionProfile}{SMR}(x, historyItems, historyRatings, allColumns = FALSE, ...)
 }
 \arguments{
 \item{x}{a recommender object}

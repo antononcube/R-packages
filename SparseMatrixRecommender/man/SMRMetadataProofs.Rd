@@ -4,8 +4,13 @@
 \alias{SMRMetadataProofs}
 \title{Metadata proofs}
 \usage{
-SMRMetadataProofs(smr, toBeLovedItem, profile, normalizeScores = TRUE,
-  style = "intersection")
+SMRMetadataProofs(
+  smr,
+  toBeLovedItem,
+  profile,
+  normalizeScores = TRUE,
+  style = "intersection"
+)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
@@ -25,6 +30,7 @@ A data frame with columns names "Score", "Index", "Tag".
 Find the metadata tags that would explain or justify the recommendations.
 }
 \seealso{
-Other Proof functions: \code{\link{SMRHistoryProofs}}
+Other Proof functions: 
+\code{\link{SMRHistoryProofs}()}
 }
 \concept{Proof functions}

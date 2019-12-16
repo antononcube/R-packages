@@ -16,8 +16,9 @@ A data frame of triplets.
 Converts a sparse matrix into a data frame triplets.
 }
 \seealso{
-Other Sparse matrix transformation functions: \code{\link{SMRImposeColumnIDs}},
-  \code{\link{SMRImposeRowIDs}},
-  \code{\link{SMRTripletsToSparseMatrix}}
+Other Sparse matrix transformation functions: 
+\code{\link{SMRImposeColumnIDs}()},
+\code{\link{SMRImposeRowIDs}()},
+\code{\link{SMRTripletsToSparseMatrix}()}
 }
 \concept{Sparse matrix transformation functions}

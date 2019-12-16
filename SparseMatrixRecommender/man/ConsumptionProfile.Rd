@@ -4,8 +4,7 @@
 \alias{ConsumptionProfile}
 \title{Calculation of a consumption profile}
 \usage{
-ConsumptionProfile(x, historyItems, historyRatings, allColumns = FALSE,
-  ...)
+ConsumptionProfile(x, historyItems, historyRatings, allColumns = FALSE, ...)
 }
 \arguments{
 \item{x}{a recommender object}

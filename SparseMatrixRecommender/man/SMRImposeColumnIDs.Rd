@@ -18,8 +18,9 @@ Matrix.
 Makes sure that the columns of a matrix are in 1-to-1 correspondence to an array of columns ID's.
 }
 \seealso{
-Other Sparse matrix transformation functions: \code{\link{SMRImposeRowIDs}},
-  \code{\link{SMRSparseMatrixToTriplets}},
-  \code{\link{SMRTripletsToSparseMatrix}}
+Other Sparse matrix transformation functions: 
+\code{\link{SMRImposeRowIDs}()},
+\code{\link{SMRSparseMatrixToTriplets}()},
+\code{\link{SMRTripletsToSparseMatrix}()}
 }
 \concept{Sparse matrix transformation functions}

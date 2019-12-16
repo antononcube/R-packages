@@ -4,8 +4,7 @@
 \alias{SMRMatricesToWideDF}
 \title{Sub-matrices to data frame wide form conversion}
 \usage{
-SMRMatricesToWideDF(smr, tagTypes = NULL, sep = ", ",
-  .progress = "none")
+SMRMatricesToWideDF(smr, tagTypes = NULL, sep = ", ", .progress = "none")
 }
 \arguments{
 \item{smr}{A sparse matrix object.}

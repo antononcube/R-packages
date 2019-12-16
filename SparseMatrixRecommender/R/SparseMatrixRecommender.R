@@ -153,7 +153,7 @@ SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName =
     SMRCreateItemTagMatrix(dataRows, tagType=x, itemColumnName=itemColumnName)
   })
   
-  SMRCreateFromMatrices(matrices, tagTypes, itemColumnName, imposeSameRowNamesQ = TRUE, ... )
+  SMRCreateFromMatrices(matrices, tagTypes, itemColumnName, ... )
 }
 
 #' Creation of a SMR object with a list of matrices
@@ -1575,6 +1575,58 @@ SMRMatricesToWideDF <- function( smr, tagTypes = NULL, sep = ", ", .progress = "
                              value.var = "Value", fun.aggregate = function(x) paste(x, collapse = sep ) )
 }
 
+
+##===========================================================
+## Recommender export
+##===========================================================
+
+#' Exports recommender to a directory
+#' @description Exports the recommender to specified directory.
+#' @param smr A sparse matrix recommender.
+#' @param directoryPath A path to a directorsy.
+#' @param dataNameInfix A string designating the exported SMR object.
+#' @details The sparse matrix recommender \code{smr} is
+#' exported using \code{\link{writeMM}}.
+#' @return A logical.
+#' @export
+SMRExportToDirectory <- function( smr, directoryPath, dataNameInfix = "" ) {
+
+  if( !is.character(directoryPath) ) {
+    stop( "The argument directoryPath is expected to be a string.", call. = TRUE )
+  }
+  
+  if( !file.exists(directoryPath) ) {
+    stop( "The argument directoryPath is expected to be a valid directory path.", call. = TRUE )
+  }
+  
+  if( !is.character(dataNameInfix) ) {
+    stop( "The argument dataNameInfix is expected to be a string.", call. = TRUE )
+  }
+  
+  ## Ranges 
+  write.table( smr$TagTypeRanges, 
+               file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".tsv", sep="") ), 
+               sep="\t" )
+  
+  write.csv( smr$TagTypeRanges, 
+             file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".csv",sep="") ) ) 
+
+  ## Sparse matrices row names and column names
+  write.csv(
+    data.frame( ColumnName = colnames(smr$M01), stringsAsFactors = FALSE ), 
+    file.path(directoryPath, paste("SMR-colnames-from-",dataNameInfix,".csv",sep="") )
+  )
+  
+  write.csv(
+    data.frame( RowName = rownames(smr$M01), stringsAsFactors = FALSE ), 
+    file.path(directoryPath, paste("SMR-rownames-from-",dataNameInfix,".csv",sep="") )
+  )
+  
+  ## Sparse matrix
+  Matrix::writeMM( smr$M01, file.path(directoryPath, paste("SMR-M01-from-",dataNameInfix,".mm",sep="" ) ) )
+  
+  return(TRUE)
+}
 
 
 ##===========================================================

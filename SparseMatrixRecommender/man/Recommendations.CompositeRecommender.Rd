@@ -4,9 +4,16 @@
 \alias{Recommendations.CompositeRecommender}
 \title{Calculate recommendations with a composite recommender}
 \usage{
-\method{Recommendations}{CompositeRecommender}(x, historyItems,
-  historyRatings, nrecs, removeHistory = TRUE,
-  normalizationType = NULL, mergeFunction = NULL, ...)
+\method{Recommendations}{CompositeRecommender}(
+  x,
+  historyItems,
+  historyRatings,
+  nrecs,
+  removeHistory = TRUE,
+  normalizationType = NULL,
+  mergeFunction = NULL,
+  ...
+)
 }
 \arguments{
 \item{x}{A recommender object.}

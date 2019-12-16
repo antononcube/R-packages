@@ -4,9 +4,15 @@
 \alias{TSCorrSMRCreate}
 \title{Time series recommender creation}
 \usage{
-TSCorrSMRCreate(timeSeriesMatrix, smr, classLabelMatrix = NULL,
-  correlationMethod = "pearson", smrNRecs = 2000,
-  itemIDtoNameRules = NULL, tibNameToTIBRules = NULL)
+TSCorrSMRCreate(
+  timeSeriesMatrix,
+  smr,
+  classLabelMatrix = NULL,
+  correlationMethod = "pearson",
+  smrNRecs = 2000,
+  itemIDtoNameRules = NULL,
+  tibNameToTIBRules = NULL
+)
 }
 \arguments{
 \item{timeSeriesMatrix}{A time series matrix.}
@@ -34,10 +40,11 @@ A list (an S3 object).
 Time series recommender creation
 }
 \seealso{
-Other Creation functions: \code{\link{SMRCreateFromMatrices}},
-  \code{\link{SMRCreateFromSpecification}},
-  \code{\link{SMRCreateItemTagMatrix}},
-  \code{\link{SMRCreate}},
-  \code{\link{SMREmptySpecification}}
+Other Creation functions: 
+\code{\link{SMRCreateFromMatrices}()},
+\code{\link{SMRCreateFromSpecification}()},
+\code{\link{SMRCreateItemTagMatrix}()},
+\code{\link{SMRCreate}()},
+\code{\link{SMREmptySpecification}()}
 }
 \concept{Creation functions}

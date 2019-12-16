@@ -20,7 +20,8 @@ Sparse matrix recommender.
 Annex a sub-matrix to the metadata matrix of an SMR object.
 }
 \seealso{
-Other SMR modification functions: \code{\link{SMRJoin}},
-  \code{\link{SMRRowBindMatrix}}
+Other SMR modification functions: 
+\code{\link{SMRJoin}()},
+\code{\link{SMRRowBindMatrix}()}
 }
 \concept{SMR modification functions}

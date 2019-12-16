@@ -22,10 +22,11 @@ A sparse matrix or a matrix.
 Convert to contingency matrix from item consumption "transactions" (e.g. instances of movie watching).
 }
 \seealso{
-Other Creation functions: \code{\link{SMRCreateFromMatrices}},
-  \code{\link{SMRCreateFromSpecification}},
-  \code{\link{SMRCreate}},
-  \code{\link{SMREmptySpecification}},
-  \code{\link{TSCorrSMRCreate}}
+Other Creation functions: 
+\code{\link{SMRCreateFromMatrices}()},
+\code{\link{SMRCreateFromSpecification}()},
+\code{\link{SMRCreate}()},
+\code{\link{SMREmptySpecification}()},
+\code{\link{TSCorrSMRCreate}()}
 }
 \concept{Creation functions}

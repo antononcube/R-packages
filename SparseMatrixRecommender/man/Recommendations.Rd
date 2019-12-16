@@ -4,8 +4,14 @@
 \alias{Recommendations}
 \title{Compute recommendations}
 \usage{
-Recommendations(x, historyItems, historyRatings, nrecs,
-  removeHistory = TRUE, ...)
+Recommendations(
+  x,
+  historyItems,
+  historyRatings,
+  nrecs,
+  removeHistory = TRUE,
+  ...
+)
 }
 \arguments{
 \item{x}{A recommender object.}
@@ -25,6 +31,7 @@ A data frame with the columns c("Score", "Item").
 The generic function for calculating recommendations by history.
 }
 \seealso{
-Other Recommendations calculation functions: \code{\link{Recommendations.SMR}}
+Other Recommendations calculation functions: 
+\code{\link{Recommendations.SMR}()}
 }
 \concept{Recommendations calculation functions}

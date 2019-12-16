@@ -22,9 +22,10 @@ A data frame with columns "Score", "Index", \code{smr$ItemColumnName}.
 Recommend items based on a sparse matrix recommender and a data frame user history of consumption.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRRecommendationsByProfileDF}},
-  \code{\link{SMRRecommendationsByProfileVector}},
-  \code{\link{SMRRecommendationsByProfile}},
-  \code{\link{SMRRecommendations}}
+Other Recommendations computation functions: 
+\code{\link{SMRRecommendationsByProfileDF}()},
+\code{\link{SMRRecommendationsByProfileVector}()},
+\code{\link{SMRRecommendationsByProfile}()},
+\code{\link{SMRRecommendations}()}
 }
 \concept{Recommendations computation functions}

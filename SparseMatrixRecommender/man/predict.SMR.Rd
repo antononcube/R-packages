@@ -4,8 +4,7 @@
 \alias{predict.SMR}
 \title{Classification with a sparse matrix recommender object}
 \usage{
-\method{predict}{SMR}(smr, data, type = "decision", normalizedQ = TRUE,
-  ...)
+\method{predict}{SMR}(smr, data, type = "decision", normalizedQ = TRUE, ...)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}

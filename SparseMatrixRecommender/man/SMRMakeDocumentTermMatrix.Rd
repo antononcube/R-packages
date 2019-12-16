@@ -4,8 +4,13 @@
 \alias{SMRMakeDocumentTermMatrix}
 \title{Create document-term matrix from a document collection.}
 \usage{
-SMRMakeDocumentTermMatrix(documents, ids = NULL, split = "\\\\W",
-  applyWordStemming = TRUE, minWordLength = 2)
+SMRMakeDocumentTermMatrix(
+  documents,
+  ids = NULL,
+  split = "\\\\W",
+  applyWordStemming = TRUE,
+  minWordLength = 2
+)
 }
 \arguments{
 \item{documents}{A list of documents.}
@@ -26,9 +31,10 @@ Creates a document-term matrix from a list of documents and list of ID's
 It would be nice if this function uses SMRToBagOfWords function defined above.
 }
 \seealso{
-Other Document-term matrix functions: \code{\link{SMRApplyTermWeightFunctions}},
-  \code{\link{SMRGlobalTermFunctionWeights}},
-  \code{\link{SMRMakeColumnStochastic}},
-  \code{\link{SMRToBagOfWords}}
+Other Document-term matrix functions: 
+\code{\link{SMRApplyTermWeightFunctions}()},
+\code{\link{SMRGlobalTermFunctionWeights}()},
+\code{\link{SMRMakeColumnStochastic}()},
+\code{\link{SMRToBagOfWords}()}
 }
 \concept{Document-term matrix functions}

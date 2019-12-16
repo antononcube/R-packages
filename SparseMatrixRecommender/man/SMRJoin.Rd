@@ -4,8 +4,13 @@
 \alias{SMRJoin}
 \title{Join two sparse matrix recommender objects}
 \usage{
-SMRJoin(smr1, smr2, joinType = "same", colnamesPrefix1 = NULL,
-  colnamesPrefix2 = NULL)
+SMRJoin(
+  smr1,
+  smr2,
+  joinType = "same",
+  colnamesPrefix1 = NULL,
+  colnamesPrefix2 = NULL
+)
 }
 \arguments{
 \item{smr1}{The first SMR object.}
@@ -31,7 +36,8 @@ For example, if \code{joinType = "outer"} the union of the rownames of SMR matri
 is row-imposed first. See \code{\link{SMRImposeRowIDs}}.
 }
 \seealso{
-Other SMR modification functions: \code{\link{SMRAnnexSubMatrix}},
-  \code{\link{SMRRowBindMatrix}}
+Other SMR modification functions: 
+\code{\link{SMRAnnexSubMatrix}()},
+\code{\link{SMRRowBindMatrix}()}
 }
 \concept{SMR modification functions}
