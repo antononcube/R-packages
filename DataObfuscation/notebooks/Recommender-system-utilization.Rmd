@@ -1,0 +1,41 @@
+---
+title: "Make recommender"
+output: html_notebook
+---
+
+```{r}
+library(magrittr)
+library(Matrix)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(DataObfuscation)
+```
+
+Extend the banking data with an ID column:
+
+```{r}
+dfMintBubblesTransactions2 <- cbind( ID = 1:nrow(dfMintBubblesTransactions), dfMintBubblesTransactions, stringsAsFactors = TRUE )
+```
+
+Create are recommender:
+
+```{r}
+smrObj <- 
+  SMRMonUnit() %>% 
+  SMRMonCreate( data = dfMintBubblesTransactions2, itemColumnName = "ID", addTagTypesToColumnNamesQ = TRUE )
+```
+
+Show the recommender tag types:
+
+```{r}
+smrObj %>% SMRMonTakeTagTypes()
+```
+
+Classify to a "Category" value using a profile:
+
+```{r}
+smrObj %>% 
+  SMRMonClassifyByProfile( tagType = "Category", profile = c( "Amount:5.75", "Date:2012-11-12") ) %>% 
+  SMRMonTakeValue
+```
+
