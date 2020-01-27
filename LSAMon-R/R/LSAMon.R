@@ -1146,7 +1146,7 @@ LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighb
       dplyr::arrange( Word.Distance ) %>%
       dplyr::mutate( Rank = dplyr::row_number()) %>%
       dplyr::select( SearchTerm, Rank, Word.Word )
-    reshape2::dcast( formula = SearchTerm ~ Rank, data = nnsDF2, value.var = "Word.Word" )
+    nnsDF2 <- reshape2::dcast( formula = SearchTerm ~ Rank, data = nnsDF2, value.var = "Word.Word" )
 
     print(nnsDF2)
 
