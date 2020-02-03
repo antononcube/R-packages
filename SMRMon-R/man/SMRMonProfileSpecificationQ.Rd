@@ -4,8 +4,12 @@
 \alias{SMRMonProfileSpecificationQ}
 \title{Is the argument a profile specification.}
 \usage{
-SMRMonProfileSpecificationQ(smrObj, spec,
-  functionName = "SMRMonProfileSpecificationQ", logicalResultQ = FALSE)
+SMRMonProfileSpecificationQ(
+  smrObj,
+  spec,
+  functionName = "SMRMonProfileSpecificationQ",
+  logicalResultQ = FALSE
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}

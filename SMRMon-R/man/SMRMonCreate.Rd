@@ -4,8 +4,13 @@
 \alias{SMRMonCreate}
 \title{Make an SMRMon object from a transactions data frame}
 \usage{
-SMRMonCreate(smrObj, data = SMRMonTakeData(smrObj),
-  tagTypes = names(data)[-1], itemColumnName = names(data)[1], ...)
+SMRMonCreate(
+  smrObj,
+  data = SMRMonTakeData(smrObj),
+  tagTypes = names(data)[-1],
+  itemColumnName = names(data)[1],
+  ...
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -29,6 +34,7 @@ and makes is an SMRMon object.
 An S3 object is returned that is list with class attribute set to "SMR".
 }
 \seealso{
-Other Creation functions: \code{\link{SMRMonCreateFromMatrices}}
+Other Creation functions: 
+\code{\link{SMRMonCreateFromMatrices}()}
 }
 \concept{Creation functions}

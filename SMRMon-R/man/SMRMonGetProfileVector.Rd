@@ -4,8 +4,12 @@
 \alias{SMRMonGetProfileVector}
 \title{From a profile specification into a vector}
 \usage{
-SMRMonGetProfileVector(smrObj, profile,
-  functionName = "SMRMonGetProfileVector", warningQ = TRUE)
+SMRMonGetProfileVector(
+  smrObj,
+  profile,
+  functionName = "SMRMonGetProfileVector",
+  warningQ = TRUE
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}

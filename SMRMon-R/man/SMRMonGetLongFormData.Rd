@@ -4,8 +4,13 @@
 \alias{SMRMonGetLongFormData}
 \title{Long form data frame representation.}
 \usage{
-SMRMonGetLongFormData(smrObj, items = NULL, tagTypesQ = TRUE,
-  summarizeTagsQ = FALSE, nTopTags = 5)
+SMRMonGetLongFormData(
+  smrObj,
+  items = NULL,
+  tagTypesQ = TRUE,
+  summarizeTagsQ = FALSE,
+  nTopTags = 5
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}

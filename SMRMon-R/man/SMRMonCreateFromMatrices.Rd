@@ -4,9 +4,15 @@
 \alias{SMRMonCreateFromMatrices}
 \title{Creation an SMRMon object with a list of matrices.}
 \usage{
-SMRMonCreateFromMatrices(smrObj, matrices, tagTypes = names(matrices),
-  itemColumnName = "Item", imposeSameRowNamesQ = TRUE,
-  addTagTypesToColumnNamesQ = FALSE, sep = ":")
+SMRMonCreateFromMatrices(
+  smrObj,
+  matrices,
+  tagTypes = names(matrices),
+  itemColumnName = "Item",
+  imposeSameRowNamesQ = TRUE,
+  addTagTypesToColumnNamesQ = FALSE,
+  sep = ":"
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -35,6 +41,7 @@ and makes is an SMRMon object.
 An S3 object is returned that is list with class attribute set to "SMR".
 }
 \seealso{
-Other Creation functions: \code{\link{SMRMonCreate}}
+Other Creation functions: 
+\code{\link{SMRMonCreate}()}
 }
 \concept{Creation functions}

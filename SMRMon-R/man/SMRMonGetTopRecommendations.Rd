@@ -24,8 +24,11 @@ This function simplifies certain workflows.
 (Very inefficient implementation at this point.)
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonJoinAcross}},
-  \code{\link{SMRMonRecommendByProfile}},
-  \code{\link{SMRMonRecommend}}
+Other Recommendations computation functions: 
+\code{\link{SMRMonJoinAcross}()},
+\code{\link{SMRMonProveByHistory}()},
+\code{\link{SMRMonProveByMetadata}()},
+\code{\link{SMRMonRecommendByProfile}()},
+\code{\link{SMRMonRecommend}()}
 }
 \concept{Recommendations computation functions}

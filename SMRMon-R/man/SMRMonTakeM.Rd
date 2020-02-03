@@ -18,21 +18,23 @@ A list of functions or \code{SMRMonFailureSymbol}.
 Takes M from the monad object.
 }
 \seealso{
-Other Set/Take functions: \code{\link{SMRMonSetData}},
-  \code{\link{SMRMonSetItemColumnName}},
-  \code{\link{SMRMonSetItemToIndexRules}},
-  \code{\link{SMRMonSetM01}}, \code{\link{SMRMonSetM}},
-  \code{\link{SMRMonSetTagToIndexRules}},
-  \code{\link{SMRMonSetTagTypeRanges}},
-  \code{\link{SMRMonSetTagTypes}},
-  \code{\link{SMRMonSetValue}},
-  \code{\link{SMRMonTakeData}},
-  \code{\link{SMRMonTakeItemColumnName}},
-  \code{\link{SMRMonTakeItemToIndexRules}},
-  \code{\link{SMRMonTakeM01}},
-  \code{\link{SMRMonTakeTagToIndexRules}},
-  \code{\link{SMRMonTakeTagTypeRanges}},
-  \code{\link{SMRMonTakeTagTypes}},
-  \code{\link{SMRMonTakeValue}}
+Other Set/Take functions: 
+\code{\link{SMRMonSetData}()},
+\code{\link{SMRMonSetItemColumnName}()},
+\code{\link{SMRMonSetItemToIndexRules}()},
+\code{\link{SMRMonSetM01}()},
+\code{\link{SMRMonSetM}()},
+\code{\link{SMRMonSetTagToIndexRules}()},
+\code{\link{SMRMonSetTagTypeRanges}()},
+\code{\link{SMRMonSetTagTypes}()},
+\code{\link{SMRMonSetValue}()},
+\code{\link{SMRMonTakeData}()},
+\code{\link{SMRMonTakeItemColumnName}()},
+\code{\link{SMRMonTakeItemToIndexRules}()},
+\code{\link{SMRMonTakeM01}()},
+\code{\link{SMRMonTakeTagToIndexRules}()},
+\code{\link{SMRMonTakeTagTypeRanges}()},
+\code{\link{SMRMonTakeTagTypes}()},
+\code{\link{SMRMonTakeValue}()}
 }
 \concept{Set/Take functions}

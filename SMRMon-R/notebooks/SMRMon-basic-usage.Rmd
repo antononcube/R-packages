@@ -45,9 +45,13 @@ smrObj <-
 # Recommendations by profile
 
 ```{r}
+focusProfile <- c("female", "30", "died")
+```
+
+```{r}
 smrObj <-
   smrObj %>% 
-  SMRMonRecommendByProfile( profile = c("female", "30", "died"), nrecs = 12 ) %>% 
+  SMRMonRecommendByProfile( profile = focusProfile, nrecs = 12 ) %>% 
   SMRMonJoinAcross( dfTitanic ) %>% 
   SMRMonEchoValue
 ```
@@ -55,9 +59,21 @@ smrObj <-
 ```{r}
 smrObj <-
   smrObj %>% 
-  SMRMonRecommendByProfile( profile = c("female", "30", "died"), nrecs = 12 ) %>% 
+  SMRMonRecommendByProfile( profile =focusProfile, nrecs = 12 ) %>% 
   SMRMonJoinAcross( setNames( dfTitanic, 1:ncol(dfTitanic)), by = c( "id" = "1" ) ) %>% 
   SMRMonEchoValue()
+```
+
+```{r}
+smrObj %>% 
+  SMRMonProveByMetadata( profile = focusProfile, item = "id.668" ) %>% 
+  SMRMonTakeValue
+```
+
+```{r}
+smrObj %>% 
+  SMRMonProveByHistory( history = c("id.727", "id.970"), item = "id.668" ) %>% 
+  SMRMonTakeValue
 ```
 
 # Profile finding

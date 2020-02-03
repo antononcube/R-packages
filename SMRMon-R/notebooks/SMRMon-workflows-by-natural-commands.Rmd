@@ -41,6 +41,12 @@ to_SMRMon_R_command <- function(command, parse=TRUE) {
   pres <- Perl6Command( command = paste0( "say to_SMRMon_R(\"", command, "\")"),
                         moduleDirectory = Perl6SMRMonParsingLib(),
                         moduleName = "RecommenderWorkflows" )
+  messageInds <- grep( "^Possible", pres )
+  if( length(messageInds) > 0 ) {
+    messageLines <- pres[messageInds]
+    print(messageLines)
+    pres <- pres[setdiff(1:length(pres), messageInds)]
+  }
   pres <- gsub( "\\\"", "\"", pres, fixed = T)
   if(parse) { parse(text = pres) }
   else { pres }
@@ -56,10 +62,11 @@ dfTitanic
 to_SMRMon_R_command( "recommend for history id.5, id.7 and id.12", parse = F )
 ```
 
+
 ```{r}
 smrObj2 <-
   eval( expr = to_SMRMon_R_command( 
-    "create from dfTitanic; 
+    "create from dfTitanic;
      recommend for history id.5, id.7; 
      join across recommendations with the data frame dfTitanic; 
      echo pipeline value" ) )
@@ -79,12 +86,32 @@ smrObj2 <-
 to_SMRMon_R_command("recommend by profile female, died")
 ```
 
+This is problematic:
+
+```{r}
+# The argument "globalWeightFunction" is used twice:
+to_SMRMon_R_command( 
+    "create from dfTitanic; 
+     apply the LSI functions IDF, None, Cosine;" )
+```
+
+
+```{r}
+to_SMRMon_R_command( 
+    "create from dfTitanic; 
+     apply the LSI functions inverse document frequency, term frequency, and cosine;
+     recommend by profile female->3, 30->0.1; 
+     extend recommendations with dfTitanic; 
+     show pipeline value" )
+```
+
 ```{r}
 smrObj2 <-
   SMRMonUnit() %>% 
   eval( expr = to_SMRMon_R_command( 
     "create from dfTitanic; 
-     recommend by profile female, 30; 
+     apply the LSI functions IDF, TermFrequency, Cosine;
+     recommend by profile female->1, 30->0.1; 
      extend recommendations with dfTitanic; 
      show pipeline value" ) )
 ```
@@ -100,7 +127,7 @@ smrObj3 <-
      echo value;
      find top 5 recommendations;
      extend recommendations with dfTitanic;
-     echo value" ) )
+     echo value;" ) )
 ```
 
 ## Classification
@@ -119,6 +146,10 @@ smrObj3 <-
 ## SMR query
 
 ```{r}
+smrObj %>% SMRMonGetProperty("properties") %>% SMRMonTakeValue
+```
+
+```{r}
 to_SMRMon_R_command("show the recommender matrix number of rows")
 ```
 ```{r}
@@ -128,6 +159,14 @@ to_SMRMon_R_command(
      display the tag types;
      show sub matrices", parse = F )
 ```
+```{r}
+smrObj <- smrObj %>% SMRMonGetMatrixProperty( property = "properties" ) %>% SMRMonEchoValue
+```
+
+```{r}
+smrObj <- smrObj %>% SMRMonGetProperty( property = "property" ) %>% SMRMonEchoValue
+```
+
 
 ```{r}
 smrObj3 <-
@@ -146,4 +185,14 @@ smrObj3 <-
      show the sub-matrix passengerClass columns;
      show the tag type passengerSurvival density" ) )
 ```
+
+```{r}
+smrObj <- 
+  smrObj %>% 
+  SMRMonApplyTagTypeWeights( weights = c( "passengerClass" = 2 ), default = 0 ) %>% 
+  SMRMonRecommendByProfile( profile = c( "3rd" ), nrecs = 12 ) %>% 
+  SMRMonJoinAcross( dfTitanic ) %>% 
+  SMRMonEchoValue
+```
+
 

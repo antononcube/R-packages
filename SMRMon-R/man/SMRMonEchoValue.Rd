@@ -16,6 +16,7 @@ An SMRMon object
 Echoes the monad object value.
 }
 \seealso{
-Other Echo functions: \code{\link{SMRMonEchoFunctionValue}}
+Other Echo functions: 
+\code{\link{SMRMonEchoFunctionValue}()}
 }
 \concept{Echo functions}

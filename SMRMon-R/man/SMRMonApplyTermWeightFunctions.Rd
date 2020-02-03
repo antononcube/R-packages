@@ -4,8 +4,12 @@
 \alias{SMRMonApplyTermWeightFunctions}
 \title{Apply term-weight functions.}
 \usage{
-SMRMonApplyTermWeightFunctions(smrObj, globalWeightFunction = "IDF",
-  localWeightFunction = "None", normalizerFunction = "Cosine")
+SMRMonApplyTermWeightFunctions(
+  smrObj,
+  globalWeightFunction = "IDF",
+  localWeightFunction = "None",
+  normalizerFunction = "Cosine"
+)
 }
 \arguments{
 \item{smrObj}{A SMRMon object.}

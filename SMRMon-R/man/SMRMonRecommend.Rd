@@ -4,8 +4,13 @@
 \alias{SMRMonRecommend}
 \title{Compute recommendations}
 \usage{
-SMRMonRecommend(smrObj, history, nrecs = 12, removeHistoryQ = FALSE,
-  warningQ = TRUE)
+SMRMonRecommend(
+  smrObj,
+  history,
+  nrecs = 12,
+  removeHistoryQ = FALSE,
+  warningQ = TRUE
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -33,8 +38,11 @@ data frame with columns "Score", "Index", \code{smr$ItemColumnName};
 assigned to \code{smrObj$Value}.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonGetTopRecommendations}},
-  \code{\link{SMRMonJoinAcross}},
-  \code{\link{SMRMonRecommendByProfile}}
+Other Recommendations computation functions: 
+\code{\link{SMRMonGetTopRecommendations}()},
+\code{\link{SMRMonJoinAcross}()},
+\code{\link{SMRMonProveByHistory}()},
+\code{\link{SMRMonProveByMetadata}()},
+\code{\link{SMRMonRecommendByProfile}()}
 }
 \concept{Recommendations computation functions}

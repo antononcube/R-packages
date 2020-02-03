@@ -24,8 +24,11 @@ with the argument \code{by}.
 The name of the function corresponds a Mathematica function (\code{JoinAcross}).
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonGetTopRecommendations}},
-  \code{\link{SMRMonRecommendByProfile}},
-  \code{\link{SMRMonRecommend}}
+Other Recommendations computation functions: 
+\code{\link{SMRMonGetTopRecommendations}()},
+\code{\link{SMRMonProveByHistory}()},
+\code{\link{SMRMonProveByMetadata}()},
+\code{\link{SMRMonRecommendByProfile}()},
+\code{\link{SMRMonRecommend}()}
 }
 \concept{Recommendations computation functions}

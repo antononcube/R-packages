@@ -21,6 +21,7 @@ Apply a function to the "Value" element/member of the monad object.
 Prints \code{f(smrObj$Value)}.
 }
 \seealso{
-Other Echo functions: \code{\link{SMRMonEchoValue}}
+Other Echo functions: 
+\code{\link{SMRMonEchoValue}()}
 }
 \concept{Echo functions}

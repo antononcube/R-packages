@@ -4,8 +4,12 @@
 \alias{SMRMonGetHistoryDataFrame}
 \title{From a history specification into a data frame}
 \usage{
-SMRMonGetHistoryDataFrame(smrObj, history,
-  functionName = "SMRMonGetHistoryDataFrame", warningQ = TRUE)
+SMRMonGetHistoryDataFrame(
+  smrObj,
+  history,
+  functionName = "SMRMonGetHistoryDataFrame",
+  warningQ = TRUE
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}

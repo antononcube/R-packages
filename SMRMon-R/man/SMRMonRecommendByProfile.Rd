@@ -31,8 +31,11 @@ data frame with columns "Score", "Index", \code{smr$ItemColumnName};
 assigned to \code{smrObj$Value}.
 }
 \seealso{
-Other Recommendations computation functions: \code{\link{SMRMonGetTopRecommendations}},
-  \code{\link{SMRMonJoinAcross}},
-  \code{\link{SMRMonRecommend}}
+Other Recommendations computation functions: 
+\code{\link{SMRMonGetTopRecommendations}()},
+\code{\link{SMRMonJoinAcross}()},
+\code{\link{SMRMonProveByHistory}()},
+\code{\link{SMRMonProveByMetadata}()},
+\code{\link{SMRMonRecommend}()}
 }
 \concept{Recommendations computation functions}

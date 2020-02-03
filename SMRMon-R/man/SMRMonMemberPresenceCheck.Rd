@@ -4,9 +4,14 @@
 \alias{SMRMonMemberPresenceCheck}
 \title{General member presence check.}
 \usage{
-SMRMonMemberPresenceCheck(smrObj, memberName,
-  memberPrettyName = memberName, functionName = "",
-  logicalResultQ = FALSE, warningQ = TRUE)
+SMRMonMemberPresenceCheck(
+  smrObj,
+  memberName,
+  memberPrettyName = memberName,
+  functionName = "",
+  logicalResultQ = FALSE,
+  warningQ = TRUE
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}

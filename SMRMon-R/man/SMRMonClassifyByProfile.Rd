@@ -4,9 +4,16 @@
 \alias{SMRMonClassifyByProfile}
 \title{Classification with a profile}
 \usage{
-SMRMonClassifyByProfile(smrObj, tagType, profile, nTopNNs = NULL,
-  voting = FALSE, dropZeroScoredLabels = TRUE,
-  maxNumberOfLabels = NULL, normalizeQ = TRUE)
+SMRMonClassifyByProfile(
+  smrObj,
+  tagType,
+  profile,
+  nTopNNs = NULL,
+  voting = FALSE,
+  dropZeroScoredLabels = TRUE,
+  maxNumberOfLabels = NULL,
+  normalizeQ = TRUE
+)
 }
 \arguments{
 \item{smrObj}{A sparse matrix recommender.}

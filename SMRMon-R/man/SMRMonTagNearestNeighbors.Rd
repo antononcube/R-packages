@@ -4,8 +4,15 @@
 \alias{SMRMonTagNearestNeighbors}
 \title{Tag nearest neighbors}
 \usage{
-SMRMonTagNearestNeighbors(smrObj, tags, tagType, nrecs = 12,
-  nrecsProfile = 100, normalizeQ, ...)
+SMRMonTagNearestNeighbors(
+  smrObj,
+  tags,
+  tagType,
+  nrecs = 12,
+  nrecsProfile = 100,
+  normalizeQ,
+  ...
+)
 }
 \arguments{
 \item{smrObj}{A sparse matrix recommender.}

@@ -24,6 +24,7 @@ Places an SMRMon object member to be the pipeline value.
 This function simplifies certain workflows.
 }
 \seealso{
-Other Get functions: \code{\link{SMRMonGetProperty}}
+Other Get functions: 
+\code{\link{SMRMonGetProperty}()}
 }
 \concept{Get functions}

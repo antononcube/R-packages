@@ -4,8 +4,12 @@
 \alias{SMRMonGetProfileDataFrame}
 \title{From a profile specification into a data frame}
 \usage{
-SMRMonGetProfileDataFrame(smrObj, profile,
-  functionName = "SMRMonGetProfileDataFrame", warningQ = TRUE)
+SMRMonGetProfileDataFrame(
+  smrObj,
+  profile,
+  functionName = "SMRMonGetProfileDataFrame",
+  warningQ = TRUE
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}

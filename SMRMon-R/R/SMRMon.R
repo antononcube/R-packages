@@ -1537,6 +1537,80 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
   smrObj
 }
 
+##===========================================================
+## Prove by metadata
+##===========================================================
+
+#' Prove a recommendation to a profile using metadata.
+#' @description For a given profile and item finds scored metadata tags
+#' that are appear in both the given profile and the profile of the given item.
+#' @param smrObj An SMRMon object.
+#' @param profile A profile specification.
+#' @param item An item index or name to make proofs for.
+#' Must be a row index or row name of \code{smrObj$M}.
+#' @param normalizeScoresQ Should the proof scores be normalized or not?
+#' @param style Proof style derivation; one of "intersection", "multiplication".
+#' @details The result is a data frame with columns names "Score", "Index", "Tag"
+#' and it is assigned to \code{smrObj$Value}.
+#' @return An SMRMon object.
+#' @family Recommendations computation functions
+#' @export
+SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRUE, style = "intersection" ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  dfProfile <-
+    smrObj %>%
+    SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonProveByMetadata", warningQ = TRUE ) %>%
+    SMRMonTakeValue
+
+  if( SMRMonFailureQ(dfProfile) ) { return(SMRMonFailureSymbol) }
+
+  res <- SMRMetadataProofs( smr = smrObj, toBeLovedItem = item, profile = dfProfile, normalizeScores = normalizeScoresQ, style = style )
+
+  smrObj$Value <- res
+
+  smrObj
+}
+
+
+##===========================================================
+## Prove by history
+##===========================================================
+
+#' Prove a recommendation to a history.
+#' @description Finds the items of the history that are the closest to a recommendation.
+#' @param smrObj An SMRMon object.
+#' @param history A history specification.
+#' @param item An item index or name to make proofs for.
+#' Must be a row index or row name of \code{smrObj$M}.
+#' @param normalizeScoresQ Should the proof scores be normalized or not?
+#' @details The result is a data frame with columns names
+#' "Score", "Index", and \code{smrObj$ItemColumnName}
+#' and it is assigned to \code{smrObj$Value}.
+#' @return An SMRMon object.
+#' @family Recommendations computation functions
+#' @export
+SMRMonProveByHistory <- function( smrObj, history, item, normalizeScoresQ = TRUE ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  dfHistory <-
+    smrObj %>%
+    SMRMonGetHistoryDataFrame( history = history, functionName = "SMRMonProveByHistory", warningQ = TRUE ) %>%
+    SMRMonTakeValue
+
+  if( SMRMonFailureQ(dfHistory) ) { return(SMRMonFailureSymbol) }
+
+  res <- SMRHistoryProofs( smr = smrObj, toBeLovedItem = item, history = dfHistory, normalizeScores = normalizeScoresQ )
+
+  names(res) <- c( names(res)[1:2], smrObj$ItemColumnName )
+
+  smrObj$Value <- res
+
+  smrObj
+}
+
 
 ##===========================================================
 ## Apply tag type weights
