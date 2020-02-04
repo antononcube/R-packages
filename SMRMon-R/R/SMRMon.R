@@ -31,6 +31,7 @@
 
 #' @import SparseMatrixRecommender
 #' @import SparseMatrixRecommenderInterfaces
+#' @import OutlierIdentifiers
 #' @import Matrix
 #' @import magrittr
 #' @import purrr
@@ -1550,12 +1551,14 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
 #' Must be a row index or row name of \code{smrObj$M}.
 #' @param normalizeScoresQ Should the proof scores be normalized or not?
 #' @param style Proof style derivation; one of "intersection", "multiplication".
+#' @param outlierIdentifierParameters Outlier identifier parameters or parameters finding function.
+#' If NULL all tags are returned.
 #' @details The result is a data frame with columns names "Score", "Index", "Tag"
 #' and it is assigned to \code{smrObj$Value}.
 #' @return An SMRMon object.
 #' @family Recommendations computation functions
 #' @export
-SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRUE, style = "intersection" ) {
+SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRUE, style = "intersection", outlierIdentifierParameters = NULL ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1567,6 +1570,27 @@ SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRU
   if( SMRMonFailureQ(dfProfile) ) { return(SMRMonFailureSymbol) }
 
   res <- SMRMetadataProofs( smr = smrObj, toBeLovedItem = item, profile = dfProfile, normalizeScores = normalizeScoresQ, style = style )
+
+  if( is.numeric(outlierIdentifierParameters) && length(outlierIdentifierParameters) == 2 ) {
+
+    oiFunc <- function(x) OutlierIdentifiers::TopOutlierIdentifier( x, lowerAndUpperThresholds = outlierIdentifierParameters )
+
+  } else if( is.function(outlierIdentifierParameters) ) {
+
+    oiFunc <- function(x) OutlierIdentifiers::TopOutlierIdentifier( x, identifier = outlierIdentifierParameters )
+
+  } else if( !is.null(outlierIdentifierParameters) ) {
+
+    warning( "The argument is outlierIdentifierParameters is expected to be NULL, a pair of numbers, or a function.", call. = TRUE)
+    return(SMRMonFailureSymbol)
+
+  } else {
+    oiFunc <- NULL
+  }
+
+  if( is.function(oiFunc) ) {
+    res <- res[ oiFunc(res$Score), ]
+  }
 
   smrObj$Value <- res
 
@@ -1585,13 +1609,15 @@ SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRU
 #' @param item An item index or name to make proofs for.
 #' Must be a row index or row name of \code{smrObj$M}.
 #' @param normalizeScoresQ Should the proof scores be normalized or not?
+#' @param outlierIdentifierParameters Outlier identifier parameters or parameters finding function.
+#' If NULL all items are returned.
 #' @details The result is a data frame with columns names
 #' "Score", "Index", and \code{smrObj$ItemColumnName}
 #' and it is assigned to \code{smrObj$Value}.
 #' @return An SMRMon object.
 #' @family Recommendations computation functions
 #' @export
-SMRMonProveByHistory <- function( smrObj, history, item, normalizeScoresQ = TRUE ) {
+SMRMonProveByHistory <- function( smrObj, history, item, normalizeScoresQ = TRUE, outlierIdentifierParameters = NULL ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1605,6 +1631,27 @@ SMRMonProveByHistory <- function( smrObj, history, item, normalizeScoresQ = TRUE
   res <- SMRHistoryProofs( smr = smrObj, toBeLovedItem = item, history = dfHistory, normalizeScores = normalizeScoresQ )
 
   names(res) <- c( names(res)[1:2], smrObj$ItemColumnName )
+
+  if( is.numeric(outlierIdentifierParameters) && length(outlierIdentifierParameters) == 2 ) {
+
+    oiFunc <- function(x) OutlierIdentifiers::TopOutlierIdentifier( x, lowerAndUpperThresholds = outlierIdentifierParameters )
+
+  } else if( is.function(outlierIdentifierParameters) ) {
+
+    oiFunc <- function(x) OutlierIdentifiers::TopOutlierIdentifier( x, identifier = outlierIdentifierParameters )
+
+  } else if( !is.null(outlierIdentifierParameters) ) {
+
+    warning( "The argument is outlierIdentifierParameters is expected to be NULL, a pair of numbers, or a function.", call. = TRUE)
+    return(SMRMonFailureSymbol)
+
+  } else {
+    oiFunc <- NULL
+  }
+
+  if( is.function(oiFunc) ) {
+    res <- res[ oiFunc(res$Score), ]
+  }
 
   smrObj$Value <- res
 

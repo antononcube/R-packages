@@ -4,7 +4,13 @@
 \alias{SMRMonProveByHistory}
 \title{Prove a recommendation to a history.}
 \usage{
-SMRMonProveByHistory(smrObj, history, item, normalizeScoresQ = TRUE)
+SMRMonProveByHistory(
+  smrObj,
+  history,
+  item,
+  normalizeScoresQ = TRUE,
+  outlierIdentifierParameters = NULL
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -15,6 +21,9 @@ SMRMonProveByHistory(smrObj, history, item, normalizeScoresQ = TRUE)
 Must be a row index or row name of \code{smrObj$M}.}
 
 \item{normalizeScoresQ}{Should the proof scores be normalized or not?}
+
+\item{outlierIdentifierParameters}{Outlier identifier parameters or parameters finding function.
+If NULL all items are returned.}
 }
 \value{
 An SMRMon object.

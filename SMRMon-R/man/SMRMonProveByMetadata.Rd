@@ -9,7 +9,8 @@ SMRMonProveByMetadata(
   profile,
   item,
   normalizeScoresQ = TRUE,
-  style = "intersection"
+  style = "intersection",
+  outlierIdentifierParameters = NULL
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ Must be a row index or row name of \code{smrObj$M}.}
 \item{normalizeScoresQ}{Should the proof scores be normalized or not?}
 
 \item{style}{Proof style derivation; one of "intersection", "multiplication".}
+
+\item{outlierIdentifierParameters}{Outlier identifier parameters or parameters finding function.
+If NULL all tags are returned.}
 }
 \value{
 An SMRMon object.
