@@ -18,14 +18,14 @@ directory
 
 Some loosely adhered to rules for the package licenses in this repository follow.
 
-- The "computer science" packages have BSD-3 licenses.
+- The "computer science" packages have BSD-3 or LGPL-3 licenses.
 
   - For example, the monad code generation package 
     [StateMonadCodeGenerator](https://github.com/antononcube/R-packages/tree/master/StateMonadCodeGenerator). 
 
 - The more "academic" packages have GPL-3 licenses.
 
-- In general the simple packages have BSD-3 licenses.
+- In general the simple packages have BSD-3 or LGPL-3 licenses.
 
   - For example, the package [OutlierIdentifiers](https://github.com/antononcube/R-packages/tree/master/OutlierIdentifiers) 
     is very simple. (Hence with BSD-3.)
@@ -40,5 +40,7 @@ Some loosely adhered to rules for the package licenses in this repository follow
  
   - at least one of the underlying important packages is with GPL-3,
    
-  - the original version of the package was published with GPL-3.
+  - the original version of the package was published with GPL-3,
+  
+  - GPL-3 is the default and preferred license.
 
