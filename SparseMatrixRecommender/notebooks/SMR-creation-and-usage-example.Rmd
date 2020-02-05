@@ -8,6 +8,7 @@ output: html_notebook
 ```{r}
 library(SparseMatrixRecommender)
 library(Matrix)
+library(purrr)
 library(magrittr)
 library(ggplot2)
 ```
@@ -169,8 +170,8 @@ smr$M01[1:5,(ncol(smr$M01)-1):ncol(smr$M01)]
 
 ```{r}
 predict( smr, 
-         smr$M01[1:5,], 
-         nTopNNs = 20, type = "decision", tagType = labelColumnName )
+         smr$M01[1:15,], 
+         nTopNNs = 20, type = "scores", tagType = labelColumnName )
 ```
 
 # Distances within classes
@@ -180,7 +181,7 @@ smr$TagTypes
 ```
 
 ```{r}
-dfDists <- SMREuclideanDistances( smr, tagType = NULL )
+dfDists <- SMRDistances( smr, tagType = NULL, method = "euclidean" )
 dfDists
 ```
 
