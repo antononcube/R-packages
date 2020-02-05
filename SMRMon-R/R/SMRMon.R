@@ -1538,38 +1538,67 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
   smrObj
 }
 
+
 ##===========================================================
-## Prove by metadata
+## Prove
 ##===========================================================
 
-#' Prove a recommendation to a profile using metadata.
-#' @description For a given profile and item finds scored metadata tags
-#' that are appear in both the given profile and the profile of the given item.
+#' Prove a recommendation to a profile or history
+#' @description
+#' If \code{proofType = "metadata"} then for a given profile and a recommended item
+#' finds scored metadata tags that appear in both the given profile and the profile
+#' of the recommended item.
+#' If \code{proofType = "history"} then for a given history and a recommended item
+#' finds the items of the history that are the closest to recommended item.
 #' @param smrObj An SMRMon object.
-#' @param profile A profile specification.
+#' @param spec A specification that is a profile or a history.
 #' @param item An item index or name to make proofs for.
+#' @param type One of "metadata" or "history".
 #' Must be a row index or row name of \code{smrObj$M}.
 #' @param normalizeScoresQ Should the proof scores be normalized or not?
 #' @param style Proof style derivation; one of "intersection", "multiplication".
-#' @param outlierIdentifierParameters Outlier identifier parameters or parameters finding function.
+#' @param outlierIdentifierParameters Outlier identifier parameters or a parameters finding function.
 #' If NULL all tags are returned.
-#' @details The result is a data frame with columns names "Score", "Index", "Tag"
-#' and it is assigned to \code{smrObj$Value}.
+#' @param warningQ Should warnings be given?
+#' @details The result is assigned to \code{smrObj$Value}.
+#' For some data and outlier identifier parameters the proofs data frame might turn out empty.
+#' In those cases warning a given if \code{warningQ = TRUE}.
+#' The argument \code{style} has an effect only when \code{type = "metadata"}.
 #' @return An SMRMon object.
 #' @family Recommendations computation functions
 #' @export
-SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRUE, style = "intersection", outlierIdentifierParameters = NULL ) {
+SMRMonProve <- function( smrObj, spec, item, type = "metadata", normalizeScoresQ = TRUE, style = "intersection", outlierIdentifierParameters = NULL, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  dfProfile <-
-    smrObj %>%
-    SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonProveByMetadata", warningQ = TRUE ) %>%
-    SMRMonTakeValue
+  if( tolower(type) == "metadata") {
 
-  if( SMRMonFailureQ(dfProfile) ) { return(SMRMonFailureSymbol) }
+    dfProfile <-
+      smrObj %>%
+      SMRMonGetProfileDataFrame( profile = spec, functionName = "SMRMonProveByMetadata", warningQ = TRUE ) %>%
+      SMRMonTakeValue
 
-  res <- SMRMetadataProofs( smr = smrObj, toBeLovedItem = item, profile = dfProfile, normalizeScores = normalizeScoresQ, style = style )
+    if( SMRMonFailureQ(dfProfile) ) { return(SMRMonFailureSymbol) }
+
+    res <- SMRMetadataProofs( smr = smrObj, toBeLovedItem = item, profile = dfProfile, normalizeScores = normalizeScoresQ, style = style )
+
+  } else if ( tolower(type) == "history" ) {
+
+    dfHistory <-
+      smrObj %>%
+      SMRMonGetHistoryDataFrame( history = spec, functionName = "SMRMonProveByHistory", warningQ = TRUE ) %>%
+      SMRMonTakeValue
+
+    if( SMRMonFailureQ(dfHistory) ) { return(SMRMonFailureSymbol) }
+
+    res <- SMRHistoryProofs( smr = smrObj, toBeLovedItem = item, history = dfHistory, normalizeScores = normalizeScoresQ )
+
+    names(res) <- c( names(res)[1:2], smrObj$ItemColumnName )
+
+  } else {
+    warning( "The argument proofType is expected to be one 'metadata' or 'history'.")
+    return(SMRMonFailureSymbol)
+  }
 
   if( is.numeric(outlierIdentifierParameters) && length(outlierIdentifierParameters) == 2 ) {
 
@@ -1589,12 +1618,48 @@ SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRU
   }
 
   if( is.function(oiFunc) ) {
+
     res <- res[ oiFunc(res$Score), ]
+
+    if( is.null(res) || nrow(res) == 0 ) {
+      warning( paste( "An empty data frame of", type, "proofs was obtained after applying the outlier identification",
+                      "for the item:", item, "." ), call. = TRUE )
+    }
   }
 
   smrObj$Value <- res
 
   smrObj
+}
+
+
+##===========================================================
+## Prove by metadata
+##===========================================================
+
+#' Prove a recommendation to a profile using metadata.
+#' @description For a given profile and item finds scored metadata tags
+#' that appear in both the given profile and the profile of the given item.
+#' @param smrObj An SMRMon object.
+#' @param profile A profile specification.
+#' @param item An item index or name to make proofs for.
+#' Must be a row index or row name of \code{smrObj$M}.
+#' @param normalizeScoresQ Should the proof scores be normalized or not?
+#' @param style Proof style derivation; one of "intersection", "multiplication".
+#' @param outlierIdentifierParameters Outlier identifier parameters or parameters finding function.
+#' If NULL all tags are returned.
+#' @param warningQ Should warnings be given?
+#' @details The result is a data frame with columns names "Score", "Index", "Tag"
+#' and it is assigned to \code{smrObj$Value}.
+#' @return An SMRMon object.
+#' @family Recommendations computation functions
+#' @export
+SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRUE, style = "intersection", outlierIdentifierParameters = NULL, warningQ = TRUE ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  SMRMonProve( smrObj = smrObj, spec = profile, item = item, type = "metadata",
+               normalizeScoresQ = normalizeScoresQ, style = style, outlierIdentifierParameters = outlierIdentifierParameters, warningQ = warningQ )
 }
 
 
@@ -1611,51 +1676,19 @@ SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRU
 #' @param normalizeScoresQ Should the proof scores be normalized or not?
 #' @param outlierIdentifierParameters Outlier identifier parameters or parameters finding function.
 #' If NULL all items are returned.
+#' @param warningQ Should warnings be given?
 #' @details The result is a data frame with columns names
 #' "Score", "Index", and \code{smrObj$ItemColumnName}
 #' and it is assigned to \code{smrObj$Value}.
 #' @return An SMRMon object.
 #' @family Recommendations computation functions
 #' @export
-SMRMonProveByHistory <- function( smrObj, history, item, normalizeScoresQ = TRUE, outlierIdentifierParameters = NULL ) {
+SMRMonProveByHistory <- function( smrObj, history, item, normalizeScoresQ = TRUE, outlierIdentifierParameters = NULL, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  dfHistory <-
-    smrObj %>%
-    SMRMonGetHistoryDataFrame( history = history, functionName = "SMRMonProveByHistory", warningQ = TRUE ) %>%
-    SMRMonTakeValue
-
-  if( SMRMonFailureQ(dfHistory) ) { return(SMRMonFailureSymbol) }
-
-  res <- SMRHistoryProofs( smr = smrObj, toBeLovedItem = item, history = dfHistory, normalizeScores = normalizeScoresQ )
-
-  names(res) <- c( names(res)[1:2], smrObj$ItemColumnName )
-
-  if( is.numeric(outlierIdentifierParameters) && length(outlierIdentifierParameters) == 2 ) {
-
-    oiFunc <- function(x) OutlierIdentifiers::TopOutlierIdentifier( x, lowerAndUpperThresholds = outlierIdentifierParameters )
-
-  } else if( is.function(outlierIdentifierParameters) ) {
-
-    oiFunc <- function(x) OutlierIdentifiers::TopOutlierIdentifier( x, identifier = outlierIdentifierParameters )
-
-  } else if( !is.null(outlierIdentifierParameters) ) {
-
-    warning( "The argument is outlierIdentifierParameters is expected to be NULL, a pair of numbers, or a function.", call. = TRUE)
-    return(SMRMonFailureSymbol)
-
-  } else {
-    oiFunc <- NULL
-  }
-
-  if( is.function(oiFunc) ) {
-    res <- res[ oiFunc(res$Score), ]
-  }
-
-  smrObj$Value <- res
-
-  smrObj
+  SMRMonProve( smrObj = smrObj, spec = history, item = item, type = "history",
+               normalizeScoresQ = normalizeScoresQ, outlierIdentifierParameters = outlierIdentifierParameters, warningQ = warningQ )
 }
 
 

@@ -10,7 +10,8 @@ SMRMonProveByMetadata(
   item,
   normalizeScoresQ = TRUE,
   style = "intersection",
-  outlierIdentifierParameters = NULL
+  outlierIdentifierParameters = NULL,
+  warningQ = TRUE
 )
 }
 \arguments{
@@ -27,13 +28,15 @@ Must be a row index or row name of \code{smrObj$M}.}
 
 \item{outlierIdentifierParameters}{Outlier identifier parameters or parameters finding function.
 If NULL all tags are returned.}
+
+\item{warningQ}{Should warnings be given?}
 }
 \value{
 An SMRMon object.
 }
 \description{
 For a given profile and item finds scored metadata tags
-that are appear in both the given profile and the profile of the given item.
+that appear in both the given profile and the profile of the given item.
 }
 \details{
 The result is a data frame with columns names "Score", "Index", "Tag"
@@ -44,6 +47,7 @@ Other Recommendations computation functions:
 \code{\link{SMRMonGetTopRecommendations}()},
 \code{\link{SMRMonJoinAcross}()},
 \code{\link{SMRMonProveByHistory}()},
+\code{\link{SMRMonProve}()},
 \code{\link{SMRMonRecommendByProfile}()},
 \code{\link{SMRMonRecommend}()}
 }

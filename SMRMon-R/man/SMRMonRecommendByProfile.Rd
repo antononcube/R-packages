@@ -36,6 +36,7 @@ Other Recommendations computation functions:
 \code{\link{SMRMonJoinAcross}()},
 \code{\link{SMRMonProveByHistory}()},
 \code{\link{SMRMonProveByMetadata}()},
+\code{\link{SMRMonProve}()},
 \code{\link{SMRMonRecommend}()}
 }
 \concept{Recommendations computation functions}

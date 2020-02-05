@@ -9,7 +9,8 @@ SMRMonProveByHistory(
   history,
   item,
   normalizeScoresQ = TRUE,
-  outlierIdentifierParameters = NULL
+  outlierIdentifierParameters = NULL,
+  warningQ = TRUE
 )
 }
 \arguments{
@@ -24,6 +25,8 @@ Must be a row index or row name of \code{smrObj$M}.}
 
 \item{outlierIdentifierParameters}{Outlier identifier parameters or parameters finding function.
 If NULL all items are returned.}
+
+\item{warningQ}{Should warnings be given?}
 }
 \value{
 An SMRMon object.
@@ -41,6 +44,7 @@ Other Recommendations computation functions:
 \code{\link{SMRMonGetTopRecommendations}()},
 \code{\link{SMRMonJoinAcross}()},
 \code{\link{SMRMonProveByMetadata}()},
+\code{\link{SMRMonProve}()},
 \code{\link{SMRMonRecommendByProfile}()},
 \code{\link{SMRMonRecommend}()}
 }

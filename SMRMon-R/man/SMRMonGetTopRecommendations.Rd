@@ -28,6 +28,7 @@ Other Recommendations computation functions:
 \code{\link{SMRMonJoinAcross}()},
 \code{\link{SMRMonProveByHistory}()},
 \code{\link{SMRMonProveByMetadata}()},
+\code{\link{SMRMonProve}()},
 \code{\link{SMRMonRecommendByProfile}()},
 \code{\link{SMRMonRecommend}()}
 }
