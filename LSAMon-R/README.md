@@ -1,6 +1,6 @@
 # Latent Semantic Analysis Monad in R (LSAMon-R)
 
-This package, `LSAMon-R`, implements a software monad for the specification of Latent Semenatic Analysis (LSA) workflows.
+This package, `LSAMon-R`, implements a software monad for the specification of Latent Semantic Analysis (LSA) workflows.
 `LSAMon-R`'s computations are based on the document-term matrix creation functions in the package
 [SparseMatrixRecommender](https://github.com/antononcube/R-packages/tree/master/SparseMatrixRecommender)
 and the packages for matrix factorization
@@ -16,4 +16,10 @@ lsaObj <-
   LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>%
   LSAMonExtractTopics( numberOfTopics = numberOfTopics, minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm, maxSteps = maxSteps, method = "NNMF" ) %>%
   LSAMonEchoTopicsTable( numberOfTerms = 20 )
+```
+
+To install use the command:
+
+```r
+devtools::install_github("antononcube/R-packages", subdir = "LSAMon-R")   
 ```
