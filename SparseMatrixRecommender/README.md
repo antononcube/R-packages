@@ -12,7 +12,9 @@ document-term matrix creation functions and LSI application functions. I include
 package since I wanted to minimize the external package dependencies.
 
 See the notebook 
-[SMR-creation-and-usage-example.Rmd](./notebooks/SMR-creation-and-usage-example.Rmd)
+[SMR-creation-and-usage-example.Rmd](./notebooks/SMR-creation-and-usage-example.Rmd) 
+or the corresponding
+[HTML notebook](https://htmlpreview.github.io/?https://raw.githubusercontent.com/antononcube/R-packages/master/SparseMatrixRecommender/notebooks/SMR-creation-and-usage-example.nb.html)
 for examples.
 
 The package includes two data-sets `dfTitanic` and `dfMushroom` in order to make easier the
