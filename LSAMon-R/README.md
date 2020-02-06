@@ -21,5 +21,8 @@ lsaObj <-
 To install use the command:
 
 ```r
+install.packages("irlba", "magrittr", "purrr")
+devtools::install_github("antononcube/R-packages", subdir = "SparseMatrixRecommender")   
+devtools::install_github("antononcube/R-packages", subdir = "NonNegativeMatrixFactorization")   
 devtools::install_github("antononcube/R-packages", subdir = "LSAMon-R")   
 ```
