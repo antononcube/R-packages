@@ -27,7 +27,6 @@
 #' @import irlba
 #' @import NonNegativeMatrixFactorization
 #' @import SparseMatrixRecommender
-#' @import lattice
 NULL
 
 
