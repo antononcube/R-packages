@@ -8,6 +8,7 @@ output: html_notebook
 ```{r}
 library(SMRMon)
 library(SparseMatrixRecommender)
+library(OutlierIdentifiers)
 library(Matrix)
 library(magrittr)
 ```
@@ -66,14 +67,14 @@ smrObj <-
 
 ```{r}
 smrObj %>% 
-  SMRMonProveByMetadata( profile = focusProfile, item = "id.668", 
+  SMRMonProveByMetadata( profile = focusProfile, items = c("id.668", "id.343", "id.1"), 
                          outlierIdentifierParameters = HampelIdentifierParameters ) %>% 
   SMRMonTakeValue
 ```
 
 ```{r}
 smrObj %>% 
-  SMRMonProveByHistory( history = c("id.727", "id.970"), item = "id.668" ) %>% 
+  SMRMonProveByHistory( history = c("id.727", "id.970"), items = c( "id.668", "id.1") ) %>% 
   SMRMonTakeValue
 ```
 

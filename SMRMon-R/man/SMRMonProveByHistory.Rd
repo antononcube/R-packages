@@ -7,7 +7,7 @@
 SMRMonProveByHistory(
   smrObj,
   history,
-  item,
+  items,
   normalizeScoresQ = TRUE,
   outlierIdentifierParameters = NULL,
   warningQ = TRUE
@@ -18,8 +18,8 @@ SMRMonProveByHistory(
 
 \item{history}{A history specification.}
 
-\item{item}{An item index or name to make proofs for.
-Must be a row index or row name of \code{smrObj$M}.}
+\item{items}{One or more item-indexes or item-names to make proofs for.
+Each element must be a row index or row name of \code{smrObj$M}.}
 
 \item{normalizeScoresQ}{Should the proof scores be normalized or not?}
 

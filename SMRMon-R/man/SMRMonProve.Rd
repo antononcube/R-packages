@@ -7,7 +7,7 @@
 SMRMonProve(
   smrObj,
   spec,
-  item,
+  items,
   type = "metadata",
   normalizeScoresQ = TRUE,
   style = "intersection",
@@ -20,7 +20,7 @@ SMRMonProve(
 
 \item{spec}{A specification that is a profile or a history.}
 
-\item{item}{An item index or name to make proofs for.}
+\item{items}{One or more item-indexes or item-names to make proofs for.}
 
 \item{type}{One of "metadata" or "history".
 Must be a row index or row name of \code{smrObj$M}.}

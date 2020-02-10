@@ -1552,7 +1552,7 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
 #' finds the items of the history that are the closest to recommended item.
 #' @param smrObj An SMRMon object.
 #' @param spec A specification that is a profile or a history.
-#' @param item An item index or name to make proofs for.
+#' @param items One or more item-indexes or item-names to make proofs for.
 #' @param type One of "metadata" or "history".
 #' Must be a row index or row name of \code{smrObj$M}.
 #' @param normalizeScoresQ Should the proof scores be normalized or not?
@@ -1567,7 +1567,7 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
 #' @return An SMRMon object.
 #' @family Recommendations computation functions
 #' @export
-SMRMonProve <- function( smrObj, spec, item, type = "metadata", normalizeScoresQ = TRUE, style = "intersection", outlierIdentifierParameters = NULL, warningQ = TRUE ) {
+SMRMonProve <- function( smrObj, spec, items, type = "metadata", normalizeScoresQ = TRUE, style = "intersection", outlierIdentifierParameters = NULL, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1580,7 +1580,13 @@ SMRMonProve <- function( smrObj, spec, item, type = "metadata", normalizeScoresQ
 
     if( SMRMonFailureQ(dfProfile) ) { return(SMRMonFailureSymbol) }
 
-    res <- SMRMetadataProofs( smr = smrObj, toBeLovedItem = item, profile = dfProfile, normalizeScores = normalizeScoresQ, style = style )
+    res <-
+      purrr::map_df( items, function(x) {
+        cbind( Recommended = x,
+               SMRMetadataProofs( smr = smrObj, toBeLovedItem = x, profile = dfProfile, normalizeScores = normalizeScoresQ, style = style ),
+               stringsAsFactors = FALSE )
+      })
+
 
   } else if ( tolower(type) == "history" ) {
 
@@ -1591,9 +1597,14 @@ SMRMonProve <- function( smrObj, spec, item, type = "metadata", normalizeScoresQ
 
     if( SMRMonFailureQ(dfHistory) ) { return(SMRMonFailureSymbol) }
 
-    res <- SMRHistoryProofs( smr = smrObj, toBeLovedItem = item, history = dfHistory, normalizeScores = normalizeScoresQ )
+    res <-
+      purrr::map_df( items, function(x) {
+        cbind( Recommended = x,
+               SMRHistoryProofs( smr = smrObj, toBeLovedItem = x, history = dfHistory, normalizeScores = normalizeScoresQ ),
+               stringsAsFactors = FALSE )
+      })
 
-    names(res) <- c( names(res)[1:2], smrObj$ItemColumnName )
+    names(res) <- c( names(res)[1:(ncol(res)-1)], smrObj$ItemColumnName )
 
   } else {
     warning( "The argument proofType is expected to be one 'metadata' or 'history'.")
@@ -1623,7 +1634,7 @@ SMRMonProve <- function( smrObj, spec, item, type = "metadata", normalizeScoresQ
 
     if( is.null(res) || nrow(res) == 0 ) {
       warning( paste( "An empty data frame of", type, "proofs was obtained after applying the outlier identification",
-                      "for the item:", item, "." ), call. = TRUE )
+                      "for the item(s):", paste(items, collapse = ","), "." ), call. = TRUE )
     }
   }
 
@@ -1642,8 +1653,8 @@ SMRMonProve <- function( smrObj, spec, item, type = "metadata", normalizeScoresQ
 #' that appear in both the given profile and the profile of the given item.
 #' @param smrObj An SMRMon object.
 #' @param profile A profile specification.
-#' @param item An item index or name to make proofs for.
-#' Must be a row index or row name of \code{smrObj$M}.
+#' @param items One or more item-indexes or item-names to make proofs for.
+#' Each element must be a row index or row name of \code{smrObj$M}.
 #' @param normalizeScoresQ Should the proof scores be normalized or not?
 #' @param style Proof style derivation; one of "intersection", "multiplication".
 #' @param outlierIdentifierParameters Outlier identifier parameters or parameters finding function.
@@ -1654,11 +1665,11 @@ SMRMonProve <- function( smrObj, spec, item, type = "metadata", normalizeScoresQ
 #' @return An SMRMon object.
 #' @family Recommendations computation functions
 #' @export
-SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRUE, style = "intersection", outlierIdentifierParameters = NULL, warningQ = TRUE ) {
+SMRMonProveByMetadata <- function( smrObj, profile, items, normalizeScoresQ = TRUE, style = "intersection", outlierIdentifierParameters = NULL, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  SMRMonProve( smrObj = smrObj, spec = profile, item = item, type = "metadata",
+  SMRMonProve( smrObj = smrObj, spec = profile, items = items, type = "metadata",
                normalizeScoresQ = normalizeScoresQ, style = style, outlierIdentifierParameters = outlierIdentifierParameters, warningQ = warningQ )
 }
 
@@ -1671,8 +1682,8 @@ SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRU
 #' @description Finds the items of the history that are the closest to a recommendation.
 #' @param smrObj An SMRMon object.
 #' @param history A history specification.
-#' @param item An item index or name to make proofs for.
-#' Must be a row index or row name of \code{smrObj$M}.
+#' @param items One or more item-indexes or item-names to make proofs for.
+#' Each element must be a row index or row name of \code{smrObj$M}.
 #' @param normalizeScoresQ Should the proof scores be normalized or not?
 #' @param outlierIdentifierParameters Outlier identifier parameters or parameters finding function.
 #' If NULL all items are returned.
@@ -1683,11 +1694,12 @@ SMRMonProveByMetadata <- function( smrObj, profile, item, normalizeScoresQ = TRU
 #' @return An SMRMon object.
 #' @family Recommendations computation functions
 #' @export
-SMRMonProveByHistory <- function( smrObj, history, item, normalizeScoresQ = TRUE, outlierIdentifierParameters = NULL, warningQ = TRUE ) {
+SMRMonProveByHistory <- function( smrObj, history, items, normalizeScoresQ = TRUE, outlierIdentifierParameters = NULL, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  SMRMonProve( smrObj = smrObj, spec = history, item = item, type = "history",
+
+  SMRMonProve( smrObj = smrObj, spec = history, items = items, type = "history",
                normalizeScoresQ = normalizeScoresQ, outlierIdentifierParameters = outlierIdentifierParameters, warningQ = warningQ )
 }
 

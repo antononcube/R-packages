@@ -7,7 +7,7 @@
 SMRMonProveByMetadata(
   smrObj,
   profile,
-  item,
+  items,
   normalizeScoresQ = TRUE,
   style = "intersection",
   outlierIdentifierParameters = NULL,
@@ -19,8 +19,8 @@ SMRMonProveByMetadata(
 
 \item{profile}{A profile specification.}
 
-\item{item}{An item index or name to make proofs for.
-Must be a row index or row name of \code{smrObj$M}.}
+\item{items}{One or more item-indexes or item-names to make proofs for.
+Each element must be a row index or row name of \code{smrObj$M}.}
 
 \item{normalizeScoresQ}{Should the proof scores be normalized or not?}
 
