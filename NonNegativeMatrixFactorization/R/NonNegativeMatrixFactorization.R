@@ -49,12 +49,27 @@
 #' @import purrr
 NULL
 
+#' Sparse matrix test.
+#' @description Tests is the argument one of sparse matrix classes in
+#' the base package \link{\code{Matrix}}.
+#' @param object An object.
+#' @return A logical value.
+#' @details These class names are considered sparse matrix classes:
+#' \code{names(getClass("Matrix")@subclasses)}.
+#' @export
+SparseMatrixQ <- function(object) {
+  nms <- names(getClass("Matrix")@subclasses)
+  sum( nms %in% class(object) ) > 0
+}
+
 #' Non-Negative Matrix Factorization (NNMF).
 #' @description Returns the pair of matrices {W,H} such that V = W H and
 #' the number of the columns of W and the number of rows of H are k.
 #' The method used is Gradient Descent with Constrained Least Squares.
 #' @param V A sparse matrix.
 #' @param k Rank for the factorization.
+#' @param initialW Initial left factor W. If NULL a random matrix is used.
+#' @param initialH Initial right factor H. If NULL a constant matrix of zeroes is used.
 #' @param maxSteps Maximum steps for the iteration process
 #' @param nonNegativeQ Should the factorization be non-negative or not?
 #' @param epsilon Denominator offset.
@@ -63,7 +78,9 @@ NULL
 #' @param profilingQ Should profiling information be printed during execution or not?
 #' @return A list with named elements corresponding to the matrix factors.
 #' @export
-NNMF <- function( V, k, maxSteps = 200, nonNegativeQ = TRUE, epsilon = 10^-9., regularizationParameter = 0.01, tolerance = 0.0001, profilingQ = FALSE ) {
+NNMF <- function( V, k,
+                  initialW = NULL, initialH = NULL,
+                  maxSteps = 200, nonNegativeQ = TRUE, epsilon = 10^-9., regularizationParameter = 0.01, tolerance = 0.0001, profilingQ = FALSE ) {
 
   ## Initial values
   nSteps <- 0
@@ -72,8 +89,22 @@ NNMF <- function( V, k, maxSteps = 200, nonNegativeQ = TRUE, epsilon = 10^-9., r
   n <- ncol(V)
 
   ## Initialization
-  W <- matrix( runif( n = m*k, min = 0, max = 1 ), nrow = m, ncol = k )
-  H <- matrix( rep( 0, k*n ), nrow = k, ncol = n )
+  if( is.null(initialW) ) {
+    W <- matrix( runif( n = m*k, min = 0, max = 1 ), nrow = m, ncol = k )
+  } else if( is.matrix(initialW) || SparseMatrixQ(initialW) ) {
+    W <- initialW
+  } else {
+    stop( "The argument initialW is expected to be NULL, a matrix, or a sparse matrix.", call. = TRUE )
+  }
+
+  if( is.null(initialH) ) {
+    H <- matrix( rep( 0, k*n ), nrow = k, ncol = n )
+  } else if( is.matrix(initialH) || SparseMatrixQ(initialH) ) {
+    H <- initialH
+  } else {
+    stop( "The argument initialH is expected to be NULL, a matrix, or a sparse matrix.", call. = TRUE )
+  }
+
   normV <- norm( V, "F"); diffNorm <- 10 * normV;
 
   while ( nSteps < maxSteps && normV > 0 && ( diffNorm / normV > tolerance ) ) {

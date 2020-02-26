@@ -17,5 +17,5 @@ NNMFNormalizeMatrixProduct(W, H, normalizeLeftQ = TRUE)
 A list with named elements corresponding to the matrix factors.
 }
 \description{
-Normalization of a matrix product.
+
 }

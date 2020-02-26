@@ -4,14 +4,27 @@
 \alias{NNMF}
 \title{Non-Negative Matrix Factorization (NNMF).}
 \usage{
-NNMF(V, k, maxSteps = 200, nonNegativeQ = TRUE, epsilon = 10^-9,
-  regularizationParameter = 0.01, tolerance = 1e-04,
-  profilingQ = FALSE)
+NNMF(
+  V,
+  k,
+  initialW = NULL,
+  initialH = NULL,
+  maxSteps = 200,
+  nonNegativeQ = TRUE,
+  epsilon = 10^-9,
+  regularizationParameter = 0.01,
+  tolerance = 1e-04,
+  profilingQ = FALSE
+)
 }
 \arguments{
 \item{V}{A sparse matrix.}
 
 \item{k}{Rank for the factorization.}
+
+\item{initialW}{Initial left factor W. If NULL a random matrix is used.}
+
+\item{initialH}{Initial right factor H. If NULL a constant matrix of zeroes is used.}
 
 \item{maxSteps}{Maximum steps for the iteration process}
 

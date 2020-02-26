@@ -4,8 +4,7 @@
 \alias{RowCentralizeSparseMatrix}
 \title{Sparse matrix row centralization.}
 \usage{
-RowCentralizeSparseMatrix(smat, centerFinder = median,
-  spreadFinder = NULL)
+RowCentralizeSparseMatrix(smat, centerFinder = median, spreadFinder = NULL)
 }
 \arguments{
 \item{smat}{A sparse item-tag (document-term) matrix.}
