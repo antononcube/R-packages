@@ -11,11 +11,11 @@ Language: en-US
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/antononcube/R-packages/tree/master/NonNegativeMatrixFactorization
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Imports:
     Matrix
 Suggests: 
     knitr,
     rmarkdown,
-    testthat
+    testthat (>= 2.1.0)
 VignetteBuilder: knitr
