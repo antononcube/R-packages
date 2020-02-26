@@ -8,12 +8,14 @@ LSAMonExtractTopics(
   lsaObj,
   numberOfTopics,
   minNumberOfDocumentsPerTerm = NULL,
+  numberOfInitializingDocuments = 12,
   method = "NNMF",
   maxSteps = NULL,
   tolerance = 0.01,
   profilingQ = TRUE,
   orderBySignificanceQ = TRUE,
   automaticTopicNamesQ = TRUE,
+  initialTopics = NULL,
   ...
 )
 }
@@ -24,6 +26,10 @@ LSAMonExtractTopics(
 
 \item{minNumberOfDocumentsPerTerm}{Minimal number of documents for the terms
 to be considered in the topics.}
+
+\item{numberOfInitializingDocuments}{Number of random documents per
+(random) initializing topic.
+If NULL the standard initialization of NNMF done.}
 
 \item{maxSteps}{Maximum iteration steps.
 If NULL appropriate default values for the different methods are used.
@@ -40,6 +46,9 @@ If NULL appropriate default values for the different methods are used.
 \item{...}{Additional parameters for the matrix decomposition functions.
 See \code{\link{irlba::irlba}} and \code{\link{NonNegativeMatrixFactorization::NNMF}}.
 Note that some of those overlap with some of function's arguments.}
+
+\item{initilTopics}{A list of string vectors.
+Each vector has terms of a initilization topic.}
 }
 \value{
 A LSAMon object.

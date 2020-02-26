@@ -195,7 +195,7 @@ LSAMonSetDocuments <- function( lsaObj, documents ) {
   }
 
   if( is.null( names(documents) ) ) {
-      documents <- setNames( documents, paste( "id", 1:length(documents), sep = "." ) )
+    documents <- setNames( documents, paste( "id", 1:length(documents), sep = "." ) )
   }
 
   lsaObj$Documents <- documents
@@ -729,6 +729,9 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' @param numberOfTopics Number of topics to be extracted.
 #' @param minNumberOfDocumentsPerTerm Minimal number of documents for the terms
 #' to be considered in the topics.
+#' @param numberOfInitializingDocuments Number of random documents per
+#' (random) initializing topic.
+#' If NULL the standard initialization of NNMF done.
 #' @param maxSteps Maximum iteration steps.
 #' If NULL appropriate default values for the different methods are used.
 #' (For NNMF 12, for SVD 1000.)
@@ -736,6 +739,8 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' @param profilingQ Should the computation be profiled?
 #' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
 #' @param automaticTopicNamesQ Should the extracted topics be given automatic names?
+#' @param initilTopics A list of string vectors.
+#' Each vector has terms of a initilization topic.
 #' @param ... Additional parameters for the matrix decomposition functions.
 #' See \code{\link{irlba::irlba}} and \code{\link{NonNegativeMatrixFactorization::NNMF}}.
 #' Note that some of those overlap with some of function's arguments.
@@ -748,11 +753,14 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' The automatic topic name is derived from topic's index and topic's top three words.
 #' (The later is to ensure topic name uniqueness.)
 #' @export
-LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPerTerm = NULL,
-                                   method = "NNMF",
-                                   maxSteps = NULL, tolerance = 0.01, profilingQ = TRUE,
-                                   orderBySignificanceQ = TRUE, automaticTopicNamesQ = TRUE,
-                                   ...) {
+LSAMonExtractTopics <- function( lsaObj, numberOfTopics,
+                                 minNumberOfDocumentsPerTerm = NULL,
+                                 numberOfInitializingDocuments = 12,
+                                 method = "NNMF",
+                                 maxSteps = NULL, tolerance = 0.01, profilingQ = TRUE,
+                                 orderBySignificanceQ = TRUE, automaticTopicNamesQ = TRUE,
+                                 initialTopics = NULL,
+                                 ...) {
 
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
@@ -770,22 +778,22 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
                                       localWeightFunction = "None",
                                       normalizerFunction = "Cosine" ) %>%
       LSAMonExtractTopics( numberOfTopics = numberOfTopics,
-                             minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm,
-                             method = method,
-                             maxSteps = maxSteps,
-                             tolerance = tolerance,
-                             profilingQ = profilingQ,
-                             orderBySignificanceQ = orderBySignificanceQ,
-                             automaticTopicNamesQ = automaticTopicNamesQ,
-                             ... )
+                           minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm,
+                           method = method,
+                           maxSteps = maxSteps,
+                           tolerance = tolerance,
+                           profilingQ = profilingQ,
+                           orderBySignificanceQ = orderBySignificanceQ,
+                           automaticTopicNamesQ = automaticTopicNamesQ,
+                           ... )
 
     return(lsaObj)
   }
 
   wDocTermMat <- lsaObj %>% LSAMonTakeWeightedDocumentTermMatrix()
 
-  if( !( is.numeric(numberOfTopics) && numberOfTopics > 0 ) ) {
-    warning( "The argument numberOfTopics is expected to be a positive integer.", call. = T)
+  if( !( is.numeric(numberOfTopics) && 0 < numberOfTopics && numberOfTopics <= nrow(wDocTermMat) ) ) {
+    warning( "The argument numberOfTopics is expected to be a positive integer not greater than the number of rows of the weighted document-term matrix .", call. = T)
     return(LSAMonFailureSymbol)
   }
 
@@ -799,7 +807,25 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
   }
 
   if( minNumberOfDocumentsPerTerm > nrow(wDocTermMat) ) {
-    warning( "The argument minNumberOfDocumentsPerTerm is expected not to be greater than the number of rows of the weighted document-term matrix.", call. = T)
+    warning( "The argument minNumberOfDocumentsPerTerm is expected to not to be greater than the number of rows of the weighted document-term matrix.", call. = T)
+    return(LSAMonFailureSymbol)
+  }
+
+  if( is.null(numberOfInitializingDocuments) ) { numberOfInitializingDocuments <- 0 }
+
+  if( ! is.numeric(numberOfInitializingDocuments) ) {
+    warning( "The argument numberOfInitializingDocuments is expected to be numeric or NULL.", call. = T)
+    return(LSAMonFailureSymbol)
+  }
+
+  if( !( 0 <= numberOfInitializingDocuments && numberOfInitializingDocuments <= nrow(wDocTermMat) ) ) {
+    warning( "The argument numberOfInitializingDocuments is expected to be greater or equal to 0 and lesser than the number of rows of the weighted document-term matrix.", call. = T)
+    return(LSAMonFailureSymbol)
+  }
+
+  if( !( is.null(initialTopics) ||
+         is.list(initialTopics) && mean( purrr::map_lgl(initialTopics, is.character) ) == 1 ) ) {
+    warning( "The argument initialTopics is expected to be NULL or a list of lists of strings.", call. = T)
     return(LSAMonFailureSymbol)
   }
 
@@ -820,6 +846,24 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
   }
 
   wDocTermMat <- wDocTermMat[ , pred ]
+
+  ## Initial topics to list of known terms.
+  if( ! is.null(initialTopics) ) {
+
+    initialTopicsKnownTerms <-
+      purrr::map( initialTopics, function(x) {
+        colnames(wDocTermMat) %in% x
+      })
+
+    if( mean( purrr::map_int(initialTopicsKnownTerms, length) == purrr::map_int(initialTopics, length) ) < 1  ) {
+      warning( "Some of the specified initial topics terms are not column names in the restricted weighted document-term matrix.", call. = T)
+    }
+
+    if( mean( purrr::map_int(initialTopicsKnownTerms, length) == 0 ) == 1  ) {
+      warning( "None of the specified initial topics terms are column names in the restricted weighted document-term matrix.", call. = T)
+      return(LSAMonFailureSymbol)
+    }
+  }
 
   ## Topic extraction.
   if( tolower(method) %in% tolower(c( "irlba", "SVD")) ) {
@@ -852,10 +896,43 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics, minNumberOfDocumentsPer
 
     if( is.null(maxSteps) ) { maxSteps = 12 }
 
+    initialW <- NULL
+
+    ## Initilization
+    if( !is.null(initialTopics) || numberOfInitializingDocuments > 0 ) {
+
+      ## Maybe it is better to use a permutation matrix.
+      initialW <-
+        purrr::map( 1:numberOfTopics, function(i) {
+          rowSums( wDocTermMat[, sample( 1:nrow(wDocTermMat), numberOfInitializingDocuments ), drop = F ] )
+        })
+
+      initialW <- t( matrix( unlist( initialW ), nrow = numberOfTopics, byrow = TRUE ) )
+    }
+
+    if( !is.null(initialTopics) ) {
+
+      initialW <-
+        Reduce( function(acc, i) {
+          twordsPred <- initialTopics[[i]] %in% colnames(wDocTermMat)
+          if( sum(twordsPred) == 0 ) {
+            NULL
+          } else {
+            col <- colSums( wDocTermMat[, twordsPred, drop = F ] )
+            acc[, i] <- col
+          }
+        },
+        init = initialW,
+        x = 1:length(initialTopics)
+        )
+
+    }
+
     ## Find NNMF decomposition.
     resNNMF <-
       NonNegativeMatrixFactorization::NNMF( V = wDocTermMat,
                                             k = as.integer(numberOfTopics),
+                                            initialW = initialW,
                                             maxSteps = maxSteps,
                                             tolerance = tolerance,
                                             profilingQ = profilingQ )
