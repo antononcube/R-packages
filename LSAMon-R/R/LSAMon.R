@@ -220,7 +220,7 @@ LSAMonSetDocumentTermMatrix <- function( lsaObj, documentTermMatrix ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(documentTermMatrix) || ( "dgCMatrix" %in% class(documentTermMatrix) ) ) ) {
+  if( !( is.null(documentTermMatrix) || SparseMatrixQ(documentTermMatrix) ) ) {
     warning("The argument documentTermMatrix is expected to be NULL or a sparse matrix of type 'dgCMatrix'.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
@@ -285,6 +285,11 @@ LSAMonSetWeightedDocumentTermMatrix <- function( lsaObj, weightedDocumentTermMat
 ## W setter
 ##===========================================================
 
+SparseMatrixQ <- function(x) {
+  ( c("dgCMatrix", "dgRMatrix", "dgTMatrix") %in% class(x) )
+}
+
+
 #' Set W.
 #' @description Sets W into the monad object.
 #' @param lsaObj An LSAMon object.
@@ -296,8 +301,8 @@ LSAMonSetW <- function( lsaObj, W ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(W) || is.matrix(W)) ) {
-    warning("The argument W is expected to be NULL or a matrix.", call. = TRUE)
+  if( !( is.null(W) || is.matrix(W) || SparseMatrixQ(W) ) ) {
+    warning("The argument W is expected to be NULL, a matrix, or a sparse matrix.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -321,8 +326,8 @@ LSAMonSetH <- function( lsaObj, H ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !( is.null(H) || is.matrix(H)) ) {
-    warning("The argument H is expected to be NULL or a matrix.", call. = TRUE)
+  if( !( is.null(H) || is.matrix(H) || SparseMatrixQ(H) ) ) {
+    warning("The argument H is expected to be NULL, a matrix, or a sparse matrix.", call. = TRUE)
     return(LSAMonFailureSymbol)
   }
 
@@ -1055,6 +1060,8 @@ LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
   lsaObj2 <- lsaObj %>% LSAMonNormalizeMatrixProduct( normalizeLeftQ = normalizeLeftQ, orderBySignificanceQ = orderBySignificanceQ )
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
   list( W = lsaObj2 %>% LSAMonTakeW, H = lsaObj2 %>% LSAMonTakeH )
 }
