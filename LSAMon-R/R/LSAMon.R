@@ -904,7 +904,7 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics,
       ## Maybe it is better to use a permutation matrix.
       initialW <-
         purrr::map( 1:numberOfTopics, function(i) {
-          rowSums( wDocTermMat[, sample( 1:nrow(wDocTermMat), numberOfInitializingDocuments ), drop = F ] )
+          rowSums( wDocTermMat[, sample( 1:ncol(wDocTermMat), numberOfInitializingDocuments ), drop = F ] )
         })
 
       initialW <- t( matrix( unlist( initialW ), nrow = numberOfTopics, byrow = TRUE ) )
