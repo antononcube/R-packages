@@ -994,25 +994,25 @@ LSAMonExtractTopics <- function( lsaObj, numberOfTopics,
 
 
 ##===========================================================
-## Take normalized matrix product components
+## Normalized matrix product components
 ##===========================================================
 
-#' Take normalized matrix product components.
+#' Normalized matrix product components.
 #' @description Normalizes the matrix factors and returns a list with them.
 #' @param lsaObj A LSAMon object.
 #' @param normalizeLeftQ Should the left factor be normalized?
 #' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
-#' @return A list of matrices
+#' @return A LSAMon object.
 #' @export
-LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ = TRUE, orderBySignificanceQ = FALSE ) {
+LSAMonNormalizeMatrixProduct <- function( lsaObj, normalizeLeftQ = TRUE, orderBySignificanceQ = FALSE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonTakeNormalizedMatrixProductComponents", logicalResult = T ) ) {
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "H", functionName = "LSAMonNormalizeMatrixProduct", logicalResult = T ) ) {
     return(LSAMonFailureSymbol)
   }
 
-  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "W", functionName = "LSAMonTakeNormalizedMatrixProductComponents", logicalResult = T ) ) {
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj, memberName = "W", functionName = "LSAMonNormalizeMatrixProduct", logicalResult = T ) ) {
     return(LSAMonFailureSymbol)
   }
 
@@ -1031,7 +1031,32 @@ LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ 
     topicSFactors <- topicSFactors[ rev(order(topicSFactors)) ]
   }
 
-  list( W = nres$W, H = nres$H )
+  lsaObj <- lsaObj %>% LSAMonSetW( nres$W )
+  lsaObj <- lsaObj %>% LSAMonSetH( nres$H )
+
+  lsaObj
+}
+
+
+##===========================================================
+## Take normalized matrix product components
+##===========================================================
+
+#' Take normalized matrix product components.
+#' @description Normalizes the matrix factors and returns a list with them.
+#' @param lsaObj A LSAMon object.
+#' @param normalizeLeftQ Should the left factor be normalized?
+#' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
+#' @return A list of matrices
+#' @details Makes a call to \link{\code{LSAMonNormalizeMatrixProduct}}.
+#' @export
+LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ = TRUE, orderBySignificanceQ = FALSE ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  lsaObj2 <- lsaObj %>% LSAMonNormalizeMatrixProduct( normalizeLeftQ = normalizeLeftQ, orderBySignificanceQ = orderBySignificanceQ )
+
+  list( W = lsaObj2 %>% LSAMonTakeW, H = lsaObj2 %>% LSAMonTakeH )
 }
 
 
