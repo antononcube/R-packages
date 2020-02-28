@@ -7,7 +7,7 @@
 LSAMonInterpretBasisVectors(
   lsaObj,
   basisVectorIndexes = NULL,
-  n = 12,
+  numberOfTerms = 12,
   orderBySignificanceQ = TRUE
 )
 }
@@ -17,7 +17,8 @@ LSAMonInterpretBasisVectors(
 \item{basisVectorIndexes}{Basis vectors to be interpreted.
 If NULL all indexes are taken.}
 
-\item{n}{Number of (top) coordinates per basis vector.}
+\item{numberOfTerms}{Number of terms per topic.
+(I.e. number of top coordinates per basis vector.)}
 
 \item{orderBySignificanceQ}{Should the basis vectors be ordered by their significance?}
 }

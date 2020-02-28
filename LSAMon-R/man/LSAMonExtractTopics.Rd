@@ -43,12 +43,12 @@ If NULL appropriate default values for the different methods are used.
 
 \item{automaticTopicNamesQ}{Should the extracted topics be given automatic names?}
 
+\item{initialTopics}{A list of string vectors.
+Each vector has terms of a initialization topic.}
+
 \item{...}{Additional parameters for the matrix decomposition functions.
 See \code{\link{irlba::irlba}} and \code{\link{NonNegativeMatrixFactorization::NNMF}}.
 Note that some of those overlap with some of function's arguments.}
-
-\item{initilTopics}{A list of string vectors.
-Each vector has terms of a initilization topic.}
 }
 \value{
 A LSAMon object.

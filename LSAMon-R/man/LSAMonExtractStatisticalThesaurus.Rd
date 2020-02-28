@@ -4,7 +4,12 @@
 \alias{LSAMonExtractStatisticalThesaurus}
 \title{Statistical thesaurus derivation.}
 \usage{
-LSAMonExtractStatisticalThesaurus(lsaObj, searchWords, n = 12, fixed = TRUE)
+LSAMonExtractStatisticalThesaurus(
+  lsaObj,
+  searchWords,
+  numberOfNearestNeighbors = 12,
+  fixed = TRUE
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}
@@ -12,7 +17,7 @@ LSAMonExtractStatisticalThesaurus(lsaObj, searchWords, n = 12, fixed = TRUE)
 \item{searchWords}{A character vector with words to find statistical
 thesauri for. The words can be patterns.}
 
-\item{n}{Number of words in each thesaurus entry.}
+\item{numberOfNearestNeighbors}{Number of words in each thesaurus entry.}
 
 \item{fixed}{Should \code{searchWords} be considered fixed or pattern strings?}
 }

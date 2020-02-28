@@ -744,8 +744,8 @@ LSAMonApplyTermWeightFunctions <- function( lsaObj, globalWeightFunction = "IDF"
 #' @param profilingQ Should the computation be profiled?
 #' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
 #' @param automaticTopicNamesQ Should the extracted topics be given automatic names?
-#' @param initilTopics A list of string vectors.
-#' Each vector has terms of a initilization topic.
+#' @param initialTopics A list of string vectors.
+#' Each vector has terms of a initialization topic.
 #' @param ... Additional parameters for the matrix decomposition functions.
 #' See \code{\link{irlba::irlba}} and \code{\link{NonNegativeMatrixFactorization::NNMF}}.
 #' Note that some of those overlap with some of function's arguments.
@@ -1076,7 +1076,8 @@ LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ 
 #' @param lsaObj A LSAMon object.
 #' @param basisVectorIndexes Basis vectors to be interpreted.
 #' If NULL all indexes are taken.
-#' @param n Number of (top) coordinates per basis vector.
+#' @param numberOfTerms Number of terms per topic.
+#' (I.e. number of top coordinates per basis vector.)
 #' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
 #' @return A LSAMon object.
 #' @details This function is based on
@@ -1087,7 +1088,7 @@ LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ 
 #' \code{reshape2::dcast( data = lsaObj$Value, formula = TermRank ~ TopicRank, value.var = "Term" )}.
 #' (Note that some columns are dropped.)
 #' @export
-LSAMonInterpretBasisVectors <- function( lsaObj, basisVectorIndexes = NULL, n = 12, orderBySignificanceQ = TRUE ) {
+LSAMonInterpretBasisVectors <- function( lsaObj, basisVectorIndexes = NULL, numberOfTerms = 12, orderBySignificanceQ = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -1119,7 +1120,7 @@ LSAMonInterpretBasisVectors <- function( lsaObj, basisVectorIndexes = NULL, n = 
   topics <-
     purrr::map_df( basisVectorIndexes, function(i) {
 
-      basisVec <- NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation( nres$H[i,], n, colnames(nres$H) )
+      basisVec <- NonNegativeMatrixFactorization::NNMFBasisVectorInterpretation( vec = nres$H[i,], n = numberOfTerms, interpretationTerms = colnames(nres$H) )
 
       data.frame( TopicRank = i,
                   TopicName = rownames(nres$H)[[i]],
@@ -1137,19 +1138,19 @@ LSAMonInterpretBasisVectors <- function( lsaObj, basisVectorIndexes = NULL, n = 
 
 
 ##===========================================================
-## Echo topics table
+## Make topics table
 ##===========================================================
 
-#' Echo topics table.
-#' @description Echoes a table of (the calculated) topics.
+#' Make topics table.
+#' @description Makes a table of (the calculated) topics.
 #' @param lsaObj A LSAMon object.
 #' @param numberOfTerms Number of terms per topic.
 #' @param wideFormQ Should the topics table be in wide form or not?
 #' @param numberOfTableColumns Number of table columns.
-#' (Dummy argument at this point)
+#' (Dummy argument at this point.)
 #' @return A LSAMon object.
 #' @export
-LSAMonEchoTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE, numberOfTableColumns = NA ) {
+LSAMonMakeTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE, numberOfTableColumns = NA ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -1166,12 +1167,43 @@ LSAMonEchoTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE
     dfTopicsWideForm <-
       reshape2::dcast( data = dfTopics, formula = TermRank ~ TopicName, value.var = "Term" )
 
-    print(dfTopicsWideForm)
+    lsaObj$Value <- dfTopicsWideForm
 
   } else {
 
-    print(dfTopics)
+    lsaObj$Value <- dfTopics
+  }
 
+  lsaObj
+}
+
+
+##===========================================================
+## Echo topics table
+##===========================================================
+
+#' Echo topics table.
+#' @description Echoes a table of (the calculated) topics.
+#' @param lsaObj A LSAMon object.
+#' @param numberOfTerms Number of terms per topic.
+#' @param wideFormQ Should the topics table be in wide form or not?
+#' @param numberOfTableColumns Number of table columns.
+#' (Dummy argument at this point.)
+#' @param echoQ Should the result be echoed or not?
+#' @return A LSAMon object.
+#' @export
+LSAMonEchoTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE, numberOfTableColumns = NA, echoQ = TRUE ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  lsaObj <-
+    lsaObj %>%
+    LSAMonMakeTopicsTable( numberOfTerms = numberOfTerms, wideFormQ = wideFormQ, numberOfTableColumns = numberOfTableColumns  )
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( echoQ ) {
+    print( lsaObj %>% LSAMonTakeValue )
   }
 
   lsaObj
@@ -1187,14 +1219,14 @@ LSAMonEchoTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE
 #' @param lsaObj A LSAMon object.
 #' @param searchWords A character vector with words to find statistical
 #' thesauri for. The words can be patterns.
-#' @param n Number of words in each thesaurus entry.
+#' @param numberOfNearestNeighbors Number of words in each thesaurus entry.
 #' @param fixed Should \code{searchWords} be considered fixed or pattern strings?
 #' @return A LSAMon object.
 #' @details This function calls
 #' \code{\link{NonNegativeMatrixFactorization::NearestWords}}.
 #' The obtained list of thesaurus entries is assigned to \code{lsaObj$Value}.
 #' @export
-LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixed = TRUE ) {
+LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, numberOfNearestNeighbors = 12, fixed = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -1210,7 +1242,7 @@ LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, n = 12, fixe
 
         if ( word %in% colnames(lsaObj$H) ) {
           cbind( SearchTerm = word,
-                 Word = NonNegativeMatrixFactorization::NearestWords( lsaObj$H, word, fixed = fixed, n = n ),
+                 Word = NonNegativeMatrixFactorization::NearestWords( lsaObj$H, word, fixed = fixed, n = numberOfNearestNeighbors ),
                  stringsAsFactors = FALSE )
         } else { NULL }
       })
