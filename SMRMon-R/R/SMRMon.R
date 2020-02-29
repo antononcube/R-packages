@@ -1236,17 +1236,17 @@ SMRMonProfileSpecificationQ <- function( smrObj, spec, functionName = "SMRMonPro
 #' (Very inefficient implementation at this point.)
 #' @family Recommendations computation functions
 #' @export
-SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12 ) {
+SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12, ... ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
   if ( is.null(spec) ) {
 
-    res <- smrObj %>% SMRMonRecommend( smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE )
+    res <- smrObj %>% SMRMonRecommend( smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE, ... )
 
     if( !SMRMonFailureQ(res) ) { return(res) }
 
-    res <- smrObj %>% SMRMonRecommendByProfile(  smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE )
+    res <- smrObj %>% SMRMonRecommendByProfile(  smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE, ... )
 
     if( SMRMonFailureQ(res) ) {
       warning( "The monad object 'Value' is not a history or profile specification.", call. = TRUE )
@@ -1254,11 +1254,11 @@ SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12 ) {
 
   } else {
 
-    res <- smrObj %>% SMRMonRecommend( spec, nrecs = nrecs )
+    res <- smrObj %>% SMRMonRecommend( spec, nrecs = nrecs, ... )
 
     if( !SMRMonFailureQ(res) ) { return(res) }
 
-    res <- smrObj %>% SMRMonRecommendByProfile( spec, nrecs = nrecs )
+    res <- smrObj %>% SMRMonRecommendByProfile( spec, nrecs = nrecs, ... )
 
     if( SMRMonFailureQ(res) ) {
       warning( "The argument spec is not a history or profile specification.", call. = TRUE )

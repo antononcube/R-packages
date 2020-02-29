@@ -4,7 +4,7 @@
 \alias{SMRMonGetTopRecommendations}
 \title{Get top recommendations}
 \usage{
-SMRMonGetTopRecommendations(smrObj, spec = NULL, nrecs = 12)
+SMRMonGetTopRecommendations(smrObj, spec = NULL, nrecs = 12, ...)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
