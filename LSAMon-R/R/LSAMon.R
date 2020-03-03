@@ -56,7 +56,10 @@ LSAMonFailureQ <- function(x) { mean(is.na(x)) }
 #' @export
 LSAMonUnit <- function( documents = NULL ) {
 
-  res <- list( Value = NULL, Documents = NULL, DocumentTermMatrix = NULL, Terms = NULL, WeightedDocumentTermMatrix = NULL, W = NULL, H = NULL, TopicColumnPositions = NULL, AutomaticTopicNames = NULL )
+  res <- list( Value = NULL, Documents = NULL, DocumentTermMatrix = NULL, Terms = NULL, WeightedDocumentTermMatrix = NULL,
+               W = NULL, H = NULL, TopicColumnPositions = NULL, AutomaticTopicNames = NULL,
+               SplitPattern = NULL, StemWordsQ = NULL, StopWords = NULL )
+
   attr(res, "class") <- "LSAMon"
 
   if( !is.null(documents) ) {
@@ -595,7 +598,7 @@ LSAMonTakeTopicNames <- function( lsaObj, functionName = "LSAMonTakeTopicNames" 
 #' The documents are expected to have ID's. If \code{is.null(names(lsaObj$Documents))}
 #' then the ID's are just the indexes of the documents list/vector.
 #' @export
-LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "\\W", stemWordsQ = FALSE, stopWords = NULL ) {
+LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]", stemWordsQ = FALSE, stopWords = NULL ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -614,6 +617,10 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "\\W", stemWord
   if( !is.character(splitPattern) ) {
     warning("The argument splitPattern is expected to be a string.", call. = TRUE )
     return(LSAMonFailureSymbol)
+  }
+
+  if( is.null(splitPattern) ) {
+    splitPattern <- "[[:space:]]"
   }
 
   if( is.null(stemWordsQ) ) {
@@ -671,6 +678,7 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "\\W", stemWord
   lsaObj$DocumentTermMatrix <- dtMat
   lsaObj$StopWords <- stopWords
   lsaObj$StemWordsQ <- stemWordsQ
+  lsaObj$SplitPattern <- splitPattern
 
   lsaObj
 }
@@ -1319,11 +1327,14 @@ LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighb
 #' @export
 LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = TRUE ) {
 
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+
   if( is.character(query) ) {
 
     qmat <-
       LSAMonUnit( query ) %>%
-      LSAMonMakeDocumentTermMatrix( stemWordsQ = lsaObj$StemWordsQ, stopWords = lsaObj$StopWords ) %>%
+      LSAMonMakeDocumentTermMatrix( splitPattern = lsaObj$SplitPattern, stemWordsQ = lsaObj$StemWordsQ, stopWords = lsaObj$StopWords ) %>%
       LSAMonTakeDocumentTermMatrix
 
     lsaObj %>% LSAMonRepresentByTerms( query = qmat, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ )
@@ -1347,7 +1358,10 @@ LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = T
         return(LSAMonFailureSymbol)
       }
 
-      qmat <- SparseMatrixRecommender::SMRApplyTermWeightFunctions( qmat, globalWeightFunction = lsaObj$GlobalWeights, lsaObj$LocalWeightFunction, lsaObj$NormalizerFunction )
+      qmat <- SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = qmat,
+                                                                    globalWeightFunction = lsaObj$GlobalWeights,
+                                                                    localWeightFunction = lsaObj$LocalWeightFunction,
+                                                                    normalizerFunction = lsaObj$NormalizerFunction )
 
     }
 
@@ -1382,11 +1396,13 @@ LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = T
 #' @export
 LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = TRUE ) {
 
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
   if( is.character(query) ) {
 
     qmat <-
       LSAMonUnit( query ) %>%
-      LSAMonMakeDocumentTermMatrix( stemWordsQ = lsaObj$StemWordsQ, stopWords = lsaObj$StopWords ) %>%
+      LSAMonMakeDocumentTermMatrix( splitPattern = lsaObj$SplitPattern, stemWordsQ = lsaObj$StemWordsQ, stopWords = lsaObj$StopWords ) %>%
       LSAMonTakeDocumentTermMatrix
 
     lsaObj %>% LSAMonRepresentByTopics( query = qmat, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ )

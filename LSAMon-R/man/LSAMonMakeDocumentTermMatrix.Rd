@@ -6,7 +6,7 @@
 \usage{
 LSAMonMakeDocumentTermMatrix(
   lsaObj,
-  splitPattern = "\\\\W",
+  splitPattern = "[[:space:]]",
   stemWordsQ = FALSE,
   stopWords = NULL
 )
