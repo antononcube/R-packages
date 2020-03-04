@@ -1522,7 +1522,7 @@ SMRSameTags <- function( smrTo, smrFrom ) {
 #' @param tagType A tag type (string).
 #' @return A data frame.
 #' @export
-SMRSparseMatrixToDF <- function( smr, tagType  ) {
+SMRSparseMatrixToDataFrame <- function( smr, tagType  ) {
   
   if( !(tagType %in% smr$TagTypes) ) {
     stop("The parameter tagType is not of the tag types of the SMR object.")
@@ -1542,17 +1542,26 @@ SMRSparseMatrixToDF <- function( smr, tagType  ) {
 #' @description Long form of the data frame.
 #' @param smr A sparse matrix recommender.
 #' @param tagTypes A vector tag types (strings) to make the data frame with.
+#' @param removeTagTypePrefixesQ Should the tag type prefixes be removed from the tags.
+#' @param sep Separator between tag type prefixes and tags.
 #' @return A data frame.
 #' @export
-SMRMatricesToLongDF <- function( smr, tagTypes = NULL ) {
+SMRMatricesToLongForm <- function( smr, tagTypes = NULL, removeTagTypePrefixesQ = FALSE, sep = ":" ) {
   
   if ( is.null(tagTypes) ) { tagTypes = smr$TagTypes }
+
+  if ( !is.character(tagTypes) ) {
+    stop( "The argument tagTypes is expected to be a list of strings or NULL.", call. = TRUE )
+  }  
   
   dfs <-
     purrr::map( tagTypes, function(tt) {
-      df <- SMRSparseMatrixToDF(smr, tt)
+      df <- SMRSparseMatrixToDataFrame(smr, tt)
       if ( nrow(df) == 0 ) { NULL }
       else {
+        if( removeTagTypePrefixesQ ) {
+          df[[tt]] <- gsub( pattern = paste0( tt, sep ), replacement = "", x = df[[tt]], fixed = TRUE )
+        }
         names(df) <- c( smr$ItemColumnName, "Value", "Weight")
         cbind(df, TagType = tt, stringsAsFactors = FALSE )
       }
@@ -1566,10 +1575,13 @@ SMRMatricesToLongDF <- function( smr, tagTypes = NULL ) {
 #' @description Long form of the data frame.
 #' @param smr A sparse matrix object.
 #' @param tagTypes The tag types to make the data frame with.
+#' @param sep Separtor placed between the tags.
+#' @param removeTagTypePrefixesQ Should the tag type prefixes be removed from the tags.
+#' @param tagTypeSep Separator between tag type prefixes and tags.
 #' @return A data frame.
 #' @export
-SMRMatricesToWideDF <- function( smr, tagTypes = NULL, sep = ", ", .progress = "none" ) {
-  df <- SMRMatricesToLongDF( smr, tagTypes )
+SMRMatricesToWideForm <- function( smr, tagTypes = NULL, sep = ", ",  removeTagTypePrefixesQ = FALSE, tagTypeSep = ":" ) {
+  df <- SMRMatricesToLongForm( smr, tagTypes, removeTagTypePrefixesQ, tagTypeSep )
   dfCast <- reshape2::dcast( data = df,
                              formula = as.formula( paste( smr$ItemColumnName, " ~ TagType " ) ),
                              value.var = "Value", fun.aggregate = function(x) paste(x, collapse = sep ) )
