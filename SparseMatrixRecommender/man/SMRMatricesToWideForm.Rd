@@ -17,7 +17,7 @@ SMRMatricesToWideForm(
 
 \item{tagTypes}{The tag types to make the data frame with.}
 
-\item{sep}{Separtor placed between the tags.}
+\item{sep}{Separator placed between the tags.}
 
 \item{removeTagTypePrefixesQ}{Should the tag type prefixes be removed from the tags.}
 

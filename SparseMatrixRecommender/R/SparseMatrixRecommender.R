@@ -1575,7 +1575,7 @@ SMRMatricesToLongForm <- function( smr, tagTypes = NULL, removeTagTypePrefixesQ 
 #' @description Long form of the data frame.
 #' @param smr A sparse matrix object.
 #' @param tagTypes The tag types to make the data frame with.
-#' @param sep Separtor placed between the tags.
+#' @param sep Separator placed between the tags.
 #' @param removeTagTypePrefixesQ Should the tag type prefixes be removed from the tags.
 #' @param tagTypeSep Separator between tag type prefixes and tags.
 #' @return A data frame.
