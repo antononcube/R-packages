@@ -115,6 +115,18 @@
 #' @import reshape2
 NULL
 
+
+#' Is the argument a sparse matrix?
+#' @description Gives TRUE if the argument is a sparse matrix object.
+#' @param x An object to check.
+#' @return Logical
+#' @details The check is done with the code: \code{c("dgCMatrix", "dgRMatrix", "dgTMatrix") %in% class(x)}.
+#' @export
+SMRSparseMatrixQ <- function(x) {
+  sum( c("dgCMatrix", "dgRMatrix", "dgTMatrix") %in% class(x) ) > 0
+}
+
+
 #' Creation of an item-tag contingency matrix
 #' @description Convert to contingency matrix from item consumption "transactions" (e.g. instances of movie watching).
 #' @param dataRows A data frame corresponding to a item consumption metadata table.
@@ -570,24 +582,40 @@ SMRRecommendationsByProfile <- function( smr, profileInds, profileRatings, nrecs
 #' @description Recommend items based on a sparse matrix and specified profile.
 #' @param smr A sparse matrix recommender.
 #' @param profileVec A sparse matrix with 1 row (a row from a sparse matrix).
-#' @param nrecs Number of recommendations to be returned.
+#' @param nrecs Number of recommendations to be returned, numeric or NULL.
+#' If NULL all recommendations are returned.
 #' @return A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
 #' @family Recommendations computation functions
 #' @export
 SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
-  if ( dim( profileVec )[[2]] == dim( smr$M )[[2]] ) {
+
+  if( ! ( is.null(nrecs) || is.numeric(nrecs) && length(nrecs) == 1 && nrecs > 0 ) ) {
+    stop( "The argument nrecs is expected to be a positive integer or NULL.", call. = TRUE )
+  }
+  
+  if( ! ( SMRSparseMatrixQ(profileVec) && ( nrow(profileVec) == 1 || ncol(profileVec) == 1 ) ) ) {
+    stop( "The argument profileVec is expected to be a sparse matrix with one row or one column.", call. = TRUE )
+  }
+  
+  if ( ncol(profileVec) == ncol(smr$M) ) {
     profileVec <- t(profileVec)
   }
+  
   rvec <- smr$M %*% profileVec
-  rvec <- as.array(rvec)
-  recInds <- rev(order(rvec))
-  recScores <- rvec[recInds]
-  if ( nrecs > length(rvec) ) {
-    nrecs <- length(rvec)
+  
+  rvecDF <- as.data.frame( summary(rvec) )
+  rvecDF <- rvecDF[ order(-rvecDF[,3]), ]
+  
+  if( is.null(nrecs) ) { nrecs <- nrow(rvecDF) }
+  
+  if ( nrecs > nrow(rvecDF) ) {
+    nrecs <- nrow(rvecDF)
   }
-  res <- data.frame( Score = recScores[1:nrecs], Index = recInds[1:nrecs], stringsAsFactors = FALSE )
-  res <- cbind( res, Item = rownames(smr$M)[recInds[1:nrecs]], stringsAsFactors = FALSE )
+  
+  res <- rvecDF[1:nrecs, c(3,1)]
+  res <- cbind( res, Item = rownames(smr$M)[ res[,2] ], stringsAsFactors = FALSE )
   names(res)<-c( "Score", "Index", smr$ItemColumnName )
+  
   res
 }
 
@@ -757,6 +785,42 @@ SMRProfileDFToVector <- function( smr, profileDF, tagType = NULL, uniqueColumns 
     stop( "Expected a data frame with names c('Score','Index','Tag'), c('Score','Index'), or c('Score','Tag').", call. = TRUE )
   }
 }
+
+
+#' Extend profile
+#' @description Makes and extended profile of a given profile.
+#' @param smr A sparse matrix recommender.
+#' @param profile A character vector of tags, a profile vector, or a profile data frame.
+#' @param nrecs Number of recommendations.
+#' @param normalizeQ Should the scores in result be normalized by the maximum score?
+#' @details This function has the following steps. 
+#' (1) Find recommendations for the given profile.
+#' (2) Find the profile of the found recommendations.
+#' (3) Optionally, normalize the scores.
+#' @export
+SMRExtendProfile <- function( smr, profile, nrecs = NULL, normalizeQ = TRUE ) {
+  
+  if( is.character(profile) ) {
+    profile <- data.frame( Score = 1, Item = profile, stringsAsFactors = FALSE )
+    profile <- setNames( profile, c("Score", smr$ItemColumnName) )
+  }
+  
+  if( is.data.frame(profile) ) {
+    recs <- SMRRecommendationsByProfileDF( smr = smr, profile = profile, nrecs = nrecs )
+  } else if( SMRSparseMatrixQ(profile) ) {
+    recs <- SMRRecommendationsByProfileVector( smr = smr, profileVec = profile, nrecs = nrecs )
+  } else {
+    stop( "The argument profile is expected to be a data frame or a sparse matrix with one row or one column.", call. = TRUE )
+  }
+  
+  res <- SMRProfileDF( smr = smr, itemHistory = setNames( recs[, c("Score", smr$ItemColumnName)], c("Rating", smr$ItemColumnName) ) )
+  
+  if( normalizeQ && nrow(res) > 0 && res[1,1] > 0) {
+    res[,1] <- res[,1] / max(res[,1])
+  }
+  res
+}
+
 
 #' Interpret recommendations
 #' @description Gives the interpretation of a data frame of recommendations with sparse matrix recommender object.
@@ -1581,7 +1645,7 @@ SMRMatricesToLongForm <- function( smr, tagTypes = NULL, removeTagTypePrefixesQ 
 #' @return A data frame.
 #' @export
 SMRMatricesToWideForm <- function( smr, tagTypes = NULL, sep = ", ",  removeTagTypePrefixesQ = FALSE, tagTypeSep = ":" ) {
-  df <- SMRMatricesToLongForm( smr, tagTypes, removeTagTypePrefixesQ, tagTypeSep )
+  df <- SMRMatricesToLongForm( smr = smr, tagTypes = tagTypes, removeTagTypePrefixesQ = removeTagTypePrefixesQ, sep = tagTypeSep )
   dfCast <- reshape2::dcast( data = df,
                              formula = as.formula( paste( smr$ItemColumnName, " ~ TagType " ) ),
                              value.var = "Value", fun.aggregate = function(x) paste(x, collapse = sep ) )
