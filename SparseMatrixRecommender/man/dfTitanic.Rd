@@ -4,14 +4,16 @@
 \name{dfTitanic}
 \alias{dfTitanic}
 \title{Titanic survival}
-\format{A data frame with 1309 rows and 5 columns.
+\format{
+A data frame with 1309 rows and 5 columns.
 \describe{
   \item{id}{simple, order derived ID}
   \item{passengerClass}{passenger class}
   \item{passengerAge}{passenger age rounded into age groups}
   \item{passengerSex}{passenger sex}
   \item{passengerSurvival}{passenger survival}
-}}
+}
+}
 \source{
 \url{https://datarepository.wolframcloud.com/resources/Sample-Data-Titanic-Survival}
 }

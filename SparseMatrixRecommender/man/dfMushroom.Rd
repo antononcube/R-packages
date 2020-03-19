@@ -4,7 +4,9 @@
 \name{dfMushroom}
 \alias{dfMushroom}
 \title{Mushroom edibility}
-\format{A data frame with 8124 rows and 24 columns.}
+\format{
+A data frame with 8124 rows and 24 columns.
+}
 \source{
 \url{https://datahub.io/machine-learning/mushroom}
 }

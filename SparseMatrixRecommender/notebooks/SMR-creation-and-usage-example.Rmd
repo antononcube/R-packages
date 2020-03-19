@@ -131,8 +131,8 @@ recs <- SMRRecommendationsByProfileDF( smr = smr, profile = prof[, 1:2], nrecs =
 recs %>% dplyr::inner_join( dfTitanic, by = "id" )
 ```
 
-```{r}
-recs2 <- SMRRecommendationsByProfileDF( smr = smr2, profile = prof[, 1:2], nrecs = 12 )
+```{r, rows.print = 20}
+recs2 <- SMRRecommendationsByProfileDF( smr = smr2, profile = prof[, 1:2], nrecs = NULL )
 recs2 %>% dplyr::inner_join( dfTitanic, by = "id" )
 ```
 

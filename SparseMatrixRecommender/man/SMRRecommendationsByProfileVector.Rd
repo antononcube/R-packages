@@ -11,7 +11,8 @@ SMRRecommendationsByProfileVector(smr, profileVec, nrecs)
 
 \item{profileVec}{A sparse matrix with 1 row (a row from a sparse matrix).}
 
-\item{nrecs}{Number of recommendations to be returned.}
+\item{nrecs}{Number of recommendations to be returned, numeric or NULL.
+If NULL all recommendations are returned.}
 }
 \value{
 A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.

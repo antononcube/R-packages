@@ -35,9 +35,11 @@ The implemented normalization function ID's are "Cosine", "Sum", "None".
 }
 \seealso{
 Other Document-term matrix functions: 
+\code{\link{SMRClip}()},
 \code{\link{SMRGlobalTermFunctionWeights}()},
 \code{\link{SMRMakeColumnStochastic}()},
 \code{\link{SMRMakeDocumentTermMatrix}()},
-\code{\link{SMRToBagOfWords}()}
+\code{\link{SMRToBagOfWords}()},
+\code{\link{SMRUnitize}()}
 }
 \concept{Document-term matrix functions}

@@ -28,8 +28,10 @@ Converts a string into a bag of words.
 \seealso{
 Other Document-term matrix functions: 
 \code{\link{SMRApplyTermWeightFunctions}()},
+\code{\link{SMRClip}()},
 \code{\link{SMRGlobalTermFunctionWeights}()},
 \code{\link{SMRMakeColumnStochastic}()},
-\code{\link{SMRMakeDocumentTermMatrix}()}
+\code{\link{SMRMakeDocumentTermMatrix}()},
+\code{\link{SMRUnitize}()}
 }
 \concept{Document-term matrix functions}

@@ -33,8 +33,10 @@ It would be nice if this function uses SMRToBagOfWords function defined above.
 \seealso{
 Other Document-term matrix functions: 
 \code{\link{SMRApplyTermWeightFunctions}()},
+\code{\link{SMRClip}()},
 \code{\link{SMRGlobalTermFunctionWeights}()},
 \code{\link{SMRMakeColumnStochastic}()},
-\code{\link{SMRToBagOfWords}()}
+\code{\link{SMRToBagOfWords}()},
+\code{\link{SMRUnitize}()}
 }
 \concept{Document-term matrix functions}

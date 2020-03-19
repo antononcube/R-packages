@@ -1659,7 +1659,7 @@ SMRMatricesToWideForm <- function( smr, tagTypes = NULL, sep = ", ",  removeTagT
 #' Exports recommender to a directory
 #' @description Exports the recommender to specified directory.
 #' @param smr A sparse matrix recommender.
-#' @param directoryPath A path to a directorsy.
+#' @param directoryPath A path to a directory.
 #' @param dataNameInfix A string designating the exported SMR object.
 #' @details The sparse matrix recommender \code{smr} is
 #' exported using \code{\link{writeMM}}.

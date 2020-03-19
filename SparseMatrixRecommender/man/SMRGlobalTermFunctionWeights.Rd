@@ -23,8 +23,10 @@ The implemented global weight function ID's are "IDF", "GFIDF", "Normal", "Binar
 \seealso{
 Other Document-term matrix functions: 
 \code{\link{SMRApplyTermWeightFunctions}()},
+\code{\link{SMRClip}()},
 \code{\link{SMRMakeColumnStochastic}()},
 \code{\link{SMRMakeDocumentTermMatrix}()},
-\code{\link{SMRToBagOfWords}()}
+\code{\link{SMRToBagOfWords}()},
+\code{\link{SMRUnitize}()}
 }
 \concept{Document-term matrix functions}

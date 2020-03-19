@@ -9,7 +9,7 @@ SMRExportToDirectory(smr, directoryPath, dataNameInfix = "")
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
-\item{directoryPath}{A path to a directorsy.}
+\item{directoryPath}{A path to a directory.}
 
 \item{dataNameInfix}{A string designating the exported SMR object.}
 }
