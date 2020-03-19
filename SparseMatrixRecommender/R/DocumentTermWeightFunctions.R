@@ -54,10 +54,12 @@
 #' @import reshape2
 NULL
 
+
 # Defined for legacy code purposes
 SMRApplyGlobalWeightFunction <- function( docTermMat, globalWeightFunction, normalizerFunction ) {
   SMRApplyTermWeightFunctions( docTermMat, globalWeightFunction, NULL, normalizerFunction )
 }
+
 
 #' Global weights for a document-term matrix.
 #' @description Computes the global weights with a function specification.
@@ -381,4 +383,51 @@ SMRMakeDocumentTermMatrix <- function( documents, ids = NULL, split = "\\W",
   dtMat <- xtabs( formula = ~ id + term, ssDF, sparse = TRUE )
 
   dtMat
+}
+
+
+##===========================================================
+## Additional generally USEFUL functions
+##===========================================================
+
+#' Unitize a sparse matrix.
+#' @description Replaces non-zero entries with 1's.
+#' @param smat A sparse matrix.
+#' @return Sparse matrix
+#' @family Document-term matrix functions
+#' @export
+SMRUnitize <- function(smat) {
+  
+  if( ! SMRSparseMatrixQ(smat) ) {
+    stop( "The first argument is expected to be a sparse matrix.", call. = TRUE )
+  }
+  
+  smat@x[ smat@x != 0 ] <- 1
+  smat
+}
+
+
+#' Clip a sparse matrix.
+#' @description Replaces non-zero entries with 1's.
+#' @param smat A sparse matrix.
+#' @param min Lower boundary.
+#' @param max Upper boundary.
+#' @param vmin New value for values lesser than \code{min}.
+#' @param vmax New value for values greater than \code{max}.
+#' @return Sparse matrix
+#' @family Document-term matrix functions
+#' @export
+SMRClip <- function( smat, min = 0, max = 1, vmin = min, vmax = max ) {
+  
+  if( ! SMRSparseMatrixQ(smat) ) {
+    stop( "The first argument is expected to be a sparse matrix.", call. = TRUE )
+  }
+  
+  smat@x[ smat@x < min ] <- vmin
+  smat@x[ smat@x > max ] <- vmax
+  
+  ## I hope this means removing the 0's from smat@x .
+  smat <- as( smat, "dgCMatrix" )
+  
+  smat
 }
