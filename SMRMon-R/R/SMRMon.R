@@ -1496,7 +1496,7 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
     nTopNNs <- min( 100, nrow(smrObj$M) )
   }
 
-  if( "dgCMatrix" %in% class(profile)  ) {
+  if( SMRSparseMatrixQ(profile)  ) {
 
     profileVec <- profile
 
@@ -1800,8 +1800,8 @@ SMRMonFilterMatrix <- function( smrObj, profile ) {
 #' @details The result is a list of scored tags that is assigned
 #' to \code{smrObj$Value}.
 #' This function is based in \code{\link{SMRClassifyByProfileVector}}.
-#' The tags to correspond to columns of the SMR object sparse matrix.
-#' (The columns of that matrix assumed to be unique.)
+#' The tags correspond to columns of the SMR object sparse matrix.
+#' (The columns of that matrix are assumed to be unique.)
 #' @return An SMRMon object.
 #' @export
 SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsProfile = 100, normalizeQ, ...) {
@@ -1899,7 +1899,7 @@ SMRMonComputeTopK <- function( smrObj, testData, ks, type = "fraction", ...) {
         return(SMRMonFailureSymbol)
       }
 
-      data.frame( SearchID = df$SearchID[1], K = ks, Value = topKStat, stringsAsFactors = FALSE)
+      data.frame( SearchID = df$SearchID[1], K = ks, Value = topKStat, N = nrow(df), stringsAsFactors = FALSE)
     })
 
   smrObj$Value <- res
