@@ -40,6 +40,6 @@ Find nearest neighbors for a given vector of tags.
 The result is a list of scored tags that is assigned
 to \code{smrObj$Value}.
 This function is based in \code{\link{SMRClassifyByProfileVector}}.
-The tags to correspond to columns of the SMR object sparse matrix.
-(The columns of that matrix assumed to be unique.)
+The tags correspond to columns of the SMR object sparse matrix.
+(The columns of that matrix are assumed to be unique.)
 }
