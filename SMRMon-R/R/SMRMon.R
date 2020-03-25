@@ -1705,11 +1705,57 @@ SMRMonProveByHistory <- function( smrObj, history, items, normalizeScoresQ = TRU
 
 
 ##===========================================================
+## Apply tag weights
+##===========================================================
+
+#' Apply tag weights
+#' @description Multiplies the weights of tags of a sparse matrix recommender object.
+#' @param smrObj A sparse matrix recommender.
+#' @param weights A list/vector of weights to be applied.
+#' @param default The weight to be used for weights not specified in weights.
+#' @details
+#' If \code{weights} does not have names it is going to replicated to match
+#' the length of \code{ncol(smr$M)}.
+#' If \code{weights} has names the missing tag types are (if any)
+#' are set to have the value \code{default}.
+#' @return An SMRMon object.
+#' @export
+SMRMonApplyTagWeights <- function( smrObj, weights, default = 1 ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  #default <- if ( is.null(weights$Default) ) { 0 } else { weights$Default }
+
+  if( is.null(names(weights)) ) {
+    weights <- setNames( c( weights, rep( default, ncol(smrObj$M) - length(weights) ) ), colnames(smrObj$M) )
+  }
+
+  cnames <- intersect( colnames(smrObj$M), names(weights) )
+
+  if( length(cnames) == 0 ) {
+    warning( "The tag types specified in weights are not known.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  diffnames <- setdiff( colnames(smrObj$M), cnames )
+
+  weights <- c( weights[cnames], setNames( rep_len( x = default, length.out = length(diffnames) ), diffnames ) )
+
+  weights <- weights[ colnames(smrObj$M) ]
+
+  # SMRApplyTagWeights does multiplication with diagonal matrix made with weights as a diagonal.
+  smrObj$M <- SMRApplyTagWeights( smr = smrObj, weights = weights )
+
+  smrObj
+}
+
+
+##===========================================================
 ## Apply tag type weights
 ##===========================================================
 
 #' Apply tag type weights
-#' @description Applies the weights of tag types of a sparse matrix recommender object.
+#' @description Multiplies the weights of tag types of a sparse matrix recommender object.
 #' @param smrObj A sparse matrix recommender.
 #' @param weights A list/vector of weights to be applied.
 #' @param default The weight to be used for weights not specified in weights.
