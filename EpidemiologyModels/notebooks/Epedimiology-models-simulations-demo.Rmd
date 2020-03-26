@@ -1,12 +1,12 @@
 ---
 title: "Epidemiology models simulations demo"
 author: Anton Antonov
+date: 2020-03-26
 output: html_notebook
 ---
 
 ```{r}
-#library(EpidemiologyModels)
-devtools::load_all()
+library(EpidemiologyModels)
 library(deSolve)
 library(tidyverse)
 library(ggplot2)

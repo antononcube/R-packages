@@ -28,8 +28,8 @@
 
 #' SIR model
 #' @description SIRModel
-#' @param initialConditionsQ Should initial conditions be given?
-#' @param rateRulesQ Should rate rules be given?
+#' @param initialConditionsQ Should initial conditions be included?
+#' @param rateRulesQ Should rate rules be included?
 #' @param A list
 #' @export
 SIRModel <- function( initialConditionsQ = TRUE, rateRulesQ = TRUE ) {
@@ -97,8 +97,8 @@ SIRModel <- function( initialConditionsQ = TRUE, rateRulesQ = TRUE ) {
 
 #' SI2R model
 #' @description SI2RModel
-#' @param initialConditionsQ Should initial conditions be given?
-#' @param rateRulesQ Should rate rules be given?
+#' @param initialConditionsQ Should initial conditions be included?
+#' @param rateRulesQ Should rate rules be included?
 #' @param A list
 #' @export
 SI2RModel <- function( initialConditionsQ = TRUE, rateRulesQ = TRUE ) {
@@ -187,8 +187,8 @@ SI2RModel <- function( initialConditionsQ = TRUE, rateRulesQ = TRUE ) {
 
 #' SEI2RModel model
 #' @description SEI2RModel
-#' @param initialConditionsQ Should initial conditions be given?
-#' @param rateRulesQ Should rate rules be given?
+#' @param initialConditionsQ Should initial conditions be included?
+#' @param rateRulesQ Should rate rules be included?
 #' @param birthsTermQ Should the births term be included or not?
 #' @param A list
 #' @export
