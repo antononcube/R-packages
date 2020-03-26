@@ -1,0 +1,39 @@
+---
+title: "Epidemiology models simulations demo"
+author: Anton Antonov
+output: html_notebook
+---
+
+```{r}
+#library(EpidemiologyModels)
+devtools::load_all()
+library(deSolve)
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+modelSIR <- SEI2RModel()
+modelSIR
+```
+
+```{r}
+times <- seq( 0, 365, 1)
+```
+
+```{r}
+dfSol <- ode(y = modelSIR[["InitialConditions"]], times = times, func = modelSIR[["RHSFunction"]], parms = modelSIR[["RateRules"]])
+dfSol <- as.data.frame(dfSol)
+colnames(dfSol) <- gsub( "time", "Time", colnames(dfSol) )
+head(dfSol)
+```
+
+
+```{r}
+dfSol %>% 
+  tidyr::pivot_longer( cols = colnames(dfSol)[-1], names_to = "Stock", values_to = "Value" ) %>%
+  dplyr::filter( Stock != "MLPt" ) %>% 
+  ggplot( ) +
+  geom_line( aes( x = Time, y = Value, color = Stock ) )
+```
+

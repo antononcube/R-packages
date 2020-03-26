@@ -289,7 +289,7 @@ LSAMonSetWeightedDocumentTermMatrix <- function( lsaObj, weightedDocumentTermMat
 ##===========================================================
 
 SparseMatrixQ <- function(x) {
-  ( c("dgCMatrix", "dgRMatrix", "dgTMatrix") %in% class(x) )
+  sum( c("dgCMatrix", "dgRMatrix", "dgTMatrix") %in% class(x) ) > 0
 }
 
 
