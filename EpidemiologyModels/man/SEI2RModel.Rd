@@ -7,9 +7,9 @@
 SEI2RModel(initialConditionsQ = TRUE, rateRulesQ = TRUE, birthsTermQ = FALSE)
 }
 \arguments{
-\item{initialConditionsQ}{Should initial conditions be given?}
+\item{initialConditionsQ}{Should initial conditions be included?}
 
-\item{rateRulesQ}{Should rate rules be given?}
+\item{rateRulesQ}{Should rate rules be included?}
 
 \item{birthsTermQ}{Should the births term be included or not?}
 

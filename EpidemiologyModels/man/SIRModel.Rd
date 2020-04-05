@@ -7,9 +7,9 @@
 SIRModel(initialConditionsQ = TRUE, rateRulesQ = TRUE)
 }
 \arguments{
-\item{initialConditionsQ}{Should initial conditions be given?}
+\item{initialConditionsQ}{Should initial conditions be included?}
 
-\item{rateRulesQ}{Should rate rules be given?}
+\item{rateRulesQ}{Should rate rules be included?}
 
 \item{A}{list}
 }

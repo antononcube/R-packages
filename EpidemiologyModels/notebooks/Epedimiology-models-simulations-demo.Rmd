@@ -6,14 +6,15 @@ output: html_notebook
 ---
 
 ```{r}
-library(EpidemiologyModels)
+#library(EpidemiologyModels)
+devtools::load_all()
 library(deSolve)
 library(tidyverse)
 library(ggplot2)
 ```
 
 ```{r}
-modelSIR <- SEI2RModel()
+modelSIR <- SEI2HRModel()
 modelSIR
 ```
 
@@ -22,8 +23,12 @@ times <- seq( 0, 365, 1)
 ```
 
 ```{r}
-dfSol <- ode(y = modelSIR[["InitialConditions"]], times = times, func = modelSIR[["RHSFunction"]], parms = modelSIR[["RateRules"]])
-dfSol <- as.data.frame(dfSol)
+sol <- ode(y = modelSIR[["InitialConditions"]], times = times, func = modelSIR[["RHSFunction"]], parms = modelSIR[["RateRules"]], method = "rk4" )
+hist(sol)
+```
+
+```{r}
+dfSol <- as.data.frame(sol)
 colnames(dfSol) <- gsub( "time", "Time", colnames(dfSol) )
 head(dfSol)
 ```
@@ -32,8 +37,17 @@ head(dfSol)
 ```{r}
 dfSol %>% 
   tidyr::pivot_longer( cols = colnames(dfSol)[-1], names_to = "Stock", values_to = "Value" ) %>%
-  dplyr::filter( Stock != "MLPt" ) %>% 
+  dplyr::filter( Stock %in% c( "SPt", "EPt", "INSPt", "ISSPt", "HPt", "RPt", "DIPt" ) ) %>% 
   ggplot( ) +
   geom_line( aes( x = Time, y = Value, color = Stock ) )
 ```
 
+
+
+```{r}
+dfSol %>% 
+  tidyr::pivot_longer( cols = colnames(dfSol)[-1], names_to = "Stock", values_to = "Value" ) %>%
+  dplyr::filter( Stock %in% c( "ISSPt", "HPt", "DIPt" ) ) %>% 
+  ggplot( ) +
+  geom_line( aes( x = Time, y = Value, color = Stock ) )
+```
