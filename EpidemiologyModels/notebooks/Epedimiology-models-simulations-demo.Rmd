@@ -7,7 +7,7 @@ output: html_notebook
 
 ```{r}
 library(EpidemiologyModels)
-#devtools::load_all()
+#devtools::load_all() 
 library(deSolve)
 library(tidyverse)
 library(ggplot2)
@@ -22,15 +22,6 @@ modelSIR
 times <- seq( 0, 365, 1)
 ```
 
-```{r}
-params <- as.list( modelSIR[["RateRules"]] )
-params[ c( "contactRateISSP", "contactRateINSP", "deathRateISSP", "deathRateINSP", "sspf") ] <- c( 0.56, 0.56, 0.034, 0.02, 0.2 )
-params[["contactRateINSP"]] <- function(t) { 0.56 * ifelse( 60 <= t && t <= 120, 0.35, 1 ) }
-params[["contactRateISSP"]] <- function(t) { 0.56 * ifelse( 60 <= t && t <= 120, 0.35, 1 ) }
-params
-```
-
-
 Quarantine scenario:
 
 ```{r}
@@ -38,6 +29,7 @@ modelSIR[["RateRules"]] <- as.list( modelSIR[["RateRules"]] )
 modelSIR[["RateRules"]][["contactRateINSP"]] <- with( list( cr = modelSIR[["RateRules"]][["contactRateINSP"]] ), function(t) { cr * ifelse( 80 <= t && t <= 80 + 56, 0.25, 1 ) } )
 modelSIR[["RateRules"]][["contactRateISSP"]] <- with( list( cr = modelSIR[["RateRules"]][["contactRateISSP"]] ), function(t) { cr * ifelse( 80 <= t && t <= 80 + 56, 0.25, 1 ) } )
 ```
+
 
 ```{r}
 sol <- ode(y = modelSIR[["InitialConditions"]], times = times, func = modelSIR[["RHSFunction"]], parms = modelSIR[["RateRules"]], method = "rk4" )
