@@ -1,0 +1,150 @@
+---
+title: "SEI2HR"
+
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    social: menu
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(shiny)
+library(EpidemiologyModels)
+library(deSolve)
+library(dplyr)
+library(tidyr)
+library(magrittr)
+library(ggplot2)
+```
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+modelSIR <- SEI2HRModel()
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+### Rates
+
+```{r}
+sliderInput( inputId = "contactRateISSP", label = "ISSP contact rate:", min = 0, max = 6, value = 0.56, step = 0.01 )
+
+sliderInput( inputId = "contactRateINSP", label = "INSP contact rate:", min = 0, max = 6, value = 0.56, step = 0.01 )
+
+sliderInput( inputId = "deathRateISSP", label = "ISSP death rate:", min = 0, max = 1, value = 0.035, step = 0.001 )
+
+sliderInput( inputId = "deathRateINSP", label = "INSP death rate:", min = 0, max = 1, value = 0.015, step = 0.001 )
+
+sliderInput( inputId = "sspf", label = "Severely symptomatic population fraction:", min = 0, max = 1, value = 0.2, step = 0.01 )
+```
+
+### Time horizon
+
+```{r}
+sliderInput( inputId = "maxTime", label = "Max time:", min = 1, max = 365, value = 240, step = 1 )
+```
+
+### Stocks to plot
+
+```{r}
+selectInput( inputId = "stocksToPlot", 
+             label = "Stocks to plot:", 
+             choices = c("SPt", "EPt", "INSPt", "ISSPt", "HPt", "RPt", "DIPt" ), 
+             selected = c("SPt", "EPt", "INSPt", "ISSPt", "HPt", "RPt", "DIPt" ), 
+             multiple = TRUE )
+```
+
+### Appearance
+
+```{r}
+checkboxInput( inputId = "moneyPlotLog10", label = "Log 10 money plots?", value = TRUE )
+```
+
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Populations plot
+
+```{r}
+sol <- 
+  reactive({
+    times <- seq(0, input$maxTime, 1) 
+    params <- modelSIR[["RateRules"]]
+    params[ c( "contactRateISSP", "contactRateINSP", "deathRateISSP", "deathRateISSP", "deathRateISSP", "sspf") ] <- c( input$contactRateISSP, input$contactRateINSP, input$deathRateISSP, input$deathRateISSP, input$deathRateISSP, input$sspf)
+    ode(y = modelSIR[["InitialConditions"]], times = times, func = modelSIR[["RHSFunction"]], parms = params, method = "rk4" ) 
+  })
+```
+
+```{r}
+dfSol <- 
+  reactive({
+    res <- as.data.frame(sol()) 
+    colnames(res) <- gsub( "time", "Time", colnames(res) )
+    res
+  })
+```
+
+
+```{r}
+
+renderPlot( expr = {
+  
+  p <-
+    dfSol() %>%
+    tidyr::pivot_longer( cols = colnames(dfSol())[-1], names_to = "Stock", values_to = "Value" )%>% 
+    dplyr::filter( Stock %in% input$stocksToPlot ) %>%
+    ggplot( ) +
+    geom_line( aes( x = Time, y = Value, color = Stock), lwd = 1.2 )
+  
+  print(p)
+})
+```
+
+
+### Money plots
+
+```{r}
+
+renderPlot( expr = {
+  
+  p <-
+    dfSol() %>%
+    tidyr::pivot_longer( cols = colnames(dfSol())[-1], names_to = "Stock", values_to = "Value" )%>% 
+    dplyr::filter( Stock %in% c("MHSt", "MLPt"))
+  
+  p <-
+    if( input$moneyPlotLog10 ) {
+      ggplot(p) +
+        geom_line( aes( x = Time, y = log10(Value), color = Stock), lwd = 1.2 )
+    } else {
+      ggplot(p) +
+        geom_line( aes( x = Time, y = Value, color = Stock), lwd = 1.2 )
+    }  
+  
+  print(p)
+})
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+```{r}
+renderPlot( expr = {
+  
+  p <-
+    dfSol() %>%
+    tidyr::pivot_longer( cols = colnames(dfSol())[-1], names_to = "Stock", values_to = "Value" )%>% 
+    ggplot( ) +
+    geom_histogram( aes( x = Value) ) +
+    facet_wrap( ~Stock, scales = "free", ncol = 2 )
+  
+  print(p)
+})
+```
+
+
