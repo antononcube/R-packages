@@ -23,7 +23,7 @@ library(ggplot2)
 
 ```{r global, include=FALSE}
 # load data in 'global' chunk so it can be shared by all users of the dashboard
-modelSIR <- reactive( SEI2HRModel() )
+modelSIR <- SEI2HRModel()
 ```
 
 Column {.sidebar data-width=300}
