@@ -20,12 +20,13 @@ library(magrittr)
 library(ggplot2)
 ```
 
+
 ```{r global, include=FALSE}
 # load data in 'global' chunk so it can be shared by all users of the dashboard
-modelSIR <- SEI2HRModel()
+modelSIR <- reactive( SEI2HRModel() )
 ```
 
-Column {.sidebar}
+Column {.sidebar data-width=300}
 -----------------------------------------------------------------------
 
 ### Rates
@@ -40,6 +41,16 @@ sliderInput( inputId = "deathRateISSP", label = "ISSP death rate:", min = 0, max
 sliderInput( inputId = "deathRateINSP", label = "INSP death rate:", min = 0, max = 1, value = 0.015, step = 0.001 )
 
 sliderInput( inputId = "sspf", label = "Severely symptomatic population fraction:", min = 0, max = 1, value = 0.2, step = 0.01 )
+```
+
+### Quarantine parameters
+
+```{r}
+sliderInput( inputId = "qsd", label = "Quarantine start date:", min = 0, max = 365, value = 60, step = 1 )
+
+sliderInput( inputId = "ql", label = "Quarantine length:", min = 0, max = 365, value = 56, step = 1 )
+
+sliderInput( inputId = "qcrf", label = "Quarantine contact rate factor:", min = 0, max = 2, value = 0.25, step = 0.01 )
 ```
 
 ### Time horizon
@@ -74,24 +85,31 @@ Column {data-width=650}
 sol <- 
   reactive({
     times <- seq(0, input$maxTime, 1) 
-    params <- modelSIR[["RateRules"]]
-    params[ c( "contactRateISSP", "contactRateINSP", "deathRateISSP", "deathRateISSP", "deathRateISSP", "sspf") ] <- c( input$contactRateISSP, input$contactRateINSP, input$deathRateISSP, input$deathRateISSP, input$deathRateISSP, input$sspf)
-    ode(y = modelSIR[["InitialConditions"]], times = times, func = modelSIR[["RHSFunction"]], parms = params, method = "rk4" ) 
+    
+    localParams <- as.list( modelSIR[["RateRules"]] )
+    
+    localParams[ c( "contactRateISSP", "contactRateINSP", "deathRateISSP", "deathRateINSP", "sspf") ] <- c( input$contactRateISSP, input$contactRateINSP, input$deathRateISSP, input$deathRateINSP, input$sspf)
+    
+    localParams[["contactRateINSP"]] <- function(t) { input$contactRateISSP * ifelse( input$qsd <= t && t <= input$qsd + input$ql, input$qcrf, 1 ) }
+    localParams[["contactRateISSP"]] <- function(t) { input$contactRateINSP * ifelse( input$qsd <= t && t <= input$qsd + input$ql, input$qcrf, 1 ) }
+
+    ode(y = modelSIR[["InitialConditions"]], times = times, func = modelSIR[["RHSFunction"]], parms = localParams, method = "lsoda" ) 
   })
 ```
 
 ```{r}
 dfSol <- 
   reactive({
+    
     res <- as.data.frame(sol()) 
     colnames(res) <- gsub( "time", "Time", colnames(res) )
+    
     res
   })
 ```
 
 
 ```{r}
-
 renderPlot( expr = {
   
   p <-
@@ -109,7 +127,6 @@ renderPlot( expr = {
 ### Money plots
 
 ```{r}
-
 renderPlot( expr = {
   
   p <-
@@ -133,6 +150,8 @@ renderPlot( expr = {
 Column {data-width=350}
 -----------------------------------------------------------------------
 
+### Stock histograms
+
 ```{r}
 renderPlot( expr = {
   
@@ -140,7 +159,7 @@ renderPlot( expr = {
     dfSol() %>%
     tidyr::pivot_longer( cols = colnames(dfSol())[-1], names_to = "Stock", values_to = "Value" )%>% 
     ggplot( ) +
-    geom_histogram( aes( x = Value) ) +
+    geom_histogram( aes( x = Value), bins = 30 ) +
     facet_wrap( ~Stock, scales = "free", ncol = 2 )
   
   print(p)

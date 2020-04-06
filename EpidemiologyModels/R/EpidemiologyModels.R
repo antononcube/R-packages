@@ -338,9 +338,24 @@ SEI2HRModel <- function( initialConditionsQ = TRUE, rateRulesQ = TRUE, birthsTer
           with(as.list( c( state, parameters ) ) ,
                {
 
+                 ##----------------------------------------
 
-                 newBySeverelyInfectedTerm <-  contactRateISSP / TP0 * SPt * max( ISSPt - HPt, 0) + contactRateHP / TP0 * SPt * HPt;
-                 newByNormallyInfectedTerm <-  contactRateINSP / TP0 * SPt * INSPt;
+                 if( is.function(contactRateINSP) ) {
+                   nContactRateINSP <- contactRateINSP(time)
+                 } else {
+                   nContactRateINSP <- contactRateINSP
+                 }
+
+                 if( is.function(contactRateISSP) ) {
+                   nContactRateISSP <- contactRateISSP(time)
+                 } else {
+                   nContactRateISSP <- contactRateISSP
+                 }
+
+                 ##----------------------------------------
+
+                 newBySeverelyInfectedTerm <- nContactRateISSP / TP0 * SPt * max( ISSPt - HPt, 0) + contactRateHP / TP0 * SPt * HPt;
+                 newByNormallyInfectedTerm <- nContactRateINSP / TP0 * SPt * INSPt;
                  newlyInfectedTerm <-  newBySeverelyInfectedTerm + newByNormallyInfectedTerm;
 
                  peopleDyingPerDay <- deathRateISSP * ( ISSPt - HPt ) + deathRateINSP * INSPt + deathRateHP * HPt;
