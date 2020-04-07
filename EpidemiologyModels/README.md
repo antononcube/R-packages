@@ -14,14 +14,15 @@ The content of the package corresponds to the Mathematica packages and notebooks
 
 ## Installation
 
-Here is the installation command:
+Here is an installation command using ["devtools"](https://cran.r-project.org/web/packages/devtools/readme/README.html):
+
 ```r
 devtools::install_github(repo = "antononcube/R-packages", subdir = "EpidemiologyModels")
 ```
 
-*Remark:* The simulations done by the package functions rely on the R package 
+**Remark:** The simulations done by the package functions rely on the R package 
 ["deSolve"](https://cran.r-project.org/web/packages/deSolve/index.html),
-which in turn relies on FORTRAN code. For example, on Mac OS X the installation of gfortran is needed.
+which in turn relies on FORTRAN code. For example, on Mac OS X the installation of `gfortran` is needed.
 
 ## Usage
 
@@ -33,14 +34,14 @@ The package repository has:
 
 Here are the models 
 
-  - SIR 
+  - SIR   
     “Susceptible, Infected, Recovered” populations
 
-  - SEI2R 
+  - SEI2R   
     “Susceptible, Exposed, Infected two, Recovered” populations
 
-  - SEI2HR
-  - “Susceptible, Exposed, Infected two, Hospitalized, Recovered” populations
+  - SEI2HR   
+    “Susceptible, Exposed, Infected two, Hospitalized, Recovered” populations
 
 
 ## References
@@ -53,8 +54,6 @@ Here are the models
 
 [HH1] Herbert W. Hethcote (2000). ["The Mathematics of Infectious Diseases"](http://leonidzhukov.net/hse/2014/socialnetworks/papers/2000SiamRev.pdf). SIAM Review. 42 (4): 599–653. Bibcode:2000SIAMR..42..599H. doi:10.1137/s0036144500371907.
 
-[BC1] Lucia Breierova,  Mark Choudhari,  [An Introduction to Sensitivity Analysis](https://ocw.mit.edu/courses/sloan-school-of-management/15-988-system-dynamics-self-study-fall-1998-spring-1999/readings/sensitivityanalysis.pdf), (1996), Massachusetts Institute of Technology.
-
 [AA1] Anton Antonov, ["Coronavirus propagation modeling considerations"](https://github.com/antononcube/SystemModeling/blob/master/Projects/Coronavirus-propagation-dynamics/Documents/Coronavirus-propagation-modeling-considerations.md), (2020), [SystemModeling at GitHub](https://github.com/antononcube/SystemModeling).
 
 [AA2] Anton Antonov, ["Basic experiments workflow for simple epidemiological models"](https://github.com/antononcube/SystemModeling/blob/master/Projects/Coronavirus-propagation-dynamics/Documents/Basic-experiments-workflow-for-simple-epidemiological-models.md), (2020), [SystemModeling at GitHub](https://github.com/antononcube/SystemModeling).
@@ -62,8 +61,6 @@ Here are the models
 [AA3] Anton Antonov, ["Scaling of Epidemiology Models with Multi-site Compartments"](https://github.com/antononcube/SystemModeling/blob/master/Projects/Coronavirus-propagation-dynamics/Documents/Scaling-of-epidemiology-models-with-multi-site-compartments.md), (2020), [SystemModeling at GitHub](https://github.com/antononcube/SystemModeling).
 
 ### Repositories, packages
-
-[WRI1] Wolfram Research, Inc., ["Epidemic Data for Novel Coronavirus COVID-19"](https://www.wolframcloud.com/obj/resourcesystem/published/DataRepository/resources/Epidemic-Data-for-Novel-Coronavirus-COVID-19), [WolframCloud](https://www.wolframcloud.com).
 
 [AAr1] Anton Antonov, [Coronavirus propagation dynamics project](https://github.com/antononcube/SystemModeling/tree/master/Projects/Coronavirus-propagation-dynamics), (2020), [SystemModeling at GitHub](https://github.com/antononcube/SystemModeling).
 
