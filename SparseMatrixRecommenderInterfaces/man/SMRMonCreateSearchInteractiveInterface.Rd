@@ -4,11 +4,18 @@
 \alias{SMRMonCreateSearchInteractiveInterface}
 \title{Creation of a SMRMon search interface}
 \usage{
-SMRMonCreateSearchInteractiveInterface(smrObj, itemData,
-  itemDataColNames = NULL, itemDataIDColName = NULL,
-  itemListIDsSplitPattern = "\\\\W", dashboardTheme = NULL)
+SMRMonCreateSearchInteractiveInterface(
+  smrObj,
+  itemData,
+  itemDataColNames = NULL,
+  itemDataIDColName = NULL,
+  itemListIDsSplitPattern = "\\\\W",
+  dashboardTheme = NULL
+)
 }
 \arguments{
+\item{smrObj}{A SMRMon object.}
+
 \item{itemData}{A data frame with rows corresponding to items (to be recommended.)}
 
 \item{itemDataColNames}{Which column names of \code{itemData} should be used in
@@ -23,8 +30,6 @@ and ratings list.}
 \item{dashboardTheme}{A string specifying the dashbaard theme.
 See \code{\link{dashboardthemes::shinyDashboardThemes}}.
 Ignored if the package \code{dashboardthemes} is not installed.}
-
-\item{smarObj}{A SMRMon object.}
 }
 \value{
 Shiny app
@@ -37,8 +42,10 @@ The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 used if the row ID's have white spaces in them.
 }
 \seealso{
-Other SMRMon interface functions: \code{\link{SMRMonCreateInteractiveInterface}},
-  \code{\link{SMRMonMakeSearchUI}},
-  \code{\link{SMRMonMakeUI}}
+Other SMRMon interface functions: 
+\code{\link{SMRMonCreateInteractiveInterface}()},
+\code{\link{SMRMonMakeSearchServerFunction}()},
+\code{\link{SMRMonMakeSearchUI}()},
+\code{\link{SMRMonMakeUI}()}
 }
 \concept{SMRMon interface functions}

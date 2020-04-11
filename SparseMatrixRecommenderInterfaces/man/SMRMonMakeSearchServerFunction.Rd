@@ -4,8 +4,13 @@
 \alias{SMRMonMakeSearchServerFunction}
 \title{SMRMon search interface server function}
 \usage{
-SMRMonMakeSearchServerFunction(smrObj, itemData, itemDataColNames = NULL,
-  itemDataIDColName = NULL, itemListIDsSplitPattern = "\\\\W")
+SMRMonMakeSearchServerFunction(
+  smrObj,
+  itemData,
+  itemDataColNames = NULL,
+  itemDataIDColName = NULL,
+  itemListIDsSplitPattern = "\\\\W"
+)
 }
 \arguments{
 \item{smrObj}{A time series recommender.}
@@ -32,9 +37,10 @@ The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 used if the row ID's have white spaces in them.
 }
 \seealso{
-Other SMR interface functions: \code{\link{SMRCreateInteractiveInterface}},
-  \code{\link{SMRMakeServerFunction}},
-  \code{\link{SMRMakeUI}},
-  \code{\link{SMRMonMakeServerFunction}}
+Other SMRMon interface functions: 
+\code{\link{SMRMonCreateInteractiveInterface}()},
+\code{\link{SMRMonCreateSearchInteractiveInterface}()},
+\code{\link{SMRMonMakeSearchUI}()},
+\code{\link{SMRMonMakeUI}()}
 }
-\concept{SMR interface functions}
+\concept{SMRMon interface functions}

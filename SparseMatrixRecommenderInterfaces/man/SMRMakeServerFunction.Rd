@@ -4,9 +4,14 @@
 \alias{SMRMakeServerFunction}
 \title{Sparse matrix recommender interface server function}
 \usage{
-SMRMakeServerFunction(itemSMR, itemData, itemDataColNames = NULL,
-  itemDataIDColName = NULL, searchColName = NULL,
-  itemListIDsSplitPattern = "\\\\W")
+SMRMakeServerFunction(
+  itemSMR,
+  itemData,
+  itemDataColNames = NULL,
+  itemDataIDColName = NULL,
+  searchColName = NULL,
+  itemListIDsSplitPattern = "\\\\W"
+)
 }
 \arguments{
 \item{itemSMR}{A time series recommender.}
@@ -35,9 +40,9 @@ The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 used if the row ID's have white spaces in them.
 }
 \seealso{
-Other SMR interface functions: \code{\link{SMRCreateInteractiveInterface}},
-  \code{\link{SMRMakeUI}},
-  \code{\link{SMRMonMakeSearchServerFunction}},
-  \code{\link{SMRMonMakeServerFunction}}
+Other SMR interface functions: 
+\code{\link{SMRCreateInteractiveInterface}()},
+\code{\link{SMRMakeUI}()},
+\code{\link{SMRMonMakeServerFunction}()}
 }
 \concept{SMR interface functions}

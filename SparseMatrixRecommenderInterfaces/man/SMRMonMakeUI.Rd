@@ -20,8 +20,10 @@ Shiny UI object.
 Creates the Shiny UI function for a sparse matrix recommender SMRMon interface.
 }
 \seealso{
-Other SMRMon interface functions: \code{\link{SMRMonCreateInteractiveInterface}},
-  \code{\link{SMRMonCreateSearchInteractiveInterface}},
-  \code{\link{SMRMonMakeSearchUI}}
+Other SMRMon interface functions: 
+\code{\link{SMRMonCreateInteractiveInterface}()},
+\code{\link{SMRMonCreateSearchInteractiveInterface}()},
+\code{\link{SMRMonMakeSearchServerFunction}()},
+\code{\link{SMRMonMakeSearchUI}()}
 }
 \concept{SMRMon interface functions}

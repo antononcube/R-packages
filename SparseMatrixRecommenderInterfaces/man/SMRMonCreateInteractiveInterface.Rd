@@ -4,10 +4,15 @@
 \alias{SMRMonCreateInteractiveInterface}
 \title{Creation of a SMRMon interface}
 \usage{
-SMRMonCreateInteractiveInterface(smrObj, itemData,
-  itemDataColNames = NULL, itemDataIDColName = NULL,
-  searchColName = NULL, itemListIDsSplitPattern = "\\\\W",
-  dashboardTheme = NULL)
+SMRMonCreateInteractiveInterface(
+  smrObj,
+  itemData,
+  itemDataColNames = NULL,
+  itemDataIDColName = NULL,
+  searchColName = NULL,
+  itemListIDsSplitPattern = "\\\\W",
+  dashboardTheme = NULL
+)
 }
 \arguments{
 \item{itemData}{A data frame with rows corresponding to items (to be recommended.)}
@@ -38,8 +43,10 @@ The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 used if the row ID's have white spaces in them.
 }
 \seealso{
-Other SMRMon interface functions: \code{\link{SMRMonCreateSearchInteractiveInterface}},
-  \code{\link{SMRMonMakeSearchUI}},
-  \code{\link{SMRMonMakeUI}}
+Other SMRMon interface functions: 
+\code{\link{SMRMonCreateSearchInteractiveInterface}()},
+\code{\link{SMRMonMakeSearchServerFunction}()},
+\code{\link{SMRMonMakeSearchUI}()},
+\code{\link{SMRMonMakeUI}()}
 }
 \concept{SMRMon interface functions}

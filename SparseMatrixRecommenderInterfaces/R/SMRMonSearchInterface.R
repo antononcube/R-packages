@@ -232,7 +232,7 @@ SMRMonMakeSearchUI <- function( smrObj, dashboardTheme = NULL ) {
 #' @details  The default value of \code{itemListIDsSplitPattern} is '\\W', but "," should be
 #' used if the row ID's have white spaces in them.
 #' @return Shiny server function.
-#' @family SMR interface functions
+#' @family SMRMon interface functions
 #' @export
 SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames = NULL, itemDataIDColName = NULL, itemListIDsSplitPattern = "\\W" ) {
 
@@ -517,7 +517,7 @@ SMRMonMakeSearchServerFunction <- function( smrObj, itemData, itemDataColNames =
 ##===========================================================
 
 #' Creation of a SMRMon search interface
-#' @param smarObj A SMRMon object.
+#' @param smrObj A SMRMon object.
 #' @param itemData A data frame with rows corresponding to items (to be recommended.)
 #' @param itemDataColNames Which column names of \code{itemData} should be used in
 #' the search and recommendation results.

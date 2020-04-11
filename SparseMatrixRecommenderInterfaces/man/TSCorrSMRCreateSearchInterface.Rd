@@ -19,7 +19,8 @@ Creates Shiny interface for a given time series recommender and
 optional search time series shapes.
 }
 \seealso{
-Other Time series search interface functions: \code{\link{TSCorrSMRMakeServerFunction}},
-  \code{\link{TSCorrSMRMakeUI}}
+Other Time series search interface functions: 
+\code{\link{TSCorrSMRMakeServerFunction}()},
+\code{\link{TSCorrSMRMakeUI}()}
 }
 \concept{Time series search interface functions}
