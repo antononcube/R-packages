@@ -1405,13 +1405,13 @@ SMRMonProfile <- function( smrObj, history, tagTypesQ = FALSE ) {
 
   if( tagTypesQ ) {
 
-      ttInds <- c( smrObj$TagTypeRanges$Begin, smrObj$TagTypeRanges$End[ nrow(smrObj$TagTypeRanges) ])
+    ttInds <- c( smrObj$TagTypeRanges$Begin, smrObj$TagTypeRanges$End[ nrow(smrObj$TagTypeRanges) ])
 
-      tts <- findInterval( res$Index, ttInds, all.inside = TRUE )
+    tts <- findInterval( res$Index, ttInds, all.inside = TRUE )
 
-      res <- cbind( res, TagType = rownames(smrObj$TagTypeRanges)[ tts ], stringsAsFactors = FALSE )
+    res <- cbind( res, TagType = rownames(smrObj$TagTypeRanges)[ tts ], stringsAsFactors = FALSE )
 
-      res <- res[ , c( "Score", "Index", "TagType", "Tag") ]
+    res <- res[ , c( "Score", "Index", "TagType", "Tag") ]
   }
 
   smrObj$Value <- res
@@ -1953,5 +1953,109 @@ SMRMonComputeTopK <- function( smrObj, testData, ks, type = "fraction", ...) {
   smrObj
 }
 
+
+
+##===========================================================
+## SMRMonRetrievalByProfileStatistics
+##===========================================================
+
+#' Top-K statistic computation
+#' @description Computes the Top-K statistic for a data frame with the scored similarity pairs.
+#' @param smrObj A sparse matrix recommender.
+#' @param focusTag The tag to be tested.
+#' @param focusTagType The tag type of the tag to be tested.
+#' @param profileTagTypes A character vector of tag types.
+#' @details The computation result is assigned to \code{smrObj$Value}.
+#' The computation steps follow.
+#' (1) Find all items that have \code{focustTag}.
+#' (2) Find the profile of the focus tag items.
+#' (3) Find recommendations with the profile according to \code{max(nrecs)}.
+#' (4) Find how many focus tag items (of step 1) are present in the recommendations (of step 3).
+#' @return An SMRMon object.
+#' @export
+SMRMonRetrievalByProfileStatistics <- function( smrObj, focusTag, focusTagType, profileTagTypes, nrecs = c(100) ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( ! ( is.character(focusTag) && length(focusTag) == 1 ) ) {
+    warning( "The argument focusTag is expected to be a character vector of length 1.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( ! ( is.character(focusTagType) && length(focusTagType) == 1 ) ) {
+    warning( "The argument focusTagType is expected to be a character vector of length 1.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( !is.character(profileTagTypes) ) {
+    warning( "The argument profileTagTypes is expected to be a character vector.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( !( is.numeric(nrecs) && mean(nrecs > 0) == 1 ) ) {
+    warning( "The argument nrecs is expected to be a vector of positive integers.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( !( focusTagType %in% (smrObj %>% SMRMonTakeTagTypes) ) ) {
+    warning( "The value of focusTagType is not known by the recommender object smrObj.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( mean( profileTagTypes %in% (smrObj %>% SMRMonTakeTagTypes) ) < 1 ) {
+    warning( "At least one of profileTagTypes is not known by the recommender object smrObj.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Get the items corresponding to a tag.
+  dfTagItems <-
+    smrObj %>%
+    SMRMonRecommendByProfile( profile = focusTag, nrecs = NULL ) %>%
+    SMRMonTakeValue
+
+  ## Find the profile of the tag items.
+  ## Take profile tags that belong to the specified tag types.
+  dfTagProfile <-
+    smrObj %>%
+    SMRMonProfile( history = dfTagItems[[ smrObj %>% SMRMonTakeItemColumnName ]], tagTypesQ = TRUE ) %>%
+    SMRMonTakeValue %>%
+    dplyr::filter( TagType %in% profileTagTypes )
+
+  ## Find recommendations with the tag profile.
+  dfRecs <-
+    smrObj %>%
+    SMRMonRecommendByProfile( profile = dfTagProfile, nrecs = max(nrecs) ) %>%
+    SMRMonTakeValue
+
+  ## Get the sub-matrix for the focus tag type.
+  smat <- SMRSubMatrix( smrObj, tagType = focusTagType )
+
+  dfRecs <- dfRecs[ dfRecs[[ smrObj %>% SMRMonTakeItemColumnName ]] %in% rownames(smat), ]
+
+  if( nrow(dfRecs) == 0 ) {
+    warning( paste0( "No recommendations were found for tag: '", focusTag, "'."), call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Compute Top-K statistics.
+  res <-
+    purrr::map_df( nrecs, function(k) {
+
+      smat <- smat[ dfRecs[[ smrObj %>% SMRMonTakeItemColumnName ]][ 1:min(k, nrow(dfRecs) ) ], ]
+      dfRecTags <- SMRSparseMatrixToTriplets(smat)
+
+      data.frame( Tag = focusTag,
+                  Mean = sum( dfRecTags$j == focusTag ) / min(nrow(dfTagItems), k),
+                  TopKMean = mean( dfRecTags$j == focusTag ),
+                  Count = sum( dfRecTags$j == focusTag ),
+                  K = k,
+                  N = nrow(dfTagItems),
+                  stringsAsFactors = FALSE )
+    })
+
+  smrObj$Value <- res
+
+  smrObj
+}
 
 

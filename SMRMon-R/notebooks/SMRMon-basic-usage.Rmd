@@ -157,3 +157,28 @@ smrObj3 %>%
   SMRMonTakeM
 ```
 
+# Retrieval test
+
+```{r}
+smrObj <-
+  SMRMonUnit( data = dfTitanic ) %>%
+  SMRMonCreate( itemColumnName = "id", addTagTypesToColumnNamesQ = FALSE )
+```
+
+```{r}
+smrObj %>% SMRMonTakeTagTypes
+```
+
+```{r}
+colnames(smrObj %>% SMRMonTakeM)
+```
+```{r}
+smrObj <- smrObj %>% SMRMonApplyTagTypeWeights( weights = c(), default = 1 )
+```
+
+```{r}
+smrObj %>% 
+  SMRMonRetrievalByProfileStatistics( focusTag = "10", focusTagType = "passengerAge", profileTagTypes = c("passengerSex", "passengerSurvival"), nrecs = c( 100, 200) ) %>% 
+  SMRMonTakeValue
+```
+
