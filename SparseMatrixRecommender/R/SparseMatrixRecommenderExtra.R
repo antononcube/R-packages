@@ -40,7 +40,7 @@ ListOfSparseMatrixRecommendersQ <- function(obj) {
   if( !is.list(obj) ) { 
     FALSE
   } else {
-    res <- purrr::map( obj, function(x) { SparseMatrixRecommenderQ(x) })
+    res <- purrr::map_lgl( obj, function(x) { SparseMatrixRecommenderQ(x) })
     mean(res) == 1
   }
 
