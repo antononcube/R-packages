@@ -4,7 +4,7 @@
 \alias{SMRToMetadataRecommender}
 \title{Convert to a metadata recommender}
 \usage{
-SMRToMetadataRecommender(smr, tagType, nTopTags = 1)
+SMRToMetadataRecommender(smr, tagType, nTopTags = 1, ...)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
@@ -21,7 +21,7 @@ A sparse matrix recommender
 }
 \description{
 Converts the recommender object into a recommender for a 
-specified taga type.
+specified tag type.
 }
 \details{
 The following steps are taken.

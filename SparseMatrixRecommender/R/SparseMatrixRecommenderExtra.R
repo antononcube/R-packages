@@ -127,7 +127,7 @@ SMRSparseMatrixCor <- function( x ) {
 
 #' Convert to a metadata recommender
 #' @description Converts the recommender object into a recommender for a 
-#' specified taga type.
+#' specified tag type.
 #' @param smr A sparse matrix recommender.
 #' @param tagType Tag type to make a recommender for.
 #' @param nTopTags Number of top tags from \code{tagType} when making item-tag 
@@ -139,7 +139,7 @@ SMRSparseMatrixCor <- function( x ) {
 #' (2) The items are replaced with the top tags of \code{tagType}.
 #' (3) A new recommender is created with items that are the tags of \code{tagType}.
 #' @export
-SMRToMetadataRecommender <- function( smr, tagType, nTopTags = 1 ) {
+SMRToMetadataRecommender <- function( smr, tagType, nTopTags = 1, ... ) {
   
   if( !SMRSparseMatrixRecommenderQ(smr) ) {
     stop( "The argument smr is expected to be a sparse matrix recommender.", call. = TRUE )
@@ -162,7 +162,7 @@ SMRToMetadataRecommender <- function( smr, tagType, nTopTags = 1 ) {
     nTopTags <-  1
   }
   
-  dfVectorTypesLongForm <- SMRMatricesToLongForm( smr = smr)
+  dfVectorTypesLongForm <- SMRMatricesToLongForm( smr = smr, ...)
   
   dfIDToTag <- 
     dfVectorTypesLongForm %>% 
