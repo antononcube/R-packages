@@ -189,6 +189,9 @@ SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName =
 #' @param imposeSameRowNamesQ Should the union of the row names be imposed on each matrix?
 #' @param addTagTypesToColumnNamesQ Should the tag types be added as prefixes 
 #' to the column names of the corresponding sub-matrices?
+#' If NULL it is automatically determined: 
+#' if there is overalap between the tags of different tag types
+#' then becomes TRUE (the tag types are added as prefixes.)
 #' @param sep Separator for the prefixes of the columns names.
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
 #' @return SMR object.
@@ -223,6 +226,11 @@ SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemCol
     matrices <- purrr::map( matrices, function(x) SMRImposeRowIDs( rowIDs = allRowNames, smat = x ) )                    
   }
   
+  if( is.null(addTagTypesToColumnNamesQ) ) {
+    lsAllColumnNames <- unlist( purrr::map( matrices, colnames ) )
+    addTagTypesToColumnNamesQ <- length(unique(lsAllColumnNames)) < length(lsAllColumnNames)
+  }
+    
   if( addTagTypesToColumnNamesQ ) {
     matrices <- 
       purrr::map2( matrices, tagTypes, function(mat, prefix) { 
@@ -279,10 +287,10 @@ SMREmptySpecification <- function( nrow = 1 ) {
 #' \code{data} to be used and with what weight functions.
 #' @param itemColumnName The name of the column containing the unique items.
 #' @details The specification data frame is expected to have the columns names:
-#' "ColumnName", "ValueColumnName", "GlobalWeightFunction", "LocalWeightFunction", "NormalizerFunction", "NormalizeByMax".
-#' The NA values of "ValueColumnName" are replaced with "None". 
-#' (I.e. do not use "None" as a "value" column name of \code{data}.)
-#' See \code{\link{SMREmptySpecification}}.
+#' \code{c("ColumnName", "ValueColumnName", "GlobalWeightFunction", "LocalWeightFunction", "NormalizerFunction", "NormalizeByMax")}.
+#' The NA values of \code{"ValueColumnName"} are replaced with \code{"None"}. 
+#' (I.e. do not use \code{"None"} as a "value" column name of \code{data}.)
+#' See \link{\code{SMREmptySpecification}}.
 #' @return An SMR object.
 #' @family Creation functions
 #' @export
@@ -1672,10 +1680,13 @@ SMRMatricesToLongForm <- function( smr, tagTypes = NULL, removeTagTypePrefixesQ 
 #' @return A data frame.
 #' @export
 SMRMatricesToWideForm <- function( smr, tagTypes = NULL, sep = ", ",  removeTagTypePrefixesQ = FALSE, tagTypeSep = ":" ) {
+  
   df <- SMRMatricesToLongForm( smr = smr, tagTypes = tagTypes, removeTagTypePrefixesQ = removeTagTypePrefixesQ, sep = tagTypeSep )
+  
   dfCast <- reshape2::dcast( data = df,
                              formula = as.formula( paste( smr$ItemColumnName, " ~ TagType " ) ),
                              value.var = "Value", fun.aggregate = function(x) paste(x, collapse = sep ) )
+  dfCast
 }
 
 
@@ -1746,8 +1757,9 @@ SMRExportToDirectory <- function( smr, directoryPath, dataNameInfix = "" ) {
 #' @param ... Parameters \code{\link{SMRClassifyByProfileVector}}.
 #' @details The sparse matrix recommender \code{smr} can have additional parameters
 #' tucked-in to \code{smr['ClassifierParameters']}.
-#' The list \code{smr['ClassifierParameters']} can have elements: 
-#' "tagType", "nTopNNs", "voting", "dropZeroScoredLabels". (Same as \code{...}.)
+#' The list \code{smr['ClassifierParameters']} can have the named elements: 
+#' \code{"tagType"}, \code{"nTopNNs"}, \code{"voting"}, \code{"dropZeroScoredLabels"}. 
+#' (Same as \code{...}.)
 #' @return If \code{type="decision"} -- a vector of scored class labels.
 #' If \code{type="raw"} or \code{type="scores"} -- a contingency matrix of labels and scores.
 #' @export
@@ -1880,7 +1892,7 @@ Recommendations.SMR <- function( x, historyItems, historyRatings, nrecs, removeH
 RecommendationsByProfile <- function( x, profileTags, profileTagScores, nrecs, ... ) UseMethod( "RecommendationsByProfile" )
 
 #' Specialization of \code{RecommendationsByProfile} for SMR objects
-#' @description Specialization of RecommendationsByProfile for SMR objects.
+#' @description Specialization of \code{RecommendationsByProfile} for SMR objects.
 #' @param x A recommender object.
 #' @param profileTags A list of profile tags.
 #' @param profileTagScores A list of scores corresponding to the profile tags.

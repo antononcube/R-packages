@@ -19,5 +19,5 @@
 A data frame with the columns columns c("Score", "Item").
 }
 \description{
-Specialization of RecommendationsByProfile for SMR objects.
+Specialization of \code{RecommendationsByProfile} for SMR objects.
 }

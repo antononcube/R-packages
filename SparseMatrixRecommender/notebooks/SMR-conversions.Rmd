@@ -1,0 +1,38 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# library(SparseMatrixRecommender)
+devtools::load_all()
+```
+
+# Create recommender(s)
+
+```{r}
+smr <- SMRCreate( dataRows = dfTitanic)
+```
+
+# Long form
+
+```{r}
+SMRMatricesToLongForm(smr)
+```
+
+# Wide form
+
+```{r}
+SMRMatricesToWideForm( smr = smr )
+```
+
+# To metadata recommender
+
+```{r}
+smrAge <- SMRToMetadataRecommender( smr = smr, tagTypeTo = "passengerAge", tagTypes = NULL, addTagTypesToColumnNamesQ = TRUE )
+```
+
+```{r}
+as.matrix(smrAge$M)
+```
+

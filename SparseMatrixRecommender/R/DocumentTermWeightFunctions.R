@@ -135,7 +135,7 @@ SMRGlobalTermFunctionWeights <- function( docTermMat, globalWeightFunction = "No
 #' Document-term matrix term re-weighting.
 #' @description Applies the term weight functions -- like Inverse Document Frequency (IDF) -- 
 #' to the entries of a sparse matrix.
-#' @param docTermMat A document-term sparse matrix (dgCMatrix).
+#' @param docTermMat A document-term sparse matrix ("dgCMatrix").
 #' @param globalWeightFunction A global weight function ID or
 #' a numeric vector with length that equals \code{ncols(docTermMat)}.
 #' @param localWeightFunction A global weight function ID (a string, one of "Binary", "TermFrequency", "Log", "None").

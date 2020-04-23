@@ -28,6 +28,7 @@ Classify a data frame or matrix using a sparse matrix recommender.
 \details{
 The sparse matrix recommender \code{smr} can have additional parameters
 tucked-in to \code{smr['ClassifierParameters']}.
-The list \code{smr['ClassifierParameters']} can have elements: 
-"tagType", "nTopNNs", "voting", "dropZeroScoredLabels". (Same as \code{...}.)
+The list \code{smr['ClassifierParameters']} can have the named elements: 
+\code{"tagType"}, \code{"nTopNNs"}, \code{"voting"}, \code{"dropZeroScoredLabels"}. 
+(Same as \code{...}.)
 }

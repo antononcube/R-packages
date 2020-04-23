@@ -12,7 +12,7 @@ SMRApplyTermWeightFunctions(
 )
 }
 \arguments{
-\item{docTermMat}{A document-term sparse matrix (dgCMatrix).}
+\item{docTermMat}{A document-term sparse matrix ("dgCMatrix").}
 
 \item{globalWeightFunction}{A global weight function ID or
 a numeric vector with length that equals \code{ncols(docTermMat)}.}

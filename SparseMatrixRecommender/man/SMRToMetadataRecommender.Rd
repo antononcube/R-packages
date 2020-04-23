@@ -4,17 +4,20 @@
 \alias{SMRToMetadataRecommender}
 \title{Convert to a metadata recommender}
 \usage{
-SMRToMetadataRecommender(smr, tagType, nTopTags = 1, ...)
+SMRToMetadataRecommender(smr, tagTypeTo, nTopTags = 1, tagTypes = NULL, ...)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
-\item{tagType}{Tag type to make a recommender for.}
+\item{tagTypeTo}{Tag type to make a recommender for.}
 
-\item{nTopTags}{Number of top tags from \code{tagType} when making item-tag 
+\item{nTopTags}{Number of top tags from \code{tagTypeTo} when making item-tag 
 replacements.}
 
-\item{...}{Additional arguments for \code{SMRMatricesToLongForm}.}
+\item{tagTypes}{A vector tag types (strings) to make the data frame with. 
+If NULL all tag types are used. Passed to \code{SMRMatricesToLongForm}.}
+
+\item{...}{Additional arguments for \code{SMRMatricesToLongForm} or \code{SMRCreateFromMatrices}.}
 }
 \value{
 A sparse matrix recommender
@@ -26,6 +29,6 @@ specified tag type.
 \details{
 The following steps are taken.
 (1) The long form of the recommender is made.
-(2) The items are replaced with the top tags of \code{tagType}.
-(3) A new recommender is created with items that are the tags of \code{tagType}.
+(2) The items are replaced with the top tags of \code{tagTypeTo}.
+(3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
 }

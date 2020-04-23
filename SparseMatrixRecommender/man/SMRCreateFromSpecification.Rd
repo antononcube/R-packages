@@ -23,10 +23,10 @@ and a meta-data specification.
 }
 \details{
 The specification data frame is expected to have the columns names:
-"ColumnName", "ValueColumnName", "GlobalWeightFunction", "LocalWeightFunction", "NormalizerFunction", "NormalizeByMax".
-The NA values of "ValueColumnName" are replaced with "None". 
-(I.e. do not use "None" as a "value" column name of \code{data}.)
-See \code{\link{SMREmptySpecification}}.
+\code{c("ColumnName", "ValueColumnName", "GlobalWeightFunction", "LocalWeightFunction", "NormalizerFunction", "NormalizeByMax")}.
+The NA values of \code{"ValueColumnName"} are replaced with \code{"None"}. 
+(I.e. do not use \code{"None"} as a "value" column name of \code{data}.)
+See \link{\code{SMREmptySpecification}}.
 }
 \seealso{
 Other Creation functions: 

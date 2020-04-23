@@ -30,7 +30,7 @@ TSPSRCorrelationNNs(
 
 \item{smr.nrecs}{Number of recommendations for the intermediate candidate finding using the SMR object.}
 
-\item{method}{Correlation method; one of { 'dot', 'pearson', 'spearman', 'kendall' }.}
+\item{method}{Correlation method; one of \code{'dot'}, \code{'pearson'}, \code{'spearman'}, \code{'kendall'}.}
 }
 \description{
 Finds time series recommendations for specified search row ID and / or search vector ID.

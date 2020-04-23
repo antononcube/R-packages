@@ -97,7 +97,7 @@ SMRTagTypeRepresentation <- function( recommenders ) {
 #' @param x A sparse matrix
 #' @return A matrix
 #' @details Should produces the same results as \code{cor(as.matrix(x))}.
-#' (Follows the namings of \code{cor}.)
+#' (Follows the naming in \code{cor}.)
 #' @export
 SMRSparseMatrixCor <- function( x ) {
   
@@ -129,28 +129,30 @@ SMRSparseMatrixCor <- function( x ) {
 #' @description Converts the recommender object into a recommender for a 
 #' specified tag type.
 #' @param smr A sparse matrix recommender.
-#' @param tagType Tag type to make a recommender for.
-#' @param nTopTags Number of top tags from \code{tagType} when making item-tag 
+#' @param tagTypeTo Tag type to make a recommender for.
+#' @param nTopTags Number of top tags from \code{tagTypeTo} when making item-tag 
 #' replacements.
-#' @param ... Additional arguments for \code{SMRMatricesToLongForm}.
+#' @param tagTypes 	A vector tag types (strings) to make the data frame with. 
+#' If NULL all tag types are used. Passed to \code{SMRMatricesToLongForm}.
+#' @param ... Additional arguments for \code{SMRMatricesToLongForm} or \code{SMRCreateFromMatrices}.
 #' @return A sparse matrix recommender
 #' @details The following steps are taken.
 #' (1) The long form of the recommender is made.
-#' (2) The items are replaced with the top tags of \code{tagType}.
-#' (3) A new recommender is created with items that are the tags of \code{tagType}.
+#' (2) The items are replaced with the top tags of \code{tagTypeTo}.
+#' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
 #' @export
-SMRToMetadataRecommender <- function( smr, tagType, nTopTags = 1, ... ) {
+SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = NULL, ... ) {
   
   if( !SMRSparseMatrixRecommenderQ(smr) ) {
     stop( "The argument smr is expected to be a sparse matrix recommender.", call. = TRUE )
   }
   
-  if( !( is.character(tagType) && length(tagType) == 1 ) ) {
-    stop( "The argument tagType is expected to be a string (a character vector of length one.)", call. = TRUE )
+  if( !( is.character(tagTypeTo) && length(tagTypeTo) == 1 ) ) {
+    stop( "The argument tagTypeTo is expected to be a string (a character vector of length one.)", call. = TRUE )
   }
   
-  if( !( tagType %in% smr$TagTypes ) ) {
-    stop( "The argument tagType is not a known tag type of the recommender smr.", call. = TRUE )
+  if( !( tagTypeTo %in% smr$TagTypes ) ) {
+    stop( "The argument tagTypeTo is not a known tag type of the recommender smr.", call. = TRUE )
   }
   
   if( !( is.numeric(nTopTags) && length(nTopTags) == 1 && nTopTags > 0 ) ) {
@@ -162,28 +164,56 @@ SMRToMetadataRecommender <- function( smr, tagType, nTopTags = 1, ... ) {
     nTopTags <-  1
   }
   
-  dfVectorTypesLongForm <- SMRMatricesToLongForm( smr = smr, ...)
+  ## Assign default values for ...
+  lsAllArgs <- c( as.list(environment()), list(...) )
+  lsDefaults <- list( removeTagTypePrefixesQ = TRUE, sep = ":", imposeSameRowNamesQ = TRUE, addTagTypesToColumnNamesQ = NULL )
   
+  lsAllArgs <- 
+    Reduce( 
+      function(a,x) if( x %in% names(a) ) { a } else { c( a, lsDefaults[x] ) }, 
+      init = lsAllArgs, 
+      x = names(lsDefaults) 
+    )
+  
+  ## To long form
+  dfVectorTypesLongForm <- 
+    SMRMatricesToLongForm( 
+      smr = smr, 
+      tagTypes = tagTypes, 
+      removeTagTypePrefixesQ = lsAllArgs[["removeTagTypePrefixesQ"]], 
+      sep = lsAllArgs[["sep"]]  
+    )
+  
+  ## Make mapping rules
   dfIDToTag <- 
     dfVectorTypesLongForm %>% 
-    dplyr::filter( TagType == tagType ) %>% 
+    dplyr::filter( TagType == tagTypeTo ) %>% 
     dplyr::group_by_at( .vars = c( smr$ItemColumnName ) ) %>% 
     dplyr::arrange(dplyr::desc(Weight)) %>% 
     dplyr::filter( dplyr::row_number() <= nTopTags ) %>% 
     dplyr::ungroup()
   
+  lsIDToTag <- setNames( dfIDToTag$Value, dfIDToTag[[smr$ItemColumnName]] )
+  
+  ## Remove tagTypeTo records from long form
   dfVectorTypesLongForm <- 
     dfVectorTypesLongForm %>% 
-    dplyr::filter( TagType != tagType )
+    dplyr::filter( TagType != tagTypeTo )
   
-  lsIDToTag <- setNames( dfIDToTag$Value, dfIDToTag[[smr$ItemColumnName]] )
-
+  ## Map items to tagTypeTo values
   dfVectorTypesLongForm[[ smr$ItemColumnName ]] = lsIDToTag[ dfVectorTypesLongForm[[ smr$ItemColumnName ]]  ]
   
+  ## Create contingency matrices from the transformed long form
   smats <- 
     purrr::map( split(dfVectorTypesLongForm, dfVectorTypesLongForm$TagType ), function(x) { 
       mat <- xtabs( formula = as.formula( paste( "Weight ~ ", smr$ItemColumnName, " + Value" ) ), data = x, sparse = TRUE )
     } )
   
-  SMRCreateFromMatrices( matrices = smats, itemColumnName = tagType, imposeSameRowNamesQ = TRUE, addTagTypesToColumnNamesQ = TRUE )
+  ## Create recommender
+  SMRCreateFromMatrices( 
+    matrices = smats, 
+    itemColumnName = tagTypeTo, 
+    imposeSameRowNamesQ = lsAllArgs[["imposeSameRowNamesQ"]], 
+    addTagTypesToColumnNamesQ = lsAllArgs[["addTagTypesToColumnNamesQ"]] 
+  )
 } 

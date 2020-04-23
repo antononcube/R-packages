@@ -46,7 +46,7 @@ NULL
 #' @param searchVector Search vector with dimension \code{ncol(timeSeriesMat) == ncol(smr$M)} or NULL.
 #' @param nrecs Number of recommendations to return; if NULL all recommendations are returned.
 #' @param smr.nrecs Number of recommendations for the intermediate candidate finding using the SMR object.
-#' @param method Correlation method; one of { 'dot', 'pearson', 'spearman', 'kendall' }.
+#' @param method Correlation method; one of \code{'dot'}, \code{'pearson'}, \code{'spearman'}, \code{'kendall'}.
 #' @details The rownames of \code{timeSeriesMat} are composed of channels and item IDs. An item ID can be in several
 #' different channels. Hence we have row IDs like "NYSE:APPL" or "NASDAQ:APPL".
 #' Note, that this is a package internal function and it is not expected to be used on a regular basis;

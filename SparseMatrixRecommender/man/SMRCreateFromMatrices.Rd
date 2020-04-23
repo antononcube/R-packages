@@ -23,7 +23,10 @@ SMRCreateFromMatrices(
 \item{imposeSameRowNamesQ}{Should the union of the row names be imposed on each matrix?}
 
 \item{addTagTypesToColumnNamesQ}{Should the tag types be added as prefixes 
-to the column names of the corresponding sub-matrices?}
+to the column names of the corresponding sub-matrices?
+If NULL it is automatically determined: 
+if there is overalap between the tags of different tag types
+then becomes TRUE (the tag types are added as prefixes.)}
 
 \item{sep}{Separator for the prefixes of the columns names.}
 }
