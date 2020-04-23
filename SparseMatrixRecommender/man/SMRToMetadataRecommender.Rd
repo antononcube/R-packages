@@ -14,7 +14,7 @@ SMRToMetadataRecommender(smr, tagType, nTopTags = 1, ...)
 \item{nTopTags}{Number of top tags from \code{tagType} when making item-tag 
 replacements.}
 
-\item{...}{Additional arguments for \link{\code{SMRMatricesToLongForm}}.}
+\item{...}{Additional arguments for \code{SMRMatricesToLongForm}.}
 }
 \value{
 A sparse matrix recommender

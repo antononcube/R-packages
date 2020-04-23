@@ -17,5 +17,5 @@ Gives the correlation of the columns of a sparse matrix.
 }
 \details{
 Should produces the same results as \code{cor(as.matrix(x))}.
-(Follows the namings of \link{\code{cor}}.)
+(Follows the namings of \code{cor}.)
 }

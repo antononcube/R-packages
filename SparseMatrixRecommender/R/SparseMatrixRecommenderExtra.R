@@ -97,7 +97,7 @@ SMRTagTypeRepresentation <- function( recommenders ) {
 #' @param x A sparse matrix
 #' @return A matrix
 #' @details Should produces the same results as \code{cor(as.matrix(x))}.
-#' (Follows the namings of \link{\code{cor}}.)
+#' (Follows the namings of \code{cor}.)
 #' @export
 SMRSparseMatrixCor <- function( x ) {
   
@@ -132,7 +132,7 @@ SMRSparseMatrixCor <- function( x ) {
 #' @param tagType Tag type to make a recommender for.
 #' @param nTopTags Number of top tags from \code{tagType} when making item-tag 
 #' replacements.
-#' @param ... Additional arguments for \link{\code{SMRMatricesToLongForm}}.
+#' @param ... Additional arguments for \code{SMRMatricesToLongForm}.
 #' @return A sparse matrix recommender
 #' @details The following steps are taken.
 #' (1) The long form of the recommender is made.
