@@ -107,4 +107,8 @@ length(tsSearchVectors)
 ```{r}
 shiny::runApp( TSCorrSMRCreateSearchInterface( tsSMR = tssmrSP500 ) )
 ```
+```{r}
+library(magrittr)
+mtcars %>% dplyr::filter( mpg > 21) %>% dplyr::select( wt, mpg, am )
+```
 
