@@ -149,6 +149,10 @@ SMRToMetadataRecommender <- function( smr, tagType, nTopTags = 1 ) {
     stop( "The argument tagType is expected to be a string (a character vector of length one.)", call. = TRUE )
   }
   
+  if( !( tagType %in% smr$TagTypes ) ) {
+    stop( "The argument tagType is not a known tag type of the recommender smr.", call. = TRUE )
+  }
+  
   if( !( is.numeric(nTopTags) && length(nTopTags) == 1 && nTopTags > 0 ) ) {
     stop( "The argument nTopTags is expected to be a positive number.", call. = TRUE )
   }
