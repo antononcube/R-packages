@@ -127,6 +127,19 @@ SMRSparseMatrixQ <- function(x) {
 }
 
 
+#' Is the argument a sparse matrix recommender?
+#' @description Gives TRUE if the argument is a sparse matrix recommender object.
+#' @param obj An object to check.
+#' @return Logical
+#' @details Is \code{obj} a list and does it have the named elements: \code{c( "M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName" )}.
+#' @export
+SMRSparseMatrixRecommenderQ <- function(obj) {
+  is.list(obj) && 
+    mean( c( "M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName" ) %in% names(obj) ) == 1 &&
+    SMRSparseMatrixQ( obj$M )
+}
+
+
 #' Creation of an item-tag contingency matrix
 #' @description Convert to contingency matrix from item consumption "transactions" (e.g. instances of movie watching).
 #' @param dataRows A data frame corresponding to a item consumption metadata table.
@@ -1606,11 +1619,16 @@ SMRSparseMatrixToDataFrame <- function( smr, tagType  ) {
 #' @description Long form of the data frame.
 #' @param smr A sparse matrix recommender.
 #' @param tagTypes A vector tag types (strings) to make the data frame with.
-#' @param removeTagTypePrefixesQ Should the tag type prefixes be removed from the tags.
+#' If NULL all tag types are used.
+#' @param removeTagTypePrefixesQ Should the tag type prefixes be removed from the tags?
 #' @param sep Separator between tag type prefixes and tags.
 #' @return A data frame.
 #' @export
 SMRMatricesToLongForm <- function( smr, tagTypes = NULL, removeTagTypePrefixesQ = FALSE, sep = ":" ) {
+  
+  if ( !SMRSparseMatrixRecommenderQ(smr) ) {
+    stop( "The argument smr is expected to be a sparse matrix recommender object.", call. = TRUE )
+  }
   
   if ( is.null(tagTypes) ) { tagTypes = smr$TagTypes }
 
@@ -1619,20 +1637,29 @@ SMRMatricesToLongForm <- function( smr, tagTypes = NULL, removeTagTypePrefixesQ 
   }  
   
   dfs <-
-    purrr::map( tagTypes, function(tt) {
+    purrr::map_df( tagTypes, function(tt) {
+      
       df <- SMRSparseMatrixToDataFrame(smr, tt)
-      if ( nrow(df) == 0 ) { NULL }
-      else {
+      
+      if ( nrow(df) == 0 ) { 
+        
+        NULL 
+        
+      } else {
+        
         if( removeTagTypePrefixesQ ) {
+          
           df[[tt]] <- gsub( pattern = paste0( tt, sep ), replacement = "", x = df[[tt]], fixed = TRUE )
+          
         }
+        
         names(df) <- c( smr$ItemColumnName, "Value", "Weight")
+        
         cbind(df, TagType = tt, stringsAsFactors = FALSE )
       }
     } )
   
-  dfs <- dfs[ !is.null(dfs) ]
-  do.call( rbind, dfs )
+  dfs
 }
 
 #' Sub-matrices to data frame wide form conversion

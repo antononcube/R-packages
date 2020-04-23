@@ -24,6 +24,7 @@
 #' @import Matrix
 #' @import dplyr
 #' @import purrr
+#' @import magrittr
 NULL
 
 
@@ -31,16 +32,12 @@ NULL
 ## SMRTagTypeRepresentation
 ##===========================================================
 
-SparseMatrixRecommenderQ <- function(obj) {
-  mean( c( "M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName" ) %in% names(obj) ) == 1
-}
- 
 ListOfSparseMatrixRecommendersQ <- function(obj) {
   
   if( !is.list(obj) ) { 
     FALSE
   } else {
-    res <- purrr::map_lgl( obj, function(x) { SparseMatrixRecommenderQ(x) })
+    res <- purrr::map_lgl( obj, function(x) { SMRSparseMatrixRecommenderQ(x) })
     mean(res) == 1
   }
 
@@ -123,3 +120,66 @@ SMRSparseMatrixCor <- function( x ) {
   covmat/crossprod(t(sdvec))
 }
 
+
+##===========================================================
+## SMRToMetadataRecommender
+##===========================================================
+
+#' Convert to a metadata recommender
+#' @description Converts the recommender object into a recommender for a 
+#' specified taga type.
+#' @param smr A sparse matrix recommender.
+#' @param tagType Tag type to make a recommender for.
+#' @param nTopTags Number of top tags from \code{tagType} when making item-tag 
+#' replacements.
+#' @param ... Additional arguments for \link{\code{SMRMatricesToLongForm}}.
+#' @return A sparse matrix recommender
+#' @details The following steps are taken.
+#' (1) The long form of the recommender is made.
+#' (2) The items are replaced with the top tags of \code{tagType}.
+#' (3) A new recommender is created with items that are the tags of \code{tagType}.
+#' @export
+SMRToMetadataRecommender <- function( smr, tagType, nTopTags = 1 ) {
+  
+  if( !SMRSparseMatrixRecommenderQ(smr) ) {
+    stop( "The argument smr is expected to be a sparse matrix recommender.", call. = TRUE )
+  }
+  
+  if( !( is.character(tagType) && length(tagType) == 1 ) ) {
+    stop( "The argument tagType is expected to be a string (a character vector of length one.)", call. = TRUE )
+  }
+  
+  if( !( is.numeric(nTopTags) && length(nTopTags) == 1 && nTopTags > 0 ) ) {
+    stop( "The argument nTopTags is expected to be a positive number.", call. = TRUE )
+  }
+  
+  if( nTopTags > 1 ) {
+    warning( "The argument nTopTags is taken to be 1: larger number of tags is not implemented (yet.)", call. = TRUE )
+    nTopTags <-  1
+  }
+  
+  dfVectorTypesLongForm <- SMRMatricesToLongForm( smr = smr)
+  
+  dfIDToTag <- 
+    dfVectorTypesLongForm %>% 
+    dplyr::filter( TagType == tagType ) %>% 
+    dplyr::group_by_at( .vars = c( smr$ItemColumnName ) ) %>% 
+    dplyr::arrange(dplyr::desc(Weight)) %>% 
+    dplyr::filter( dplyr::row_number() <= nTopTags ) %>% 
+    dplyr::ungroup()
+  
+  dfVectorTypesLongForm <- 
+    dfVectorTypesLongForm %>% 
+    dplyr::filter( TagType != tagType )
+  
+  lsIDToTag <- setNames( dfIDToTag$Value, dfIDToTag[[smr$ItemColumnName]] )
+
+  dfVectorTypesLongForm[[ smr$ItemColumnName ]] = lsIDToTag[ dfVectorTypesLongForm[[ smr$ItemColumnName ]]  ]
+  
+  smats <- 
+    purrr::map( split(dfVectorTypesLongForm, dfVectorTypesLongForm$TagType ), function(x) { 
+      mat <- xtabs( formula = as.formula( paste( "Weight ~ ", smr$ItemColumnName, " + Value" ) ), data = x, sparse = TRUE )
+    } )
+  
+  SMRCreateFromMatrices( matrices = smats, itemColumnName = tagType, imposeSameRowNamesQ = TRUE, addTagTypesToColumnNamesQ = TRUE )
+} 

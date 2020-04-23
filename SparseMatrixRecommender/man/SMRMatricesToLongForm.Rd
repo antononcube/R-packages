@@ -14,9 +14,10 @@ SMRMatricesToLongForm(
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
-\item{tagTypes}{A vector tag types (strings) to make the data frame with.}
+\item{tagTypes}{A vector tag types (strings) to make the data frame with.
+If NULL all tag types are used.}
 
-\item{removeTagTypePrefixesQ}{Should the tag type prefixes be removed from the tags.}
+\item{removeTagTypePrefixesQ}{Should the tag type prefixes be removed from the tags?}
 
 \item{sep}{Separator between tag type prefixes and tags.}
 }
