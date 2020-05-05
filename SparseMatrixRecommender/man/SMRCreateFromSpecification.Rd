@@ -30,6 +30,7 @@ See \link{\code{SMREmptySpecification}}.
 }
 \seealso{
 Other Creation functions: 
+\code{\link{SMRCreateFromLongForm}()},
 \code{\link{SMRCreateFromMatrices}()},
 \code{\link{SMRCreateItemTagMatrix}()},
 \code{\link{SMRCreate}()},

@@ -116,6 +116,10 @@
 NULL
 
 
+#=======================================================================================
+# Object type/class verifications
+#=======================================================================================
+
 #' Is the argument a sparse matrix?
 #' @description Gives TRUE if the argument is a sparse matrix object.
 #' @param x An object to check.
@@ -140,6 +144,10 @@ SMRSparseMatrixRecommenderQ <- function(obj) {
 }
 
 
+#=======================================================================================
+# Creation functions
+#=======================================================================================
+
 #' Creation of an item-tag contingency matrix
 #' @description Convert to contingency matrix from item consumption "transactions" (e.g. instances of movie watching).
 #' @param dataRows A data frame corresponding to a item consumption metadata table.
@@ -162,6 +170,7 @@ SMRCreateItemTagMatrix <- function( dataRows, itemColumnName, tagType, sparse = 
   xtabs( formula = as.formula(formulaString), data = dataRows, sparse = sparse )
 }
 
+
 #' Creation of a SMR object from a transactions data frame
 #' @description Creates a Sparse Matrix Recommender object from transactions data and a list of tag types.
 #' @param dataRows The transactions data frame.
@@ -178,8 +187,40 @@ SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName =
     SMRCreateItemTagMatrix(dataRows, tagType=x, itemColumnName=itemColumnName)
   })
   
-  SMRCreateFromMatrices(matrices, tagTypes, itemColumnName, ... )
+  SMRCreateFromMatrices( matrices = matrices, tagTypes = tagTypes, itemColumnName = itemColumnName, ... )
 }
+
+
+#' Creation of a SMR object from a long form data
+#' @description Creates a Sparse Matrix Recommender object from long form data.
+#' @param data A data frame.
+#' @param itemColumnName Item (names or ID's) column.
+#' @param tagTypeColumnName Tag type column.
+#' @param valueColumnName (Tag) value column.
+#' @param weightColumnName Weight column.
+#' @param ... Additional parameters for \code{\link{SMRCreateFromMatrices}}.
+#' @details An S3 object is returned that is list with class attribute set to "SMR".
+#' @return SMR object.
+#' @family Creation functions
+#' @export
+SMRCreateFromLongForm <- function( data, itemColumnName = "Item", tagTypeColumnName = "TagType", valueColumnName = "Value", weightColumnName = "Weight", ... ){
+  
+  if( !is.data.frame(data) ) {
+    stop( "The argument data is expected to be data frame.", call. = TRUE )
+  }
+  
+  if( mean( c( itemColumnName, tagTypeColumnName, valueColumnName, weightColumnName ) %in% colnames(data) ) < 1 ) {
+    stop( "The argument data is expected have column names that include the column names specificed with the rest of the arguments.", call. = TRUE )
+  }
+  
+  matrices <- 
+    purrr::map( split(data, data[[tagTypeColumnName]] ), function(df) {
+      xtabs( formula = as.formula( paste0( weightColumnName, " ~ ", itemColumnName, " + ", valueColumnName ) ), data = df, sparse = TRUE )
+    })
+  
+  SMRCreateFromMatrices( matrices = matrices, tagTypes = names(matrices), itemColumnName = itemColumnName, ... )
+}
+
 
 #' Creation of a SMR object with a list of matrices
 #' @description Creates a Sparse Matrix Recommender object from a list of matrices and a corresponding list of tag types.
@@ -190,7 +231,7 @@ SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName =
 #' @param addTagTypesToColumnNamesQ Should the tag types be added as prefixes 
 #' to the column names of the corresponding sub-matrices?
 #' If NULL it is automatically determined: 
-#' if there is overalap between the tags of different tag types
+#' if there is overlap between the tags of different tag types
 #' then becomes TRUE (the tag types are added as prefixes.)
 #' @param sep Separator for the prefixes of the columns names.
 #' @details An S3 object is returned that is list with class attribute set to "SMR".
@@ -259,6 +300,7 @@ SMRCreateFromMatrices <- function( matrices, tagTypes = names(matrices), itemCol
   res
 }
 
+
 #' Empty specification
 #' @description Creates an empty specification data frame for the creation of 
 #' a sparse matrix recommender.
@@ -278,6 +320,7 @@ SMREmptySpecification <- function( nrow = 1 ) {
               stringsAsFactors = FALSE)
   
 }
+
 
 #' Creation of a Sparse Matrix Recommender object from a specification
 #' @description Creates a sparse matrix recommender from transactions-like data
@@ -346,6 +389,11 @@ SMRCreateFromSpecification <- function( data, metaDataSpec, itemColumnName ) {
   
   SMRCreateFromMatrices( matrices = matrices, tagTypes = names(matrices), itemColumnName = itemColumnName )
 }
+
+
+#=======================================================================================
+# Tag and tag type weights
+#=======================================================================================
 
 #' Apply tag weights
 #' @description Changes the weights of the tags of a sparse matrix recommender object
@@ -422,6 +470,22 @@ SMRApplyTagTypeWeights <- function( smr, weights ) {
   SMRApplyTagWeights( smr, wvec )
 }
 
+#' Get current tag type significance factors
+#' @description Finds the current significance factors in a SMR object.
+#' @param smr A sparse matrix object.
+#' @return A list of named significance factors (numbers).
+#' @export
+SMRCurrentTagTypeSignificanceFactors <- function(smr) {
+  sfs01 <- purrr::map_dbl( smr$TagTypes, function(tc) sum( SMRSubMatrixOfMatrix( smr$M01, smr$TagTypeRanges, tc ) ) )
+  sfs01[ sfs01 == 0 ] <- 1
+  res <- purrr::map_dbl( smr$TagTypes, function(tc) sum( SMRSubMatrix( smr, tc ) ) ) / sfs01
+  setNames( res, smr$TagTypes )
+}
+
+
+#=======================================================================================
+# Sub-matrices
+#=======================================================================================
 
 #' Sub-matrix corresponding to a tag type
 #' @description Returns the sub-matrix of the SMR metadata matrix that corresponds to a tag type.
@@ -444,18 +508,10 @@ SMRSubMatrixOfMatrix <- function( M, ranges, tagType ) {
   M[,ranges[tagType, "Begin"]:ranges[tagType, "End"], drop = FALSE ]
 }
 
-#' Get current tag type significance factors
-#' @description Finds the current significance factors in a SMR object.
-#' @param smr A sparse matrix object.
-#' @return A list of named significance factors (numbers).
-#' @export
-SMRCurrentTagTypeSignificanceFactors <- function(smr) {
-  sfs01 <- purrr::map_dbl( smr$TagTypes, function(tc) sum( SMRSubMatrixOfMatrix( smr$M01, smr$TagTypeRanges, tc ) ) )
-  sfs01[ sfs01 == 0 ] <- 1
-  res <- purrr::map_dbl( smr$TagTypes, function(tc) sum( SMRSubMatrix( smr, tc ) ) ) / sfs01
-  setNames( res, smr$TagTypes )
-}
 
+#=======================================================================================
+# Recommendations by history
+#=======================================================================================
 
 #' Convert a recommendations vector to a data frame
 #' @description Convert a recommendations vector to a data frame.
@@ -561,6 +617,11 @@ SMRRecommendationsDF <- function( smr, history, nrecs, removeHistory=TRUE ) {
   res
 }
 
+
+#=======================================================================================
+# Recommendations by profile
+#=======================================================================================
+
 #' Recommendations using a profile data frame
 #' @description Recommend items based on a sparse matrix and a specified profile.
 #' @param smr A sparse matrix recommender.
@@ -640,6 +701,11 @@ SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
   res
 }
 
+
+#=======================================================================================
+# Classification by profile
+#=======================================================================================
+
 #' Classification with a profile vector
 #' @description Classify a profile vector into the column names of a tag type sub-matrix.
 #' @param smr A sparse matrix recommender.
@@ -701,6 +767,11 @@ SMRClassifyByProfileVector <- function( smr, tagType, profileVec, nTopNNs,
   
   s
 }
+
+
+#=======================================================================================
+# Profile derivation and transformations
+#=======================================================================================
 
 #' Profile vector calculation
 #' @description Calculate profile vector from item history.
@@ -842,6 +913,10 @@ SMRExtendProfile <- function( smr, profile, nrecs = NULL, normalizeQ = TRUE ) {
   res
 }
 
+
+#=======================================================================================
+# Further functions
+#=======================================================================================
 
 #' Interpret recommendations
 #' @description Gives the interpretation of a data frame of recommendations with sparse matrix recommender object.

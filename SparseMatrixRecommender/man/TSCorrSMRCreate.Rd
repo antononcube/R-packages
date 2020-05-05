@@ -41,6 +41,7 @@ Time series recommender creation
 }
 \seealso{
 Other Creation functions: 
+\code{\link{SMRCreateFromLongForm}()},
 \code{\link{SMRCreateFromMatrices}()},
 \code{\link{SMRCreateFromSpecification}()},
 \code{\link{SMRCreateItemTagMatrix}()},

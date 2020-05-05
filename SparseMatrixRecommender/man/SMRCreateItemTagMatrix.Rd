@@ -23,6 +23,7 @@ Convert to contingency matrix from item consumption "transactions" (e.g. instanc
 }
 \seealso{
 Other Creation functions: 
+\code{\link{SMRCreateFromLongForm}()},
 \code{\link{SMRCreateFromMatrices}()},
 \code{\link{SMRCreateFromSpecification}()},
 \code{\link{SMRCreate}()},
