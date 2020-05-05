@@ -36,8 +36,8 @@ smat <- smrTitanic$M
 SMRSparseMatrixToTriplets( smat )
 ```
 
-# Mushroom
 
+# Mushroom
 
 ```{r}
 smrMushroom <- SMRCreate( dfMushroom, 

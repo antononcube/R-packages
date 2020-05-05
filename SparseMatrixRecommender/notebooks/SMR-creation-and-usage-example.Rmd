@@ -21,7 +21,7 @@ TBD...
 
 ```{r, eval=F}
 library(devtools)
-install_github( repo = "antononcube/R-packages", subdir = "SparseMatrixRecommender" )
+devtools::install_github( repo = "antononcube/R-packages", subdir = "SparseMatrixRecommender" )
 ```
 
 
