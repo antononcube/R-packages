@@ -4,12 +4,14 @@
 \alias{SMRMonFilterMatrix}
 \title{Filter recommendation matrix rows}
 \usage{
-SMRMonFilterMatrix(smrObj, profile)
+SMRMonFilterMatrix(smrObj, profile, type = "union")
 }
 \arguments{
 \item{smrObj}{A sparse matrix recommender.}
 
 \item{profile}{A profile specification used to filter with.}
+
+\item{type}{The type of filtering one of "union" or "intersection".}
 }
 \value{
 An SMRMon object.
@@ -20,4 +22,8 @@ Applies a profile filter to the rows of the recommendation matrix.
 \details{
 The matrix can be recovered with tag type
 weights application, see \code{\link{SMRMonApplyTagTypeWeights}}.
+If \code{type} is "union" each item that has at least one of the tags in
+\code{profile} is in the result recommender.
+If \code{type} is "intersection" each item in the result recommender
+has all tags in \code{profile}.
 }

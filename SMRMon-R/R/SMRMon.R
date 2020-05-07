@@ -1803,11 +1803,16 @@ SMRMonApplyTagTypeWeights <- function( smrObj, weights, default = 1 ) {
 #' @description Applies a profile filter to the rows of the recommendation matrix.
 #' @param smrObj A sparse matrix recommender.
 #' @param profile A profile specification used to filter with.
+#' @param type The type of filtering one of "union" or "intersection".
 #' @details The matrix can be recovered with tag type
 #' weights application, see \code{\link{SMRMonApplyTagTypeWeights}}.
+#' If \code{type} is "union" each item that has at least one of the tags in
+#' \code{profile} is in the result recommender.
+#' If \code{type} is "intersection" each item in the result recommender
+#' has all tags in \code{profile}.
 #' @return An SMRMon object.
 #' @export
-SMRMonFilterMatrix <- function( smrObj, profile ) {
+SMRMonFilterMatrix <- function( smrObj, profile, type = "union" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1818,8 +1823,31 @@ SMRMonFilterMatrix <- function( smrObj, profile ) {
 
   profileVec <- SMRProfileDFToVector( smr = smrObj, profileDF = profile )
 
-  svec <- (smrObj %>% SMRMonTakeM) %*% profileVec
+  ## Unitize
+  profileVec@x[ profileVec@x > 0 ] <- 1
 
+  ## Find the items corresponding to the profile and type spec
+  if( is.character(type) && tolower(type) == "union" ) {
+
+    svec <- (smrObj %>% SMRMonTakeM) %*% profileVec
+
+  } else if ( is.character(type) && tolower(type) == "intersection" ) {
+
+    smat <- (smrObj %>% SMRMonTakeM)
+    smat@x[ smat@x > 0 ] <- 1
+
+    svec <- smat %*% profileVec
+
+    svec@x[ svec@x < nrow(profile) ] <- 0
+
+  } else {
+
+    warning("The argument type is expected to be one of 'union' or 'intersection'.", call. = TRUE)
+    return(SMRMonFailureSymbol)
+
+  }
+
+  ## Make the recommender object
   smrObj <-
     smrObj %>%
     SMRMonSetM( (smrObj %>% SMRMonTakeM)[ svec[,1] > 0, , drop=F ] ) %>%

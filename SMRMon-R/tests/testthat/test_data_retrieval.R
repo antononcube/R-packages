@@ -51,14 +51,28 @@ test_that("Expected long form representation data shapes", {
 
 })
 
-## Test data shapes after filtering.
-test_that("Expected data shapes after filtering", {
+## Test data shapes after filtering of type "union".
+test_that("Expected data shapes after filtering: union", {
 
-  expect_equal( nrow( smrObj %>% SMRMonFilterMatrix( profile = c( "male" ) ) %>% SMRMonTakeM ) ,
+  expect_equal( nrow( smrObj %>% SMRMonFilterMatrix( profile = c( "male" ), type = "union" ) %>% SMRMonTakeM ) ,
                 nrow( dfTitanic %>% dplyr::filter( passengerSex == "male" ) ) )
 
-  expect_equal( nrow( smrObj %>% SMRMonFilterMatrix( profile = c( "male", "1st" ) ) %>% SMRMonTakeM ) ,
+  expect_equal( nrow( smrObj %>% SMRMonFilterMatrix( profile = c( "male", "1st" ), type = "union" ) %>% SMRMonTakeM ) ,
                 nrow( dfTitanic %>% dplyr::filter( passengerSex == "male" | passengerClass == "1st" ) ) )
+
+})
+
+## Test data shapes after filtering of type "intersection".
+test_that("Expected data shapes after filtering: intersection", {
+
+  expect_equal( nrow( smrObj %>% SMRMonFilterMatrix( profile = c( "male" ), type = "intersection" ) %>% SMRMonTakeM ) ,
+                nrow( dfTitanic %>% dplyr::filter( passengerSex == "male" ) ) )
+
+  expect_equal( nrow( smrObj %>% SMRMonFilterMatrix( profile = c( "male", "1st" ), type = "intersection" ) %>% SMRMonTakeM ) ,
+                nrow( dfTitanic %>% dplyr::filter( passengerSex == "male" & passengerClass == "1st" ) ) )
+
+  expect_equal( nrow( smrObj %>% SMRMonFilterMatrix( profile = c( "male", "1st", "died" ), type = "intersection" ) %>% SMRMonTakeM ) ,
+                nrow( dfTitanic %>% dplyr::filter( passengerSex == "male" & passengerClass == "1st" & passengerSurvival == "died" ) ) )
 
 })
 
