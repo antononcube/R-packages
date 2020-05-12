@@ -21,16 +21,17 @@
 #
 #=======================================================================================
 #
-# This software monad is a "monadic interface" to the packages
-# SparseMatrixRecommender and SparseMatrixRecommenderInterfaces. See:
+# This software monad is a "monadic interface" to the package
+# SparseMatrixRecommender; see:
 #   https://github.com/antononcube/R-packages/tree/master/SparseMatrixRecommender ,
+#
+# This package is used in the package SparseMatrixRecommenderInterfaces; see:
 #   https://github.com/antononcube/R-packages/tree/master/SparseMatrixRecommenderInterfaces .
 #
 #=======================================================================================
 
 
 #' @import SparseMatrixRecommender
-#' @import SparseMatrixRecommenderInterfaces
 #' @import OutlierIdentifiers
 #' @import Matrix
 #' @import magrittr

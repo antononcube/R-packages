@@ -17,8 +17,7 @@ Imports:
     Matrix,
     magrittr,
     purrr,
-    SparseMatrixRecommender,
-    SparseMatrixRecommenderInterfaces
+    SparseMatrixRecommender
 Suggests: 
     knitr,
     rmarkdown,
