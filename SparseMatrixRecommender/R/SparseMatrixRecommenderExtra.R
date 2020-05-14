@@ -133,8 +133,8 @@ SMRSparseMatrixCor <- function( x ) {
 #' @param nTopTags Number of top tags from \code{tagTypeTo} when making item-tag 
 #' replacements.
 #' @param tagTypes 	A vector tag types (strings) to make the data frame with. 
-#' If NULL all tag types are used. Passed to \code{SMRMatricesToLongForm}.
-#' @param ... Additional arguments for \code{SMRMatricesToLongForm} or \code{SMRCreateFromMatrices}.
+#' If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.
+#' @param ... Additional arguments for \code{\link{SMRMatricesToLongForm}} or \code{\link{SMRCreateFromMatrices}}.
 #' @return A sparse matrix recommender
 #' @details The following steps are taken.
 #' (1) The long form of the recommender is made.

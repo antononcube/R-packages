@@ -15,9 +15,9 @@ SMRToMetadataRecommender(smr, tagTypeTo, nTopTags = 1, tagTypes = NULL, ...)
 replacements.}
 
 \item{tagTypes}{A vector tag types (strings) to make the data frame with. 
-If NULL all tag types are used. Passed to \code{SMRMatricesToLongForm}.}
+If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.}
 
-\item{...}{Additional arguments for \code{SMRMatricesToLongForm} or \code{SMRCreateFromMatrices}.}
+\item{...}{Additional arguments for \code{\link{SMRMatricesToLongForm}} or \code{\link{SMRCreateFromMatrices}}.}
 }
 \value{
 A sparse matrix recommender
