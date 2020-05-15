@@ -9,7 +9,7 @@ SMRToMetadataRecommender(
   tagTypeTo,
   nTopTags = 1,
   tagTypes = NULL,
-  tagSelection = NULL,
+  tagSelectionCriteria = NULL,
   ...
 )
 }
@@ -24,8 +24,8 @@ replacements.}
 \item{tagTypes}{A vector tag types (strings) to make the data frame with. 
 If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.}
 
-\item{tagSelection}{Tag selection criteria.
-If a positive integer for each tag type the number of \code{tagSelection} top tags are taken.
+\item{tagSelectionCriteria}{Tag selection criteria.
+If a positive integer for each tag type the number of \code{tagSelectionCriteria} top tags are taken.
 If a function that function is expected to give a list of booleans for a given list of tag weights.
 The tags with weights that correspond to TRUE are selected.}
 
