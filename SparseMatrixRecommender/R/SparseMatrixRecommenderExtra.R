@@ -134,6 +134,10 @@ SMRSparseMatrixCor <- function( x ) {
 #' replacements.
 #' @param tagTypes 	A vector tag types (strings) to make the data frame with. 
 #' If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.
+#' @param tagSelection Tag selection criteria.
+#' If a positive integer for each tag type the number of \code{tagSelection} top tags are taken.
+#' If a function that function is expected to give a list of booleans for a given list of tag weights.
+#' The tags with weights that correspond to TRUE are selected.
 #' @param ... Additional arguments for \code{\link{SMRMatricesToLongForm}} or \code{\link{SMRCreateFromMatrices}}.
 #' @return A sparse matrix recommender
 #' @details The following steps are taken.
@@ -141,7 +145,7 @@ SMRSparseMatrixCor <- function( x ) {
 #' (2) The items are replaced with the top tags of \code{tagTypeTo}.
 #' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
 #' @export
-SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = NULL, ... ) {
+SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = NULL, tagSelection = NULL, ... ) {
   
   if( !SMRSparseMatrixRecommenderQ(smr) ) {
     stop( "The argument smr is expected to be a sparse matrix recommender.", call. = TRUE )
@@ -162,6 +166,10 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
   if( nTopTags > 1 ) {
     warning( "The argument nTopTags is taken to be 1: larger number of tags is not implemented (yet.)", call. = TRUE )
     nTopTags <-  1
+  }
+  
+  if( !( is.null(tagSelection) || is.numeric(tagSelection) && tagSelection > 0 || is.function(tagSelection) ) ) {
+    stop( "The argument tagSelection is expected to be NULL, a positive integer, or a function.", call. = TRUE )
   }
   
   ## Assign default values for ...
@@ -199,6 +207,30 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
   dfVectorTypesLongForm <- 
     dfVectorTypesLongForm %>% 
     dplyr::filter( TagType != tagTypeTo )
+  
+  ## Tag selection
+  if( is.numeric(tagSelection) && tagSelection > 0 ) {
+    
+    dfVectorTypesLongForm <- 
+      dfVectorTypesLongForm %>%
+      dplyr::group_by_at( .vars = c( smr$ItemColumnName, "TagType" ) ) %>%  
+      dplyr::arrange( desc(Weight) ) %>% 
+      dplyr::filter( dplyr::row_number() <= tagSelection ) %>% 
+      dplyr::ungroup()
+    
+  } else if( is.function(tagSelection) ){
+    
+    dfVectorTypesLongForm <- 
+      dfVectorTypesLongForm %>%
+      dplyr::group_by_at( .vars = c( smr$ItemColumnName, "TagType" ) ) %>%  
+      dplyr::filter( tagSelection(Weight) ) %>% 
+      dplyr::ungroup()
+    
+  }
+  
+  if( is.null(dfVectorTypesLongForm) || nrow(dfVectorTypesLongForm) == 0 ) {
+    stop( "Empty long form was obtained.", call. = TRUE )
+  }
   
   ## Map items to tagTypeTo values
   dfVectorTypesLongForm[[ smr$ItemColumnName ]] = lsIDToTag[ dfVectorTypesLongForm[[ smr$ItemColumnName ]]  ]

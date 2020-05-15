@@ -29,7 +29,11 @@ SMRMatricesToWideForm( smr = smr )
 # To metadata recommender
 
 ```{r}
-smrAge <- SMRToMetadataRecommender( smr = smr, tagTypeTo = "passengerAge", tagTypes = NULL, addTagTypesToColumnNamesQ = TRUE )
+smrAge <- SMRToMetadataRecommender( smr = smr, tagTypeTo = "passengerAge", tagTypes = NULL, tagSelection = function(x) c( TRUE, rep_len(x = FALSE, length.out = length(x)-1 )), addTagTypesToColumnNamesQ = TRUE )
+```
+
+```{r}
+as.matrix(smrAge$M)
 ```
 
 ```{r}

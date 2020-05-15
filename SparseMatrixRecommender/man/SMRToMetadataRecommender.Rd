@@ -4,7 +4,14 @@
 \alias{SMRToMetadataRecommender}
 \title{Convert to a metadata recommender}
 \usage{
-SMRToMetadataRecommender(smr, tagTypeTo, nTopTags = 1, tagTypes = NULL, ...)
+SMRToMetadataRecommender(
+  smr,
+  tagTypeTo,
+  nTopTags = 1,
+  tagTypes = NULL,
+  tagSelection = NULL,
+  ...
+)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
@@ -16,6 +23,11 @@ replacements.}
 
 \item{tagTypes}{A vector tag types (strings) to make the data frame with. 
 If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.}
+
+\item{tagSelection}{Tag selection criteria.
+If a positive integer for each tag type the number of \code{tagSelection} top tags are taken.
+If a function that function is expected to give a list of booleans for a given list of tag weights.
+The tags with weights that correspond to TRUE are selected.}
 
 \item{...}{Additional arguments for \code{\link{SMRMatricesToLongForm}} or \code{\link{SMRCreateFromMatrices}}.}
 }
