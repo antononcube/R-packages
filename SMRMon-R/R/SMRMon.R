@@ -1114,8 +1114,10 @@ is.sparseMatrix <- function(x) is(x, 'sparseMatrix')
 #' @param smrObj An SMRMon object.
 #' @param profile Profile specification.
 #' A data frame with columns \code{c("Score", "Tag")};
-#' a numeric vector named elements, the names being items;
+#' a numeric vector named elements, the names being tags;
 #' a character vector, the correspond ratings assumed all to be 1.
+#' @param tagType Tag type over which the vector is made.
+#' @param uniqueColumnsQ Should the tags in the profile have unique indexes in the columns of \code{smrObj$M}?
 #' @param functionName A string that is a name of this function or a delegating function.
 #' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
 #' @details The result profile vector (sparse matrix) is
@@ -1123,7 +1125,7 @@ is.sparseMatrix <- function(x) is(x, 'sparseMatrix')
 #' If \code{profile = NULL} then \code{smrObj$Value} is used.
 #' @return A SMRMon object
 #' @export
-SMRMonGetProfileVector <- function( smrObj, profile, functionName = "SMRMonGetProfileVector", warningQ = TRUE ) {
+SMRMonGetProfileVector <- function( smrObj, profile, tagType = NULL, uniqueColumnsQ = TRUE, functionName = "SMRMonGetProfileVector", warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1131,7 +1133,7 @@ SMRMonGetProfileVector <- function( smrObj, profile, functionName = "SMRMonGetPr
     profile <- smrObj %>% SMRMonTakeValue
   }
 
-  if( is.sparseMatrix( profile ) ) {
+  if( SMRSparseMatrixQ( profile ) ) {
 
     if( !( "dgCMatrix" %in% class(profile)) ) {
       profile <- as( profile, "dgCMatrix" )
@@ -1151,6 +1153,10 @@ SMRMonGetProfileVector <- function( smrObj, profile, functionName = "SMRMonGetPr
                call. = TRUE )
       return(SMRMonFailureSymbol)
     }
+
+  } else if ( is.character(profile) ) {
+
+     profile <- SMRProfileDFToVector( smr = smrObj, profileDF = data.frame( Score = 1, Tag = profile, stringsAsFactors = FALSE), tagType = tagType, uniqueColumns = uniqueColumnsQ )
 
   } else {
 

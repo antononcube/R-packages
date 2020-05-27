@@ -7,6 +7,8 @@
 SMRMonGetProfileVector(
   smrObj,
   profile,
+  tagType = NULL,
+  uniqueColumnsQ = TRUE,
   functionName = "SMRMonGetProfileVector",
   warningQ = TRUE
 )
@@ -16,8 +18,12 @@ SMRMonGetProfileVector(
 
 \item{profile}{Profile specification.
 A data frame with columns \code{c("Score", "Tag")};
-a numeric vector named elements, the names being items;
+a numeric vector named elements, the names being tags;
 a character vector, the correspond ratings assumed all to be 1.}
+
+\item{tagType}{Tag type over which the vector is made.}
+
+\item{uniqueColumnsQ}{Should the tags in the profile have unique indexes in the columns of \code{smrObj$M}?}
 
 \item{functionName}{A string that is a name of this function or a delegating function.}
 
