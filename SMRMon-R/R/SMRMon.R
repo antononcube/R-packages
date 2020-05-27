@@ -1154,9 +1154,26 @@ SMRMonGetProfileVector <- function( smrObj, profile, tagType = NULL, uniqueColum
       return(SMRMonFailureSymbol)
     }
 
+  } else if ( is.data.frame(profile) ) {
+
+    if( mean( c('Score', 'Tag') %in% colnames(profile) ) < 1 ) {
+      warning( paste0( "The profile data frame given to the function ", functionName,
+                       " is expected to have the columns c('Score', 'Tag')."),
+               call. = TRUE )
+      return(SMRMonFailureSymbol)
+    }
+
+    profile <- SMRProfileDFToVector( smr = smrObj,
+                                     profileDF = profile,
+                                     tagType = tagType,
+                                     uniqueColumns = uniqueColumnsQ )
+
   } else if ( is.character(profile) ) {
 
-     profile <- SMRProfileDFToVector( smr = smrObj, profileDF = data.frame( Score = 1, Tag = profile, stringsAsFactors = FALSE), tagType = tagType, uniqueColumns = uniqueColumnsQ )
+    profile <- SMRProfileDFToVector( smr = smrObj,
+                                     profileDF = data.frame( Score = 1, Tag = profile, stringsAsFactors = FALSE),
+                                     tagType = tagType,
+                                     uniqueColumns = uniqueColumnsQ )
 
   } else {
 
