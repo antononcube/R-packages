@@ -180,6 +180,27 @@ SMRMonEchoFunctionValue <- function( smrObj, f ) {
 
 
 ##===========================================================
+## Echo
+##===========================================================
+
+#' Echo.
+#' @description Echoes the given argument.
+#' @param smrObj An SMRMon object.
+#' @param x Object to be echoed.
+#' @return An SMRMon object
+#' @family Echo functions
+#' @export
+SMRMonEcho <- function( smrObj, x ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  print(x)
+
+  smrObj
+}
+
+
+##===========================================================
 ## Optional function application over monad's object
 ##===========================================================
 

@@ -22,6 +22,7 @@ Prints \code{f(smrObj$Value)}.
 }
 \seealso{
 Other Echo functions: 
-\code{\link{SMRMonEchoValue}()}
+\code{\link{SMRMonEchoValue}()},
+\code{\link{SMRMonEcho}()}
 }
 \concept{Echo functions}
