@@ -693,9 +693,9 @@ SMRMonGetMatrixProperty <- function( smrObj, property, tagType = NULL ) {
   }
 
   res <-
-    if ( tolower(property) %in% tolower( c( "tags", "columns" ) ) ) {
+    if ( tolower(property) %in% tolower( c( "tags", "columns", "colnames" ) ) ) {
       colnames(smat)
-    } else if( tolower(property) %in% tolower( c( "rows") ) ) {
+    } else if( tolower(property) %in% tolower( c( "rows", "rownames" ) ) ) {
       rownames(smat)
     } else if( tolower(property) %in% tolower( c( "numberOfColumns") ) ) {
       ncol(smat)
