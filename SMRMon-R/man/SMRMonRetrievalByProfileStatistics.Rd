@@ -2,7 +2,7 @@
 % Please edit documentation in R/SMRMon.R
 \name{SMRMonRetrievalByProfileStatistics}
 \alias{SMRMonRetrievalByProfileStatistics}
-\title{Top-K statistic computation}
+\title{Retrieval by profile statistics}
 \usage{
 SMRMonRetrievalByProfileStatistics(
   smrObj,
@@ -25,7 +25,8 @@ SMRMonRetrievalByProfileStatistics(
 An SMRMon object.
 }
 \description{
-Computes the Top-K statistic for a data frame with the scored similarity pairs.
+Computes the Top-K statistics between the items that have a given focus tag
+and the profile recommendations for that focus tag (as a profile.)
 }
 \details{
 The computation result is assigned to \code{smrObj$Value}.

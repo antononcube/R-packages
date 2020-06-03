@@ -1127,8 +1127,6 @@ SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGe
 ## Get profile data frame
 ##===========================================================
 
-is.sparseMatrix <- function(x) is(x, 'sparseMatrix')
-
 #' From a profile specification into a vector
 #' @description Transforms a profile specification into a sparse matrix
 #' with one row.
@@ -1384,7 +1382,7 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, warningQ = TR
     return(SMRMonFailureSymbol)
   }
 
-  if( is.sparseMatrix(profile) ) {
+  if( SparseMatrixRecommender::SMRSparseMatrixQ(profile) ) {
 
     smrObj <- smrObj %>% SMRMonGetProfileVector( profile = profile, functionName = "SMRMonRecommendByProfile", warningQ = warningQ )
 
@@ -1541,7 +1539,7 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
     nTopNNs <- min( 100, nrow(smrObj$M) )
   }
 
-  if( SMRSparseMatrixQ(profile)  ) {
+  if( SparseMatrixRecommender::SMRSparseMatrixQ(profile)  ) {
 
     profileVec <- profile
 
@@ -1903,7 +1901,75 @@ SMRMonFilterMatrix <- function( smrObj, profile, type = "union" ) {
 
 
 ##===========================================================
-## Tag nerest neighbors
+## Make tag type recommender
+##===========================================================
+
+#' Make tag type recommender
+#' @description Converts the recommender into a recommender for one of the tag types.
+#' @param smrObj A sparse matrix recommender.
+#' @param tagTypeTo Tag type to make a recommender for.
+#' @param nTopTags Number of top tags from \code{tagTypeTo} when making item-tag
+#' replacements.
+#' @param tagTypes 	A vector tag types (strings) to make the data frame with.
+#' If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.
+#' @param tagSelectionCriteria Tag selection criteria.
+#' If a positive integer for each tag type the number of \code{tagSelectionCriteria} top tags are taken.
+#' If a function that function is expected to give a list of booleans for a given list of tag weights.
+#' The tags with weights that correspond to TRUE are selected.
+#' @param ... Additional arguments for \code{\link{SMRMatricesToLongForm}} or \code{\link{SMRCreateFromMatrices}}.
+#' @return A sparse matrix recommender
+#' @details
+#' This monad function calls the function \code{\link{SMRToMetadataRecommender}}.
+#' The following steps are taken.
+#' (1) The long form of the recommender is made.
+#' (2) The items are replaced with the top tags of \code{tagTypeTo}.
+#' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
+#' @export
+SMRMonMakeTagTypeRecommender <- function( smrObj, tagTypeTo, nTopTags = 1, tagTypes = NULL, tagSelectionCriteria = NULL, ...) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+
+  smrTagTypeObj <-
+    tryCatch(
+
+      expr = {
+        smrTagTypeObj <- SMRToMetadataRecommender( smr = smrObj, tagTypeTo = tagTypeTo, nTopTags = nTopTags, tagTypes = tagTypes, tagSelectionCriteria = tagSelectionCriteria, ... )
+      },
+
+      error = function(e) {
+        message( "Error attempting to run SMRToMetadataRecommender." )
+        passQ <- FALSE
+        print(e)
+        return(NULL)
+      },
+
+      warning = function(w) {
+        message( "Warning attempting to run SMRToMetadataRecommender." )
+        print(w)
+        return(NULL)
+      },
+
+      finally = { }
+    )
+
+  if( is.null(smrTagTypeObj) ) {
+
+    warning("Failure while running SMRMonMakeTagTypeRecommender.")
+
+    return(SMRMonFailureSymbol)
+
+  } else if( SMRSparseMatrixRecommenderQ(smrTagTypeObj) ) {
+
+    return(smrTagTypeObj)
+
+  }
+
+}
+
+
+##===========================================================
+## Tag nearest neighbors
 ##===========================================================
 
 #' Tag nearest neighbors
@@ -2032,8 +2098,9 @@ SMRMonComputeTopK <- function( smrObj, testData, ks, type = "fraction", ...) {
 ## SMRMonRetrievalByProfileStatistics
 ##===========================================================
 
-#' Top-K statistic computation
-#' @description Computes the Top-K statistic for a data frame with the scored similarity pairs.
+#' Retrieval by profile statistics
+#' @description Computes the Top-K statistics between the items that have a given focus tag
+#' and the profile recommendations for that focus tag (as a profile.)
 #' @param smrObj A sparse matrix recommender.
 #' @param focusTag The tag to be tested.
 #' @param focusTagType The tag type of the tag to be tested.
