@@ -62,14 +62,21 @@ dfTitanic
 to_SMRMon_R_command( "recommend for history id.5, id.7 and id.12", parse = F )
 ```
 
+```{r}
+to_SMRMon_R_command( 
+    "create from dfTitanic;
+     recommend for history id.5, id.7; 
+     join across recommendations with the data frame dfTitanic; 
+     echo pipeline value" ) 
+```
 
 ```{r}
 smrObj2 <-
   eval( expr = to_SMRMon_R_command( 
     "create from dfTitanic;
-     recommend for history id.5, id.7; 
+     suggest for history id.5, id.7; 
      join across recommendations with the data frame dfTitanic; 
-     echo pipeline value" ) )
+     echo pipeline value" ) ) 
 ```
 
 ```{r}
@@ -195,4 +202,20 @@ smrObj <-
   SMRMonEchoValue
 ```
 
+# Metadata recomemnder making
+
+```{r}
+to_SMRMon_R_command( 
+    "create using dfTitanic;
+     create metadata recommender for passengerClass over the tag types passengerSex and passengerSurvival;
+     show the sparse matrix rownames", parse = F ) 
+```
+
+```{r}
+smrRes <- 
+  eval( to_SMRMon_R_command( 
+    "create using dfTitanic;
+     create metadata recommender for passengerClass;
+     show the sparse matrix rownames", parse = T ) )
+```
 
