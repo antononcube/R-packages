@@ -165,6 +165,27 @@ MStateEchoFunctionValue <- function( msObj, f ) {
 
 
 ##===========================================================
+## Echo
+##===========================================================
+
+#' Echo.
+#' @description Echoes given argument.
+#' @param msObj An MState object.
+#' @param x Object to be echoed.
+#' @return An MState object
+#' @family Echo functions
+#' @export
+MStateEcho <- function( msObj, x ) {
+
+  if( MStateFailureQ(msObj) ) { return(MStateFailureSymbol) }
+
+  print(x)
+
+  msObj
+}
+
+
+##===========================================================
 ## Optional function application over monad's object
 ##===========================================================
 

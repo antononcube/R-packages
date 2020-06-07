@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -1486,8 +1485,8 @@ window.initializeCodeFolding = function(show) {
 
     // create a collapsable div to wrap the code in
     var div = $('<div class="collapse r-code-collapse"></div>');
-    if (show || $(this)[0].classList.contains('fold-show'))
-      div.addClass('in');
+    show = (show || $(this).hasClass('fold-show')) && !$(this).hasClass('fold-hide');
+    if (show) div.addClass('in');
     var id = 'rcode-643E0F36' + currentIndex++;
     div.attr('id', id);
     $(this).before(div);
@@ -1701,6 +1700,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -1771,8 +1771,11 @@ textMStateSetMember &lt;- readLines( &quot;../code-stencils/MStateSetMember.R&qu
 textMStateTakeMember &lt;- readLines( &quot;../code-stencils/MStateTakeMember.R&quot;)
 usethis::use_data( textMStateCoreFunctions, textMStateSetMember, textMStateTakeMember, overwrite = T)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiXHUwMDFiWzMybeKclFx1MDAxYlszOW0gU2F2aW5nIFx1MDAxYlszNG0ndGV4dE1TdGF0ZUNvcmVGdW5jdGlvbnMnXHUwMDFiWzM5bSwgXHUwMDFiWzM0bSd0ZXh0TVN0YXRlU2V0TWVtYmVyJ1x1MDAxYlszOW0sIFx1MDAxYlszNG0ndGV4dE1TdGF0ZVRha2VNZW1iZXInXHUwMDFiWzM5bSB0byBcdTAwMWJbMzRtJ2RhdGEvdGV4dE1TdGF0ZUNvcmVGdW5jdGlvbnMucmRhJ1x1MDAxYlszOW0sIFx1MDAxYlszNG0nZGF0YS90ZXh0TVN0YXRlU2V0TWVtYmVyLnJkYSdcdTAwMWJbMzltLCBcdTAwMWJbMzRtJ2RhdGEvdGV4dE1TdGF0ZVRha2VNZW1iZXIucmRhJ1x1MDAxYlszOW1cbiJ9 -->
-<pre><code>[32m✔[39m Saving [34m&#39;textMStateCoreFunctions&#39;[39m, [34m&#39;textMStateSetMember&#39;[39m, [34m&#39;textMStateTakeMember&#39;[39m to [34m&#39;data/textMStateCoreFunctions.rda&#39;[39m, [34m&#39;data/textMStateSetMember.rda&#39;[39m, [34m&#39;data/textMStateTakeMember.rda&#39;[39m</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoi4pyTIFNldHRpbmcgYWN0aXZlIHByb2plY3QgdG8gJy9Wb2x1bWVzL01hY2ludG9zaCBIRC9Vc2Vycy9hbnRvbm92L1ItcGFja2FnZXMvU3RhdGVNb25hZENvZGVHZW5lcmF0b3InXG7inJMgQWRkaW5nICdSJyB0byBEZXBlbmRzIGZpZWxkIGluIERFU0NSSVBUSU9OXG7inJMgU2F2aW5nICd0ZXh0TVN0YXRlQ29yZUZ1bmN0aW9ucycsICd0ZXh0TVN0YXRlU2V0TWVtYmVyJywgJ3RleHRNU3RhdGVUYWtlTWVtYmVyJyB0byAnZGF0YS90ZXh0TVN0YXRlQ29yZUZ1bmN0aW9ucy5yZGEnLCAnZGF0YS90ZXh0TVN0YXRlU2V0TWVtYmVyLnJkYScsICdkYXRhL3RleHRNU3RhdGVUYWtlTWVtYmVyLnJkYSdcbuKXjyBEb2N1bWVudCB5b3VyIGRhdGEgKHNlZSAnaHR0cHM6Ly9yLXBrZ3Mub3JnL2RhdGEuaHRtbCcpXG4ifQ== -->
+<pre><code>✓ Setting active project to &#39;/Volumes/Macintosh HD/Users/antonov/R-packages/StateMonadCodeGenerator&#39;
+✓ Adding &#39;R&#39; to Depends field in DESCRIPTION
+✓ Saving &#39;textMStateCoreFunctions&#39;, &#39;textMStateSetMember&#39;, &#39;textMStateTakeMember&#39; to &#39;data/textMStateCoreFunctions.rda&#39;, &#39;data/textMStateSetMember.rda&#39;, &#39;data/textMStateTakeMember.rda&#39;
+● Document your data (see &#39;https://r-pkgs.org/data.html&#39;)</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 
