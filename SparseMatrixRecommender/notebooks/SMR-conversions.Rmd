@@ -4,6 +4,8 @@ output: html_notebook
 ---
 
 ```{r}
+library(magrittr)
+library(Matrix)
 library(SparseMatrixRecommender)
 #devtools::load_all()
 ```
@@ -11,25 +13,33 @@ library(SparseMatrixRecommender)
 # Create recommender(s)
 
 ```{r}
-smr <- SMRCreate( dataRows = dfTitanic)
+smrTitanic <- SMRCreate( dataRows = dfTitanic)
 ```
 
 # Long form
 
 ```{r}
-SMRMatricesToLongForm(smr)
+SMRMatricesToLongForm(smrTitanic)
 ```
 
 # Wide form
 
 ```{r}
-SMRMatricesToWideForm( smr = smr )
+SMRMatricesToWideForm( smr = smrTitanic )
 ```
 
 # To metadata recommender
 
 ```{r}
-smrAge <- SMRToMetadataRecommender( smr = smr, tagTypeTo = "passengerAge", tagTypes = NULL, tagSelection = function(x) c( TRUE, rep_len(x = FALSE, length.out = length(x)-1 )), addTagTypesToColumnNamesQ = TRUE )
+SMRSparseMatrixToTriplets(smrTitanic$M)
+```
+
+```{r}
+smrAge <- SMRToMetadataRecommender( smr = smrTitanic, tagTypeTo = "passengerAge", tagTypes = NULL, tagSelection = function(x) c( TRUE, rep_len(x = FALSE, length.out = length(x)-1 )), addTagTypesToColumnNamesQ = TRUE )
+```
+
+```{r}
+smrAge <- SMRToMetadataRecommender( smr = smrTitanic, tagTypeTo = "passengerAge", tagTypes = NULL, tagSelection = 3, addTagTypesToColumnNamesQ = TRUE )
 ```
 
 ```{r}
@@ -38,5 +48,14 @@ as.matrix(smrAge$M)
 
 ```{r}
 as.matrix(smrAge$M)
+```
+# Unitize matrices
+
+```{r}
+smrFreq <- SMRUnitizeSubMatrices( smr = smrTitanic )
+```
+
+```{r}
+summary(smrFreq$M@x)
 ```
 

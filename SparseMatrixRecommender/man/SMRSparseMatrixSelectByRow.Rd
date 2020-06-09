@@ -11,8 +11,11 @@ SMRSparseMatrixSelectByRow(smat, selectionCriteria)
 
 \item{selectionCriteria}{Tag selection criteria.
 If a positive integer for each row the number of \code{selectionCriteria} top elements are taken.
-If a function that function is expected to give a list of booleans for a given list of numerical values
+If a function that function is expected to give a list of booleans for a given list of numerical values.
 The elements with values that correspond to TRUE are selected.}
+}
+\value{
+A sparse matrix
 }
 \description{
 Selects elements row-wise using a specified criteria.

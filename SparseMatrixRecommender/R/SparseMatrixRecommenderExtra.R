@@ -122,6 +122,33 @@ SMRSparseMatrixCor <- function( x ) {
 
 
 ##===========================================================
+## SMRUnitizeSubMatrices
+##===========================================================
+
+#' Unitize sub-matrices
+#' @description Unitizes the sub-matrices of a sparse matrix recommender.
+#' @param smr A sparse matrix recommender.
+#' @return A sparse matrix recommender
+#' @export
+SMRUnitizeSubMatrices <- function( smr ) {
+  
+  if( !SMRSparseMatrixRecommenderQ(smr) ) {
+    stop( "The argument smr is expected to be a sparse matrix recommender object.", call. = TRUE )
+  }
+    
+  smats <- purrr::map( smr$TagTypes, function(x) SMRUnitize( SMRSubMatrix(smr = smr, tagType = x) ) )
+  
+  SMRCreateFromMatrices( matrices = smats, 
+                         tagTypes = smr$TagTypes, 
+                         itemColumnName = smr$ItemColumnName, 
+                         imposeSameRowNamesQ = FALSE,
+                         addTagTypesToColumnNamesQ = FALSE,
+                         sep = ":")
+  
+}
+
+
+##===========================================================
 ## SMRSparseMatrixSelectByRow
 ##===========================================================
 
@@ -130,8 +157,9 @@ SMRSparseMatrixCor <- function( x ) {
 #' @param smat A sparse matrix
 #' @param selectionCriteria Tag selection criteria.
 #' If a positive integer for each row the number of \code{selectionCriteria} top elements are taken.
-#' If a function that function is expected to give a list of booleans for a given list of numerical values
+#' If a function that function is expected to give a list of booleans for a given list of numerical values.
 #' The elements with values that correspond to TRUE are selected.
+#' @return A sparse matrix
 #' @export
 SMRSparseMatrixSelectByRow <- function( smat, selectionCriteria ) {
 
