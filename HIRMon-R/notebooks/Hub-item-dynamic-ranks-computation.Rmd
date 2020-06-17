@@ -1,0 +1,22 @@
+---
+title: "Hub-item dynamic ranks computation"
+author: Anton Antonov
+date: 2019-10-24
+output: html_notebook
+---
+
+```{r}
+library(MathematicaVsRData)
+```
+
+# Introduction
+
+# Get data
+
+```{r}
+dfTitanic
+```
+
+```{r}
+```
+

@@ -1,0 +1,60 @@
+---
+title: "Hub-Item Recommender experiments"
+author: Anton Antonov
+date: 2020-06-17
+output: html_notebook
+---
+
+```{r}
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(Matrix)
+library(magrittr)
+library(MathematicaVsRData)
+```
+
+```{r}
+devtools::load_all()
+```
+
+# Introduction
+
+# Load data
+
+```{r}
+load("~/R/MovieLensRecommender/data/dfMovies.rda")
+load("~/R/MovieLensRecommender/data/dfRatings.rda")
+load("~/R/MovieLensRecommender/data/dfMovieGenres.rda")
+```
+
+## Summaries
+
+```{r}
+Summary(dfMovies)
+```
+
+```{r}
+Summary(dfRatings)
+```
+
+
+```{r}
+Summary(dfMovieGenres)
+```
+
+# Make Hub-Item recommender
+
+```{r}
+hirObj <- 
+  HIRMonUnit() %>% 
+  HIRMonCreate( dfRatings[, c("MovieID", "UserID", "Rating")] )
+```
+
+```{r}
+names(hirObj)
+```
+
+```{r}
+hirObj$TagTypeRanges
+```
+

@@ -1,0 +1,22 @@
+Package: HIRMon
+Type: Package
+Title: Hub-Item Recommender Monad
+Version: 0.4.0
+Author: Anton Antonov
+Maintainer: <antononcube@gmail.com>
+Description: The package named, HIRMon-R, stands for "Hub-Item Recommender Monad in R."
+    HIRMon imlements the Hub-Item Dynamic Ranking Algorithm (HIDRA). 
+    HIDRA can be seen as an extension of PageRank. See http://en.wikipedia.org/wiki/PageRank .
+    The difference is that HIDRA works on a bi-partite graph and
+    multiple rank vectors are calculated using different biasing based on  
+    predicates over the nodes. For a particular query a linear
+    combination of the closest ranks vectors is used in order to obtain
+    the response ranks. (That is the dynamic ranking part.)
+    There are at least two other similar algorithms:
+    1. Hyperlink-Induced Topic Search (HITS), http://en.wikipedia.org/wiki/HITS_algorithm
+    2. Topic-Sensitive PageRank, http://en.wikipedia.org/wiki/Topic-Sensitive_PageRank
+License: GPL-3
+Encoding: UTF-8
+Language: en-US
+LazyData: true
+RoxygenNote: 7.1.0
