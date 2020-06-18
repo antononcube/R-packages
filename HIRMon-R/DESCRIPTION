@@ -5,7 +5,7 @@ Version: 0.4.0
 Author: Anton Antonov
 Maintainer: <antononcube@gmail.com>
 Description: The package named, HIRMon-R, stands for "Hub-Item Recommender Monad in R."
-    HIRMon imlements the Hub-Item Dynamic Ranking Algorithm (HIDRA). 
+    HIRMon implements the Hub-Item Dynamic Ranking Algorithm (HIDRA). 
     HIDRA can be seen as an extension of PageRank. See http://en.wikipedia.org/wiki/PageRank .
     The difference is that HIDRA works on a bi-partite graph and
     multiple rank vectors are calculated using different biasing based on  

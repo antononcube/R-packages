@@ -41,20 +41,50 @@ Summary(dfRatings)
 ```{r}
 Summary(dfMovieGenres)
 ```
+# Most popular movies
+
+```{r}
+dfRatings %>% 
+  dplyr::count( MovieID, sort = TRUE ) %>% 
+  dplyr::inner_join( dfMovies, by = "MovieID" )
+```
+
+# Extend data
+
+```{r}
+dfMovies2 <- 
+  dfMovies %>% 
+  dplyr::mutate( Tag = paste0( "MovieID:", MovieID) )
+dfMovies2
+```
 
 # Make Hub-Item recommender
 
 ```{r}
+dfRatings[, c("MovieID", "UserID", "Rating")]
+```
+
+```{r}
 hirObj <- 
   HIRMonUnit() %>% 
-  HIRMonCreate( dfRatings[, c("MovieID", "UserID", "Rating")] )
+  HIRMonCreate( dfRatings[ , c("MovieID", "UserID", "Rating")], addTagTypesToColumnNamesQ = TRUE )
 ```
 
 ```{r}
-names(hirObj)
+dfMovies2 %>% 
+  dplyr::filter( grepl( "Die", Title ) )
 ```
 
 ```{r}
-hirObj$TagTypeRanges
+dfRecs <- 
+  hirObj %>% 
+  HIRMonRecommend( profile = c( "MovieID:1036", "MovieID:1370" ), nrecs = 20, alpha = 0.9, maxSteps = 100 ) %>% 
+  HIRMonTakeValue
 ```
+
+```{r, rows.print = 20}
+dfRecs %>% 
+  dplyr::inner_join( dfMovies2, by = "Tag" )
+```
+
 

@@ -4,11 +4,17 @@
 \alias{RemoveZeroEntries}
 \title{Remove zero entries.}
 \usage{
-RemoveZeroEntries(smat)
+RemoveZeroEntries(x, ....)
 }
 \arguments{
-\item{smat}{A sparse matrix.}
+\item{x}{A sparse matrix.}
+
+\item{tol}{A non-negative number to be used as tolerance for checking
+if an entry \code{x[i,j]} should be considered to be zero.}
 }
 \description{
-Remove the zero entries from a sparse matrix.
+Remove the explicit zero entries from a sparse matrix.
+}
+\details{
+Just calls \code{\link{Matrix::drop0}}.
 }

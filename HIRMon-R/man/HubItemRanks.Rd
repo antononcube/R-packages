@@ -15,12 +15,13 @@ HubItemRanks(
   maxSteps = 100,
   sumFactor = 0.2,
   numberOfHubRanks = 200,
-  numberOfItemRanks = 200
+  numberOfItemRanks = 200,
+  tol = 10^(-6)
 )
 }
 \arguments{
 \item{hubsAndItemsMat}{A bipartite graph adjacency matrix of hub-item connections
-with rownames and colnames corresponding to the hub and item ID's.}
+with row-names and col-names corresponding to the hub and item ID's.}
 
 \item{hubIDs}{A data frame with columns \code{c('HubID','HubIndex')} mapping ID's to indexes in \code{hubsAndItemsMat}.}
 
@@ -33,6 +34,8 @@ with rownames and colnames corresponding to the hub and item ID's.}
 \item{bias}{A numerical vector with biasing values for each hub and item.}
 
 \item{normalizationFunction}{A normalization function applied to the ranks vector for each tag set.}
+
+\item{tol}{Tolerance for \code{\link{PowerMethod}}.}
 }
 \value{
 A list of sparse arrays corresponding to the item ranks for \code{tagSets}.

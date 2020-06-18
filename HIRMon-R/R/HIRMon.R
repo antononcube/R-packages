@@ -627,14 +627,21 @@ HIRMonTakeBiasVector <- function( hirObj, functionName = "HIRMonTakeBiasVector" 
 #' @param data The hub-item transactions data frame.
 #' @param hubColumnName The name of the column with the hub tags.
 #' @param itemColumnName The name of the column with the item tags.
-#' @param valueColumnName The name of the column with the hub-itme associating values.
+#' @param valueColumnName The name of the column with the hub-item associating values.
 #' If NULL only the columns \code{hubColumnName} and \code{itemColumnName} are used.
-#' @param ... Additional parameters for \code{\link{HIRMonCreateFromMatrices}}.
+#' @param addTagTypesToColumnNamesQ Should the tag types be added as prefixes
+#' to the column names of the corresponding sub-matrices?
+#' @param sep Separator for the prefixes of the columns names.
 #' @details An S3 object is returned that is list with class attribute set to "HIR".
+#' Calls \code{\link{HIRMonCreateFromMatrices}}.
 #' @return HIR object.
 #' @family Creation functions
 #' @export
-HIRMonCreate <- function( hirObj, data = HIRMonTakeData(hirObj), hubColumnName = names(data)[1], itemColumnName = names(data)[2], valueColumnName = NULL, ... ) {
+HIRMonCreate <- function( hirObj,
+                          data = HIRMonTakeData(hirObj),
+                          hubColumnName = names(data)[[1]], itemColumnName = names(data)[[2]],
+                          valueColumnName = NULL,
+                          addTagTypesToColumnNamesQ = FALSE, sep = ":") {
 
   ## We allow anything to be hirObj .
   ## if( HIRMonFailureQ(hirObj) ) { return(HIRMonFailureSymbol) }
@@ -647,7 +654,12 @@ HIRMonCreate <- function( hirObj, data = HIRMonTakeData(hirObj), hubColumnName =
 
   smat <- xtabs( formula = frm, data = data, sparse = TRUE )
 
-  res <- HIRMonCreateFromMatrices( hirObj = hirObj, hubItemMatrix = smat, itemHubMatrix = NULL, hubColumnName = hubColumnName, itemColumnName = itemColumnName, ... )
+  res <- HIRMonCreateFromMatrices( hirObj = hirObj,
+                                   hubItemMatrix = smat,
+                                   itemHubMatrix = NULL,
+                                   hubColumnName = hubColumnName,
+                                   itemColumnName = itemColumnName,
+                                   addTagTypesToColumnNamesQ = addTagTypesToColumnNamesQ, sep = sep )
 
   if( HIRMonFailureQ(res) ) { return(HIRMonFailureSymbol) }
 
@@ -679,7 +691,8 @@ HIRMonCreate <- function( hirObj, data = HIRMonTakeData(hirObj), hubColumnName =
 HIRMonCreateFromMatrices <- function( hirObj,
                                       hubItemMatrix, itemHubMatrix = t(hubItemMatrix),
                                       columnStochasticQ = TRUE,
-                                      hubColumnName = "Hub", itemColumnName = "Item", addTagTypesToColumnNamesQ = FALSE, sep = ":"  ) {
+                                      hubColumnName = "Hub", itemColumnName = "Item",
+                                      addTagTypesToColumnNamesQ = FALSE, sep = ":"  ) {
 
   ## We allow anything to be hirObj .
   ## if( HIRMonFailureQ(hirObj) ) { return(HIRMonFailureSymbol) }
@@ -701,10 +714,13 @@ HIRMonCreateFromMatrices <- function( hirObj,
   biMatHubPart <- rbind( hhZeroMat, itemHubMatrix )
   biMatItemPart <- rbind( hubItemMatrix, iiZeroMat )
 
+  rownames(biMatHubPart) <- c( rownames(hubItemMatrix), colnames(hubItemMatrix) )
+  rownames(biMatItemPart) <- c( rownames(hubItemMatrix), colnames(hubItemMatrix) )
+
   hirObj <-
     SMRMon::SMRMonUnit() %>%
-    SMRMon::SMRMonCreateFromMatrices( matrices = list( "Hub" = biMatHubPart, "Item" = biMatItemPart ),
-                                      tagTypes = NULL,
+    SMRMon::SMRMonCreateFromMatrices( matrices = setNames( list( biMatHubPart, biMatItemPart ), c( hubColumnName, itemColumnName ) ),
+                                      tagTypes = c( hubColumnName, itemColumnName ),
                                       itemColumnName = "ID",
                                       imposeSameRowNamesQ = FALSE,
                                       addTagTypesToColumnNamesQ = addTagTypesToColumnNamesQ,
@@ -712,9 +728,13 @@ HIRMonCreateFromMatrices <- function( hirObj,
 
   if( SMRMon::SMRMonFailureQ(hirObj) ) { return(HIRMonFailureSymbol) }
 
-  ## Make the bi-partite matrix column stochastic
-  hirObj$M <- SparseMatrixRecommender::SMRMakeColumnStochastic( mat = hirObj$M )
+  ## Row names of the bi-partite graph matrix are the same as the column names.
+  rownames(hirObj$M) <- colnames(hirObj$M)
 
+  ## Make the bi-partite matrix column stochastic
+  if( columnStochasticQ ) {
+    hirObj$M <- SparseMatrixRecommender::SMRMakeColumnStochastic( mat = hirObj$M )
+  }
 
   ## Result
   hirObj$HubItemMatrix <- hubItemMatrix
@@ -729,16 +749,55 @@ HIRMonCreateFromMatrices <- function( hirObj,
 
 
 ##===========================================================
-## HIRMonRecommend
+## HIRMon Recommend
 ##===========================================================
 
 #' Take Items.
 #' @description Takes Items from the monad object.
 #' @param hirObj An HIRMon object.
-#' @param functionName A string that is a name of this function or a delegating function.
-#' @return A list of functions or \code{HIRMonFailureSymbol}.
+#' @param profile Profile specification.
+#' A data frame with columns \code{c("Score", "Tag")};
+#' a numeric vector named elements, the names being tags;
+#' a character vector, the correspond scores assumed all to be 1.
+#' @param nrecs Number of recommendations.
+#' If NULL all non-zero scores recommendations are returned.
+#' @param alpha The significance of \code{hirObj$M} in the Power Method iteration formula.
+#' @param ... Additional arguments for \code{\link{PowerMethod}}.
+#' @return A HIRMon object.
 #' @family Recommender functions
 #' @export
-HIRMonRecommend <- function( hirObj, profie, nrecs = 12 ) {
+HIRMonRecommend <- function( hirObj, profile, nrecs = 12, alpha = 0.8, ... ) {
 
-}
+  if( HIRMonFailureQ(hirObj) ) { return(HIRMonFailureSymbol) }
+
+  profile <-
+    hirObj %>%
+    SMRMon::SMRMonGetProfileVector( profile = profile, tagType = NULL, uniqueColumnsQ = TRUE, functionName = "HIRMonRecommend", warningQ = TRUE ) %>%
+    SMRMon::SMRMonTakeValue()
+
+  ## Coll Power Method
+  res <- PowerMethod( mat = hirObj$M, bvec = profile, alpha = alpha, ... )
+
+  ## Reorder in descending order
+  lsOrder <- rev(order(res$Vector[,1]))
+
+  ## Take top recommendations
+  if ( is.numeric(nrecs) && length(nrecs) == 1 && nrecs > 0 ) {
+
+    lsOrder <- lsOrder[ 1:min( nrecs, length(lsOrder) ) ]
+
+  } else if ( !is.null(nrecs) ){
+    warning( "The argument nrecs is expected to be a positive integer or NULL.", call. = TRUE )
+    return(HIRMonFailureSymbol)
+  }
+
+  ## Find the tag types
+  lsTagTypes <- rownames(hirObj$TagTypeRanges)[ findInterval( x = lsOrder, vec = hirObj$TagTypeRanges$Begin ) ]
+
+  ## Form the result data frame
+  dfRes <- data.frame( Score = res$Vector[lsOrder,1], TagType = lsTagTypes, Tag = rownames(hirObj$M)[lsOrder], stringsAsFactors = FALSE )
+
+  hirObj$Value <- dfRes
+
+  hirObj
+ }

@@ -1,6 +1,6 @@
 # Hub-Item Recommender Monad
 
-The package named, HIRMon-R, stands for **H**ub-**I**tem **R**ecommender **Mo**nad in R."
+The package named, HIRMon-R, stands for **H**ub-**I**tem **R**ecommender **Mon**ad in R."
 HIRMon imlements the Hub-Item Dynamic Ranking Algorithm (HIDRA).
 
 HIDRA can be seen as an extension of [PageRank](http://en.wikipedia.org/wiki/PageRank).
