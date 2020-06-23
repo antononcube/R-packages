@@ -1363,10 +1363,11 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 #' @param smrObj An SMRMon object.
 #' @param profile Profile specification.
 #' A data frame with columns \code{c("Score", "Tag")};
-#' a numeric vector named elements, the names being items;
+#' a numeric vector with named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1;
 #' a sparse matrix with 1 column and a number of rows that equals \code{ncol(smrObj$M)}.
 #' @param nrecs Number of recommendations to be returned.
+#' @param normalizeQ Should the scores be normalized by the maximum score or not?
 #' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
 #' @details The recommendations result is a
 #' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
@@ -1374,7 +1375,7 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 #' @return A SMRMon object
 #' @family Recommendations computation functions
 #' @export
-SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, warningQ = TRUE ) {
+SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = FALSE, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1404,6 +1405,11 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, warningQ = TR
                                           profile = data.frame( Score = profile$Score, Tag = profile$Tag, stringsAsFactors = FALSE ),
                                           nrecs = nrecs )
 
+  }
+
+  if( normalizeQ ) {
+    maxScore <- max(res$Score)
+    if( maxScore != 0 ) { res$Score <- res$Score / maxScore }
   }
 
   smrObj$Value <- res

@@ -4,18 +4,26 @@
 \alias{SMRMonRecommendByProfile}
 \title{Recommendations using a profile}
 \usage{
-SMRMonRecommendByProfile(smrObj, profile, nrecs = 12, warningQ = TRUE)
+SMRMonRecommendByProfile(
+  smrObj,
+  profile,
+  nrecs = 12,
+  normalizeQ = FALSE,
+  warningQ = TRUE
+)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
 
 \item{profile}{Profile specification.
 A data frame with columns \code{c("Score", "Tag")};
-a numeric vector named elements, the names being items;
+a numeric vector with named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1;
 a sparse matrix with 1 column and a number of rows that equals \code{ncol(smrObj$M)}.}
 
 \item{nrecs}{Number of recommendations to be returned.}
+
+\item{normalizeQ}{Should the scores be normalized by the maximum score or not?}
 
 \item{warningQ}{Should a warning be issued if \code{profile} is of unknown type?}
 }

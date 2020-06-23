@@ -52,7 +52,7 @@ focusProfile <- c("female", "30", "died")
 ```{r}
 smrObj <-
   smrObj %>% 
-  SMRMonRecommendByProfile( profile = focusProfile, nrecs = 12 ) %>% 
+  SMRMonRecommendByProfile( profile = focusProfile, nrecs = NULL, normalizeQ = TRUE ) %>% 
   SMRMonJoinAcross( dfTitanic ) %>% 
   SMRMonEchoValue
 ```
@@ -180,5 +180,41 @@ smrObj <- smrObj %>% SMRMonApplyTagTypeWeights( weights = c(), default = 1 )
 smrObj %>% 
   SMRMonRetrievalByProfileStatistics( focusTag = "10", focusTagType = "passengerAge", profileTagTypes = c("passengerSex", "passengerSurvival"), nrecs = c( 100, 200) ) %>% 
   SMRMonTakeValue
+```
+# Metadata recommender
+
+```{r}
+dfTitanic
+```
+
+```{r}
+smrObj <- SMRMonUnit() %>% SMRMonCreate( data = dfTitanic, itemColumnName = "id" )
+```
+
+```{r}
+smrMetaObj <- smrObj %>% SMRMonMakeTagTypeRecommender( tagTypeTo = "passengerClass", nTopTags = 1, tagSelectionCriteria = 120, tagTypes = NULL  )
+```
+```{r}
+smrMetaObj
+```
+
+```{r}
+as.matrix(smrMetaObj$M)
+```
+```{r}
+class(matXTabs)
+```
+
+```{r}
+matXTabs <- 
+  cbind( 
+    xtabs( formula = ~ passengerClass + passengerAge, data = dfTitanic, sparse = TRUE ),
+    xtabs( formula = ~ passengerClass + passengerSex, data = dfTitanic, sparse = TRUE ),
+    xtabs( formula = ~ passengerClass + passengerSurvival, data = dfTitanic, sparse = TRUE )
+  )
+```
+
+```{r}
+max(abs(matXTabs - smrMetaObj$M))
 ```
 
