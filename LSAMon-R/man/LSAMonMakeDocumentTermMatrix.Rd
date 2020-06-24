@@ -6,7 +6,7 @@
 \usage{
 LSAMonMakeDocumentTermMatrix(
   lsaObj,
-  splitPattern = "[[:space:]]",
+  splitPattern = "[[:space:]]|[[:punct:]]",
   stemWordsQ = FALSE,
   stopWords = NULL
 )
@@ -14,7 +14,8 @@ LSAMonMakeDocumentTermMatrix(
 \arguments{
 \item{lsaObj}{A LSAMon object.}
 
-\item{splitPattern}{Pattern to use for splitting the documents into words.}
+\item{splitPattern}{Pattern to use for splitting the documents into words.
+If NULL \code{"[[:space:]]|[[:punct:]]"} is used.}
 
 \item{stemWordsQ}{Should the words be stemmed or not?}
 

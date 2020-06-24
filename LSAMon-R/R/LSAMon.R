@@ -591,6 +591,7 @@ LSAMonTakeTopicNames <- function( lsaObj, functionName = "LSAMonTakeTopicNames" 
 #' using specified word splitting and optional word stemming.
 #' @param lsaObj A LSAMon object.
 #' @param splitPattern Pattern to use for splitting the documents into words.
+#' If NULL \code{"[[:space:]]|[[:punct:]]"} is used.
 #' @param stemWordsQ Should the words be stemmed or not?
 #' @param stopWords A character vector with stop words to be removed.
 #' @return A LSAMon object.
@@ -598,7 +599,7 @@ LSAMonTakeTopicNames <- function( lsaObj, functionName = "LSAMonTakeTopicNames" 
 #' The documents are expected to have ID's. If \code{is.null(names(lsaObj$Documents))}
 #' then the ID's are just the indexes of the documents list/vector.
 #' @export
-LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]", stemWordsQ = FALSE, stopWords = NULL ) {
+LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[:punct:]]", stemWordsQ = FALSE, stopWords = NULL ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -614,13 +615,13 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]", 
     return(LSAMonFailureSymbol)
   }
 
-  if( !is.character(splitPattern) ) {
-    warning("The argument splitPattern is expected to be a string.", call. = TRUE )
+  if( !( is.null(splitPattern) || is.character(splitPattern) ) ) {
+    warning("The argument splitPattern is expected to be a string or NULL.", call. = TRUE )
     return(LSAMonFailureSymbol)
   }
 
   if( is.null(splitPattern) ) {
-    splitPattern <- "[[:space:]]"
+    splitPattern <- "[[:space:]]|[[:punct:]]"
   }
 
   if( is.null(stemWordsQ) ) {
