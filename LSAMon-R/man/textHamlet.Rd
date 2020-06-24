@@ -4,7 +4,9 @@
 \name{textHamlet}
 \alias{textHamlet}
 \title{THE TRAGEDY OF HAMLET, PRINCE OF DENMARK by William Shakespeare}
-\format{A character vector}
+\format{
+A character vector
+}
 \source{
 \url{http://erdani.com/tdpl/hamlet.txt}
 }

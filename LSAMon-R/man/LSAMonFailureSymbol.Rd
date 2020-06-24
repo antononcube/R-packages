@@ -4,7 +4,9 @@
 \name{LSAMonFailureSymbol}
 \alias{LSAMonFailureSymbol}
 \title{Failure symbol for LSAMon.}
-\format{An object of class \code{logical} of length 1.}
+\format{
+An object of class \code{logical} of length 1.
+}
 \usage{
 LSAMonFailureSymbol
 }
