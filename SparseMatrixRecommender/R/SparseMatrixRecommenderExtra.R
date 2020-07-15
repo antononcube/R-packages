@@ -128,15 +128,17 @@ SMRSparseMatrixCor <- function( x ) {
 #' Unitize sub-matrices
 #' @description Unitizes the sub-matrices of a sparse matrix recommender.
 #' @param smr A sparse matrix recommender.
+#' @param tol A positive number. 
+#' Matrix entries with absolute values below \code{tol} are put to 0.
 #' @return A sparse matrix recommender
 #' @export
-SMRUnitizeSubMatrices <- function( smr ) {
+SMRUnitizeSubMatrices <- function( smr, tol = 0 ) {
   
   if( !SMRSparseMatrixRecommenderQ(smr) ) {
     stop( "The argument smr is expected to be a sparse matrix recommender object.", call. = TRUE )
   }
     
-  smats <- purrr::map( smr$TagTypes, function(x) SMRUnitize( SMRSubMatrix(smr = smr, tagType = x) ) )
+  smats <- purrr::map( smr$TagTypes, function(x) SMRUnitize( smat = SMRSubMatrix(smr = smr, tagType = x), tol = tol ) )
   
   SMRCreateFromMatrices( matrices = smats, 
                          tagTypes = smr$TagTypes, 

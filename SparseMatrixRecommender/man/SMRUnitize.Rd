@@ -4,10 +4,13 @@
 \alias{SMRUnitize}
 \title{Unitize a sparse matrix.}
 \usage{
-SMRUnitize(smat)
+SMRUnitize(smat, tol = 0)
 }
 \arguments{
 \item{smat}{A sparse matrix.}
+
+\item{tol}{A positive number. 
+Matrix entries with absolute values below \code{tol} are put to 0.}
 }
 \value{
 Sparse matrix

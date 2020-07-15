@@ -4,10 +4,13 @@
 \alias{SMRUnitizeSubMatrices}
 \title{Unitize sub-matrices}
 \usage{
-SMRUnitizeSubMatrices(smr)
+SMRUnitizeSubMatrices(smr, tol = 0)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
+
+\item{tol}{A positive number. 
+Matrix entries with absolute values below \code{tol} are put to 0.}
 }
 \value{
 A sparse matrix recommender

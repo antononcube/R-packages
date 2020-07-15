@@ -393,16 +393,21 @@ SMRMakeDocumentTermMatrix <- function( documents, ids = NULL, split = "\\W",
 #' Unitize a sparse matrix.
 #' @description Replaces non-zero entries with 1's.
 #' @param smat A sparse matrix.
+#' @param tol A positive number. 
+#' Matrix entries with absolute values below \code{tol} are put to 0.
 #' @return Sparse matrix
 #' @family Document-term matrix functions
 #' @export
-SMRUnitize <- function(smat) {
+SMRUnitize <- function(smat, tol = 0) {
   
   if( ! SMRSparseMatrixQ(smat) ) {
     stop( "The first argument is expected to be a sparse matrix.", call. = TRUE )
   }
   
-  smat@x[ smat@x != 0 ] <- 1
+  smat@x[ abs(smat@x) >= abs(tol) ] <- 1
+  smat@x[ abs(smat@x) < abs(tol) ] <- 0
+  smat <- Matrix::drop0(smat)
+  
   smat
 }
 

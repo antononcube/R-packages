@@ -52,7 +52,11 @@ as.matrix(smrAge$M)
 # Unitize matrices
 
 ```{r}
-smrFreq <- SMRUnitizeSubMatrices( smr = smrTitanic )
+smrFreq <- SMRUnitizeSubMatrices( smr = smrTitanic, tol = 0.1 )
+```
+
+```{r}
+colSums(smrFreq$M)
 ```
 
 ```{r}
