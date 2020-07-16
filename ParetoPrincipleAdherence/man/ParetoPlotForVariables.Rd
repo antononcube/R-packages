@@ -4,8 +4,16 @@
 \alias{ParetoPlotForVariables}
 \title{Pareto plot for variables.}
 \usage{
-ParetoPlotForVariables(data, normalizeQ = TRUE, separatedPlotsQ = TRUE,
-  main = NULL, scales = "fixed", nrow = NULL, ncol = NULL, ...)
+ParetoPlotForVariables(
+  data,
+  normalizeQ = TRUE,
+  separatedPlotsQ = TRUE,
+  main = NULL,
+  scales = "fixed",
+  nrow = NULL,
+  ncol = NULL,
+  ...
+)
 }
 \arguments{
 \item{data}{A two column data frame with the first column of a variable name

@@ -4,10 +4,12 @@
 \alias{ParetoPlot}
 \title{Pareto plot for a vector.}
 \usage{
-ParetoPlot(data)
+ParetoPlot(data, ...)
 }
 \arguments{
 \item{data}{A character, factor, or numerical vector.}
+
+\item{...}{Additional parameters for \code{\link{ParetoPlotForVariables}}.}
 }
 \description{
 Computes the Pareto statistic for a vector and plots it.
@@ -16,6 +18,7 @@ Computes the Pareto statistic for a vector and plots it.
 This function is a shortcut to \code{\link{ParetoPlotForVariables}}.
 }
 \seealso{
-Other Pareto plots: \code{\link{ParetoFramePlot}}
+Other Pareto plots: 
+\code{\link{ParetoFramePlot}()}
 }
 \concept{Pareto plots}

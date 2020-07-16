@@ -265,16 +265,17 @@ ParetoFramePlot <- function( data, main = NULL, xlab = "Index", ylab = "ParetoFr
 #' Pareto plot for a vector.
 #' @description Computes the Pareto statistic for a vector and plots it.
 #' @param data A character, factor, or numerical vector.
+#' @param ... Additional parameters for \code{\link{ParetoPlotForVariables}}.
 #' @details This function is a shortcut to \code{\link{ParetoPlotForVariables}}.
 #' @family Pareto plots
 #' @export
-ParetoPlot <- function( data ) {
+ParetoPlot <- function( data, ... ) {
 
   if( !( is.character(data) || is.factor(data) || is.numeric(data) ) ) {
     stop( "The argument data is expected to be a character, factor, or numerical vector.", call. = TRUE )
   }
 
-  ParetoPlotForVariables( data.frame(Variable = paste(class(data), collapse = " "), Value = data) )
+  ParetoPlotForVariables( data.frame(Variable = paste(class(data), collapse = " "), Value = data), ... )
 }
 
 

@@ -4,9 +4,17 @@
 \alias{ParetoFramePlot}
 \title{Plot points with a Pareto frame.}
 \usage{
-ParetoFramePlot(data, main = NULL, xlab = "Index",
-  ylab = "ParetoFraction", xFraction = 0.2, yFraction = 0.8,
-  showParetoTicksQ = TRUE, computeStatisticQ = FALSE, ...)
+ParetoFramePlot(
+  data,
+  main = NULL,
+  xlab = "Index",
+  ylab = "ParetoFraction",
+  xFraction = 0.2,
+  yFraction = 0.8,
+  showParetoTicksQ = TRUE,
+  computeStatisticQ = FALSE,
+  ...
+)
 }
 \arguments{
 \item{data}{A numeric vector.}
@@ -39,6 +47,7 @@ If \code{computeStatisticQ = FALSE} then \code{data <- cumsum(rev(sort(data))) /
 is executed first.
 }
 \seealso{
-Other Pareto plots: \code{\link{ParetoPlot}}
+Other Pareto plots: 
+\code{\link{ParetoPlot}()}
 }
 \concept{Pareto plots}

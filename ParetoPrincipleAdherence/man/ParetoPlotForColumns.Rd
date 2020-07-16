@@ -4,9 +4,17 @@
 \alias{ParetoPlotForColumns}
 \title{Pareto plots over the columns of a data frame.}
 \usage{
-ParetoPlotForColumns(data, columnNames = colnames(data),
-  normalizeQ = TRUE, separatedPlotsQ = TRUE, main = NULL,
-  scales = "fixed", nrow = NULL, ncol = NULL, ...)
+ParetoPlotForColumns(
+  data,
+  columnNames = colnames(data),
+  normalizeQ = TRUE,
+  separatedPlotsQ = TRUE,
+  main = NULL,
+  scales = "fixed",
+  nrow = NULL,
+  ncol = NULL,
+  ...
+)
 }
 \arguments{
 \item{data}{A data frame.}

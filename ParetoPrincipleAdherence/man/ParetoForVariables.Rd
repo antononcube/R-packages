@@ -4,8 +4,7 @@
 \alias{ParetoForVariables}
 \title{Pareto for variables.}
 \usage{
-ParetoForVariables(data, columnNames = colnames(data),
-  normalizeQ = TRUE)
+ParetoForVariables(data, columnNames = colnames(data), normalizeQ = TRUE)
 }
 \arguments{
 \item{data}{A data frame.}
