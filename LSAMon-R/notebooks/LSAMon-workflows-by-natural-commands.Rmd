@@ -28,34 +28,6 @@ lsaObj <-
   LSAMonMakeDocumentTermMatrix()
 ```
 
-# Additional definitions
-
-```{r, eval=T}
-Perl6LSAMonParsingLib <- function() {
-    file.path("/", "Volumes", "Macintosh HD", "Users", "antonov", "ConversationalAgents", "Packages", "Perl6", "LatentSemanticAnalysisWorkflows", "lib")
-}
-```
-
-```{r}
-file.exists(Perl6LSAMonParsingLib())
-```
-
-```{r, eval=T}
-to_LSAMon_R_command <- function(command, parse=TRUE) {
-  pres <- Perl6Command( command = paste0( "say to_LSAMon_R(\"", command, "\")"),
-                        moduleDirectory = Perl6LSAMonParsingLib(),
-                        moduleName = "LatentSemanticAnalysisWorkflows" )
-  messageInds <- grep( "^Possible", pres )
-  if( length(messageInds) > 0 ) {
-    messageLines <- pres[messageInds]
-    print(messageLines)
-    pres <- pres[setdiff(1:length(pres), messageInds)]
-  }
-  pres <- gsub( "\\\"", "\"", pres, fixed = T)
-  if(parse) { parse(text = pres) }
-  else { pres }
-}
-```
 
 # Basic pipeline
 
@@ -64,18 +36,33 @@ textHamlet
 ```
 
 ```{r}
+lsaExpr <- 
+  ToLatentSemanticAnalysisWorkflowCode( 
+    "create from textHamlet;
+   make document term matrix with stemming FALSE and automatic stop words;
+   apply LSI functions global weight function inverse document frequency, local term weight function none, normalizer function Cosine;
+   extract 12 topics using method SVD and max steps 12 and 2 min number of documents per term;
+   show topics table with 10 terms;
+   show thesaurus table for king, castle, denmark;", parse = FALSE )
+lsaExpr
+```
+```{r}
+obj1 <- eval( parse( text = paste( lsaExpr, collapse = "" ) ) )
+```
+
+```{r}
 smrObj2 <-
-  eval( expr = to_LSAMon_R_command( 
+  eval( expr = ToLatentSemanticAnalysisWorkflowCode( 
   "create from textHamlet;
    make document term matrix with stemming FALSE and automatic stop words;
-   apply lsi functions global weight function idf, local term weight function none, normalizer function cosine;
-   extract 12 topics using method NNMF and max steps 12;
-   show topics table with 12 columns and 10 terms;
+   apply LSI functions global weight function IDF, local term weight function TermFrequency, normalizer function Cosine;
+   extract 12 topics using method NNMF and max steps 12 and 20 min number of documents per term;
+   show topics table with 12 terms;
    show thesaurus table for king, castle, denmark;" ) )
 ```
 
 ```{r}
-to_LSAMon_R_command( 
+ToLatentSemanticAnalysisWorkflowCode( 
   "create from textHamlet;
    make document term matrix with stemming FALSE and automatic stop words;
    apply lsi functions global weight function idf, local term weight function none, normalizer function cosine;
