@@ -79,11 +79,11 @@ test_that("Arrange columns", {
 
 test_that("Filter rows", {
   ##
-  lsCommands <- "use dfStarwars; filter by mass greater than 200 and height greater than 100 or height is 202"
+  lsCommands <- "use dfStarwars; filter by mass is greater or equal than 200 and height is greater than 100 or height is 202"
   res <- ToDataQueryWorkflowCode( lsCommands )
 
   expect_is( res, "expression" )
 
-  expect_equivalent( eval(res), dfStarwars %>% dplyr::filter( mass > 200 & height > 100 | height == 202 ) )
+  expect_equivalent( eval(res), dfStarwars %>% dplyr::filter( mass >= 200 & height > 100 | height == 202 ) )
 
 })
