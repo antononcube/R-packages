@@ -1,0 +1,99 @@
+---
+title: "Make package data"
+author: Anton Antonov
+date: 2020-08-12
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+starwars
+```
+
+# Star Wars data
+
+```{r}
+head(starwars)
+```
+
+```{r}
+starwars_films <- 
+  purrr::map_df( split(starwars, 1:nrow(starwars)), function(dfX) {
+    data.frame( name= dfX$name[[1]], 
+                film = dfX$films[[1]], 
+                stringsAsFactors = FALSE ) 
+  })
+starwars_films
+```
+
+```{r}
+starwars_vehicles <- 
+  purrr::map_df( split(starwars, 1:nrow(starwars)), function(dfX) {
+    if( length(dfX$vehicles[[1]]) == 0 ) {
+      NULL 
+    } else {
+      data.frame( name= dfX$name[[1]], 
+                vehicle = dfX$vehicles[[1]], 
+                stringsAsFactors = FALSE ) 
+    }
+  })
+starwars_vehicles
+```
+
+```{r}
+starwars_starships <- 
+  purrr::map_df( split(starwars, 1:nrow(starwars)), function(dfX) {
+    if( length(dfX$starships[[1]]) == 0 ) {
+      NULL 
+    } else {
+      data.frame( name= dfX$name[[1]], 
+                starship = dfX$starships[[1]], 
+                stringsAsFactors = FALSE ) 
+    }
+  })
+starwars_starships
+```
+
+```{r}
+starwars <- 
+  starwars %>% 
+  dplyr::mutate( films = NULL, vehicles = NULL, starships = NULL )
+starwars
+```
+
+# Get Titanic data
+
+```{r}
+dfTitanic <- read.csv("https://raw.githubusercontent.com/antononcube/MathematicaVsR/master/Data/MathematicaVsR-Data-Titanic.csv", stringsAsFactors=FALSE)
+```
+
+# Export
+
+```{r}
+dim(dfStarwarsStarships)
+```
+
+```{r, eval=FALSE}
+dfStarwars <- starwars
+usethis::use_data( dfStarwars, overwrite = T )
+```
+
+
+```{r, eval=FALSE}
+dfStarwarsFilms <- starwars_films
+usethis::use_data( dfStarwarsFilms, overwrite = T )
+```
+
+
+```{r, eval=FALSE}
+dfStarwarsVehicles <- starwars_vehicles
+usethis::use_data( dfStarwarsVehicles, overwrite = T )
+```
+
+```{r, eval=FALSE}
+dfStarwarsStarships <- starwars_starships
+usethis::use_data( dfStarwarsStarships, overwrite = T )
+```

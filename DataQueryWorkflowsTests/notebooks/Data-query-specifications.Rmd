@@ -1,0 +1,183 @@
+---
+title: "Data query specifications"
+author: Anton Antonov
+date: 2020-08-13
+output: html_notebook
+---
+
+```{r setup, include=TRUE}
+library(tidyverse)
+library(magrittr)
+library(DataQueryWorkflowsTests)
+library(MathematicaVsRData)
+library(ExternalParsersHookUp)
+```
+
+# Introduction
+
+
+# Experiments
+
+
+```{r}
+dfStarwars %>%
+  dplyr::select(mass, height ) %>%
+  dplyr::mutate(mass1 = mass) %>%
+  ( function(x) { print(summary(x)); x } ) %>%  
+  dplyr::glimpse() %>% 
+  dplyr::arrange(desc(mass, height))
+```
+# Basic workflow
+
+## Titanic
+
+```{r}
+dfTitanic %>%
+  dplyr::filter(passengerSex == "male") %>%
+  dplyr::group_by(passengerClass) %>%
+  dplyr::count()
+```
+
+## Star Wars
+
+Direct Raku call:
+
+```{r}
+RakuCommand( "say ToDataQueryWorkflowCode('use dfTitanic;
+filteri by passengerSex == 12;
+group by passengerClass, passengerSurvival;
+count;
+ungroup;')", NULL, "DSL::English::DataQueryWorkflows")
+```
+
+
+```{r}
+commands <- 
+  "use data frame dfStarwars;
+keep the columns name, homeworld, mass & height;
+transform with bmi = `mass/height^2*10000`;
+glimpse data;
+filter rows by bmi >= 30 & height < 200;
+summarise data;
+arrange by the variables mass & height descending"
+
+ToDataQueryWorkflowCode( commands, parse = TRUE )
+```
+
+```{r}
+eval(ToDataQueryWorkflowCode(commands))
+```
+
+# Group by
+
+```{r}
+ToDataQueryWorkflowCode(
+  "use dfTitanic;
+filter by passengerSex == 'male';
+group by passengerClass, passengerSurvival;
+count;
+ungroup;", parse = TRUE)
+```
+
+
+# Cross tabulation
+
+```{r}
+ToDataQueryWorkflowCode(
+  'use data frame dfStarwars; 
+  cross tabulate homeworld with gender over mass;
+  sort by Freq descending')
+```
+
+```{r}
+eval(ToDataQueryWorkflowCode(
+  'use data frame dfStarwars; 
+  cross tabulate homeworld with gender over mass;
+  sort by Freq descending'))
+```
+
+
+# Inner join
+
+```{r}
+res <- ToDataQueryWorkflowCode('
+use dfStarwarsVehicles;
+left join with dfStarwarsStarship on "name";
+cross tabulate vehicle by starship')
+res
+```
+```{r}
+class(res)
+```
+
+```{r}
+eval(res)
+```
+
+# Long form
+
+```{r}
+reshape( data = as.data.frame(dfStarwars[, c("name", "mass", "height")]), varying = c("mass", "height"), v.names = "VAL", timevar = "Var1", direction = "long") %>% 
+  dplyr::arrange( name )
+```
+
+```{r}
+dfStarwars %>%
+  dplyr::select(name, mass, height) %>%
+  tidyr::pivot_longer(cols = c( mass, height), names_to = "Var1", values_to = "VAL" ) %>% 
+  dplyr::arrange(name)
+```
+
+```{r}
+dfStarwars %>% 
+  dplyr::select( name, height, mass ) %>% 
+  tidyr::pivot_longer( cols = c(height, mass), names_to = "Variable", values_to = "Value" )
+```
+
+```{r}
+dfStarwars %>% 
+  dplyr::select( name, height, mass ) %>% 
+  tidyr::pivot_longer( cols = !contains("name"), names_to = "Variable", values_to = "Value" )
+```
+
+```{r}
+dfStarwars %>% 
+  dplyr::select( name, height, mass ) %>% 
+  tidyr::pivot_longer( cols = -name, names_to = "Variable", values_to = "Value" )
+```
+
+```{r}
+dfStarwars %>% 
+  dplyr::select( name, height, mass, homeworld, gender ) %>% 
+  tidyr::pivot_longer( cols = -name, names_to = "Variable", values_to = "Value", values_transform = list( homeworld = as.character, gender = as.character ) )
+```
+
+# Wide form
+
+```{r}
+dfLong <- 
+  reshape( data = as.data.frame(dfStarwars[, c("name", "mass", "height")]), varying = c("mass", "height"), v.names = "VAL", timevar = "Var1", direction = "long") %>% 
+  dplyr::arrange( name )
+dfLong
+```
+
+```{r}
+reshape(data = dfLong, idvar = "name", v.names = "VAL", timevar = "Var1", direction = "wide" )
+```
+
+
+```{r}
+dfLong <- 
+  dfStarwars %>%
+  dplyr::select(name, mass, height) %>%
+  tidyr::pivot_longer(cols = c( mass, height), names_to = "Var1", values_to = "VAL" ) %>% 
+  dplyr::arrange(name)
+dfLong
+```
+
+```{r}
+dfLong %>% 
+  tidyr::pivot_wider( id_cols = name, names_from = Var1, values_from = VAL )
+```
+
+
