@@ -7,7 +7,7 @@ package
 \[AAp1\].
 
 It is assumed that Raku and \[AAp1\] are installed. 
-Note that the package \[AAp1\] has its own parsing and interpretation tests.
+Note that the package \[AAp1\] has its own parsing and translation tests.
 
 ## Installation
 
@@ -29,7 +29,7 @@ devtools::test()
 
 The package uses Star Wars data taken from the package 
 [`dplyr`](https://github.com/tidyverse/dplyr),
-which cites as source SWAPI, the Star Wars API, \url{https://swapi.dev/}.
+which cites as source SWAPI, the Star Wars API, https://swapi.dev/.
 
 There are four data frames:
 
@@ -41,7 +41,8 @@ There are four data frames:
 
 - `dfStarwarsVehicles` with the vehicles the characters piloted
 
-Except `dfStarwars` all data frames are in long format.
+The column `name` is the "key" for all four data frames.
+Except `dfStarwars` all data frames are in long format. 
 
 ## References
 
