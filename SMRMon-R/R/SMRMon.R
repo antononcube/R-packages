@@ -1845,27 +1845,28 @@ SMRMonApplyTagTypeWeights <- function( smrObj, weights, default = 1 ) {
 
 
 ##===========================================================
-## Filter matrix
+## Filter by profile
 ##===========================================================
 
-#' Filter recommendation matrix rows
+#' Filter by profile
 #' @description Applies a profile filter to the rows of the recommendation matrix.
 #' @param smrObj A sparse matrix recommender.
 #' @param profile A profile specification used to filter with.
 #' @param type The type of filtering one of "union" or "intersection".
-#' @details The matrix can be recovered with tag type
-#' weights application, see \code{\link{SMRMonApplyTagTypeWeights}}.
+#' @details
+#' The result is a vector of scored items that is assigned to \code{smrObj$Value}.
 #' If \code{type} is "union" each item that has at least one of the tags in
-#' \code{profile} is in the result recommender.
-#' If \code{type} is "intersection" each item in the result recommender
+#' \code{profile} is in the result.
+#' (Essentially, that is the same as taking all non-zero score recommendations by profile.)
+#' If \code{type} is "intersection" each item in the result
 #' has all tags in \code{profile}.
 #' @return An SMRMon object.
 #' @export
-SMRMonFilterMatrix <- function( smrObj, profile, type = "union" ) {
+SMRMonFilterByProfile <- function( smrObj, profile, type = "union" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  smrObj <- SMRMonGetProfileDataFrame( smrObj = smrObj, profile = profile, functionName = "SMRMonFilterMatrix", warningQ = TRUE )
+  smrObj <- SMRMonGetProfileDataFrame( smrObj = smrObj, profile = profile, functionName = "SMRMonFilterByProfile", warningQ = TRUE )
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
   profile <- smrObj %>% SMRMonTakeValue
@@ -1896,11 +1897,46 @@ SMRMonFilterMatrix <- function( smrObj, profile, type = "union" ) {
 
   }
 
+  ## The result
+  smrObj$Value <- svec[ svec[,1] > 0, 1]
+
+  smrObj
+}
+
+
+##===========================================================
+## Filter matrix
+##===========================================================
+
+#' Filter recommendation matrix rows
+#' @description Applies a profile filter to the rows of the recommendation matrix.
+#' @param smrObj A sparse matrix recommender.
+#' @param profile A profile specification used to filter with.
+#' @param type The type of filtering one of "union" or "intersection".
+#' @details
+#' If \code{type} is "union" each item that has at least one of the tags in
+#' \code{profile} is in the result recommender.
+#' If \code{type} is "intersection" each item in the result recommender
+#' has all tags in \code{profile}.
+#' This function is based on \code{\link{SMRMonFilterByProfile}}.
+#' @return An SMRMon object.
+#' @export
+SMRMonFilterMatrix <- function( smrObj, profile, type = "union" ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  svec <-
+    smrObj %>%
+    SMRMonFilterByProfile( profile = profile, type = type ) %>%
+    SMRMonTakeValue
+
+  if( SMRMonFailureQ(svec) ) { return(SMRMonFailureSymbol) }
+
   ## Make the recommender object
   smrObj <-
     smrObj %>%
-    SMRMonSetM( (smrObj %>% SMRMonTakeM)[ svec[,1] > 0, , drop=F ] ) %>%
-    SMRMonSetM01( (smrObj %>% SMRMonTakeM01)[ svec[,1] > 0, , drop=F ] )
+    SMRMonSetM( (smrObj %>% SMRMonTakeM)[ names(svec), , drop=F ] ) %>%
+    SMRMonSetM01( (smrObj %>% SMRMonTakeM01)[ names(svec), , drop=F ] )
 
   smrObj
 }

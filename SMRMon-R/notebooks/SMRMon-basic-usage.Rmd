@@ -123,6 +123,24 @@ smrObj <-
   SMRMonEchoValue
 ```
 
+# Filter by profile
+
+```{r}
+smrObj %>% 
+  SMRMonFilterByProfile( profile = c( "male", "1st", "70" ), type = "intersection" ) %>% 
+  SMRMonTakeValue
+```
+
+```{r}
+smrObj2 <- 
+  smrObj %>% 
+  SMRMonFilterMatrix( profile = c( "male", "1st", "70" ), type = "intersection" )
+```
+
+```{r}
+as.matrix(smrObj2 %>% SMRMonTakeM)
+```
+
 # Recommendations with progress
 
 ```{r, eval=F}
@@ -201,9 +219,7 @@ smrMetaObj
 ```{r}
 as.matrix(smrMetaObj$M)
 ```
-```{r}
-class(matXTabs)
-```
+
 
 ```{r}
 matXTabs <- 
