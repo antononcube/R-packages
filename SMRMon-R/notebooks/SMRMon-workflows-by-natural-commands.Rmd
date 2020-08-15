@@ -28,83 +28,71 @@ smrObj <-
   SMRMonCreate( itemColumnName = "id")
 ```
 
-# Additional definitions
-
-```{r, eval=T}
-Perl6SMRMonParsingLib <- function() {
-    file.path("/", "Volumes", "Macintosh HD", "Users", "antonov", "ConversationalAgents", "Packages", "Perl6", "RecommenderWorkflows", "lib")
-}
-```
-
-```{r, eval=T}
-to_SMRMon_R_command <- function(command, parse=TRUE) {
-  pres <- Perl6Command( command = paste0( "say to_SMRMon_R(\"", command, "\")"),
-                        moduleDirectory = Perl6SMRMonParsingLib(),
-                        moduleName = "RecommenderWorkflows" )
-  messageInds <- grep( "^Possible", pres )
-  if( length(messageInds) > 0 ) {
-    messageLines <- pres[messageInds]
-    print(messageLines)
-    pres <- pres[setdiff(1:length(pres), messageInds)]
-  }
-  pres <- gsub( "\\\"", "\"", pres, fixed = T)
-  if(parse) { parse(text = pres) }
-  else { pres }
-}
-```
-
 # Basic pipeline
 
 ```{r}
 dfTitanic
 ```
 ```{r}
-to_SMRMon_R_command( "recommend for history id.5, id.7 and id.12", parse = F )
+ToRecommenderWorkflowCode( "recommend for history id.5, id.7 and id.12", parse = F )
 ```
 
 ```{r}
-to_SMRMon_R_command( 
+ToRecommenderWorkflowCode( 
     "create from dfTitanic;
-     recommend for history id.5, id.7; 
+     recommend with history id.5=10, id.7=3; 
      join across recommendations with the data frame dfTitanic; 
      echo pipeline value" ) 
 ```
 
 ```{r}
-smrObj2 <-
-  eval( expr = to_SMRMon_R_command( 
+dfTitanic
+```
+
+```{r}
+obj <- 
+  SMRMonCreate( data = dfTitanic) %>%
+  SMRMonRecommend( history = c("id.5"=10, "id.7"=3)) %>%
+  SMRMonJoinAcross( data = dfTitanic) %>%
+  SMRMonEchoValue()
+```
+
+```{r}
+smrObj = SMRMonCreate( data = dfTitanic ) 
+smrObj = SMRMonRecommend( smrObj, history = c("id.5", "id.7"), removeHistoryQ = FALSE )
+smrObj = SMRMonJoinAcross( smrObj, data = dfTitanic)
+SMRMonTakeValue(smrObj)
+```
+
+
+```{r}
+smrObj <-
+  eval( expr = ToRecommenderWorkflowCode( 
     "create from dfTitanic;
      suggest for history id.5, id.7; 
      join across recommendations with the data frame dfTitanic; 
      echo pipeline value" ) ) 
 ```
 
-```{r}
-smrObj2 <- 
-  eval( to_SMRMon_R_command( 
-    "use recommender smrObj2; 
-     find top 5 recommendations for the history id.5, id.7; 
-     echo value" ) )
-```
 
 ## By profile
 
 ```{r}
-to_SMRMon_R_command("recommend by profile female, died")
+ToRecommenderWorkflowCode("suggest by profile female, died")
 ```
 
 This is problematic:
 
 ```{r}
 # The argument "globalWeightFunction" is used twice:
-to_SMRMon_R_command( 
+ToRecommenderWorkflowCode( 
     "create from dfTitanic; 
      apply the LSI functions IDF, None, Cosine;" )
 ```
 
 
 ```{r}
-to_SMRMon_R_command( 
+ToRecommenderWorkflowCode( 
     "create from dfTitanic; 
      apply the LSI functions inverse document frequency, term frequency, and cosine;
      recommend by profile female->3, 30->0.1; 
@@ -115,7 +103,7 @@ to_SMRMon_R_command(
 ```{r}
 smrObj2 <-
   SMRMonUnit() %>% 
-  eval( expr = to_SMRMon_R_command( 
+  eval( expr = ToRecommenderWorkflowCode( 
     "create from dfTitanic; 
      apply the LSI functions IDF, TermFrequency, Cosine;
      recommend by profile female->1, 30->0.1; 
@@ -128,20 +116,20 @@ smrObj2 <-
 
 ```{r}
 smrObj3 <- 
-  eval( to_SMRMon_R_command( 
+  eval( ToRecommenderWorkflowCode( 
     "use recommender smrObj2; 
      compute profile for the history id.5, id.993; 
-     echo value;
+     echo pipeline value;
      find top 5 recommendations;
      extend recommendations with dfTitanic;
-     echo value;" ) )
+     echo pipeline value;" ) )
 ```
 
 ## Classification
 
 ```{r}
 smrObj3 <- 
-  eval( to_SMRMon_R_command( 
+  eval( ToRecommenderWorkflowCode( 
     "use recommender smrObj2; 
      recommend by profile female, 30;
      extend recommendations with dfTitanic;
@@ -157,10 +145,10 @@ smrObj %>% SMRMonGetProperty("properties") %>% SMRMonTakeValue
 ```
 
 ```{r}
-to_SMRMon_R_command("show the recommender matrix number of rows")
+ToRecommenderWorkflowCode("show the recommender matrix number of rows")
 ```
 ```{r}
-to_SMRMon_R_command( 
+ToRecommenderWorkflowCode( 
     "use recommender smrObj2;
      display properties;
      display the tag types;
@@ -171,13 +159,13 @@ smrObj <- smrObj %>% SMRMonGetMatrixProperty( property = "properties" ) %>% SMRM
 ```
 
 ```{r}
-smrObj <- smrObj %>% SMRMonGetProperty( property = "property" ) %>% SMRMonEchoValue
+smrObj <- smrObj %>% SMRMonGetProperty( property = "properties" ) %>% SMRMonEchoValue
 ```
 
 
 ```{r}
 smrObj3 <-
-  eval( to_SMRMon_R_command( 
+  eval( ToRecommenderWorkflowCode( 
     "use recommender smrObj;
      show recommender matrix properties;
      show recommender matrix property;
@@ -205,7 +193,7 @@ smrObj <-
 # Metadata recomemnder making
 
 ```{r}
-to_SMRMon_R_command( 
+ToRecommenderWorkflowCode( 
     "create using dfTitanic;
      create metadata recommender for passengerClass over the tag types passengerSex and passengerSurvival;
      show the sparse matrix rownames", parse = F ) 
@@ -213,7 +201,7 @@ to_SMRMon_R_command(
 
 ```{r}
 smrRes <- 
-  eval( to_SMRMon_R_command( 
+  eval( ToRecommenderWorkflowCode( 
     "create using dfTitanic;
      create metadata recommender for passengerClass;
      show the sparse matrix rownames", parse = T ) )
