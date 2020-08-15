@@ -61,7 +61,7 @@ filter rows by bmi >= 30 & height < 200;
 summarise data;
 arrange by the variables mass & height descending"
 
-ToDataQueryWorkflowCode( commands, parse = TRUE )
+ToDataQueryWorkflowCode( commands, parse = FALSE )
 ```
 
 ```{r}
