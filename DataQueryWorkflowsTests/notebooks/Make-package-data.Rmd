@@ -77,23 +77,23 @@ dim(dfStarwarsStarships)
 ```
 
 ```{r, eval=FALSE}
-dfStarwars <- starwars
+dfStarwars <- as.data.frame(starwars)
 usethis::use_data( dfStarwars, overwrite = T )
 ```
 
 
 ```{r, eval=FALSE}
-dfStarwarsFilms <- starwars_films
+dfStarwarsFilms <- as.data.frame(starwars_films)
 usethis::use_data( dfStarwarsFilms, overwrite = T )
 ```
 
 
 ```{r, eval=FALSE}
-dfStarwarsVehicles <- starwars_vehicles
+dfStarwarsVehicles <- as.data.frame(starwars_vehicles)
 usethis::use_data( dfStarwarsVehicles, overwrite = T )
 ```
 
 ```{r, eval=FALSE}
-dfStarwarsStarships <- starwars_starships
+dfStarwarsStarships <- as.data.frame(starwars_starships)
 usethis::use_data( dfStarwarsStarships, overwrite = T )
 ```
