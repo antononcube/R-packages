@@ -140,6 +140,26 @@ smrObj2 <-
 ```{r}
 as.matrix(smrObj2 %>% SMRMonTakeM)
 ```
+# Retrieval by query
+
+```{r}
+res <- 
+  smrObj %>% 
+  SMRMonRetrieveByQueryElements( should = c("1st", "2nd"), must = c("male"), mustNot = c("40")  ) %>% 
+  SMRMonTakeValue
+```
+
+```{r}
+res2 <- 
+  dfTitanic %>% 
+  dplyr::filter( passengerClass %in% c("1st", "2nd") & passengerSex == "male" & passengerAge != "40" )
+```
+
+```{r}
+length( intersect( res$id, res2$id ) ) == length( res$id )
+length( intersect( res$id, res2$id ) ) == length( res2$id )
+```
+
 
 # Recommendations with progress
 

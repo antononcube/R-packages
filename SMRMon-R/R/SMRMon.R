@@ -1862,7 +1862,7 @@ SMRMonApplyTagTypeWeights <- function( smrObj, weights, default = 1 ) {
 #' has all tags in \code{profile}.
 #' @return An SMRMon object.
 #' @export
-SMRMonFilterByProfile <- function( smrObj, profile, type = "union" ) {
+SMRMonFilterByProfile <- function( smrObj, profile, type = "intersection" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1898,7 +1898,9 @@ SMRMonFilterByProfile <- function( smrObj, profile, type = "union" ) {
   }
 
   ## The result
-  smrObj$Value <- svec[ svec[,1] > 0, 1]
+  svec <- svec[ svec[,1] > 0, 1]
+  smrObj$Value <- data.frame( Score = svec, Item = names(svec), stringsAsFactors = FALSE )
+  smrObj$Value <- setNames( smrObj$Value, c("Score", smrObj %>% SMRMonTakeItemColumnName) )
 
   smrObj
 }
@@ -1935,8 +1937,101 @@ SMRMonFilterMatrix <- function( smrObj, profile, type = "union" ) {
   ## Make the recommender object
   smrObj <-
     smrObj %>%
-    SMRMonSetM( (smrObj %>% SMRMonTakeM)[ names(svec), , drop=F ] ) %>%
-    SMRMonSetM01( (smrObj %>% SMRMonTakeM01)[ names(svec), , drop=F ] )
+    SMRMonSetM( (smrObj %>% SMRMonTakeM)[ svec[[ smrObj %>% SMRMonTakeItemColumnName ]], , drop=F ] ) %>%
+    SMRMonSetM01( (smrObj %>% SMRMonTakeM01)[ svec[[ smrObj %>% SMRMonTakeItemColumnName ]], , drop=F ] )
+
+  smrObj
+}
+
+
+
+##===========================================================
+## Rertrieve by query elements
+##===========================================================
+
+#' Filter recommendation matrix rows
+#' @description Applies a profile filter to the rows of the recommendation matrix.
+#' @param smrObj A sparse matrix recommender.
+#' @param should A profile specification used to recommend with.
+#' @param must A profile specification used to filter with.
+#' The items in the result must have the tags in \code{must}.
+#' @param mustNot A profile specification used to filter with.
+#' The items in the result must not have the tags in \code{mustNot}.
+#' @details
+#' The result is assigned to \code{smrObj$Value}.
+#' This function is based on \code{\link{SMRMonRecommendByProfile}} ("should")
+#' and \code{\link{SMRMonFilterByProfile}} ("must" and "must not").
+#' @return An SMRMon object.
+#' @export
+SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, mustNot = NULL ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  ## Should
+  if( !is.null(should) ) {
+
+    shouldItems <-
+      smrObj %>%
+      SMRMonRecommendByProfile( profile = should, nrecs = NULL ) %>%
+      SMRMonTakeValue
+
+    if( SMRMonFailureQ(shouldItems) ) { return(SMRMonFailureSymbol) }
+
+    shouldItems <- shouldItems[ , c("Score", smrObj %>% SMRMonTakeItemColumnName ) ]
+
+  } else {
+
+    shouldItems <-
+      data.frame(
+        Score = rowSums(smrObj %>% SMRMonTakeM),
+        Item = rownames( smrObj %>% SMRMonTakeM ),
+        stringsAsFactors = FALSE
+      )
+
+    shouldItems <- setNames( shouldItems, c("Score", smrObj %>% SMRMonTakeItemColumnName) )
+
+  }
+
+  res <- shouldItems
+
+  ## Must
+  if( !is.null(must) ) {
+
+    mustItems <-
+      smrObj %>%
+      SMRMonFilterByProfile( profile = must, type = "intersection" ) %>%
+      SMRMonTakeValue
+
+    if( SMRMonFailureQ(mustItems) ) { return(SMRMonFailureSymbol) }
+
+  } else {
+    mustItems <- NULL
+  }
+
+  if( !is.null(mustItems) ) {
+    res <- res[ res[[ smrObj %>% SMRMonTakeItemColumnName ]] %in% mustItems[[ smrObj %>% SMRMonTakeItemColumnName ]], ]
+  }
+
+  ## Must not
+  if( !is.null(mustNot) ) {
+
+    mustNotItems <-
+      smrObj %>%
+      SMRMonFilterByProfile( profile = mustNot, type = "intersection" ) %>%
+      SMRMonTakeValue
+
+    if( SMRMonFailureQ(mustNotItems) ) { return(SMRMonFailureSymbol) }
+
+  } else {
+    mustNotItems <- NULL
+  }
+
+  if( !is.null(mustNotItems) ) {
+    res <- res[ !( res[[ smrObj %>% SMRMonTakeItemColumnName ]] %in% mustNotItems[[ smrObj %>% SMRMonTakeItemColumnName ]] ), ]
+  }
+
+  ## Result
+  smrObj$Value <- res
 
   smrObj
 }

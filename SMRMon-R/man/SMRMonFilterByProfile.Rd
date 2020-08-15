@@ -4,7 +4,7 @@
 \alias{SMRMonFilterByProfile}
 \title{Filter by profile}
 \usage{
-SMRMonFilterByProfile(smrObj, profile, type = "union")
+SMRMonFilterByProfile(smrObj, profile, type = "intersection")
 }
 \arguments{
 \item{smrObj}{A sparse matrix recommender.}
