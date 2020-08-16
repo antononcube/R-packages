@@ -4,6 +4,25 @@ library(DataQueryWorkflowsTests)
 library(ExternalParsersHookUp)
 
 
+test_that("Distinct rows", {
+
+  ##
+  lsCommands1 <- "use dfStarwarsFilms;
+  select name;
+  distinct values only"
+
+  res1 <- ToDataQueryWorkflowCode( command = lsCommands1, parse = TRUE, target = "tidyverse" )
+
+  expect_is( res1, "expression" )
+
+  expect_equivalent(
+    eval(res1),
+    dfStarwarsFilms %>% dplyr::select(name) %>% dplyr::distinct()
+  )
+
+})
+
+
 test_that("Select columns", {
 
   ##
