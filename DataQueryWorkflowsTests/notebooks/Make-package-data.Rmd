@@ -72,9 +72,7 @@ dfTitanic <- read.csv("https://raw.githubusercontent.com/antononcube/Mathematica
 
 # Export
 
-```{r}
-dim(dfStarwarsStarships)
-```
+## Package data frames (Rda)
 
 ```{r, eval=FALSE}
 dfStarwars <- as.data.frame(starwars)
@@ -97,3 +95,13 @@ usethis::use_data( dfStarwarsVehicles, overwrite = T )
 dfStarwarsStarships <- as.data.frame(starwars_starships)
 usethis::use_data( dfStarwarsStarships, overwrite = T )
 ```
+
+## Package CSV files
+
+```{r, eval=FALSE}
+write.csv( x = dfStarwars, file = "../inst/extdata/dfStarwars.csv", row.names = FALSE )
+write.csv( x = dfStarwarsFilms, file = "../inst/extdata/dfStarwarsFilms.csv", row.names = FALSE )
+write.csv( x = dfStarwarsVehicles, file = "../inst/extdata/dfStarwarsVehicles.csv", row.names = FALSE )
+write.csv( x = dfStarwarsStarships, file = "../inst/extdata/dfStarwarsStarships.csv", row.names = FALSE )
+```
+
