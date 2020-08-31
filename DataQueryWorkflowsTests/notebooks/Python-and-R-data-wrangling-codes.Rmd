@@ -1,0 +1,65 @@
+---
+title: "Python and R data wrangling codes"
+author: Anton Antonov
+date: 2020-08-16
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r setup}
+library(DataQueryWorkflowsTests)
+library(tidyverse)
+library(ExternalParsersHookUp)
+library(reticulate)
+reticulate::use_python("/usr/local/opt/python/libexec/bin/python")
+```
+
+
+```{python}
+import pandas
+from ExternalParsersHookUp import ParseWorkflowSpecifications
+dfStarwars = pandas.read_csv("../inst/extdata/dfStarwars.csv")
+dfStarwarsFilms = pandas.read_csv("../inst/extdata/dfStarwarsFilms.csv")
+dfStarwarsStarships = pandas.read_csv("../inst/extdata/dfStarwarsStarships.csv")
+```
+
+```{python}
+dfStarwars
+```
+
+
+```{r}
+dfStarwars
+```
+```{r}
+ToDataQueryWorkflowCode(
+'use dfStarwars;
+      filter with gender is "feminine" or height is greater or equal than 160 and species is "Human";
+      select the columns mass & height;
+      keep distinct values only;
+      mutate bmi = `mass/height^2`;
+      arrange by the variable bmi, mass, height descending;', parse = T, target = "tidyverse" )
+```
+
+
+```{r}
+res <- ToDataQueryWorkflowCode( "use dfStarwars; select mass and height; cross tabulate mass and height", parse = F, target = "Python-pandas" )
+res
+```
+```{r}
+res1 <- paste(res, collapse = "\n")
+res1
+```
+
+
+
+```{python}
+res = ParseWorkflowSpecifications.ToDataQueryWorkflowCode( 'use dfStarwars; select mass, height and homeworld; cross tabulate mass and homeworld', parse = True, globals = globals() )
+print(res)
+obj
+```
+
