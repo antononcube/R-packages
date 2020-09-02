@@ -35,3 +35,10 @@ dim(dfMintBubblesTransactions)
 ```{r, eval=F}
 usethis::use_data(dfMintBubblesTransactions)
 ```
+
+## Export the data
+
+```{r, eval=FALSE}
+write.csv( x = dfMintBubblesTransactions, file = "../inst/extdata/dfMintBubblesTransactions.csv", row.names = FALSE)
+```
+
