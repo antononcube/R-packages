@@ -1946,10 +1946,10 @@ SMRMonFilterMatrix <- function( smrObj, profile, type = "union" ) {
 
 
 ##===========================================================
-## Rertrieve by query elements
+## Retrieve by query elements
 ##===========================================================
 
-#' Filter recommendation matrix rows
+#' Retrieve by query elements
 #' @description Applies a profile filter to the rows of the recommendation matrix.
 #' @param smrObj A sparse matrix recommender.
 #' @param should A profile specification used to recommend with.
@@ -1968,11 +1968,14 @@ SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, m
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
   ## Should
-  if( !is.null(should) ) {
+  if( !is.null(should) && !is.null(must) ) {
+
+    pvecShould <- smrObj %>% SMRMonGetProfileVector(profile = should) %>% SMRMonTakeValue
+    pvecMust <- smrObj %>% SMRMonGetProfileVector(profile = must) %>% SMRMonTakeValue
 
     shouldItems <-
       smrObj %>%
-      SMRMonRecommendByProfile( profile = should, nrecs = NULL ) %>%
+      SMRMonRecommendByProfile( profile = pvecShould + pvecMust, nrecs = NULL ) %>%
       SMRMonTakeValue
 
     if( SMRMonFailureQ(shouldItems) ) { return(SMRMonFailureSymbol) }
@@ -1983,7 +1986,7 @@ SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, m
 
     shouldItems <-
       data.frame(
-        Score = rowSums(smrObj %>% SMRMonTakeM),
+        Score = rowSums( smrObj %>% SMRMonTakeM ),
         Item = rownames( smrObj %>% SMRMonTakeM ),
         stringsAsFactors = FALSE
       )

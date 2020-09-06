@@ -152,12 +152,15 @@ res <-
 ```{r}
 res2 <- 
   dfTitanic %>% 
-  dplyr::filter( passengerClass %in% c("1st", "2nd") & passengerSex == "male" & passengerAge != "40" )
+  dplyr::filter( passengerSex == "male" & passengerAge != 40 )
 ```
+
 
 ```{r}
 length( intersect( res$id, res2$id ) ) == length( res$id )
 length( intersect( res$id, res2$id ) ) == length( res2$id )
+mean( res$id %in% res2$id ) == 1
+mean( res2$id %in% res$id ) == 1
 ```
 
 

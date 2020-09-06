@@ -2,7 +2,7 @@
 % Please edit documentation in R/SMRMon.R
 \name{SMRMonRetrieveByQueryElements}
 \alias{SMRMonRetrieveByQueryElements}
-\title{Filter recommendation matrix rows}
+\title{Retrieve by query elements}
 \usage{
 SMRMonRetrieveByQueryElements(
   smrObj,
