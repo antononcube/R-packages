@@ -2023,7 +2023,7 @@ SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, m
 
     mustNotItems <-
       smrObj %>%
-      SMRMonFilterByProfile( profile = mustNot, type = "intersection" ) %>%
+      SMRMonFilterByProfile( profile = mustNot, type = "union" ) %>%
       SMRMonTakeValue
 
     if( SMRMonFailureQ(mustNotItems) ) { return(SMRMonFailureSymbol) }
