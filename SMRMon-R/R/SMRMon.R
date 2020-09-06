@@ -1971,7 +1971,10 @@ SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, m
   if( !is.null(should) && !is.null(must) ) {
 
     pvecShould <- smrObj %>% SMRMonGetProfileVector(profile = should) %>% SMRMonTakeValue
+    if( SMRMonFailureQ(pvecShould) ) { return(SMRMonFailureSymbol) }
+
     pvecMust <- smrObj %>% SMRMonGetProfileVector(profile = must) %>% SMRMonTakeValue
+    if( SMRMonFailureQ(pvecMust) ) { return(SMRMonFailureSymbol) }
 
     shouldItems <-
       smrObj %>%
