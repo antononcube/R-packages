@@ -11,10 +11,17 @@ library(SMRMon)
 library(DataObfuscation)
 ```
 
+
 Extend the banking data with an ID column:
 
 ```{r}
-dfMintBubblesTransactions2 <- cbind( ID = 1:nrow(dfMintBubblesTransactions), dfMintBubblesTransactions, stringsAsFactors = TRUE )
+dfMintBubblesTransactions2 <- cbind( ID = as.character(1:nrow(dfMintBubblesTransactions)), dfMintBubblesTransactions, stringsAsFactors = TRUE )
+```
+
+This is how the data looks like:
+
+```{r}
+head(dfMintBubblesTransactions2)
 ```
 
 Create are recommender:
@@ -31,11 +38,20 @@ Show the recommender tag types:
 smrObj %>% SMRMonTakeTagTypes()
 ```
 
+Recommendations by profile:
+
+```{r, rows.print = 20}
+smrObj %>% 
+  SMRMonRecommendByProfile( profile = c( "Amount:5.75",  "Date:2012-11-12" ), nrecs = 20 ) %>% 
+  SMRMonJoinAcross( dfMintBubblesTransactions2, by = "ID" ) %>% 
+  SMRMonTakeValue
+```
+
 Classify to a "Category" value using a profile:
 
 ```{r}
 smrObj %>% 
-  SMRMonClassifyByProfile( tagType = "Category", profile = c( "Amount:5.75", "Date:2012-11-12") ) %>% 
+  SMRMonClassifyByProfile( tagType = "Category", profile = c( "Amount:5.75" ) ) %>% 
   SMRMonTakeValue
 ```
 
