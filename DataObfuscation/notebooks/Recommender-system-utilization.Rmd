@@ -1,16 +1,24 @@
 ---
-title: "Make recommender"
+title: "Recommender system utilization"
+author: Anton Antonov
+date: 2020-01-14
 output: html_notebook
 ---
 
-```{r}
+```{r, setup}
 library(magrittr)
 library(Matrix)
 library(SparseMatrixRecommender)
 library(SMRMon)
+library(LSAMon)
 library(DataObfuscation)
 ```
 
+# Introduction
+
+This notebook shows how to make and use a recommender for investigating the data in this package. 
+
+# Basic workflow
 
 Extend the banking data with an ID column:
 
@@ -24,7 +32,7 @@ This is how the data looks like:
 head(dfMintBubblesTransactions2)
 ```
 
-Create are recommender:
+Create a recommender:
 
 ```{r}
 smrObj <- 
@@ -55,3 +63,74 @@ smrObj %>%
   SMRMonTakeValue
 ```
 
+# Elaborations
+
+## Categorization of amounts
+
+Here we categorize the numerical values of the column "Amount":
+
+```{r}
+vecCatAmounts <- SMRCategorizeToIntervals( vec = dfMintBubblesTransactions2$Amount, breaks = c( seq(0,100,5), seq(100,300,10), seq(300,1000,100)), intervalNamesQ = TRUE )
+vecCatAmounts[1:6]
+```
+
+Here we add the categorized amounts as a column to data:
+
+```{r}
+dfMintBubblesTransactions2 <- cbind( dfMintBubblesTransactions2, CatAmount = vecCatAmounts, stringsAsFactors = FALSE )
+```
+
+Re-create the recommender:
+
+```{r}
+smrObj <- 
+  SMRMonUnit() %>% 
+  SMRMonCreate( data = dfMintBubblesTransactions2, itemColumnName = "ID", addTagTypesToColumnNamesQ = TRUE )
+```
+
+
+Using recommendations by profile retrieve all transactions with amounts between 25 and 30 dollars:
+
+```{r, rows.print = 20}
+smrObj %>% 
+  SMRMonRecommendByProfile( profile = c( "CatAmount:25≤v<30" ), nrecs = NULL ) %>% 
+  SMRMonJoinAcross( dfMintBubblesTransactions2, by = "ID" ) %>% 
+  SMRMonTakeValue
+```
+
+
+## Using descriptions words
+
+Using the Latent Semantic Analysis (LSA) software monad `LSAMon` create a description-word matrix and extract topics:
+
+```{r}
+lsaObj <- 
+  LSAMonUnit( setNames(dfMintBubblesTransactions2$Description, dfMintBubblesTransactions2$ID) ) %>% 
+  LSAMonMakeDocumentTermMatrix(stemWordsQ = F, stopWords = NULL) %>% 
+  LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
+  LSAMonExtractTopics(numberOfTopics = 12, minNumberOfDocumentsPerTerm = 2, method = "NNMF", maxSteps = 20, profilingQ = FALSE ) %>% 
+  LSAMonEchoTopicsTable(numberOfTerms = 8, wideFormQ = TRUE )
+```
+
+Add the description-term matrix to the recommender:
+
+```{r}
+smat <- lsaObj %>% LSAMonTakeWeightedDocumentTermMatrix
+colnames(smat) <- paste0("Word:", colnames(smat))
+smrObj <- smrObj %>% SMRAnnexSubMatrix( newSubMat = smat, newTagType = "Word" )
+```
+
+Show the tag types of the recommender:
+
+```{r}
+smrObj %>% SMRMonTakeTagTypes
+```
+
+Using recommendations by profile get *purchase* transactions with amounts between 50 and 55 dollars:
+
+```{r, rows.print = 20}
+smrObj %>% 
+  SMRMonRecommendByProfile( profile = c( "Word:purchase", "CatAmount:50≤v<55" ), nrecs = 6 ) %>% 
+  SMRMonJoinAcross( dfMintBubblesTransactions2, by = "ID" ) %>% 
+  SMRMonTakeValue
+```
