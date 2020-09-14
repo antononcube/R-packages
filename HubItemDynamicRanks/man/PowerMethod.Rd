@@ -18,3 +18,6 @@ PowerMethod(mat, bvec, alpha, maxSteps = 100, tol = 10^(-6))
 \description{
 Find the eigenvector with the largest eigenvalue using the Power method.
 }
+\details{
+
+}

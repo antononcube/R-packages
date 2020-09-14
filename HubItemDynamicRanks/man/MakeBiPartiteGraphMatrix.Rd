@@ -4,9 +4,14 @@
 \alias{MakeBiPartiteGraphMatrix}
 \title{Make bi-partite graph matrix.}
 \usage{
-MakeBiPartiteGraphMatrix(hubItemScoresArray, hubIDColName = "HubID",
-  itemIDColName = "ItemID", hubItemScoreColName = NULL,
-  itemHubScoreColName = NULL, columnStochasticQ = TRUE)
+MakeBiPartiteGraphMatrix(
+  hubItemScoresArray,
+  hubIDColName = "HubID",
+  itemIDColName = "ItemID",
+  hubItemScoreColName = NULL,
+  itemHubScoreColName = NULL,
+  columnStochasticQ = TRUE
+)
 }
 \arguments{
 \item{hubItemScoresArray}{A data frame or data table with columns...}

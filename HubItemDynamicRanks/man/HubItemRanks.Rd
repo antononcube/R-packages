@@ -4,10 +4,19 @@
 \alias{HubItemRanks}
 \title{Hub-item ranks.}
 \usage{
-HubItemRanks(hubsAndItemsMat, hubIDs, hubTags, tagSets,
-  tagPresenceFraction = 0.8, bias = NULL,
-  normalizationFunction = max, maxSteps = 100, sumFactor = 0.2,
-  numberOfHubRanks = 200, numberOfItemRanks = 200)
+HubItemRanks(
+  hubsAndItemsMat,
+  hubIDs,
+  hubTags,
+  tagSets,
+  tagPresenceFraction = 0.8,
+  bias = NULL,
+  normalizationFunction = max,
+  maxSteps = 100,
+  sumFactor = 0.2,
+  numberOfHubRanks = 200,
+  numberOfItemRanks = 200
+)
 }
 \arguments{
 \item{hubsAndItemsMat}{A bipartite graph adjacency matrix of hub-item connections

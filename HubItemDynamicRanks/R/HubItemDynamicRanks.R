@@ -63,6 +63,10 @@
 NULL
 
 
+##===========================================================
+## Vector norm
+##===========================================================
+
 #' Vector norm
 #' @description Find the Euclidean norm of a vector.
 #' @param x A numeric vector.
@@ -81,6 +85,10 @@ VectorNorm <- function(x, type = "euclidean") {
   }
 }
 
+
+##===========================================================
+## Power Method
+##===========================================================
 
 #' Power method eigenvector computation.
 #' @description Find the eigenvector with the largest eigenvalue using the Power method.
@@ -115,6 +123,10 @@ PowerMethod <- function( mat, bvec, alpha, maxSteps = 100, tol = 10^(-6) ) {
   list( Vector = v, Iterations = k, ResidualNorm = norm( v - vold, "F" ) )
 }
 
+
+##===========================================================
+## Make bi-partite graph matrix
+##===========================================================
 
 #' Make bi-partite graph matrix.
 #' @description Makes the adjacency matrix of a bi-partite graph connecting.
@@ -167,20 +179,9 @@ MakeBiPartiteGraphMatrix <- function( hubItemScoresArray,
 }
 
 
-#' Remove zero entries.
-#' @description Remove the zero entries from a sparse matrix.
-#' @param smat A sparse matrix.
-#' @export
-RemoveZeroEntries <- function( smat ) {
-  df <- summary(smat)
-  smatDF <- data.frame( i=df$i, j=df$j, x=df$x )
-  smatDF <- smatDF[ smatDF$x > 0, ]
-  smatRes <- sparseMatrix( i = smatDF$i, j = smatDF$j, x = smatDF$x, dims = c( nrow(smat), ncol(smat) ) )
-  rownames(smatRes) <- rownames(smatRes)
-  colnames(smatRes) <- colnames(smatRes)
-  smatRes
-}
-
+##===========================================================
+## Hub-item ranks
+##===========================================================
 
 #' Hub-item ranks.
 #' @description Calculate the hub-item ranks for a given adjacency matrix of bi-partite graph and characterizing tags of the nodes.
@@ -264,6 +265,10 @@ HubItemRanks <- function( hubsAndItemsMat, hubIDs, hubTags, tagSets,
 
 }
 
+
+##===========================================================
+## Nearest tag sets
+##===========================================================
 
 #' Nearest tag sets.
 #' @description Finds the closest lists of strings to a list of strings.
