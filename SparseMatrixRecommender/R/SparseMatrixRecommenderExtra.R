@@ -286,6 +286,8 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
   ## Map items to tagTypeTo values
   dfVectorTypesLongForm[[ smr$ItemColumnName ]] = lsIDToTag[ dfVectorTypesLongForm[[ smr$ItemColumnName ]]  ]
   
+  dfVectorTypesLongForm <- dfVectorTypesLongForm[ !is.na(dfVectorTypesLongForm[[ smr$ItemColumnName ]]), ]
+  
   ## Create contingency matrices from the transformed long form
   smats <- 
     purrr::map( split(dfVectorTypesLongForm, dfVectorTypesLongForm$TagType ), function(x) { 
