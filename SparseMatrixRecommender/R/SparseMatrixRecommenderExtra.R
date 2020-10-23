@@ -257,19 +257,21 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
   dfVectorTypesLongForm <- 
     SMRMatricesToLongForm( 
       smr = smr, 
-      tagTypes = tagTypes, 
+      tagTypes = unique( c(tagTypeTo, tagTypes) ), 
       removeTagTypePrefixesQ = lsAllArgs[["removeTagTypePrefixesQ"]], 
       sep = lsAllArgs[["sep"]]  
     )
   
+  
   ## Make mapping rules
   dfIDToTag <- 
     dfVectorTypesLongForm %>% 
-    dplyr::filter( TagType == tagTypeTo ) %>% 
+    dplyr::filter( TagType == tagTypeTo & Weight > 0 ) %>% 
     dplyr::group_by_at( .vars = c( smr$ItemColumnName ) ) %>% 
     dplyr::arrange(dplyr::desc(Weight)) %>% 
     dplyr::filter( dplyr::row_number() <= nTopTags ) %>% 
     dplyr::ungroup()
+  
   
   lsIDToTag <- setNames( dfIDToTag$Value, dfIDToTag[[smr$ItemColumnName]] )
   
@@ -287,7 +289,7 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
   dfVectorTypesLongForm[[ smr$ItemColumnName ]] = lsIDToTag[ dfVectorTypesLongForm[[ smr$ItemColumnName ]]  ]
   
   dfVectorTypesLongForm <- dfVectorTypesLongForm[ !is.na(dfVectorTypesLongForm[[ smr$ItemColumnName ]]), ]
-  
+
   ## Create contingency matrices from the transformed long form
   smats <- 
     purrr::map( split(dfVectorTypesLongForm, dfVectorTypesLongForm$TagType ), function(x) { 
