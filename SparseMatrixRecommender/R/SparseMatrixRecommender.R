@@ -144,6 +144,16 @@ SMRSparseMatrixRecommenderQ <- function(obj) {
 }
 
 
+#' Empty sparse matrix recommender
+#' @description Makes an empty sparse matrix recommender object.
+#' @return A list 
+#' @details The result is a list that has element names a sparse matrix recommender.
+#' @export
+SMREmptySparseMatrixRecommender <- function() {
+  list( "M" = NULL, "M01" = NULL, "TagTypeRanges" = NULL, "TagTypes" = NULL, "ItemColumnName" = NULL )
+}
+
+
 #=======================================================================================
 # Creation functions
 #=======================================================================================
@@ -1794,27 +1804,86 @@ SMRExportToDirectory <- function( smr, directoryPath, dataNameInfix = "" ) {
   
   ## Ranges 
   write.table( smr$TagTypeRanges, 
-               file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".tsv", sep="") ), 
+               file.path( directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".tsv", sep="") ), 
                sep="\t" )
   
   write.csv( smr$TagTypeRanges, 
-             file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".csv",sep="") ) ) 
+             file.path( directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".csv", sep="") ) ) 
 
   ## Sparse matrices row names and column names
   write.csv(
     data.frame( ColumnName = colnames(smr$M01), stringsAsFactors = FALSE ), 
-    file.path(directoryPath, paste("SMR-colnames-from-",dataNameInfix,".csv",sep="") )
+    file.path( directoryPath, paste("SMR-colnames-from-", dataNameInfix, ".csv", sep="") )
   )
   
   write.csv(
     data.frame( RowName = rownames(smr$M01), stringsAsFactors = FALSE ), 
-    file.path(directoryPath, paste("SMR-rownames-from-",dataNameInfix,".csv",sep="") )
+    file.path( directoryPath, paste("SMR-rownames-from-", dataNameInfix, ".csv", sep="") )
   )
   
   ## Sparse matrix
-  Matrix::writeMM( smr$M01, file.path(directoryPath, paste("SMR-M01-from-",dataNameInfix,".mm",sep="" ) ) )
-  
+  Matrix::writeMM( smr$M01, file.path( directoryPath, paste("SMR-M01-from-", dataNameInfix, ".mm", sep="") ) )
+
   return(TRUE)
+}
+
+
+##===========================================================
+## Recommender import
+##===========================================================
+
+#' Imports recommender from a directory
+#' @description Exports the recommender to specified directory.
+#' @param smr A sparse matrix recommender.
+#' @param directoryPath A path to a directory.
+#' @param dataNameInfix A string designating the exported SMR object.
+#' @param itemColumnName A string to be set to results "ItemColumnName" element.
+#' @details The sparse matrix recommender \code{smr} is
+#' imported using \code{\link{readMM}}.
+#' @return A sparse matrix recommender object
+#' @export
+SMRImportFromDirectory <- function( smr, directoryPath, dataNameInfix = "", itemColumnName = "ID"  ) {
+  
+  if( !is.character(directoryPath) ) {
+    stop( "The argument directoryPath is expected to be a string.", call. = TRUE )
+  }
+  
+  if( !file.exists(directoryPath) ) {
+    stop( "The argument directoryPath is expected to be a valid directory path.", call. = TRUE )
+  }
+  
+  if( !is.character(dataNameInfix) ) {
+    stop( "The argument dataNameInfix is expected to be a string.", call. = TRUE )
+  }
+  
+  smr <- SMREmptySparseMatrixRecommender()
+  
+  ## Ranges 
+  smr$TagTypeRanges <- read.table( file = file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".tsv", sep="") ),  sep="\t" )
+  
+  #smr$TagTypeRanges <- read.csv( file = file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".csv", sep="") ) ) 
+  
+  ## Sparse matrices row names and column names
+  dfColnames <- read.csv( file = file.path(directoryPath, paste("SMR-colnames-from-", dataNameInfix, ".csv", sep="") ) )
+  
+  dfRownames <- read.csv( file = file.path(directoryPath, paste("SMR-rownames-from-", dataNameInfix, ".csv", sep="") ) )
+
+  ## Sparse matrix
+  smr$M01 <- Matrix::readMM( file.path(directoryPath, paste("SMR-M01-from-", dataNameInfix, ".mm", sep="" ) ) )
+  
+  if( "ngTMatrix" %in% class(smr$M01) ) { 
+    smr$M01 <- as(1.0 * smr$M01, "dgCMatrix")
+  }
+  
+  colnames(smr$M01) <- dfColnames$ColumnName
+  rownames(smr$M01) <- dfRownames$RowName
+  
+  smr$M <- smr$M01
+  
+  ## Item column name
+  smr$ItemColumnName <- itemColumnName
+  
+  return(smr)
 }
 
 
