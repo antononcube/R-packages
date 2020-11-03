@@ -1860,6 +1860,9 @@ SMRImportFromDirectory <- function( directoryPath, dataNameInfix = "", itemColum
   ## Ranges 
   smr$TagTypeRanges <- read.table( file = file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".tsv", sep="") ),  sep="\t" )
   
+  ## Tag types
+  smr$TagTypes <- rownames(smr$TagTypeRanges)
+  
   #smr$TagTypeRanges <- read.csv( file = file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".csv", sep="") ) ) 
   
   ## Sparse matrices row names and column names
