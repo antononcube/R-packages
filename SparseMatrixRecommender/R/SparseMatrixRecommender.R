@@ -1834,7 +1834,6 @@ SMRExportToDirectory <- function( smr, directoryPath, dataNameInfix = "" ) {
 
 #' Imports recommender from a directory
 #' @description Exports the recommender to specified directory.
-#' @param smr A sparse matrix recommender.
 #' @param directoryPath A path to a directory.
 #' @param dataNameInfix A string designating the exported SMR object.
 #' @param itemColumnName A string to be set to results "ItemColumnName" element.
@@ -1842,7 +1841,7 @@ SMRExportToDirectory <- function( smr, directoryPath, dataNameInfix = "" ) {
 #' imported using \code{\link{readMM}}.
 #' @return A sparse matrix recommender object
 #' @export
-SMRImportFromDirectory <- function( smr, directoryPath, dataNameInfix = "", itemColumnName = "ID"  ) {
+SMRImportFromDirectory <- function( directoryPath, dataNameInfix = "", itemColumnName = "ID"  ) {
   
   if( !is.character(directoryPath) ) {
     stop( "The argument directoryPath is expected to be a string.", call. = TRUE )

@@ -5,15 +5,12 @@
 \title{Imports recommender from a directory}
 \usage{
 SMRImportFromDirectory(
-  smr,
   directoryPath,
   dataNameInfix = "",
   itemColumnName = "ID"
 )
 }
 \arguments{
-\item{smr}{A sparse matrix recommender.}
-
 \item{directoryPath}{A path to a directory.}
 
 \item{dataNameInfix}{A string designating the exported SMR object.}
