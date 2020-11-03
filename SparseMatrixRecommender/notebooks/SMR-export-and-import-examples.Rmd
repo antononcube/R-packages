@@ -1,0 +1,69 @@
+---
+title: "SMR export and import examples"
+author: Anton Antonov
+date: 2020-11-03
+output: html_notebook
+---
+
+```{r setup}
+library(SparseMatrixRecommender)
+library(Matrix)
+```
+
+# Introduction
+
+This notebook has examples of SMR objects imports and exports.
+
+# Make a recommender
+
+Create recommender and apply LSI functions to its matrix:
+
+```{r}
+smrTitanic <- SMRCreate(dfTitanic)
+smrTitanic$M <- SMRApplyTermWeightFunctions( smrTitanic$M, "IDF", "None", "Cosine" )
+```
+
+# Export recommender
+
+Export recommender to specified directory using a specified recommender file names infix:
+
+```{r}
+SMRExportToDirectory( smr = smrTitanic, directoryPath = "../SMR-export", dataNameInfix = "Titanic" )
+```
+
+
+# Import recommender
+
+Import recommender from specified directory and recommender file names infix:
+
+```{r}
+smrTitanic2 <- SMRImportFromDirectory( directoryPath = "../SMR-export", dataNameInfix = "Titanic" )
+```
+
+# Verify
+
+Same row names:
+
+```{r}
+mean(rownames(smrTitanic$M) == rownames(smrTitanic2$M))
+```
+
+Same column names:
+
+```{r}
+mean(colnames(smrTitanic$M) == colnames(smrTitanic2$M))
+```
+
+Same 0-1 matrices:
+
+```{r}
+norm(smrTitanic$M01 - smrTitanic2$M01)
+```
+
+Same recommendation matrices after application of LSI functions:
+
+```{r}
+smrTitanic2$M <- SMRApplyTermWeightFunctions( smrTitanic2$M, "IDF", "None", "Cosine")
+norm(smrTitanic$M - smrTitanic2$M)
+```
+
