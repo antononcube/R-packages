@@ -343,7 +343,7 @@ SMREmptySpecification <- function( nrow = 1 ) {
 #' \code{c("ColumnName", "ValueColumnName", "GlobalWeightFunction", "LocalWeightFunction", "NormalizerFunction", "NormalizeByMax")}.
 #' The NA values of \code{"ValueColumnName"} are replaced with \code{"None"}. 
 #' (I.e. do not use \code{"None"} as a "value" column name of \code{data}.)
-#' See \link{\code{SMREmptySpecification}}.
+#' See \code{\link{SMREmptySpecification}}.
 #' @return An SMR object.
 #' @family Creation functions
 #' @export
