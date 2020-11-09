@@ -1,8 +1,17 @@
-# Proxy Recommender Monad in R (PRSMon-R)
+# Proxy Recommender System monad in R (PRSMon-R)
 
 This package, `PRSMon-R`, implements a software monad for the specification of recommendation system workflows.
 `PRSMon-R`'s recommendation computations are based on GET / POST server calls.
 
+------
+
+To install use the command:
+
+```r
+devtools::install_github("antononcube/R-packages", subdir = "PRSMon-R")   
+```
+
+------
 
 Here are example pipelines:
 
@@ -17,15 +26,9 @@ prsObj <-
   PRSMonEchoValue
 ```
 
-```{r}
+```r
 prsObj <- 
   prsObj %>% 
   PRSMonRecommendByProfile( profile = c( "male", "1st" ), nrecs = 6, parser = jsonlite::fromJSON ) %>% 
   PRSMonEchoValue
-```
-
-To install use the command:
-
-```r
-devtools::install_github("antononcube/R-packages", subdir = "PRSMon-R")   
 ```
