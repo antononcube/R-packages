@@ -1,0 +1,52 @@
+---
+title: "PRSMon retrieval experiments"
+author: Anton Antonov
+date: 2020-11-09
+output: html_notebook
+---
+
+```{r setup}
+library(RCurl)
+library(jsonlite)
+library(magrittr)
+library(SMRMon)
+```
+
+
+# Using Proxified SMR
+
+```{r}
+jsonlite::fromJSON( txt =  RCurl::getURL("http://127.0.0.1:9720/recommend?history=id.12&nrecs=12") )
+```
+
+# Verification
+
+```{r}
+prsObj <- PRSMonUnit() %>% PRSMonSetServerURL( "http://127.0.0.1:9720" )
+```
+
+## Recommendations
+
+```{r, rows.print = 20}
+prsObj <- 
+  prsObj %>% 
+  PRSMonRecommend( history = c( "id.12"), nrecs = 20, parser = jsonlite::fromJSON ) %>% 
+  PRSMonEchoValue
+```
+## Recommendations by profile
+
+```{r}
+prsObj <- 
+  prsObj %>% 
+  PRSMonRecommendByProfile( profile = c( "male", "1st" ), nrecs = 6, parser = jsonlite::fromJSON ) %>% 
+  PRSMonEchoValue
+```
+
+## Classify by profile
+
+```{r}
+prsObj <- 
+  prsObj %>% 
+  PRSMonClassifyByProfile( tagType = "passengerSurvival", profile = c( "female", "1st", "50" ), parser = "json" ) %>% 
+  PRSMonEchoValue
+```
