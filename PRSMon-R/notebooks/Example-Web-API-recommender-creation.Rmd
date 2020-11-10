@@ -1,0 +1,116 @@
+---
+title: "Example Web API recommender creation"
+author: Anton Antonov
+date: 2020-11-10
+output: html_notebook
+---
+
+```{r setup}
+library(plumber)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(magrittr)
+library(Matrix)
+```
+
+# Introduction
+
+In order to test the proxy recommender:
+
+1. In a separate R-session run this file
+
+2. Run the examples in the file ["PRSMon-retrieval-experiments.Rmd"](./PRSMon-retrieval-experiments.Rmd)
+
+# Make recommender 
+
+Create recommender (using data from the `SparseMatrixRecommender` package):
+
+```{r}
+smrObj <- 
+  SMRMonUnit() %>% 
+  SMRMonCreate( dfTitanic ) %>% 
+  SMRMonApplyTermWeightFunctions( "IDF", "None", "Cosine" )
+```
+```{r}
+dfSMRData <- dfTitanic
+```
+
+Show recommender's tag types:
+
+```{r}
+smrObj %>% SMRMonTakeTagTypes
+```
+
+
+# Make plumber calls
+
+Build up the [plumber](https://www.rplumber.io) (Web API) object:
+
+```{r}
+plObj <- 
+  plumber::pr() %>% 
+  plumber::pr_get( path = "/recommend", 
+                   handler = function( history, nrecs = 12, extendQ = FALSE ) { 
+                     
+                     history <- trimws( strsplit(history, split = ",")[[1]] )
+                     
+                     extendQ <- as.logical(extendQ)
+                     
+                     nrecs <- as.numeric(nrecs)
+                     
+                     if(extendQ) { 
+                       smrObj %>% 
+                         SMRMonRecommend( history = history, nrecs = nrecs ) %>%
+                         SMRMonJoinAcross( data = dfSMRData ) %>% 
+                         SMRMonTakeValue
+                     } else {
+                       smrObj %>% 
+                         SMRMonRecommend( history = history, nrecs = nrecs ) %>%
+                         SMRMonTakeValue
+                     }
+                     
+                   }, 
+                   serializer = plumber::serializer_json() ) %>% 
+  
+    plumber::pr_get( path = "/recommendbyprofile", 
+                   handler = function( profile, nrecs = 12, extendQ = FALSE ) { 
+                     
+                     profile <- trimws( strsplit(profile, split = ",")[[1]] )
+                     
+                     extendQ <- as.logical(extendQ)
+                     
+                     nrecs <- as.numeric(nrecs)
+                    
+                     if( extendQ ) {
+                       smrObj %>% 
+                         SMRMonRecommendByProfile( profile = profile, nrecs = nrecs ) %>%
+                         SMRMonJoinAcross( data = dfSMRData ) %>% 
+                         SMRMonTakeValue
+                     } else {
+                       smrObj %>% 
+                         SMRMonRecommendByProfile( profile = profile, nrecs = nrecs ) %>%
+                         SMRMonTakeValue
+                     }
+                     
+                   }, 
+                   serializer = plumber::serializer_json() ) %>% 
+  
+      plumber::pr_get( path = "/classifybyprofile", 
+                   handler = function( tagtype, profile ) { 
+                     
+                     profile <- trimws( strsplit(profile, split = ",")[[1]] )
+                     
+                     smrObj %>% 
+                       SMRMonClassifyByProfile( tagType = tagtype, profile = profile) %>%
+                       SMRMonTakeValue
+                     
+                   }, 
+                   serializer = plumber::serializer_json() )
+```
+
+Start the server of the `plumber` object:
+
+```{r}
+plumber::pr_run( pr = plObj )
+```
+
