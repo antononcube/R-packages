@@ -10,30 +10,47 @@ library(RCurl)
 library(jsonlite)
 library(magrittr)
 library(SMRMon)
+library(PRSMon)
 ```
+
+# Introduction
+
+In order to test the proxy recommender:
+
+1. In a separate R-session run the file ["Example-Web-API-recommender-creation.Rmd"](./Example-Web-API-recommender-creation.Rmd)
+
+2. Run the examples in this file
 
 
 # Using Proxified SMR
 
+Direct non-PRSMon call to the server (use the correct server address):
+
 ```{r}
-jsonlite::fromJSON( txt =  RCurl::getURL("http://127.0.0.1:9720/recommend?history=id.12&nrecs=12") )
+jsonlite::fromJSON( txt =  RCurl::getURL("http://127.0.0.1:9017/recommend?history=id.12&nrecs=12") )
 ```
 
 # Verification
 
+Make the proxy object and set the server address:
+
 ```{r}
-prsObj <- PRSMonUnit() %>% PRSMonSetServerURL( "http://127.0.0.1:9720" )
+prsObj <- PRSMonUnit() %>% PRSMonSetServerURL( "http://127.0.0.1:9017" )
 ```
 
 ## Recommendations
 
+Recommendations for a list of identifiers:
+
 ```{r, rows.print = 20}
 prsObj <- 
   prsObj %>% 
-  PRSMonRecommend( history = c( "id.12"), nrecs = 20, parser = jsonlite::fromJSON ) %>% 
+  PRSMonRecommend( history = c( "id.12", "id.30"), nrecs = 20, parser = jsonlite::fromJSON ) %>% 
   PRSMonEchoValue
 ```
 ## Recommendations by profile
+
+Recommendations by a list of profile tags:
 
 ```{r}
 prsObj <- 
@@ -44,9 +61,23 @@ prsObj <-
 
 ## Classify by profile
 
+Classification for a list of profile tags:
+
 ```{r}
 prsObj <- 
   prsObj %>% 
   PRSMonClassifyByProfile( tagType = "passengerSurvival", profile = c( "female", "1st", "50" ), parser = "json" ) %>% 
   PRSMonEchoValue
 ```
+Show the URL to last query sent to the server:
+
+```{r}
+prsObj %>% PRSMonTakeLastQuery
+```
+
+Show the last "raw" result from the server:
+
+```{r}
+prsObj %>% PRSMonTakeLastResult
+```
+
