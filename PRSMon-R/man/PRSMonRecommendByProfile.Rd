@@ -39,6 +39,9 @@ Recommend items based on profiles of tags.
 }
 \details{
 The result is assigned to \code{prsObj$Value}.
+This function calls \code{\link{RCurl::getURL}}.
+The query and the result from that call are stored in
+\code{prsObj$LastQuery} and \code{prsObj$LastResult} respectively.
 }
 \seealso{
 Other Recommendations computation functions: 

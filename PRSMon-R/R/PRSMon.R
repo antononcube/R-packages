@@ -698,6 +698,9 @@ PRSMonGetProfileQueryString <- function( prsObj, profile, functionName = "PRSMon
 #' If NULL no parser is applied.
 #' @param GET.with A string for the GET command.
 #' @details The result is assigned to \code{prsObj$Value}.
+#' This function calls \code{\link{RCurl::getURL}}.
+#' The query and the result from that call are stored in
+#' \code{prsObj$LastQuery} and \code{prsObj$LastResult} respectively.
 #' @return A PRSMon object
 #' @family Recommendations computation functions
 #' @export
@@ -715,7 +718,11 @@ PRSMonRecommend <- function( prsObj, history, nrecs = 12, additionalURLParameter
 
   historyQuery <- prsObj2 %>% PRSMonTakeValue
 
-  res <- RCurl::getURL( url = paste0( prsObj$ServerURL, "/", GET.with, "?history=", historyQuery, "&nrecs=", nrecs ) )
+  query <- paste0( prsObj$ServerURL, "/", GET.with, "?history=", historyQuery, "&nrecs=", nrecs )
+
+  res <- RCurl::getURL( url = query )
+
+  prsObj <- prsObj %>% PRSMonSetLastQuery(query) %>% PRSMonSetLastResult(res)
 
   if( is.function(parser) ) {
     res <- parser(res)
@@ -747,6 +754,9 @@ PRSMonRecommend <- function( prsObj, history, nrecs = 12, additionalURLParameter
 #' If NULL no parser is applied.
 #' @param GET.with A string for the GET command.
 #' @details The result is assigned to \code{prsObj$Value}.
+#' This function calls \code{\link{RCurl::getURL}}.
+#' The query and the result from that call are stored in
+#' \code{prsObj$LastQuery} and \code{prsObj$LastResult} respectively.
 #' @return A PRSMon object
 #' @family Recommendations computation functions
 #' @export
@@ -764,7 +774,11 @@ PRSMonRecommendByProfile <- function( prsObj, profile, nrecs = 12, additionalURL
 
   profileQuery <- prsObj2 %>% PRSMonTakeValue
 
-  res <- RCurl::getURL( url = paste0( prsObj$ServerURL, "/", GET.with, "?profile=", profileQuery, "&nrecs=", nrecs ) )
+  query <- paste0( prsObj$ServerURL, "/", GET.with, "?profile=", profileQuery, "&nrecs=", nrecs )
+
+  res <- RCurl::getURL( url = query )
+
+  prsObj <- prsObj %>% PRSMonSetLastQuery(query) %>% PRSMonSetLastResult(res)
 
   if( is.function(parser) ) {
     res <- parser(res)
@@ -797,6 +811,9 @@ PRSMonRecommendByProfile <- function( prsObj, profile, nrecs = 12, additionalURL
 #' If NULL no parser is applied.
 #' @param GET.with A string for the GET command.
 #' @details The result is assigned to \code{prsObj$Value}.
+#' This function calls \code{\link{RCurl::getURL}}.
+#' The query and the result from that call are stored in
+#' \code{prsObj$LastQuery} and \code{prsObj$LastResult} respectively.
 #' @return A PRSMon object
 #' @family Recommendations computation functions
 #' @export
@@ -814,7 +831,11 @@ PRSMonClassifyByProfile <- function( prsObj, tagType, profile, additionalURLPara
 
   profileQuery <- prsObj2 %>% PRSMonTakeValue
 
-  res <- RCurl::getURL( url = paste0( prsObj$ServerURL, "/", GET.with, "?tagtype=", tagType, "&profile=", profileQuery ) )
+  query <- paste0( prsObj$ServerURL, "/", GET.with, "?tagtype=", tagType, "&profile=", profileQuery )
+
+  res <- RCurl::getURL( url = query )
+
+  prsObj <- prsObj %>% PRSMonSetLastQuery(query) %>% PRSMonSetLastResult(res)
 
   if( is.function(parser) ) {
     res <- parser(res)
