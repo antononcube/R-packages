@@ -4,12 +4,12 @@
 \alias{SMRImposeColumnIDs}
 \title{Impose column ID's}
 \usage{
-SMRImposeColumnIDs(colIDs, smat)
+SMRImposeColumnIDs(smat, colIDs)
 }
 \arguments{
-\item{colIDs}{An array of column ID's.}
-
 \item{smat}{A matrix with named columns.}
+
+\item{colIDs}{An array of column ID's.}
 }
 \value{
 Matrix.

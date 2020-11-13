@@ -4,12 +4,14 @@
 \alias{SMRRemoveTagTypes}
 \title{Remove tag types from a sparse matrix recommender}
 \usage{
-SMRRemoveTagTypes(smr, removeTagTypes)
+SMRRemoveTagTypes(smr, removeTagTypes, warningQ = TRUE)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
 \item{removeTagTypes}{A list of tag types to be removed from \code{smr}.}
+
+\item{warningQ}{Should warning messages be issued or not?}
 }
 \value{
 Sparse matrix recommender.

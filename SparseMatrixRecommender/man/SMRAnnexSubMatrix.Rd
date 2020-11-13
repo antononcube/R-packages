@@ -4,7 +4,14 @@
 \alias{SMRAnnexSubMatrix}
 \title{Annex a sub-matrix}
 \usage{
-SMRAnnexSubMatrix(smr, newSubMat, newTagType)
+SMRAnnexSubMatrix(
+  smr,
+  newSubMat,
+  newTagType,
+  imposeSameRowNamesQ = TRUE,
+  addTagTypesToColumnNamesQ = FALSE,
+  sep = ":"
+)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
@@ -12,6 +19,13 @@ SMRAnnexSubMatrix(smr, newSubMat, newTagType)
 \item{newSubMat}{The new sub-matrix to be annexed.}
 
 \item{newTagType}{The tag type associated with the new sub-matrix.}
+
+\item{imposeSameRowNamesQ}{Should the row names of \code{smr$M} be imposed on the matrix to be annexed?}
+
+\item{addTagTypesToColumnNamesQ}{Should the tag type \code{newTagType} be added as a prefix
+to the column names of the matrix to be annexed?}
+
+\item{sep}{Separator for the prefixes of the columns names.}
 }
 \value{
 Sparse matrix recommender.

@@ -1111,47 +1111,6 @@ SMRHistoryProofs <- function( smr, toBeLovedItem, history, normalizeScores=TRUE 
   res
 }
 
-#' Remove tag types from a sparse matrix recommender
-#' @description Creates an SMR object from a given SMR object by removing specified tag types.
-#' @param smr A sparse matrix recommender.
-#' @param removeTagTypes A list of tag types to be removed from \code{smr}.
-#' @return Sparse matrix recommender.
-#' @family SMR modification
-#' @export
-SMRRemoveTagTypes <- function( smr, removeTagTypes ) {
-  
-  ## Copy of the SMR
-  newSMR <- smr
-  
-  ## There are several ways to do this:
-  ## 1. Work with newSMR$TagTypeRanges, take the indices corresponding to tag types not to be removed.
-  ## 2. Construct a metadata matrix by taking sub-matrices of the tag types not to be removed.
-  pos <- ! ( newSMR$TagTypes %in% removeTagTypes )
-  
-  applySFs <- SMRCurrentTagTypeSignificanceFactors( newSMR )[pos]
-  
-  newSMR$M01 <-
-    Reduce( function( mat, tt )
-      if ( is.null(mat) ) { newSMR$M01[, newSMR$TagTypeRanges[tt,]$Begin : newSMR$TagTypeRanges[tt,]$End ] }
-      else { cbind( mat, newSMR$M01[, newSMR$TagTypeRanges[tt,]$Begin : newSMR$TagTypeRanges[tt,]$End ] ) },
-      newSMR$TagTypes[pos], NULL )
-  newSMR$TagTypeRanges <- newSMR$TagTypeRanges[pos, ]
-  newSMR$TagTypes <- newSMR$TagTypes[pos]
-  
-  widths <- newSMR$TagTypeRanges$End - newSMR$TagTypeRanges$Begin + 1
-  ends <- cumsum(widths)
-  begins <- ends - widths + 1
-  newSMR$TagTypeRanges <- data.frame( Begin=begins, End=ends)
-  rownames(newSMR$TagTypeRanges) <- newSMR$TagTypes
-  
-  newSMR$TagToIndexRules <- setNames( 1:ncol(newSMR$M01), colnames(newSMR$M01) )
-  newSMR$ItemToIndexRules <- setNames( 1:nrow(newSMR$M01), rownames(newSMR$M01) )
-  
-  newSMR$M <- SMRApplyTagTypeWeights( newSMR, applySFs )
-  
-  newSMR
-}
-
 
 ##===========================================================
 ## Sparse matrix transformations
@@ -1205,12 +1164,16 @@ SMRSparseMatrixToTriplets <- function( smat ) {
 
 #' Impose row ID's
 #' @description Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
-#' @param rowIDs An array of row ID's.
 #' @param smat A matrix with named rows.
+#' @param rowIDs An array of row ID's.
 #' @return Matrix.
 #' @family Sparse matrix transformation functions
 #' @export
-SMRImposeRowIDs <- function( rowIDs, smat ) {
+SMRImposeRowIDs <- function( smat, rowIDs ) {
+  
+  if( !( SMRSparseMatrixQ(smat) || is.matrix(smat) ) ) {
+    stop("The argument smat is expected to be a sparse matrix or a matrix.", call. = TRUE )
+  }
   
   if( is.null(rowIDs) ) { return(NULL) }
   
@@ -1219,7 +1182,7 @@ SMRImposeRowIDs <- function( rowIDs, smat ) {
 
   if ( nMissingRows > 0 ) {
     # Rows are missing in the matrix
-    complMat <- sparseMatrix(i=c(1), j=c(1), x=c(0), dims = c( nMissingRows, ncol(smat) ) )
+    complMat <- Matrix::sparseMatrix(i=c(1), j=c(1), x=c(0), dims = c( nMissingRows, ncol(smat) ) )
     
     rownames(complMat) <- missingRows
     colnames(complMat) <- colnames(smat)
@@ -1232,12 +1195,12 @@ SMRImposeRowIDs <- function( rowIDs, smat ) {
 
 #' Impose column ID's
 #' @description Makes sure that the columns of a matrix are in 1-to-1 correspondence to an array of columns ID's.
-#' @param colIDs An array of column ID's.
 #' @param smat A matrix with named columns.
+#' @param colIDs An array of column ID's.
 #' @return Matrix.
 #' @family Sparse matrix transformation functions
 #' @export
-SMRImposeColumnIDs <- function( colIDs, smat ) {
+SMRImposeColumnIDs <- function( smat, colIDs ) {
   if( is.null(colIDs) ) { return(NULL) }
   t( SMRImposeRowIDs( rowIDs = colIDs, smat = t(smat) ) )
 }
@@ -1273,7 +1236,7 @@ SMRMakeColumnValueIncidenceMatrix <- function( mat, rowNamesQ = TRUE, colNamesQ 
   
   ## Convinient way to check the implmentation:
   ## resMat <- sparseMatrix( i = df$i, j = df$j, x = df$x, dims = c( nrow(mat), ncol(mat)*step ) )
-  resMat <- sparseMatrix( i = df$i, j = df$j, x = rep(1,length(df$x)), dims = c( nrow(mat), ncol(mat)*step ) )
+  resMat <- Matrix::sparseMatrix( i = df$i, j = df$j, x = rep(1,length(df$x)), dims = c( nrow(mat), ncol(mat)*step ) )
   
   if ( rowNamesQ ) { 
     rownames(resMat) <- rownames(mat) 
@@ -1440,21 +1403,103 @@ SMRDistances <- function( smr, tagType = NULL, method = "euclidean" ) {
 ## SMR algebra operations
 ##===========================================================
 
+#' Remove tag types from a sparse matrix recommender
+#' @description Creates an SMR object from a given SMR object by removing specified tag types.
+#' @param smr A sparse matrix recommender.
+#' @param removeTagTypes A list of tag types to be removed from \code{smr}.
+#' @param warningQ Should warning messages be issued or not?
+#' @return Sparse matrix recommender.
+#' @family SMR modification
+#' @export
+SMRRemoveTagTypes <- function( smr, removeTagTypes, warningQ = TRUE ) {
+  
+  ## Copy of the SMR
+  newSMR <- smr
+  
+  ## There are several ways to do this:
+  ## 1. Work with newSMR$TagTypeRanges, take the indices corresponding to tag types not to be removed.
+  ## 2. Construct a metadata matrix by taking sub-matrices of the tag types not to be removed.
+  pos <- ! ( newSMR$TagTypes %in% removeTagTypes )
+  
+  if( sum(pos) == 0 ) {
+    if( warningQ ) {
+      warning( "All recommender tag types are specified to be removed.", call. = T)
+    }
+    return(NULL)
+  }
+  
+  if( mean(pos) == 1 ) {
+    if( warningQ ) {
+      warning( "None of the specified tag types to be removed is known by the recommender.", call. = T)
+    }
+    return(smr)
+  }
+  
+  applySFs <- SMRCurrentTagTypeSignificanceFactors( newSMR )[pos]
+  
+  newSMR$M01 <-
+    Reduce( 
+      f = function( mat, tt ) {
+        if ( is.null(mat) ) { 
+          newSMR$M01[, newSMR$TagTypeRanges[tt,]$Begin : newSMR$TagTypeRanges[tt,]$End ] 
+        } else { 
+          cbind( mat, newSMR$M01[, newSMR$TagTypeRanges[tt,]$Begin : newSMR$TagTypeRanges[tt,]$End ] ) 
+        }
+      },
+      
+      x = newSMR$TagTypes[pos], 
+      
+      init =  NULL 
+    )
+  
+  newSMR$TagTypeRanges <- newSMR$TagTypeRanges[pos, ]
+  
+  newSMR$TagTypes <- newSMR$TagTypes[pos]
+  
+  widths <- newSMR$TagTypeRanges$End - newSMR$TagTypeRanges$Begin + 1
+  ends <- cumsum(widths)
+  begins <- ends - widths + 1
+  newSMR$TagTypeRanges <- data.frame( Begin=begins, End=ends)
+  rownames(newSMR$TagTypeRanges) <- newSMR$TagTypes
+  
+  newSMR$TagToIndexRules <- setNames( 1:ncol(newSMR$M01), colnames(newSMR$M01) )
+  newSMR$ItemToIndexRules <- setNames( 1:nrow(newSMR$M01), rownames(newSMR$M01) )
+  
+  newSMR$M <- SMRApplyTagTypeWeights( newSMR, applySFs )
+  
+  newSMR
+}
+
+
 #' Annex a sub-matrix
 #' @description Annex a sub-matrix to the metadata matrix of an SMR object.
 #' @param smr A sparse matrix recommender.
 #' @param newSubMat The new sub-matrix to be annexed.
 #' @param newTagType The tag type associated with the new sub-matrix.
+#' @param imposeSameRowNamesQ Should the row names of \code{smr$M} be imposed on the matrix to be annexed?
+#' @param addTagTypesToColumnNamesQ Should the tag type \code{newTagType} be added as a prefix
+#' to the column names of the matrix to be annexed?
+#' @param sep Separator for the prefixes of the columns names.
 #' @return Sparse matrix recommender.
 #' @family SMR modification functions
 #' @export
-SMRAnnexSubMatrix <- function( smr, newSubMat, newTagType ) {
+SMRAnnexSubMatrix <- function( smr, newSubMat, newTagType, imposeSameRowNamesQ = TRUE, addTagTypesToColumnNamesQ = FALSE, sep = ":" ) {
+  
+  newSMR <- smr
+  
+  if( imposeSameRowNamesQ ) {
+    newSubMat <- SMRImposeRowIDs( smat = newSubMat, rowIDs = rownames(smr$M) )
+  }
   
   if ( nrow( newSubMat ) != nrow( smr$M ) ) {
     stop( "The metadata matrix of the SMR object and the new sub-matrix should have the same number of rows.", call. = TRUE )
   }
   
-  newSMR <- smr
+  newSMR <- SMRRemoveTagTypes( smr = newSMR, removeTagTypes = newTagType, warningQ = FALSE )
+  
+  if( addTagTypesToColumnNamesQ ) {
+    colnames(newSubMat) <- paste0( newTagType, sep, colnames(newSubMat) ) 
+  }
   
   newSMR$TagTypeRanges <- rbind( newSMR$TagTypeRanges, data.frame( Begin = ncol(newSMR$M) + 1, End = ncol(newSMR$M) + ncol(newSubMat) ) )
   rownames(newSMR$TagTypeRanges) <- c( rownames(newSMR$TagTypeRanges)[-nrow(newSMR$TagTypeRanges)], newTagType )
@@ -1466,6 +1511,7 @@ SMRAnnexSubMatrix <- function( smr, newSubMat, newTagType ) {
   
   newSMR
 }
+
 
 #' Join two sparse matrix recommender objects
 #' @description Joins (column-binds) two SMR objects.
@@ -1666,7 +1712,7 @@ SMRSameTags <- function( smrTo, smrFrom ) {
         } else {
           
           smatTo <- sparseMatrix( i = c(1), j = c(1), x = c(0), dims = c( nrow(smrTo$M), ncol(smatFrom) ) )
-          smatTo <- SMRImposeRowIDs( rowIDs = rownames(smrTo$M), smatTo )
+          smatTo <- SMRImposeRowIDs( rowIDs = rownames(smrTo$M), smat = smatTo )
           smatTo <- SMRImposeColumnIDs( colIDs = colIDs, smat = smatTo )
           
         }

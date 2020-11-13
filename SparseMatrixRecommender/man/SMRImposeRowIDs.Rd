@@ -4,12 +4,12 @@
 \alias{SMRImposeRowIDs}
 \title{Impose row ID's}
 \usage{
-SMRImposeRowIDs(rowIDs, smat)
+SMRImposeRowIDs(smat, rowIDs)
 }
 \arguments{
-\item{rowIDs}{An array of row ID's.}
-
 \item{smat}{A matrix with named rows.}
+
+\item{rowIDs}{An array of row ID's.}
 }
 \value{
 Matrix.
