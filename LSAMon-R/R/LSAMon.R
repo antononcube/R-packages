@@ -581,6 +581,93 @@ LSAMonTakeTopicNames <- function( lsaObj, functionName = "LSAMonTakeTopicNames" 
   rownames(lsaObj$H)
 }
 
+#===========================================================
+## GlobalWeights Taker
+##===========================================================
+
+#' Take GlobalWeights.
+#' @description Takes GlobalWeights from the monad object.
+#' @param lsaObj An LSAMon object.
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @return A list of functions or \code{LSAMonFailureSymbol}.
+#' @family Set/Take functions
+#' @export
+LSAMonTakeGlobalWeights <- function( lsaObj, functionName = "LSAMonTakeGlobalWeights" ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj, memberName = "GlobalWeights", memberPrettyName = "GlobalWeights", functionName = functionName,  logicalResult = TRUE) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  lsaObj$GlobalWeights
+}
+
+##===========================================================
+## LocalWeightFunction Taker
+##===========================================================
+
+#' Take LocalWeightFunction.
+#' @description Takes LocalWeightFunction from the monad object.
+#' @param lsaObj An LSAMon object.
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @return A list of functions or \code{LSAMonFailureSymbol}.
+#' @family Set/Take functions
+#' @export
+LSAMonTakeLocalWeightFunction <- function( lsaObj, functionName = "LSAMonTakeLocalWeightFunction" ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj, memberName = "LocalWeightFunction", memberPrettyName = "LocalWeightFunction", functionName = functionName,  logicalResult = TRUE) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  lsaObj$LocalWeightFunction
+}
+
+##===========================================================
+## NormalizerFunction Taker
+##===========================================================
+
+#' Take NormalizerFunction.
+#' @description Takes NormalizerFunction from the monad object.
+#' @param lsaObj An LSAMon object.
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @return A list of functions or \code{LSAMonFailureSymbol}.
+#' @family Set/Take functions
+#' @export
+LSAMonTakeNormalizerFunction <- function( lsaObj, functionName = "LSAMonTakeNormalizerFunction" ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj, memberName = "NormalizerFunction", memberPrettyName = "NormalizerFunction", functionName = functionName,  logicalResult = TRUE) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  lsaObj$NormalizerFunction
+}
+
+##===========================================================
+## Method Taker
+##===========================================================
+
+#' Take Method.
+#' @description Takes Method from the monad object.
+#' @param lsaObj An LSAMon object.
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @return A list of functions or \code{LSAMonFailureSymbol}.
+#' @family Set/Take functions
+#' @export
+LSAMonTakeMethod <- function( lsaObj, functionName = "LSAMonTakeMethod" ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj, memberName = "Method", memberPrettyName = "Method", functionName = functionName,  logicalResult = TRUE) ) {
+    return(LSAMonFailureSymbol)
+  }
+
+  lsaObj$Method
+}
 
 ##===========================================================
 ## Make document-term matrix
@@ -1044,6 +1131,9 @@ LSAMonNormalizeMatrixProduct <- function( lsaObj, normalizeLeftQ = TRUE, orderBy
     nres$H <- nres$H[ rev(order(topicSFactors)), ]
     topicSFactors <- topicSFactors[ rev(order(topicSFactors)) ]
   }
+
+  nres$W <- as(nres$W, "dgCMatrix")
+  nres$H <- as(nres$H, "dgCMatrix")
 
   lsaObj <- lsaObj %>% LSAMonSetW( nres$W )
   lsaObj <- lsaObj %>% LSAMonSetH( nres$H )
