@@ -695,7 +695,7 @@ SMRRecommendationsByProfileVector <- function( smr, profileVec, nrecs ) {
   
   rvec <- smr$M %*% profileVec
   
-  rvecDF <- as.data.frame( summary(rvec) )
+  rvecDF <- as.data.frame( Matrix::summary(rvec) )
   rvecDF <- rvecDF[ order(-rvecDF[,3]), ]
   
   if( is.null(nrecs) ) { nrecs <- nrow(rvecDF) }
@@ -942,7 +942,7 @@ SMRItemData <- function(smr, recs, tagTypes=NULL) {
     sms <- purrr::map( tagTypes, function(tg) sm[,smr$TagTypeRanges[tg, "Begin"]:smr$TagTypeRanges[tg, "End"]] )
     sm <- do.call(cbind, sms)
   }
-  pt <- as.data.frame(summary(sm))
+  pt <- as.data.frame(Matrix::summary(sm))
   pt <- pt[ order(pt[,1]), ]
   pt[,1]<-rownames(sm)[pt[,1]]
   pt[,2]<-colnames(sm)[pt[,2]]
@@ -1129,10 +1129,10 @@ SMRTripletsToSparseMatrix <-  function( triplets ) {
   names(itemIDToIndex) <- itemIDs
   propertyIDToIndex <- 1:length(propertyIDs)
   names(propertyIDToIndex) <- propertyIDs
-  smat <- sparseMatrix( i=itemIDToIndex[ triplets[,1] ],
-                        j=propertyIDToIndex[ triplets[,2] ],
-                        x=triplets[,3],
-                        dims=c( length(itemIDs), length(propertyIDs) )  )
+  smat <- Martix::sparseMatrix( i=itemIDToIndex[ triplets[,1] ],
+                                j=propertyIDToIndex[ triplets[,2] ],
+                                x=triplets[,3],
+                                dims=c( length(itemIDs), length(propertyIDs) )  )
   rownames(smat) <- itemIDs
   colnames(smat) <- propertyIDs
   
@@ -1149,7 +1149,11 @@ SMRTripletsToSparseMatrix <-  function( triplets ) {
 #' @export
 SMRSparseMatrixToTriplets <- function( smat ) {
 
-  triplets <- summary(smat)
+  if( !SMRSparseMatrixQ(smat) ) {
+    stop( "The argument is expected to be a sparse matrix.", call. = TRUE)
+  }
+  
+  triplets <- Matrix::summary(smat)
   
   if( !is.null(rownames(smat)) ) {
     triplets$i <- rownames(smat)[ triplets$i ]
@@ -1218,7 +1222,7 @@ SMRImposeColumnIDs <- function( smat, colIDs ) {
 SMRMakeColumnValueIncidenceMatrix <- function( mat, rowNamesQ = TRUE, colNamesQ = TRUE ) {
   
   tmat <- as( mat, "dgCMatrix")
-  df <- summary(tmat)
+  df <- Matrix::summary(tmat)
   df <- data.frame(df)
   # minInt <- min(mat,na.rm = T); maxInt <- max(mat,na.rm = T)
   minInt <- min(tmat@x); maxInt <- max(tmat@x)
@@ -1745,7 +1749,7 @@ SMRSparseMatrixToDataFrame <- function( smr, tagType  ) {
   }
   
   smat <- SMRSubMatrix( smr = smr, tagType = tagType )
-  df <- summary(smat)
+  df <- Matrix::summary(smat)
   df <- df[ df$x > 0, ]
   
   df <- data.frame(  Rownames = rownames(smat)[df$i], Colnames = colnames(smat)[df$j], Weight = df$x, stringsAsFactors = FALSE )
