@@ -1,5 +1,5 @@
 ---
-title: "Topics extraction from the play \"Hamplet\""
+title: "Topics extraction for USA presidential speeches"
 author: "Anton Antonov"
 date: 2019-04-02
 output: html_notebook
@@ -16,7 +16,7 @@ library(MathematicaVsRData)
 ```
 
 ```{r}
-method <- "SVD"
+method <- "NNMF"
 maxSteps <- if( method == "NNMF") { 20 } else { NULL }
 numberOfTopics <- 60
 minNumberOfDocumentsPerTerm <- 25
@@ -38,9 +38,48 @@ names(texts)[1:12]
 
 ```{r}
 lsaObj <-
+  LSAMonUnit( tolower(dfUSAPresidentsSpeeches$Text) ) %>% 
+  LSAMonMakeDocumentTermMatrix( stopWords = stopwords::stopwords() )
+```
+
+```{r}
+docTermMat <- lsaObj %>% LSAMonTakeDocumentTermMatrix
+dim(docTermMat)
+```
+
+
+Fill-in:
+
+```{r}
+length(docTermMat@x)/length(docTermMat)
+```
+
+```{r}
+summary(docTermMat@x)
+```
+
+```{r}
+lsaObj <-
   LSAMonUnit( texts ) %>% 
-  LSAMonMakeDocumentTermMatrix( stopWords = stopwords::stopwords() ) %>% 
-  LSAMonTopicExtraction( numberOfTopics = numberOfTopics, minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm, maxSteps = maxSteps, method = method )
+  LSAMonMakeDocumentTermMatrix( stemWordsQ = FALSE, stopWords = stopwords::stopwords() ) %>% 
+  LSAMonApplyTermWeightFunctions( globalWeightFunction = "IDF", localWeightFunction = "TermFrequency", normalizerFunction = "Cosine" ) %>% 
+  LSAMonExtractTopics( numberOfTopics = numberOfTopics, minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm, maxSteps = maxSteps, method = method ) %>% 
+  LSAMonEchoTopicsTable( numberOfTerms = 12 )
+```
+
+```{r}
+plot(ParetoPrincipleAdherence::ParetoForNumericalVector( data = log(nrow(docTermMat)) -log(colSums(docTermMat) )))
+```
+
+```{r}
+cs <- rep(1,10000)
+cs <- rev(sort(cs))
+cs <- cumsum(cs) / sum(cs)
+plot(cs)
+```
+
+```{r}
+ParetoPrincipleAdherence::ParetoPlot( data = colSums(docTermMat) )
 ```
 
 
@@ -49,7 +88,7 @@ lsaObj <-
 ```{r}
 lsaObj <-
   lsaObj %>% 
-  LSAMonBasisVectorInterpretation( n = 20 )
+  LSAMonInterpretBasisVectors( n = 20 )
 dfTopics <- lsaObj %>% LSAMonTakeValue
 ```
 
@@ -59,7 +98,7 @@ OutlierPosition(res$TermCoefficient, SPLUSQuartileIdentifierParameters)
 ```
 
 ```{r}
-dfTopics %>% dplyr::filter(TopicRank == 12 )
+dfTopics %>% dplyr::filter(TopicRank == 3 )
 ```
 
 
@@ -101,7 +140,7 @@ summary(as.numeric(qMat))
 ```{r}
 lsaObj <-
   lsaObj %>% 
-  LSAMonStatisticalThesaurus( searchWords = sort(c("king", "sword", "god", "economy", "health", "poison", "war", "iraq")) )
+  LSAMonExtractStatisticalThesaurus( searchWords = sort(c("king", "sword", "god", "economy", "health", "poison", "war", "iraq")) )
 nnsDF <- dplyr::bind_rows( lsaObj %>% LSAMonTakeValue )
 nnsDF
 ```
@@ -130,6 +169,14 @@ qMat <- (lsaObj %>% LSAMonTakeW) %*% t(lsaObj %>% LSAMonTakeW)
 d3heatmap::d3heatmap( qMat, colors = "Blues" )
 ```
 
+### Free text representation
+
+```{r}
+lsaObj %>% 
+  LSAMonRepresentByTopics( query = "Unites States military forces bombed Vietnam.") %>% 
+  LSAMonTakeValue
+```
+
 ### Representation
 
 ```{r}
@@ -150,7 +197,7 @@ if(TRUE) {
 ```
 
 ```{r}
-lsaObj2 <- lsaObj %>% LSAMonTopicRepresentation( tags = tags, minThreshold = 0.015 )
+lsaObj2 <- lsaObj %>% LSAMonRepresentDocumentTagsByTopics( tags = tags, minThreshold = 0.005 )
 qMat <- as.matrix(lsaObj2 %>% LSAMonTakeValue)
 qMat <- qMat[ uniqueTags, ]
 d3heatmap::d3heatmap( qMat, Rowv = FALSE, Colv = TRUE, scale = "row", colors = "Blues" )
