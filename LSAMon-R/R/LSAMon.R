@@ -1511,8 +1511,8 @@ LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = 
 
     if( lsaObj$Method == "NNMF" ) {
 
-      warning( "Topic representation using the pseudo-inverse of the sparse matrix H obtained with the method NNMF is not implemented yet.", call. = TRUE )
-      return(LSAMonFailureSymbol)
+      invH <- NonNegativeMatrixFactorization::SparseMatrixPseudoInverse( smat = nnRes$H );
+      qmat <- qmat %*% invH
 
     } else if ( lsaObj$Method == "SVD" ) {
 
