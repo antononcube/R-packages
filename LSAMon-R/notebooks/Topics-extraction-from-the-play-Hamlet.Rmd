@@ -29,7 +29,7 @@ minNumberOfDocumentsPerTerm <- 5
 lsaObj <-
   LSAMonUnit( textHamlet   ) %>% 
   # LSAMonMakeDocumentTermMatrix( stemWordsQ = TRUE, stopWords = c( stopwords::stopwords(), "enter") ) %>% 
-  LSAMonMakeDocumentTermMatrix( stemWordsQ = TRUE, stopWords = NULL ) %>% 
+  LSAMonMakeDocumentTermMatrix( stemWordsQ = TRUE, stopWords = NULL, splitPattern = NULL ) %>% 
   LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
   LSAMonExtractTopics( numberOfTopics = numberOfTopics, minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm, maxSteps = maxSteps, method = "NNMF")
 ```
@@ -40,9 +40,14 @@ lsaObj <-
 ```{r}
 lsaObj <-
   lsaObj %>% 
-  LSAMonInterpretBasisVectors( n = 20 )
+  LSAMonEchoTopicsTable(numberOfTerms = 20)
 dfTopics <- lsaObj %>% LSAMonTakeValue
 ```
+
+```{r}
+dfTopics
+```
+
 
 ```{r}
 res <- dfTopics %>% dplyr::filter( TopicRank == 12 ) %>% dplyr::select( TermCoefficient )
@@ -213,7 +218,7 @@ lsaObj2 <-
   LSAMonUnit( textHamlet   ) %>% 
   LSAMonMakeDocumentTermMatrix( stemWordsQ = FALSE, stopWords = NULL ) %>% 
   LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
-  LSAMonExtractTopics( numberOfTopics = 10, minNumberOfDocumentsPerTerm = 10, method = "SVD" )
+  LSAMonExtractTopics( numberOfTopics = 10, minNumberOfDocumentsPerTerm = 10, method = "NNMF", maxSteps = 12 )
 ```
 
 
@@ -223,6 +228,7 @@ qmat <-
   lsaObj2 %>% 
   LSAMonRepresentByTopics( query = textHamlet[focusInds] ) %>% 
   LSAMonTakeValue
+qmat
 ```
 
 ```{r}
