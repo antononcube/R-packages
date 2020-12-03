@@ -17,6 +17,6 @@ RowCentralizeSparseMatrix(smat, centerFinder = median, spreadFinder = NULL)
 A sparse matrix.
 }
 \description{
-Cenralizes a sparse matrix around the mean of the non-zero elements in each row
+Centralizes a sparse matrix around the mean of the non-zero elements in each row
 The zero entries are also zeroes in the centralized matrix.
 }

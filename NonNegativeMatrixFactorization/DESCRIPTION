@@ -11,7 +11,7 @@ Language: en-US
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/antononcube/R-packages/tree/master/NonNegativeMatrixFactorization
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Imports:
     Matrix
 Suggests: 

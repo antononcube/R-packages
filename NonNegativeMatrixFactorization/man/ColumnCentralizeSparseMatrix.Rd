@@ -18,7 +18,7 @@ Centralizes a sparse matrix around the mean of the non-zero elements in each col
 The sparse matrix zero entries are also zeroes in the centralized matrix.
 }
 \details{
-If the argument spreadFinder is NULL no scaling of the centered elements is done.
+If the argument \code{spreadFinder} is NULL no scaling of the centered elements is done.
 It would be nice the argument \code{spreadFinder} can take as argument also the strings
 "interQuartile" and "standardDeviation".
 }

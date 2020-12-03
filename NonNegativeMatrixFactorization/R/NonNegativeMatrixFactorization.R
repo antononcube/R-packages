@@ -49,6 +49,11 @@
 #' @import purrr
 NULL
 
+
+##===========================================================
+## SparseMatrixQ
+##===========================================================
+
 #' Sparse matrix test.
 #' @description Tests is the argument one of sparse matrix classes in
 #' the base package \link{\code{Matrix}}.
@@ -61,6 +66,11 @@ SparseMatrixQ <- function(object) {
   nms <- names(getClass("Matrix")@subclasses)
   sum( nms %in% class(object) ) > 0
 }
+
+
+##===========================================================
+## NNMF
+##===========================================================
 
 #' Non-Negative Matrix Factorization (NNMF).
 #' @description Returns the pair of matrices {W,H} such that V = W H and
@@ -141,6 +151,11 @@ NNMF <- function( V, k,
   list( W = W, H = H )
 }
 
+
+##===========================================================
+## NNMFNormalizeMatrixProduct
+##===========================================================
+
 #' Normalization of a matrix product.
 #' @description Returns a pair of matrices (W1,H1) such that \code{W1 %*% H1 = W %*% H}
 #' and the norms of the columns of W1 are 1 if \code{normalizeLeftQ = TRUE};
@@ -173,6 +188,10 @@ NNMFNormalizeMatrixProduct <- function( W, H, normalizeLeftQ = TRUE ) {
 }
 
 
+##===========================================================
+## NNMFBasisVectorInterpretation
+##===========================================================
+
 #' Basis vector interpretation.
 #' @description Takes the \code{n} largest coordinates of \code{vec},
 #' finds the corresponding elements in a list of interpretation terms,
@@ -189,13 +208,17 @@ NNMFBasisVectorInterpretation <- function( vec, n, interpretationTerms = NULL ) 
 }
 
 
+##===========================================================
+## ColumnCentralizeSparseMatrix
+##===========================================================
+
 #' Sparse matrix column centralization.
 #' @description Centralizes a sparse matrix around the mean of the non-zero elements in each column.
 #' The sparse matrix zero entries are also zeroes in the centralized matrix.
 #' @param smat a sparse item-tag (document-term) matrix
 #' @param centerFinder a function used to find the center of a numerical vector
 #' @param spreadFinder a function to find the spread of each vector and divide its the centered elements
-#' @details If the argument spreadFinder is NULL no scaling of the centered elements is done.
+#' @details If the argument \code{spreadFinder} is NULL no scaling of the centered elements is done.
 #' It would be nice the argument \code{spreadFinder} can take as argument also the strings
 #' "interQuartile" and "standardDeviation".
 #' @export
@@ -227,8 +250,12 @@ ColumnCentralizeSparseMatrix <- function( smat, centerFinder = median, spreadFin
 }
 
 
+##===========================================================
+## RowCentralizeSparseMatrix
+##===========================================================
+
 #' Sparse matrix row centralization.
-#' @description Cenralizes a sparse matrix around the mean of the non-zero elements in each row
+#' @description Centralizes a sparse matrix around the mean of the non-zero elements in each row
 #' The zero entries are also zeroes in the centralized matrix.
 #' @param smat A sparse item-tag (document-term) matrix.
 #' @param centerFinder A function used to find the center of a numerical vector.
@@ -240,6 +267,11 @@ RowCentralizeSparseMatrix <- function( smat, centerFinder = median, spreadFinder
   ## I assume that sparse matrix transposing is fast enough.
   t( ColumnCentralizeSparseMatrix( t( smat ), centerFinder, spreadFinder ) )
 }
+
+
+##===========================================================
+## NearestWords
+##===========================================================
 
 #' Statistical thesaurus entry calculation.
 #' @description Statistical thesaurus entry calculation for a specified matrix of topics and a word.
@@ -272,4 +304,81 @@ NearestWords <- function( H, word, n = 20, fixed = TRUE ) {
   dists <- colSums( M )
   sinds <- order(dists)[1:n]
   data.frame( Distance = dists[sinds], Index = sinds, Word = colnames(H)[ sinds ], stringsAsFactors = FALSE )
+}
+
+
+#===========================================================
+## SparseMatrixExponent
+##===========================================================
+
+#' Sparse matrix exponent
+#' @description Computes the pseudo inverse of a sparse matrix.
+#' @param smat Sparse matrix.
+#' @param exp Exponent (a real number.)
+#' @param tol Tolerance (a real number.)
+#' @param ... Additional arguments for\code{\link{svd}}.
+#' @details Uses SVD through \code{\link{svd}}.
+#' @return Sparse matrix
+SparseMatrixExponent <- function( smat, exp = -1, tol = 10^-6, ... ) {
+
+  if( !SparseMatrixQ(smat) ) {
+    stop( "The argument smat is expected to be a sparse matrix.", call. = TRUE )
+  }
+
+  if( !is.numeric(tol) && length(tol) == 1 ) {
+    stop( "The argument exp is expected to be a real number.", call. = TRUE )
+  }
+
+  m <- nrow(smat)
+  n <- ncol(smat)
+
+  if( !( m > 1 || n > 1) ) {
+    stop( "The argument smat is expected not be a one-by-one matrix.", call. = TRUE )
+  }
+
+  if( is.null(tol) ){
+    tol <- min(1e-6, .Machine$double.eps * max(m,n) * max(smat))
+  }
+
+  if( m >= n ) {
+
+    #svdRes <- irlba::irlba( A = smat, nv = min(m,n)-1, nu = min(m,n)-1, tol = tol )
+    svdRes <- svd( x = smat )
+
+    keep <- which( svdRes$d > tol )
+
+    res <- t( svdRes$u[,keep] %*% diag( svdRes$d[keep]^exp, nrow=length(keep) ) %*% t(svdRes$v[,keep]) )
+  }
+
+  if ( m < n) {
+    #svdRes <- irlba::irlba( A = t(smat), nv = min(m,n)-1, nu = min(m,n)-1, tol = tol )
+    svdRes <- svd( x = t(smat) )
+
+    keep <- which(svdRes$d > tol)
+
+    res <- svdRes$u[,keep] %*% diag(svdRes$d[keep]^exp, nrow=length(keep) ) %*% t(svdRes$v[,keep])
+  }
+
+  return(res)
+}
+
+
+#===========================================================
+## SparseMatrixPseudoInverse
+##===========================================================
+
+#' Sparse matrix pseudo inverse
+#' @description Computes the pseudo inverse of a sparse matrix.
+#' @param smat Sparse matrix.
+#' @param tol Tolerance (a real number.)
+#' @param ... Additional arguments for\code{\link{svd}}.
+#' @details Uses SVD through \code{\link{svd}}.
+#' @return Sparse matrix
+SparseMatrixPseudoInverse <- function( smat, tol = 10^-6, ... ) {
+
+  if( !SparseMatrixQ(smat) ) {
+    stop( "The first argument is expected to be a sparse matrix.", call. = TRUE )
+  }
+
+  SparseMatrixExponent( smat = smat, exp = -1, tol = tol, ... )
 }
