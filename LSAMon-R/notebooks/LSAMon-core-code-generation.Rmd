@@ -28,7 +28,11 @@ GenerateStateMonadCode( monadName = "LSAMon",
                                         "W" = "matrix", 
                                         "H" = "matrix",
                                         "TopicColumnPositions" = "integer", 
-                                        "AutomaticTopicNames" = "character"), 
+                                        "AutomaticTopicNames" = "character",
+                                        "GlobalWeights" = "numeric",
+                                        "LocalWeightFunction" = "function",
+                                        "NormalizerFunction" = "function",
+                                        "Method" = "character"), 
                         monadObjectArgumentName = "lsaObj", 
                         outputFile = "LSAMon-core.R")
 ```
