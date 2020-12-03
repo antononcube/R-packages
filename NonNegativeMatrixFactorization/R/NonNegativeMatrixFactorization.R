@@ -324,6 +324,7 @@ NearestWords <- function( H, word, n = 20, fixed = TRUE ) {
 #' @param ... Additional arguments for\code{\link{svd}}.
 #' @details Uses SVD through \code{\link{svd}}.
 #' @return Sparse matrix
+#' @export
 SparseMatrixExponent <- function( smat, exp = -1, tol = 10^-6, ... ) {
 
   if( !SparseMatrixQ(smat) ) {
@@ -364,6 +365,9 @@ SparseMatrixExponent <- function( smat, exp = -1, tol = 10^-6, ... ) {
     res <- svdRes$u[,keep] %*% diag(svdRes$d[keep]^exp, nrow=length(keep) ) %*% t(svdRes$v[,keep])
   }
 
+  colnames(res) <- rownames(smat)
+  rownames(res) <- colnames(smat)
+
   return(res)
 }
 
@@ -379,6 +383,7 @@ SparseMatrixExponent <- function( smat, exp = -1, tol = 10^-6, ... ) {
 #' @param ... Additional arguments for\code{\link{svd}}.
 #' @details Uses SVD through \code{\link{svd}}.
 #' @return Sparse matrix
+#' @export
 SparseMatrixPseudoInverse <- function( smat, tol = 10^-6, ... ) {
 
   if( !SparseMatrixQ(smat) ) {
