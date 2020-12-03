@@ -122,14 +122,16 @@ NNMF <- function( V, k,
     nSteps <- nSteps + 1
 
     A <- t(W) %*% W + lbd * diag(k)
-    T <- t(W)
-    bMat <- T %*% V
-    H = solve( A, bMat )
-    H = as( H, "sparseMatrix" )
+    W2 <- t(W)
+    bMat <- W2 %*% V
+    H <- solve( A, bMat )
+    H <- as( H, "sparseMatrix" )
 
     if ( nonNegativeQ ) {
       H@x[ H@x < 0 ] <- 0
     }
+
+    H <- Matrix::drop0(H)
 
     W = W * ( V %*% t(H) ) / ( W %*% ( H %*% t(H) ) + epsilon )
 
@@ -141,8 +143,11 @@ NNMF <- function( V, k,
   }
 
   if ( nonNegativeQ ) {
-     W@x[ W@x < 0  ] <- 0
+     W@x[ W@x < 0 ] <- 0
   }
+
+  W <- as( W, "sparseMatrix" )
+  W <- Matrix::drop0(W)
 
   ## Sometimes colnames(H) is NULL. Here we make sure they are same as colnames(V).
   rownames(W) <- rownames(V)
