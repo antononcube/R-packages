@@ -11,7 +11,7 @@ SparseMatrixPseudoInverse(smat, tol = 10^-6, ...)
 
 \item{tol}{Tolerance (a real number.)}
 
-\item{...}{Additional arguments for\code{\link{svd}}.}
+\item{...}{Additional arguments for \code{\link{svd}}.}
 }
 \value{
 Sparse matrix

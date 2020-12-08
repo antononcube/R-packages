@@ -321,7 +321,7 @@ NearestWords <- function( H, word, n = 20, fixed = TRUE ) {
 #' @param smat Sparse matrix.
 #' @param exp Exponent (a real number.)
 #' @param tol Tolerance (a real number.)
-#' @param ... Additional arguments for\code{\link{svd}}.
+#' @param ... Additional arguments for \code{\link{svd}}.
 #' @details Uses SVD through \code{\link{svd}}.
 #' @return Sparse matrix
 #' @export
@@ -380,7 +380,7 @@ SparseMatrixExponent <- function( smat, exp = -1, tol = 10^-6, ... ) {
 #' @description Computes the pseudo inverse of a sparse matrix.
 #' @param smat Sparse matrix.
 #' @param tol Tolerance (a real number.)
-#' @param ... Additional arguments for\code{\link{svd}}.
+#' @param ... Additional arguments for \code{\link{svd}}.
 #' @details Uses SVD through \code{\link{svd}}.
 #' @return Sparse matrix
 #' @export
