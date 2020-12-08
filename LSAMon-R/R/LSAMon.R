@@ -1152,7 +1152,7 @@ LSAMonNormalizeMatrixProduct <- function( lsaObj, normalizeLeftQ = TRUE, orderBy
 #' @param normalizeLeftQ Should the left factor be normalized?
 #' @param orderBySignificanceQ Should the basis vectors be ordered by their significance?
 #' @return A list of matrices
-#' @details Makes a call to \link{\code{LSAMonNormalizeMatrixProduct}}.
+#' @details Makes a call to \code{\link{LSAMonNormalizeMatrixProduct}}.
 #' @export
 LSAMonTakeNormalizedMatrixProductComponents <- function( lsaObj, normalizeLeftQ = TRUE, orderBySignificanceQ = FALSE ) {
 
@@ -1511,7 +1511,7 @@ LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = 
 
     if( lsaObj$Method == "NNMF" ) {
 
-      invH <- NonNegativeMatrixFactorization::SparseMatrixPseudoInverse( smat = nnRes$H );
+      invH <- NonNegativeMatrixFactorization::SparseMatrixPseudoInverse( smat = nnRes$H )
       qmat <- qmat %*% invH
 
     } else if ( lsaObj$Method == "SVD" ) {

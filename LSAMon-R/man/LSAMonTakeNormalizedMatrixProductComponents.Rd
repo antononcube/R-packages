@@ -24,5 +24,5 @@ A list of matrices
 Normalizes the matrix factors and returns a list with them.
 }
 \details{
-Makes a call to \link{\code{LSAMonNormalizeMatrixProduct}}.
+Makes a call to \code{\link{LSAMonNormalizeMatrixProduct}}.
 }
