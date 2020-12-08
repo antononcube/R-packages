@@ -14,7 +14,7 @@ A logical value.
 }
 \description{
 Tests is the argument one of sparse matrix classes in
-the base package \code{\link{Matrix}}.
+the base package \code{Matrix}.
 }
 \details{
 These class names are considered sparse matrix classes:

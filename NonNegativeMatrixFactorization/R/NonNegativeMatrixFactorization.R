@@ -56,7 +56,7 @@ NULL
 
 #' Sparse matrix test.
 #' @description Tests is the argument one of sparse matrix classes in
-#' the base package \code{\link{Matrix}}.
+#' the base package \code{Matrix}.
 #' @param object An object.
 #' @return A logical value.
 #' @details These class names are considered sparse matrix classes:
