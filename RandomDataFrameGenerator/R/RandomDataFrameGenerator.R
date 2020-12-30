@@ -50,8 +50,11 @@ NULL
 #' @description Generates a vector of random strings.
 #' @param size Number of words.
 #' @param lambda Poisson lambda for the string length distribution.
+#' @param charClasses Character vector specifying character classes to draw elements from.
+#' The known classes are \code{c("[A-Z]", "[a-z]", "[0-9]")}.
+#' If NULL it is the same as \code{ c("[A-Z]", "[a-z]")}.
 #' @export
-RandomString <- function( size = 1, lambda = 4) {
+RandomString <- function( size = 1, lambda = 4, charClasses = c("[A-Z]", "[a-z]") ) {
 
   if( size < 1 ) {
     stop("The argument n is expected to be a positive integer.", call. = TRUE)
@@ -61,7 +64,38 @@ RandomString <- function( size = 1, lambda = 4) {
     stop("The argument lambda is expected to be a positive integer.", call. = TRUE)
   }
 
-  lsChars <- strsplit("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", "")[[1]]
+  if( !( is.character(charClasses) || is.null(charClasses) ) ) {
+    stop("The argument charClasses is expected to be a character vector or NULL.", call. = TRUE)
+  }
+
+  if( is.null(charClasses) || length(charClasses) == 1 && charClasses == "[A-Za-z]") {
+    charClasses <- c("[A-Z]", "[a-z]")
+  } else if ( length(charClasses) == 1 && charClasses == "[A-Za-z0-9]") {
+    charClasses <- c("[A-Z]", "[a-z]", "[0-9]")
+  }
+
+  lsAll <- strsplit("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", "")[[1]]
+  lsAZ <- strsplit("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "")[[1]]
+  lsaz <- strsplit("abcdefghijklmnopqrstuvwxyz", "")[[1]]
+  ls09 <- strsplit("0123456789", "")[[1]]
+
+  lsChars <-
+    Reduce(
+      f = function( a, s) {
+        if( s == "[A-Z]" ) {
+          c( a, lsAZ)
+        } else if ( s == "[a-z]" ) {
+          c( a, lsaz)
+        } else if ( s == "[0-9]" ) {
+          c( a, ls09)
+        } else {
+          c( a, strsplit(s,"")[[1]])
+        }
+      },
+      init = c(),
+      x = charClasses
+    )
+  lsChars <- lsChars[nchar(lsChars) > 0]
   purrr::map_chr( 1:size,  ~ paste( sample( x = lsChars, size = rpois( n = 1, lambda = lambda - 1 ) + 1, replace = T), collapse = "") )
 }
 
