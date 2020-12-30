@@ -6,8 +6,9 @@ This R package implements the function `RandomDataFrame` that generated random d
 The design, implementation, and unit tests closely resemble [AAp1, AAp2].
 
 See the document 
-["Rapid specification of random tabular datasets generation in R"](./notebooks/Rapid-specification-of-random-tabular-datasets-generation-in-R.Rmd)
+["Rapid specification of random tabular datasets generation in R"](https://htmlpreview.github.io/?https://github.com/antononcube/R-packages/blob/master/RandomDataFrameGenerator/notebooks/Rapid-specification-of-random-tabular-datasets-generation-in-R.nb.html)
 for a more detailed introduction.
+([This is the corresponding Rmd notebook](./notebooks/Rapid-specification-of-random-tabular-datasets-generation-in-R.Rmd).)
 
 ## Examples
 
