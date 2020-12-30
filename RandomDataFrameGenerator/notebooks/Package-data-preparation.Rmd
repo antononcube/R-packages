@@ -1,0 +1,38 @@
+---
+title: "Package data preparation"
+author: Anton Antonov
+date: 2020-12-29
+output: html_notebook
+---
+
+# Ingest word data
+
+```{r}
+dfEnglishWords <- read.csv( file = "../inst/extdata/EnglishWords.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+dim(dfEnglishWords)
+```
+
+```{r}
+summary(as.data.frame(unclass(dfEnglishWords), stringsAsFactors = TRUE))
+```
+
+```{r}
+dfEnglishWords$KnownWordQ <- ifelse( dfEnglishWords$KnownWordQ == "True", TRUE, FALSE)
+dfEnglishWords$CommonWordQ <- ifelse( dfEnglishWords$CommonWordQ == "True", TRUE, FALSE)
+dfEnglishWords$StopWordQ <- ifelse( dfEnglishWords$StopWordQ == "True", TRUE, FALSE)
+```
+
+```{r}
+summary(dfEnglishWords)
+```
+
+
+
+# Make the data
+
+```{r, eval=F}
+usethis::use_data(dfEnglishWords)
+```
