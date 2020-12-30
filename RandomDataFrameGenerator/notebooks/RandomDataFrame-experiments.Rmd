@@ -23,7 +23,7 @@ RandomWord(6, "Common")
 # Column names
 
 ```{r}
-RandomDataFrame( nrow = 4, ncol = 5, columnNames = lsNames)
+RandomDataFrame( nrow = 4, ncol = 5, columnNames = c("a", "b", "c"))
 ```
 
 ```{r}
@@ -46,7 +46,15 @@ RandomDataFrame( nrow = 4, ncol = 5, minNumberOfValues = NULL, maxNumberOfValues
 # Generators
 
 ```{r}
-RandomDataFrame( nrow = 4, columnNames = c("a", "b", "c", "d"), generators = list( "b" = rnorm, "d" = RandomString ) )
+dfGen1 <- RandomDataFrame( nrow = 100, columnNames = c("a", "b", "c", "d"), generators = list( "b" = rnorm, "d" = RandomString ) )
+dfGen1
+```
+
+```{r}
+mean(dfGen1$b)
+sd(dfGen1$b)
+ExcessCurtosis <- function(x, k) { mean( (x - mean(x) )^4 ) - 3 * mean( (x - mean(x) )^2 )^2 }
+ExcessCurtosis( dfGen1$b )
 ```
 
 ```{r}
