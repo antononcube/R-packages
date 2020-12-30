@@ -4,12 +4,16 @@
 \alias{RandomString}
 \title{Random strings.}
 \usage{
-RandomString(size = 1, lambda = 4)
+RandomString(size = 1, lambda = 4, charClasses = c("[A-Z]", "[a-z]"))
 }
 \arguments{
 \item{size}{Number of words.}
 
 \item{lambda}{Poisson lambda for the string length distribution.}
+
+\item{charClasses}{Character vector specifying character classes to draw elements from.
+The known classes are \code{c("[A-Z]", "[a-z]", "[0-9]")}.
+If NULL it is the same as \code{ c("[A-Z]", "[a-z]")}.}
 }
 \description{
 Generates a vector of random strings.
