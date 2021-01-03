@@ -16,6 +16,7 @@ test_that("Simple generator specifications", {
 
   expect_s3_class( RandomDataFrame( generators = c( function(k) rpois(k, 4), function(k) RandomString(k, lambda = 12)  ) ), "data.frame" )
 
+
   dfR1 <- RandomDataFrame( nrow = 31, ncol = 13, generators = c(RandomWord, rnorm) )
   expect_s3_class( dfR1, "data.frame" )
   expect_equal( dim(dfR1), c(31, 13))
@@ -35,3 +36,15 @@ test_that("Simple generator specifications", {
 
 })
 
+
+test_that("Named generator specifications", {
+
+  expect_s3_class( RandomDataFrame( generators = c( "GenA" = RandomDataFrameGenerator::RandomString, "GenB" = runif) ), "data.frame" )
+
+
+  dfR1 <- RandomDataFrame( nrow = 31, ncol = 13, generators = c(RandomWord, rnorm) )
+  expect_s3_class( dfR1, "data.frame" )
+  expect_equal( dim(dfR1), c(31, 13))
+  expect_equal( setNames(sapply( dfR1, class), NULL), rep_len( x = c("character", "numeric"), length.out = ncol(dfR1) ) )
+
+})
