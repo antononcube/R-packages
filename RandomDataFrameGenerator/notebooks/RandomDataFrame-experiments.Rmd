@@ -75,3 +75,7 @@ lsRDFs <- purrr::map( 1:50, ~ RandomDataFrame( columnNamesGenerator = NA) )
 purrr::map_dfr( lsRDFs, ~ c( NRow = nrow(.), NCol = ncol(.) ) ) %>% dplyr::arrange(desc(NRow * NCol))
 ```
 
+```{r}
+RandomWord(5)
+```
+
