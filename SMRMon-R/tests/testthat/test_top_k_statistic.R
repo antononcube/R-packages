@@ -9,7 +9,7 @@ dfTesting <- dfTitanic[ setdiff( 1:nrow(dfTitanic), lsTrainingInds), ]
 
 test_that("Creation with data", {
 
-  expect_is( smrObj <- SMRMonUnit( data = dfTraining ) %>% SMRMonCreate( itemColumnName = "id" ), "SMR" )
+  expect_s3_class( smrObj <- SMRMonUnit( data = dfTraining ) %>% SMRMonCreate( itemColumnName = "id" ), "SMR" )
 
   expect_equal( length( intersect( names(smrObj),
                                    c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data") ) ),

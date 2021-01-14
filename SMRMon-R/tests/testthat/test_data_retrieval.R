@@ -9,7 +9,7 @@ smrObj <-
 ## Sanity check tests
 test_that("Sanity check", {
 
-  expect_is( smrObj, "SMR" )
+  expect_s3_class( smrObj, "SMR" )
 
   expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data"), names(smrObj) ) ),
                 8 )
@@ -18,7 +18,7 @@ test_that("Sanity check", {
 
 test_that("Sanity check after matrix filtering", {
 
-  expect_is( smrObj %>% SMRMonFilterMatrix( profile = c( "male" ) ), "SMR" )
+  expect_s3_class( smrObj %>% SMRMonFilterMatrix( profile = c( "male" ) ), "SMR" )
 
   expect_equal( length( intersect( c("M", "M01", "TagTypeRanges", "TagTypes", "ItemColumnName", "TagToIndexRules", "ItemToIndexRules", "Data"),
                                   names( smrObj %>% SMRMonFilterMatrix( profile = c( "male" ) ) ) ) ),
@@ -29,9 +29,9 @@ test_that("Sanity check after matrix filtering", {
 ## Test data shapes of long form.
 test_that("Expected long form representation data shapes", {
 
-  expect_is( smrObj %>% SMRMonGetLongFormData( tagTypesQ = FALSE ) %>% SMRMonTakeValue, "data.frame" )
+  expect_s3_class( smrObj %>% SMRMonGetLongFormData( tagTypesQ = FALSE ) %>% SMRMonTakeValue, "data.frame" )
 
-  expect_is( smrObj %>% SMRMonGetLongFormData( tagTypesQ = TRUE ) %>% SMRMonTakeValue, "data.frame" )
+  expect_s3_class( smrObj %>% SMRMonGetLongFormData( tagTypesQ = TRUE ) %>% SMRMonTakeValue, "data.frame" )
 
   expect_true( ncol( smrObj %>% SMRMonGetLongFormData( tagTypesQ = FALSE ) %>% SMRMonTakeValue ) == 3 )
 
@@ -79,12 +79,12 @@ test_that("Expected data shapes after filtering: intersection", {
 ## Test summarization.
 test_that("Expected data shapes after summarization", {
 
-  expect_is( itemSummary <- smrObj %>% SMRMonSummarizeItem( item = "id.10" ) %>% SMRMonTakeValue, "list" )
+  expect_s3_class( itemSummary <- smrObj %>% SMRMonSummarizeItem( item = "id.10" ) %>% SMRMonTakeValue, "list" )
 
   expect_true( mean( c( "Profile", "TagsSummary" ) %in% names(itemSummary) ) == 1 )
 
-  expect_is( itemSummary$Profile, "data.frame" )
+  expect_s3_class( itemSummary$Profile, "data.frame" )
 
-  expect_is( itemSummary$TagsSummary, "data.frame" )
+  expect_s3_class( itemSummary$TagsSummary, "data.frame" )
 
 })
