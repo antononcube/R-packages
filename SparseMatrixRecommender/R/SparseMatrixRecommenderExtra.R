@@ -238,6 +238,19 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
     nTopTags <-  1
   }
   
+  if( is.null(tagTypes) ) {
+    tagTypes <- setdiff(smr$TagTypes, tagTypeTo)
+  }
+  
+  if( tagTypeTo %in% tagTypes ) {
+    warning( "Removing the value of tagTypeTo from value of tagTypes.", call. = TRUE )
+    tagTypes <- setdiff(tagTypes, tagTypeTo)
+  }
+  
+  if( sum(tagTypes %in% smr$TagTypes) == 0) {
+    stop( "The argument tagTypes has no known tag type of the recommender smr.", call. = TRUE )
+  }
+  
   if( !( is.null(tagSelectionCriteria) || is.numeric(tagSelectionCriteria) && tagSelectionCriteria > 0 || is.function(tagSelectionCriteria) ) ) {
     stop( "The argument tagSelectionCriteria is expected to be NULL, a positive integer, or a function.", call. = TRUE )
   }
@@ -252,7 +265,7 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
       init = lsAllArgs, 
       x = names(lsDefaults) 
     )
-  
+
   ## To long form
   dfVectorTypesLongForm <- 
     SMRMatricesToLongForm( 
