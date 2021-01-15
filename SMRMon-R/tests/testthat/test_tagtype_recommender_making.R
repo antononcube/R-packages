@@ -6,11 +6,11 @@ test_that("Metadata recommender matrix same as contingency matrix", {
 
   expect_s3_class( smrObj <- SMRMonUnit( data = dfTitanic ) %>% SMRMonCreate( itemColumnName = "id" ), "SMR" )
 
-  expect_s3_class( { smrMetaObj <- smrObj %>% SMRMonMakeTagTypeRecommender( tagTypeTo = "passengerClass" ); smrMetaObj}, "SMR" )
+  expect_s3_class( smrMetaObj <- smrObj %>% SMRMonMakeTagTypeRecommender( tagTypeTo = "passengerClass" ), "SMR" )
 
-  expect_s3_class( smrMetaObj$M, "dgCMatrix" )
+  expect_s4_class( smrMetaObj$M, "dgCMatrix" )
 
-  expect_s3_class(
+  expect_s4_class(
     matXTabs <-
       cbind(
         xtabs( formula = ~ passengerClass + passengerAge, data = dfTitanic, sparse = TRUE ),
