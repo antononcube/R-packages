@@ -16,7 +16,7 @@ smr <- SMRCreate( dfTitanic[, c("id", sMatNames)],
 ## Tests
 
 test_that("Expected SMR object", {
-  expect_is( smr, "SMR" )
+  expect_s3_class( smr, "SMR" )
   
   expect_equal( names(smr), c("M", "M01", "TagTypeRanges","TagTypes",      
                               "ItemColumnName", "TagToIndexRules", "ItemToIndexRules") )
@@ -28,7 +28,7 @@ test_that("Expected SMR object", {
 dfLongForm <- SMRMatricesToLongForm(smr, tagTypes = NULL, removeTagTypePrefixesQ = FALSE )
 
 test_that("Expected long form shape", {
-  expect_is( object = dfLongForm, class = "data.frame" )
+  expect_s3_class( object = dfLongForm, class = "data.frame" )
   expect_equal( colnames(dfLongForm), c( smr$ItemColumnName, "Value", "Weight", "TagType" ) )
   expect_equal( nrow(dfLongForm), nrow(dfTitanic) * (ncol(dfTitanic) - 1 ) )
 }) 
@@ -36,7 +36,7 @@ test_that("Expected long form shape", {
 dfLongForm <- SMRMatricesToLongForm(smr, tagTypes = NULL, removeTagTypePrefixesQ = TRUE )
 
 test_that("Expected long form shape for removed tag type prefixes", {
-  expect_is( object = dfLongForm, class = "data.frame" )
+  expect_s3_class( object = dfLongForm, class = "data.frame" )
   expect_equal( colnames(dfLongForm), c( smr$ItemColumnName, "Value", "Weight", "TagType" ) )
   expect_equal( nrow(dfLongForm), nrow(dfTitanic) * (ncol(dfTitanic) - 1 ) )
 }) 
@@ -49,7 +49,7 @@ test_that("No tag type prefixes in the long form", {
 dfWideForm <- SMRMatricesToWideForm(smr, tagTypes = NULL, removeTagTypePrefixesQ = TRUE )
 
 test_that("Expected wide form shape for removed tag type prefixes", {
-  expect_is( object = dfWideForm, class = "data.frame" )
+  expect_s3_class( object = dfWideForm, class = "data.frame" )
   expect_equal( dim(dfWideForm), dim(dfTitanic) )
   expect_equal( sort(colnames(dfWideForm)), sort(colnames(dfTitanic)) )
 }) 
