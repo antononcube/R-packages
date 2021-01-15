@@ -79,7 +79,7 @@ test_that("Expected data shapes after filtering: intersection", {
 ## Test summarization.
 test_that("Expected data shapes after summarization", {
 
-  expect_s3_class( itemSummary <- smrObj %>% SMRMonSummarizeItem( item = "id.10" ) %>% SMRMonTakeValue, "list" )
+  expect_type( { itemSummary <- smrObj %>% SMRMonSummarizeItem( item = "id.10" ) %>% SMRMonTakeValue; itemSummary}, "list" )
 
   expect_true( mean( c( "Profile", "TagsSummary" ) %in% names(itemSummary) ) == 1 )
 
