@@ -4,12 +4,16 @@
 \alias{TSCorrSMRMakeUI}
 \title{Time series search interface UI}
 \usage{
-TSCorrSMRMakeUI(tsSMR, tsSearchVectors)
+TSCorrSMRMakeUI(tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2)
 }
 \arguments{
 \item{tsSMR}{A time series recommender.}
 
 \item{tsSearchVectors}{A list of time series search vectors.}
+
+\item{initNNs}{Initial number nearest neighbors.}
+
+\item{initNCols}{Initial number of columns.}
 }
 \value{
 Shiny UI object.
