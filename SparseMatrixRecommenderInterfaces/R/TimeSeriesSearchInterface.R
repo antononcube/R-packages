@@ -69,13 +69,18 @@ NULL
 #' @param tsSearchVectors A list of time series search vectors.
 #' @param initNNs Initial number nearest neighbors.
 #' @param initNCols Initial number of columns.
+#' @param dashboardTitle Dashboard title.
 #' @return Shiny UI object.
 #' @family Time series search interface functions
 #' @export
-TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2 ) {
+TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2, dashboardTitle = "Time series search engine"  ) {
+
+  if( is.null(initNNs) ) { initNNs = 12 }
+  if( is.null(initNCols) ) { initNCols = 2 }
+  if( is.null(dashboardTitle) ) { dashboardTitle = "Time series search engine" }
 
   dashboardPage(
-    dashboardHeader(title = "Time series dashboard"),
+    dashboardHeader(title = dashboardTitle),
     dashboardSidebar(
       sidebarMenu(
         menuItem("Nearest neighbors", tabName = "NNs"),
@@ -314,11 +319,12 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 #' @param initNNs Initial number nearest neighbors.
 #' @param initNCols Initial number of columns.
 #' @param roundDigits Number of decimal places for \code{\link{round}}.
+#' @param dashboardTitle Dashboard title.
 #' (Used for making the \code{ggplot} panel names.)
 #' @return Shiny app object.
 #' @family Time series search interface functions
 #' @export
-TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL, initNNs = 12, initNCols = 2, roundDigits = 6 ) {
+TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL, initNNs = 12, initNCols = 2, roundDigits = 6, dashboardTitle = "Time series search engine" ) {
 
   if( is.null(tsSearchVectors) ) {
     tsSearchVectors <- MakeTimeSeriesSearchVectors( tsSMR$TSMat )
@@ -332,7 +338,7 @@ TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL, initN
     tsSMR$TIBNameToTIBRules <- setNames( 1:ncol(tsSMR$TSMat), colnames(tsSMR$TSMat))
   }
 
-  shiny::shinyApp( ui = TSCorrSMRMakeUI( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors, initNNs = initNNs, initNCols = initNCols ),
+  shiny::shinyApp( ui = TSCorrSMRMakeUI( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors, initNNs = initNNs, initNCols = initNCols, dashboardTitle = dashboardTitle),
                    server = TSCorrSMRMakeServerFunction( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors, roundDigits = roundDigits )
   )
 }

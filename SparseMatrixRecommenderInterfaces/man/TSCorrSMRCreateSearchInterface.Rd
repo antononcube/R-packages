@@ -9,7 +9,8 @@ TSCorrSMRCreateSearchInterface(
   tsSearchVectors = NULL,
   initNNs = 12,
   initNCols = 2,
-  roundDigits = 6
+  roundDigits = 6,
+  dashboardTitle = "Time series search engine"
 )
 }
 \arguments{
@@ -21,7 +22,9 @@ TSCorrSMRCreateSearchInterface(
 
 \item{initNCols}{Initial number of columns.}
 
-\item{roundDigits}{Number of decimal places for \code{\link{round}}.
+\item{roundDigits}{Number of decimal places for \code{\link{round}}.}
+
+\item{dashboardTitle}{Dashboard title.
 (Used for making the \code{ggplot} panel names.)}
 }
 \value{
