@@ -4,12 +4,15 @@
 \alias{TSCorrSMRCreateSearchInterface}
 \title{Creation of time series search interface}
 \usage{
-TSCorrSMRCreateSearchInterface(tsSMR, tsSearchVectors = NULL)
+TSCorrSMRCreateSearchInterface(tsSMR, tsSearchVectors = NULL, roundDigits = 6)
 }
 \arguments{
 \item{tsSMR}{A time series recommender.}
 
 \item{tsSearchVectors}{A list of time series search vectors.}
+
+\item{roundDigits}{Number of decimal places for \code{\link{round}}.
+(Used for making the \code{ggplot} panel names.)}
 }
 \value{
 Shiny app object.

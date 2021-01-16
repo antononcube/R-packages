@@ -4,12 +4,15 @@
 \alias{TSCorrSMRMakeServerFunction}
 \title{Time series search interface server function}
 \usage{
-TSCorrSMRMakeServerFunction(tsSMR, tsSearchVectors)
+TSCorrSMRMakeServerFunction(tsSMR, tsSearchVectors, roundDigits = 6)
 }
 \arguments{
 \item{tsSMR}{A time series recommender.}
 
 \item{tsSearchVectors}{A list of time series search vectors.}
+
+\item{roundDigits}{Number of decimal places for \code{\link{round}}.
+(Used for making the \code{ggplot} panel names.)}
 }
 \value{
 Shiny server function.

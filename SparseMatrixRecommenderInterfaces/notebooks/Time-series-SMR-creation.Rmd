@@ -105,7 +105,7 @@ length(tsSearchVectors)
 
 
 ```{r}
-shiny::runApp( TSCorrSMRCreateSearchInterface( tsSMR = tssmrSP500 ) )
+shiny::runApp( TSCorrSMRCreateSearchInterface( tsSMR = tssmrSP500,  roundDigits = 4) )
 ```
 ```{r}
 library(magrittr)
