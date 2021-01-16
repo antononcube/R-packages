@@ -16,8 +16,8 @@ LazyData: true
 RoxygenNote: 7.1.1
 Imports:
     SparseMatrixRecommender (>= 0.9.0),
-    dplyr (>= 1.0.3)
-    DT (>= 0.17.0)
+    dplyr (>= 1.0.3),
+    DT (>= 0.16.0),
     SMRMon (>= 0.1.0),
     ggplot2 (>= 3.1.0),
     Matrix (>= 1.2.0),
@@ -26,6 +26,6 @@ Imports:
     reshape2 (>= 1.4.0),
     stringr (>= 1.4.0),
     shiny (>= 1.3.0),
-    shinydashboard (>= 0.7.0),
+    shinydashboard (>= 0.7.0)
 Suggests: 
     testthat
