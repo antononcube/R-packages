@@ -91,7 +91,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 
                  fluidRow(
                    column(width = 4,
-                          numericInput( "numberOfNNs", "Number of NNs:", min = 1, max = 40, step = 1, value = 12 )),
+                          numericInput( "numberOfNNs", "Number of NNs:", min = 1, max = 100, step = 1, value = 21 )),
                    column(width = 4,
                           selectInput( inputId = "nnsMethod",
                                        label = "Correlation method:",
@@ -101,7 +101,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 
                  fluidRow(
                    column(width = 4,
-                          numericInput( "nnsNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = 2 )),
+                          numericInput( "nnsNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = 3 )),
                    column(width = 4,
                           selectInput( inputId = "nnsScales",
                                        label = "Graphics scales:",
@@ -128,7 +128,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 
                  fluidRow(
                    column(width = 4,
-                          numericInput( "numberOfSearchResults", "Number of NNs:", min = 1, max = 40, step = 1, value = 12 )),
+                          numericInput( "numberOfSearchResults", "Number of NNs:", min = 1, max = 100, step = 1, value = 21 )),
                    column(width = 4,
                           selectInput( inputId = "svecMethod",
                                        label = "Correlation method:",
@@ -138,7 +138,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 
                  fluidRow(
                    column(width = 4,
-                          numericInput( "svecNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = 2 )),
+                          numericInput( "svecNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = 3 )),
                    column(width = 4,
                           selectInput( inputId = "svecScales",
                                        label = "Graphics scales:",
@@ -177,10 +177,12 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors ) {
 #' @description Creates the Shiny server function for a time series search interface.
 #' @param tsSMR A time series recommender.
 #' @param tsSearchVectors A list of time series search vectors.
+#' @param roundDigits Number of decimal places for \code{\link{round}}.
+#' (Used for making the \code{ggplot} panel names.)
 #' @return Shiny server function.
 #' @family Time series search interface functions
 #' @export
-TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
+TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6 ) {
 
   function(input, output, session)  {
 
@@ -213,7 +215,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
         dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
         dplyr::group_by( Entity ) %>%
         dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, input$nnsSmoothedWindowSize, align="right", fill=0) ) %>%
-        dplyr::mutate( ItemName.Score = paste( ItemName, Score, sep = " : ") ) %>%
+        dplyr::mutate( ItemName.Score = paste( ItemName, round(x = Score, digits = roundDigits), sep = " : ") ) %>%
         dplyr::ungroup()
 
     )
@@ -228,7 +230,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
         dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
         dplyr::group_by( Entity ) %>%
         dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, input$svecSmoothedWindowSize, align="right", fill=0) ) %>%
-        dplyr::mutate( ItemName.Score = paste( ItemName, Score, sep = " : ") ) %>%
+        dplyr::mutate( ItemName.Score = paste( ItemName, round(x = Score, digits = roundDigits), sep = " : ") ) %>%
         dplyr::ungroup()
 
     )
@@ -307,10 +309,12 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors ) {
 #' optional search time series shapes.
 #' @param tsSMR A time series recommender.
 #' @param tsSearchVectors A list of time series search vectors.
+#' @param roundDigits Number of decimal places for \code{\link{round}}.
+#' (Used for making the \code{ggplot} panel names.)
 #' @return Shiny app object.
 #' @family Time series search interface functions
 #' @export
-TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL ) {
+TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL, roundDigits = 6 ) {
 
   if( is.null(tsSearchVectors) ) {
     tsSearchVectors <- MakeTimeSeriesSearchVectors( tsSMR$TSMat )
@@ -325,6 +329,6 @@ TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL ) {
   }
 
   shiny::shinyApp( ui = TSCorrSMRMakeUI( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors ),
-                   server = TSCorrSMRMakeServerFunction( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors )
+                   server = TSCorrSMRMakeServerFunction( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors, roundDigits = roundDigits )
   )
 }
