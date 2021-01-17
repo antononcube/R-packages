@@ -9,7 +9,9 @@ TSCorrSMRMakeUI(
   tsSearchVectors,
   initNNs = 12,
   initNCols = 2,
-  dashboardTitle = "Time series search engine"
+  dashboardTitle = "Time series search engine",
+  plotOutputHeight = "1000px",
+  noteText = NULL
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ TSCorrSMRMakeUI(
 \item{initNCols}{Initial number of columns.}
 
 \item{dashboardTitle}{Dashboard title.}
+
+\item{plotOutputHeight}{Plot output height for \code{\link{plotOutput}}.}
+
+\item{noteText}{Note text to display.}
 }
 \value{
 Shiny UI object.

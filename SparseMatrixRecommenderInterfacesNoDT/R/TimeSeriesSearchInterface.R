@@ -69,22 +69,26 @@ NULL
 #' @param tsSearchVectors A list of time series search vectors.
 #' @param initNNs Initial number nearest neighbors.
 #' @param initNCols Initial number of columns.
+#' @param plotOutputHeight Plot output height for \code{\link{plotOutput}}.
 #' @param dashboardTitle Dashboard title.
+#' @param noteText Note text to display.
 #' @return Shiny UI object.
 #' @family Time series search interface functions
 #' @export
-TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2, dashboardTitle = "Time series search engine"  ) {
+TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2, dashboardTitle = "Time series search engine", plotOutputHeight = "1000px", noteText = NULL ) {
 
   if( is.null(initNNs) ) { initNNs = 12 }
   if( is.null(initNCols) ) { initNCols = 2 }
   if( is.null(dashboardTitle) ) { dashboardTitle = "Time series search engine" }
 
   dashboardPage(
+    title = dashboardTitle,
     dashboardHeader(title = dashboardTitle),
     dashboardSidebar(
       sidebarMenu(
         menuItem("Nearest neighbors", tabName = "NNs"),
-        menuItem("Trend finding", tabName = "TrendFinding")
+        menuItem("Trend finding", tabName = "TrendFinding"),
+        menuItem("Notes", tabName = "Notes")
       )
     ),
 
@@ -125,7 +129,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
 
                  hr(),
 
-                 plotOutput( "entetyNNsPlot", height = "1000px" )
+                 plotOutput( "entetyNNsPlot", height = plotOutputHeight )
 
         ),
 
@@ -166,10 +170,17 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
 
                  plotOutput( "searchVectorPlot", height = "150px", width = "550px" ),
 
-                 plotOutput( "searchVectorNNsPlot",  height = "1000px" )
+                 plotOutput( "searchVectorNNsPlot",  height = plotOutputHeight )
 
+        ),
 
+        tabItem( tabName = "Notes",
+
+                 infoBox("Note", value = noteText, subtitle = NULL,
+                         icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
+                         href = NULL, fill = FALSE)
         )
+
       )
     )
   )
@@ -252,7 +263,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
       ggplot2::ggplot( ggDF ) +
         ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = input$nnsValueColName, color = "ItemName.Score" ), na.rm = T ) +
-        ggplot2::facet_wrap( ~ItemName.Score, ncol = input$nnsNCol, scales = input$nnsScales )
+        ggplot2::facet_wrap( ~ItemName.Score, ncol = input$nnsNCol, scales = input$nnsScales ) +
+        ggplot2::scale_x_continuous(position = 'top')
 
     })
 
@@ -298,8 +310,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
       ggplot2::ggplot( ggDF2  ) +
         ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName.Score" ), na.rm = T ) +
         ggplot2::facet_wrap( ~ ItemName.Score, ncol = input$svecNCol, scales = input$svecScales ) +
-        ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
-
+        ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor ) +
+        ggplot2::scale_x_continuous(position = 'top')
 
     })
 
@@ -318,13 +330,19 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 #' @param tsSearchVectors A list of time series search vectors.
 #' @param initNNs Initial number nearest neighbors.
 #' @param initNCols Initial number of columns.
+#' @param plotOutputHeight Plot output height for \code{\link{plotOutput}}.
 #' @param roundDigits Number of decimal places for \code{\link{round}}.
 #' @param dashboardTitle Dashboard title.
+#' @param noteText Note text to display.
 #' (Used for making the \code{ggplot} panel names.)
 #' @return Shiny app object.
 #' @family Time series search interface functions
 #' @export
-TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL, initNNs = 12, initNCols = 2, roundDigits = 6, dashboardTitle = "Time series search engine" ) {
+TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL,
+                                            initNNs = 12, initNCols = 2, plotOutputHeight = "1000px",
+                                            roundDigits = 6,
+                                            dashboardTitle = "Time series search engine",
+                                            noteText = NULL ) {
 
   if( is.null(tsSearchVectors) ) {
     tsSearchVectors <- MakeTimeSeriesSearchVectors( tsSMR$TSMat )
@@ -338,7 +356,10 @@ TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL, initN
     tsSMR$TIBNameToTIBRules <- setNames( 1:ncol(tsSMR$TSMat), colnames(tsSMR$TSMat))
   }
 
-  shiny::shinyApp( ui = TSCorrSMRMakeUI( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors, initNNs = initNNs, initNCols = initNCols, dashboardTitle = dashboardTitle),
+  shiny::shinyApp( ui = TSCorrSMRMakeUI( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors,
+                                         initNNs = initNNs, initNCols = initNCols, plotOutputHeight = plotOutputHeight,
+                                         dashboardTitle = dashboardTitle,
+                                         noteText = noteText),
                    server = TSCorrSMRMakeServerFunction( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors, roundDigits = roundDigits )
   )
 }
