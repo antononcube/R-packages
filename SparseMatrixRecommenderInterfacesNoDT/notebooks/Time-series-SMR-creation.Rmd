@@ -7,8 +7,7 @@ output: html_notebook
 
 ```{r}
 library(SparseMatrixRecommender)
-#library(SparseMatrixRecommenderInterfacesNoDT)
-devtools::load_all()
+library(SparseMatrixRecommenderInterfacesNoDT)
 library(MathematicaVsRData)
 library(dplyr)
 library(magrittr)
