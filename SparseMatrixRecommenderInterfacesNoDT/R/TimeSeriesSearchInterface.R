@@ -120,7 +120,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                       sliderInput( "nnsSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 )
                     ),
 
-                mainPanel( plotOutput( "entetyNNsPlot", height = plotOutputHeight ) )
+                mainPanel( width = 9, plotOutput( "entetyNNsPlot", height = plotOutputHeight ) )
 
       )),
 
@@ -129,6 +129,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                 sidebarLayout(
                   sidebarPanel =
                     sidebarPanel(
+                      width = 3,
                       selectInput( "searchVectorName", "Search vector type:", names(tsSearchVectors) ),
                       radioButtons( inputId = "searchVectorColor",
                                     label = "Search vector color:",
@@ -158,6 +159,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                     ),
 
                   mainPanel(
+                    width = 9,
                     plotOutput( "searchVectorPlot", height = "150px", width = "550px" ),
                     hr(),
                     plotOutput( "searchVectorNNsPlot",  height = plotOutputHeight )
