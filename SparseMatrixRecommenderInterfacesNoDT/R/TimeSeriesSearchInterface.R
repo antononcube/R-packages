@@ -57,6 +57,7 @@
 #' @import stringr
 #' @import shiny
 #' @import shinydashboard
+#' @import shinythemes
 NULL
 
 ##===========================================================
@@ -72,116 +73,106 @@ NULL
 #' @param plotOutputHeight Plot output height for \code{\link{plotOutput}}.
 #' @param dashboardTitle Dashboard title.
 #' @param noteText Note text to display.
+#' @param theme Shiny-theme to apply.
 #' @return Shiny UI object.
 #' @family Time series search interface functions
 #' @export
-TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2, dashboardTitle = "Time series search engine", plotOutputHeight = "1000px", noteText = NULL ) {
+TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2, dashboardTitle = "Time series search engine", plotOutputHeight = "1000px", noteText = NULL, theme = "cerulean" ) {
 
   if( is.null(initNNs) ) { initNNs = 12 }
   if( is.null(initNCols) ) { initNCols = 2 }
   if( is.null(dashboardTitle) ) { dashboardTitle = "Time series search engine" }
 
-  dashboardPage(
-    title = dashboardTitle,
-    dashboardHeader(title = dashboardTitle),
-    dashboardSidebar(
-      sidebarMenu(
-        menuItem("Nearest neighbors", tabName = "NNs"),
-        menuItem("Trend finding", tabName = "TrendFinding"),
-        menuItem("Notes", tabName = "Notes")
+
+  fluidPage(
+    theme = shinythemes::shinytheme(theme),
+
+    navbarPage(
+
+      title = dashboardTitle,
+
+      tabPanel( title = "Nearest Neighbors",
+                skin = "blue",
+
+                sidebarLayout(
+                  sidebarPanel =
+                    sidebarPanel(
+                      width = 3,
+                      selectInput( "searchID", "Entity:", rownames(tsSMR$SMR$M) ),
+                      sliderInput( "numberOfNNs", "Number of nearest neighbors:", min = 1, max = 100, step = 1, value = initNNs ),
+                      sliderInput( "nnsNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = initNCols ),
+                      hr(),
+                      radioButtons( inputId = "nnsMethod",
+                                   label = "Correlation method:",
+                                   choices = c( "Dot" = "dot", "Pearson" = "pearson", "Spearman" = "spearman", "Kendall" = "kendall" ),
+                                   selected = "pearson",
+                                   inline = TRUE ),
+                      radioButtons( inputId = "nnsScales",
+                                   label = "Graphics scales:",
+                                   choices = c( "Fixed X & Y" = "fixed", "Free Y" = "free_y", "Free X" = "free_x" ),
+                                   selected = "free_y",
+                                   inline = TRUE ),
+                      hr(),
+                      radioButtons( inputId = "nnsValueColName",
+                                    label = "Value plotting:",
+                                    choices = c( "Raw" = "Value", "Smoothed" = "Value.ma" ),
+                                    inline = TRUE ),
+                      sliderInput( "nnsSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 )
+                    ),
+
+                mainPanel( plotOutput( "entetyNNsPlot", height = plotOutputHeight ) )
+
+      )),
+
+      tabPanel( title = "Trend Finding",
+
+                sidebarLayout(
+                  sidebarPanel =
+                    sidebarPanel(
+                      selectInput( "searchVectorName", "Search vector type:", names(tsSearchVectors) ),
+                      radioButtons( inputId = "searchVectorColor",
+                                    label = "Search vector color:",
+                                    choices = c("blue", "lightblue", "black", "gray10", "gray25", "gray50", "gray75", "gray90" ),
+                                    selected = "gray75",
+                                    inline = TRUE ),
+                      hr(),
+                      sliderInput( "numberOfSearchResults", "Number of nearest neighbors:", min = 1, max = 100, step = 1, value = initNNs ),
+                      sliderInput( "svecNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = initNCols ),
+                      hr(),
+                      radioButtons( inputId = "svecMethod",
+                                   label = "Correlation method:",
+                                   choices = c( "Dot" = "dot", "Pearson" = "pearson", "Spearman" = "spearman", "Kendall" = "kendall" ),
+                                   selected = "pearson",
+                                   inline = TRUE ),
+                      radioButtons( inputId = "svecScales",
+                                   label = "Graphics scales:",
+                                   choices = c( "Fixed X & Y" = "fixed", "Free Y" = "free_y", "Free X" = "free_x" ),
+                                   selected = "free_y",
+                                   inline = TRUE ),
+                      hr(),
+                      radioButtons( inputId = "svecValueColName",
+                                    label = "Value plotting:",
+                                    choices = c( "Raw" = "Value", "Smoothed" = "Value.ma"),
+                                    inline = TRUE ),
+                      sliderInput( "svecSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 )
+                    ),
+
+                  mainPanel(
+                    plotOutput( "searchVectorPlot", height = "150px", width = "550px" ),
+                    hr(),
+                    plotOutput( "searchVectorNNsPlot",  height = plotOutputHeight )
+                  )
+                )
+
+      ),
+
+      tabPanel( title = "Notes",
+
+                infoBox("Note", value = noteText, subtitle = NULL,
+                        icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
+                        href = NULL, fill = FALSE)
       )
-    ),
 
-    dashboardBody(
-
-      tabItems(
-
-        tabItem( tabName = "NNs",
-
-                 selectInput( "searchID", "Entity:", rownames(tsSMR$SMR$M) ),
-
-                 fluidRow(
-                   column(width = 4,
-                          numericInput( "numberOfNNs", "Number of NNs:", min = 1, max = 100, step = 1, value = initNNs )),
-                   column(width = 4,
-                          selectInput( inputId = "nnsMethod",
-                                       label = "Correlation method:",
-                                       choices = c( "Dot" = "dot", "Pearson" = "pearson", "Spearman" = "spearman", "Kendall" = "kendall" ),
-                                       selected = "pearson" ) )
-                 ),
-
-                 fluidRow(
-                   column(width = 4,
-                          numericInput( "nnsNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = initNCols )),
-                   column(width = 4,
-                          selectInput( inputId = "nnsScales",
-                                       label = "Graphics scales:",
-                                       choices = c( "Fixed X & Y" = "fixed", "Free Y" = "free_y", "Free X" = "free_x" ),
-                                       selected = "free_y" ) )
-                 ),
-
-                 fluidRow(
-                   column(width = 4,
-                          selectInput( "nnsValueColName", "Value plotting:", c( "Raw" = "Value", "Smoothed" = "Value.ma" ) )),
-                   column(width = 4,
-                          numericInput( "nnsSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ))
-                   ),
-
-                 hr(),
-
-                 plotOutput( "entetyNNsPlot", height = plotOutputHeight )
-
-        ),
-
-        tabItem( tabName = "TrendFinding",
-
-                 selectInput( "searchVectorName", "Search vector type:", names(tsSearchVectors) ),
-
-                 fluidRow(
-                   column(width = 4,
-                          numericInput( "numberOfSearchResults", "Number of NNs:", min = 1, max = 100, step = 1, value = initNNs )),
-                   column(width = 4,
-                          selectInput( inputId = "svecMethod",
-                                       label = "Correlation method:",
-                                       choices = c( "Dot" = "dot", "Pearson" = "pearson", "Spearman" = "spearman", "Kendall" = "kendall" ),
-                                       selected = "pearson" ) )
-                 ),
-
-                 fluidRow(
-                   column(width = 4,
-                          numericInput( "svecNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = initNCols )),
-                   column(width = 4,
-                          selectInput( inputId = "svecScales",
-                                       label = "Graphics scales:",
-                                       choices = c( "Fixed X & Y" = "fixed", "Free Y" = "free_y", "Free X" = "free_x" ),
-                                       selected = "free_y" ) )
-                 ),
-
-                 fluidRow(
-                   column(width = 4,
-                          selectInput( "svecValueColName", "Value plotting:", c( "Raw" = "Value", "Smoothed" = "Value.ma" ) ) ),
-                   column(width = 4,
-                          numericInput( "svecSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ) )
-                 ),
-
-                 selectInput( "searchVectorColor", "Search vector color:", c("blue", "lightblue", "black", "gray10", "gray25", "gray50", "gray75", "gray90" ), selected = "gray75" ),
-
-                 hr(),
-
-                 plotOutput( "searchVectorPlot", height = "150px", width = "550px" ),
-
-                 plotOutput( "searchVectorNNsPlot",  height = plotOutputHeight )
-
-        ),
-
-        tabItem( tabName = "Notes",
-
-                 infoBox("Note", value = noteText, subtitle = NULL,
-                         icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
-                         href = NULL, fill = FALSE)
-        )
-
-      )
     )
   )
 }
@@ -263,8 +254,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
       ggplot2::ggplot( ggDF ) +
         ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = input$nnsValueColName, color = "ItemName.Score" ), na.rm = T ) +
-        ggplot2::facet_wrap( ~ItemName.Score, ncol = input$nnsNCol, scales = input$nnsScales ) +
-        ggplot2::scale_x_continuous(position = 'top')
+        ggplot2::facet_wrap( ~ItemName.Score, ncol = input$nnsNCol, scales = input$nnsScales )
+      # if( is.numeric(ggDF$TimeIntervalBoundary) ) { ggplot2::scale_x_continuous(position = 'top') } else { ggplot2::scale_x_datetime(position = 'top') }
 
     })
 
@@ -277,7 +268,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
     output$searchVectorPlot <- renderPlot( {
 
       ggplot2::ggplot( searchVecPlotDF() ) +
-        ggplot2::geom_line( ggplot2::aes( x = TimeIntervalBoundary, y = Value ), na.rm = T )
+        ggplot2::geom_line( ggplot2::aes( x = TimeIntervalBoundary, y = Value ), na.rm = T ) +
+        ggplot2::ggtitle( "Search vector" )
 
     })
 
@@ -310,8 +302,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
       ggplot2::ggplot( ggDF2  ) +
         ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName.Score" ), na.rm = T ) +
         ggplot2::facet_wrap( ~ ItemName.Score, ncol = input$svecNCol, scales = input$svecScales ) +
-        ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor ) +
-        ggplot2::scale_x_continuous(position = 'top')
+        ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
+      #if( is.numeric(ggDF2$TimeIntervalBoundary) ) { ggplot2::scale_x_continuous(position = 'top') } else { ggplot2::scale_x_datetime(position = 'top') }
 
     })
 
@@ -334,6 +326,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 #' @param roundDigits Number of decimal places for \code{\link{round}}.
 #' @param dashboardTitle Dashboard title.
 #' @param noteText Note text to display.
+#' @param theme Shiny-theme to apply.
 #' (Used for making the \code{ggplot} panel names.)
 #' @return Shiny app object.
 #' @family Time series search interface functions
@@ -342,7 +335,8 @@ TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL,
                                             initNNs = 12, initNCols = 2, plotOutputHeight = "1000px",
                                             roundDigits = 6,
                                             dashboardTitle = "Time series search engine",
-                                            noteText = NULL ) {
+                                            noteText = NULL,
+                                            theme = "cerulean" ) {
 
   if( is.null(tsSearchVectors) ) {
     tsSearchVectors <- MakeTimeSeriesSearchVectors( tsSMR$TSMat )
@@ -359,7 +353,8 @@ TSCorrSMRCreateSearchInterface <- function( tsSMR, tsSearchVectors = NULL,
   shiny::shinyApp( ui = TSCorrSMRMakeUI( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors,
                                          initNNs = initNNs, initNCols = initNCols, plotOutputHeight = plotOutputHeight,
                                          dashboardTitle = dashboardTitle,
-                                         noteText = noteText),
+                                         noteText = noteText,
+                                         theme = theme ),
                    server = TSCorrSMRMakeServerFunction( tsSMR = tsSMR, tsSearchVectors = tsSearchVectors, roundDigits = roundDigits )
   )
 }

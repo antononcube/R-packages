@@ -11,6 +11,7 @@ library(SparseMatrixRecommenderInterfacesNoDT)
 library(MathematicaVsRData)
 library(dplyr)
 library(magrittr)
+library(shiny)
 library(shinydashboard)
 ```
 
@@ -103,9 +104,13 @@ tsSearchVectors <- MakeTimeSeriesSearchVectors( tsMat = tsMat )
 length(tsSearchVectors)
 ```
 
+```{r}
+tssmrSP500$TIBNameToTIBRules <- setNames( as.POSIXct(names(tssmrSP500$TIBNameToTIBRules)), names(tssmrSP500$TIBNameToTIBRules) )
+```
+
 
 ```{r}
-shiny::runApp( TSCorrSMRCreateSearchInterface( tsSMR = tssmrSP500, initNNs = 6, initNCols = 2, roundDigits = 4, plotOutputHeight = "600px", dashboardTitle = "S&P 500 search engine") )
+shiny::runApp( TSCorrSMRCreateSearchInterface( tsSMR = tssmrSP500, initNNs = 6, initNCols = 2, roundDigits = 4, plotOutputHeight = "800px", dashboardTitle = "S&P 500 search engine", theme = "slate" ) )
 ```
 ```{r}
 library(magrittr)

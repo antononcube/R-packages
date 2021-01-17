@@ -12,7 +12,8 @@ TSCorrSMRCreateSearchInterface(
   plotOutputHeight = "1000px",
   roundDigits = 6,
   dashboardTitle = "Time series search engine",
-  noteText = NULL
+  noteText = NULL,
+  theme = "cerulean"
 )
 }
 \arguments{
@@ -30,7 +31,9 @@ TSCorrSMRCreateSearchInterface(
 
 \item{dashboardTitle}{Dashboard title.}
 
-\item{noteText}{Note text to display.
+\item{noteText}{Note text to display.}
+
+\item{theme}{Shiny-theme to apply.
 (Used for making the \code{ggplot} panel names.)}
 }
 \value{

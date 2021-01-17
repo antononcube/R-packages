@@ -25,6 +25,7 @@ Imports:
     reshape2,
     stringr,
     shiny,
-    shinydashboard
+    shinydashboard,
+    shinythemes
 Suggests: 
     testthat

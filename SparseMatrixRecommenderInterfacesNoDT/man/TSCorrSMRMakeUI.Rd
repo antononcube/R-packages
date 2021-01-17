@@ -11,7 +11,8 @@ TSCorrSMRMakeUI(
   initNCols = 2,
   dashboardTitle = "Time series search engine",
   plotOutputHeight = "1000px",
-  noteText = NULL
+  noteText = NULL,
+  theme = "cerulean"
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ TSCorrSMRMakeUI(
 \item{plotOutputHeight}{Plot output height for \code{\link{plotOutput}}.}
 
 \item{noteText}{Note text to display.}
+
+\item{theme}{Shiny-theme to apply.}
 }
 \value{
 Shiny UI object.
