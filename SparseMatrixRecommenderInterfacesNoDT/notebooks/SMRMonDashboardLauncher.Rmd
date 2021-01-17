@@ -1,0 +1,97 @@
+---
+title: "SMRMon Dashboard launcher"
+author: Anton Antonov
+date: 2019-07-07
+output: html_notebook
+---
+
+```{r}
+library(SMRMon)
+library(SparseMatrixRecommender)
+library(Matrix)
+library(magrittr)
+library(ExternalParsersHookUp)
+library(shiny)
+library(shinydashboard)
+library(dashboardthemes)
+```
+
+```{r}
+devtools::load_all()
+```
+
+# Introduction
+
+
+# Additional definitions
+
+```{r, eval=T}
+Perl6SMRMonParsingLib <- function() {
+    file.path("/", "Volumes", "Macintosh HD", "Users", "antonov", "ConversationalAgents", "Packages", "Perl6", "RecommenderWorkflows", "lib")
+}
+```
+
+```{r, eval=T}
+to_SMRMon_R_command <- function(command, parse=TRUE) {
+  pres <- Perl6Command( command = paste0( "say to_SMRMon_R(\"", command, "\")"),
+                        moduleDirectory = Perl6SMRMonParsingLib(),
+                        moduleName = "RecommenderWorkflows" )
+  pres <- gsub( "\\\"", "\"", pres, fixed = T)
+  if(parse) { parse(text = pres) }
+  else { pres }
+}
+```
+
+
+# Some preliminary tests
+
+Simple creation:
+
+```{r}
+smrMushroom <-
+  SMRMonUnit( data = dfMushroom ) %>%
+  SMRMonCreate( itemColumnName = "id")
+```
+
+```{r}
+smrTitanic <-
+  SMRMonUnit( data = dfTitanic ) %>%
+  SMRMonCreate( itemColumnName = "id")
+```
+
+
+```{r}
+smrMushroom %>% SMRMonGetProperty( "TagTypes" ) %>% SMRMonTakeValue
+```
+
+```{r}
+smrMushroom %>% SMRMonGetProperty( "TagTypeRanges" ) %>% SMRMonTakeValue
+```
+
+```{r}
+smrMushroom %>% SMRMonCreateSearchInteractiveInterface( itemData = smrMushroom %>% SMRMonGetLongFormData %>% SMRMonTakeValue, dashboardTheme = "grey_dark" )
+```
+
+```{r}
+SMRCreateInteractiveInterface( smrMushroom, itemData = dfMushroom )
+```
+
+
+
+# Natural language query check
+
+```{r}
+eval( to_SMRMon_R_command( paste0( "use recommender smrMushroom;",  "show the tag types" ) ) ) %>% SMRMonTakeValue
+```
+
+```{r}
+dfMushroom %>% dplyr::filter( id == 1001 )
+```
+
+
+```{r}
+smrMushroom %>% 
+  SMRMonProfile( history = c("1001"), tagTypesQ = T ) %>% 
+  SMRMonTakeValue
+```
+

@@ -1,0 +1,30 @@
+Package: SparseMatrixRecommenderInterfacesNoDT
+Type: Package
+Title: Sparse Matrix Recommender framework interface functions.
+Version: 0.9.0
+Author: Anton Antonov 
+Maintainer: Anton Antonov <antononcube@posteo.net>
+Description: The Sparse Matrix Recommender (SMR) framework uses sparse matrix 
+    linear algebra to compute recommendations. The framework has functions for 
+    nearest neighbors classification and modification of sparse matrix recommender
+    objects. This package provides additional functions for creating interactive
+    interfaces. (Does not use the package DT.)
+Language: en-US
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Imports:
+    SparseMatrixRecommender,
+    dplyr,
+    SMRMon,
+    ggplot2,
+    Matrix,
+    RcppRoll,
+    purrr,
+    reshape2,
+    stringr,
+    shiny,
+    shinydashboard
+Suggests: 
+    testthat
