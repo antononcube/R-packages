@@ -92,7 +92,6 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
       title = dashboardTitle,
 
       tabPanel( title = "Nearest Neighbors",
-                skin = "blue",
 
                 sidebarLayout(
                   sidebarPanel =
@@ -117,10 +116,11 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                                     label = "Value plotting:",
                                     choices = c( "Raw" = "Value", "Smoothed" = "Value.ma" ),
                                     inline = TRUE ),
-                      sliderInput( "nnsSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 )
+                      sliderInput( "nnsSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ),
+                      fluid = TRUE
                     ),
 
-                mainPanel( width = 9, plotOutput( "entetyNNsPlot", height = plotOutputHeight ) )
+                mainPanel( width = 9, plotOutput( "entetyNNsPlot", height = plotOutputHeight), fluid = TRUE )
 
       )),
 
@@ -155,14 +155,16 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                                     label = "Value plotting:",
                                     choices = c( "Raw" = "Value", "Smoothed" = "Value.ma"),
                                     inline = TRUE ),
-                      sliderInput( "svecSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 )
+                      sliderInput( "svecSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ),
+                      fluid = TRUE
                     ),
 
                   mainPanel(
                     width = 9,
                     plotOutput( "searchVectorPlot", height = "150px", width = "550px" ),
                     hr(),
-                    plotOutput( "searchVectorNNsPlot",  height = plotOutputHeight )
+                    plotOutput( "searchVectorNNsPlot",  height = plotOutputHeight ),
+                    fluid = TRUE
                   )
                 )
 
@@ -170,7 +172,9 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
 
       tabPanel( title = "Notes",
 
-                infoBox("Note", value = noteText, subtitle = NULL,
+                infoBox(title = NULL,
+                        value = noteText,
+                        subtitle = NULL,
                         icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
                         href = NULL, fill = FALSE)
       )
