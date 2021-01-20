@@ -91,7 +91,7 @@ recs
 
 ```{r}
 searchID <- "AAPL"
-res <- TSPSRCorrelationNNs( timeSeriesMat = tsMat, smr = smrSP500, itemIDtoNameRules = tssmrSP500$ItemIDtoNameRules, searchRowID = searchID, nrecs = 12, smr.nrecs = 200 )
+res <- SparseMatrixRecommender::TSPSRCorrelationNNs( timeSeriesMat = tsMat, smr = smrSP500, itemIDtoNameRules = tssmrSP500$ItemIDtoNameRules, searchRowID = searchID, nrecs = 12, smr.nrecs = 200, filterRowIDs = grep("^A", rownames(tsMat), value = T) )
 res
 ```
 
