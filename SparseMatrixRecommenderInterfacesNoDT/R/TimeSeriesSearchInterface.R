@@ -98,6 +98,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                     sidebarPanel(
                       width = 3,
                       selectInput( "searchID", "Entity:", rownames(tsSMR$SMR$M) ),
+                      textInput( "filterRowIDs", "Entities filter pattern:", ""),
                       sliderInput( "numberOfNNs", "Number of nearest neighbors:", min = 1, max = 100, step = 1, value = initNNs ),
                       sliderInput( "nnsNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = initNCols ),
                       hr(),
@@ -131,6 +132,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                     sidebarPanel(
                       width = 3,
                       selectInput( "searchVectorName", "Search vector type:", names(tsSearchVectors) ),
+                      textInput( "svecFilterRowIDs", "Entities filter pattern:", ""),
                       radioButtons( inputId = "searchVectorColor",
                                     label = "Search vector color:",
                                     choices = c("blue", "lightblue", "black", "gray10", "gray25", "gray50", "gray75", "gray90" ),
@@ -202,23 +204,37 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
   function(input, output, session)  {
 
 
-    recResNNs <- reactive(
+    recResNNs <- reactive({
 
-      TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
-                           itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
-                           searchRowID = input$searchID, nrecs = input$numberOfNNs,
-                           method = input$nnsMethod )
+      if( nchar(input$filterRowIDs) == 0 || input$filterRowIDs == ".*" ) {
+        fids <- NULL
+      } else{
+        fids <- grep( pattern = input$filterRowIDs, x = rownames(tsSMR$TSMat), value = T )
+      }
 
-    )
+      SparseMatrixRecommender::TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
+                                                    itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
+                                                    searchRowID = input$searchID, nrecs = input$numberOfNNs,
+                                                    method = input$nnsMethod,
+                                                    filterRowIDs = fids )
 
-    recResSVec <- reactive(
+    })
 
-      TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
-                           itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
-                           searchVector = tsSearchVectors[[ input$searchVectorName ]], nrecs = input$numberOfSearchResults,
-                           method = input$svecMethod )
+    recResSVec <- reactive({
 
-    )
+      if( nchar(input$svecFilterRowIDs) == 0 || input$svecFilterRowIDs == ".*" ) {
+        fids <- NULL
+      } else{
+        fids <- grep( pattern = input$svecFilterRowIDs, x = rownames(tsSMR$TSMat), value = T )
+      }
+
+      SparseMatrixRecommender::TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
+                                                    itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
+                                                    searchVector = tsSearchVectors[[ input$searchVectorName ]], nrecs = input$numberOfSearchResults,
+                                                    method = input$svecMethod,
+                                                    filterRowIDs = fids )
+
+    })
 
     recResNNsExtended <- reactive(
 
