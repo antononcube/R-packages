@@ -12,7 +12,8 @@ TSPSRCorrelationNNs(
   searchVector = NULL,
   nrecs = 12,
   smr.nrecs = 2000,
-  method = "pearson"
+  method = "pearson",
+  filterRowIDs = NULL
 )
 }
 \arguments{
@@ -31,6 +32,9 @@ TSPSRCorrelationNNs(
 \item{smr.nrecs}{Number of recommendations for the intermediate candidate finding using the SMR object.}
 
 \item{method}{Correlation method; one of \code{'dot'}, \code{'pearson'}, \code{'spearman'}, \code{'kendall'}.}
+
+\item{filterRowIDs}{A character vector with row IDs to filter the rows of the time series and recommender matrices.
+If NULL not filtering is done.}
 }
 \description{
 Finds time series recommendations for specified search row ID and / or search vector ID.

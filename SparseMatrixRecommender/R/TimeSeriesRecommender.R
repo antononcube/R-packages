@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Written by Anton Antonov,
-# antononcube @ gmail . com,
+# antononcube @ posteo . net,
 # Windermere, Florida, USA.
 #
 #=======================================================================================
@@ -47,12 +47,22 @@ NULL
 #' @param nrecs Number of recommendations to return; if NULL all recommendations are returned.
 #' @param smr.nrecs Number of recommendations for the intermediate candidate finding using the SMR object.
 #' @param method Correlation method; one of \code{'dot'}, \code{'pearson'}, \code{'spearman'}, \code{'kendall'}.
+#' @param filterRowIDs A character vector with row IDs to filter the rows of the time series and recommender matrices.
+#' If NULL not filtering is done.
 #' @details The rownames of \code{timeSeriesMat} are composed of channels and item IDs. An item ID can be in several
 #' different channels. Hence we have row IDs like "NYSE:APPL" or "NASDAQ:APPL".
 #' Note, that this is a package internal function and it is not expected to be used on a regular basis;
 #' see \code{\link{Recommendations.TSCorrSMR}}.
 #' @export
-TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRowID = NULL, searchVector = NULL, nrecs = 12, smr.nrecs = 2000, method = 'pearson' ) {
+TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, 
+                                 searchRowID = NULL, searchVector = NULL, 
+                                 nrecs = 12, smr.nrecs = 2000, 
+                                 method = 'pearson',
+                                 filterRowIDs = NULL) {
+  
+  if( !( is.matrix(timeSeriesMat) || SparseMatrixRecommender::SMRSparseMatrixQ(timeSeriesMat) ) ) {
+    stop( "The argument timeSeriesMat is expected to be a matrix or a sparse matrix.", call. = TRUE )
+  }
   
   if ( is.null(searchRowID) && is.null(searchVector) ) {
     stop( "At least one of the arguments searchRowID or searchVector has to be non-NULL.", call. = TRUE )
@@ -78,6 +88,10 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
     
   } 
 
+  if( mean( rownames(smr$M) == rownames(timeSeriesMat) ) < 1 ) {
+    stop( "The time series matrix and recommender matrix have different row names.", call. = TRUE)
+  }
+  
   ## Search vector for the correlation matrices
   if ( !is.null( searchRowID ) && !is.null( searchVector ) )  {
     searchVector <- timeSeriesMat[ searchRowID, ] + searchVector
@@ -85,6 +99,29 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules, searchRo
     searchVector <- timeSeriesMat[ searchRowID, ]
   }  
   
+  ## Filter rows
+  if( !is.null(filterRowIDs) ) {
+    
+    if( !is.character(filterRowIDs) ) {
+      stop("The argument filterRowIDs is expected to be a character vector or NULL.", call. = TRUE)
+    }
+    
+    filterRowIDs <- intersect( filterRowIDs, rownames(timeSeriesMat) )
+    
+    if( length(filterRowIDs) == 0 ) {
+      
+      warning("None of the elements of the argument filterRowIDs is a known row ID.", call. = TRUE )
+      
+    } else {
+
+      filterRowIDs <- unique( c(searchRowID, filterRowIDs) )
+
+      timeSeriesMat <- timeSeriesMat[ filterRowIDs, , drop = FALSE]      
+      smr$M <- smr$M[ filterRowIDs, , drop = FALSE]
+    }
+  }
+  
+  ## NNs computation
   if ( is.null(smr) ) {
     ## Use only the correlations of the TS matrix rows
 
