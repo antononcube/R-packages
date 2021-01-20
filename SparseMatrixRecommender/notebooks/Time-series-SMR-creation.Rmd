@@ -7,7 +7,7 @@ output: html_notebook
 
 ```{r}
 library(SparseMatrixRecommender)
-library(SparseMatrixRecommenderInterfaces)
+library(SparseMatrixRecommenderInterfacesNoDT)
 library(Matrix)
 library(MathematicaVsRData)
 library(shinydashboard)
@@ -82,8 +82,20 @@ recs
 ## Lower level functions
 
 ```{r}
+dim(smrSP500$M)
+```
+
+```{r}
+mean( rownames(smrSP500$M) == rownames(tsMat) )
+```
+
+```{r}
+grep( "^A.*", rownames(smrSP500$M), value = T )
+```
+
+```{r}
 searchID <- "AAPL"
-res <- TSPSRCorrelationNNs( timeSeriesMat = tsMat, smr = smrSP500, itemIDtoNameRules = tssmrSP500$ItemIDtoNameRules, searchRowID = searchID, nrecs = 12, smr.nrecs = 200 )
+res <- TSPSRCorrelationNNs( timeSeriesMat = tsMat, smr = smrSP500, itemIDtoNameRules = tssmrSP500$ItemIDtoNameRules, searchRowID = searchID, nrecs = 12, smr.nrecs = 200, filterRowIDs = grep( "^A.*", rownames(smrSP500$M), value = T ))
 res
 ```
 
