@@ -109,7 +109,15 @@ tssmrSP500$TIBNameToTIBRules <- setNames( as.POSIXct(names(tssmrSP500$TIBNameToT
 ```
 
 ```{r}
-txtNote <- "The S&P 500, or simply the S&P, is a stock market index that measures the stock performance of 500 large companies listed on stock exchanges in the United States. It is one of the most commonly followed equity indices. See https://en.wikipedia.org/wiki/S%26P_500 ."
+txtNote <- 
+    c( 
+      value = "The S&P 500, or simply the S&P, is a stock market index that measures the stock performance of 500 large companies listed on stock exchanges in the United States. It is one of the most commonly followed equity indices.", 
+      href = "https://en.wikipedia.org/wiki/S%26P_500"
+    )
+```
+
+```{r}
+txtNote <- "The S&P 500, or simply the S&P, is a stock market index that measures the stock performance of 500 large companies listed on stock exchanges in the United States. It is one of the most commonly followed equity indices."
 ```
 
 ```{r}
