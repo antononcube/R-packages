@@ -82,7 +82,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
   if( is.null(initNNs) ) { initNNs = 12 }
   if( is.null(initNCols) ) { initNCols = 2 }
   if( is.null(dashboardTitle) ) { dashboardTitle = "Time series search engine" }
-
+  if( length(noteText) == 1 ) { noteText <- c( value = noteText, href = NULL )}
 
   fluidPage(
     theme = shinythemes::shinytheme(theme),
@@ -175,10 +175,15 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
       tabPanel( title = "Notes",
 
                 infoBox(title = NULL,
-                        value = noteText,
+                        value = noteText["value"],
                         subtitle = NULL,
                         icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
-                        href = NULL, fill = FALSE)
+                        href = if( length(noteText) == 1 ) { NULL } else { noteText["href"] },
+                        fill = FALSE),
+
+                hr(),
+
+                box( tableOutput("smrStats"), title = "Summary:" )
       )
 
     )
@@ -329,6 +334,15 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
     })
 
+    ## Summary
+    output$smrStats <-
+      renderTable(
+        expr = data.frame( "Object" = c( "TSMat", "SMR$M"),
+                           "NumberOfRows" = c( nrow(tsSMR$TSMat), nrow(tsSMR$SMR$M) ),
+                           "NumberOfColumns" = c( ncol(tsSMR$TSMat), ncol(tsSMR$SMR$M) ),
+                           "MemorySize.MB" = c( object.size(tsSMR$TSMat), object.size(tsSMR$SMR$M) ) / 1048576
+        )
+      )
   }
 }
 
