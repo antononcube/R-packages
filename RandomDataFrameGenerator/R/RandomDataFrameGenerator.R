@@ -55,8 +55,10 @@ NULL
 #' Ignored if \code{columnNames} is not NULL.
 #' @param columnNames Column names.
 #' If NULL random strings are used.
-#' @param columnNamesGenerator
-#' @param generators
+#' @param columnNamesGenerator Generator of the column names.
+#' @param form The form of the generated data frame, one of "long", "wide", or NULL.
+#' If NULL the form is randomly chosen.
+#' @param generators Generator specifications for the column values.
 #' @param maxNumberOfValues Maximum number of non-NA values.
 #' @param minNumberOfValues Minimum number of non-NA values.
 #' @param rowNamesQ Should the generated data frame have row names or not?
@@ -64,6 +66,7 @@ NULL
 RandomDataFrame <- function( nrow = NULL, ncol = NULL,
                              columnNames = NULL,
                              columnNamesGenerator = NULL,
+                             form = "wide",
                              generators = NULL,
                              minNumberOfValues = NULL, maxNumberOfValues = NULL,
                              rowNamesQ = FALSE ) {
@@ -154,6 +157,15 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
     stop("The argument minNumberOfValues is expected to be a non-negative integer or NULL.", call. = TRUE)
   }
 
+  ## Form
+  if( is.null(form) ) { form <- c("long", "wide")[runif(1) <= 0.3] }
+
+  if( !(is.character(form) && tolower(form) %in% c("long", "wide")) ) {
+    warning( "The agument form is expected to be NULL or one of \"long\" and \"wide\". Continuing using \"wide\".", call. = TRUE )
+    form <- "wide"
+  }
+  form <- tolower(form)
+
   ## Generate coordinate pairs for the random values
   dfPairs <- setNames( expand.grid( 1:nrow, lsColNames, stringsAsFactors = FALSE ), c("Row", "Col") )
 
@@ -183,14 +195,51 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
       }
     })
 
+  if( form == "wide" ) {
 
-  ## Combine into final result
-  dfRes <- do.call( data.frame, dfRes )
-  dfRes <- dfRes[, lsColNames]
+    ## Combine into final result
+    dfRes <- do.call( data.frame, dfRes )
+    dfRes <- dfRes[, lsColNames]
 
-  ## With row names or not?
-  if( !rowNamesQ ) {
-    rownames(dfRes) <- NULL
+    ## With row names or not?
+    if( !rowNamesQ ) {
+      rownames(dfRes) <- NULL
+    }
+
+  } else {
+
+    lsTypes <- purrr::map_chr( dfRes, function(x) paste0( class(x), collapse = ".") )
+
+    lsAllValueColumnNames <- paste0( "Value.", lsTypes[!duplicated(lsTypes)] )
+
+    dfRes <-
+      purrr::map( 1:length(dfRes), function(i){
+        res <-
+          setNames(
+            data.frame( ID = 1:length(dfRes[[i]]),
+                        Variable = names(dfRes)[[i]],
+                        Value = dfRes[[i]] ),
+            c("ID", "Variable", paste0( "Value.", lsTypes[[i]] ) )
+          )
+
+      if(length(lsAllValueColumnNames) > 1) {
+        res <-
+          Reduce(
+            f = function(a,cn) { setNames( cbind( a, "NewVar" = NA ), c(colnames(a), cn)) },
+            init = res,
+            x = setdiff(lsAllValueColumnNames, colnames(res))
+          )
+      }
+
+      res[, c( "ID", "Variable", lsAllValueColumnNames)]
+    })
+
+    dfRes <- do.call( rbind, dfRes)
+
+    ## With row names or not?
+    if( !rowNamesQ ) {
+      rownames(dfRes) <- NULL
+    }
   }
 
   dfRes

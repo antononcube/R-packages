@@ -65,6 +65,19 @@ RandomDataFrame( nrow = 4, ncol = 5, generators = function(k) rnorm( n = k, mean
 RandomDataFrame( nrow = 4, ncol = 5, generators = c( function(k) rpois( n = k, lambda = 4), function(k) RandomWord(k) ))
 ```
 
+# Form
+
+```{r, rows.print = 30}
+dfRes <- RandomDataFrame( nrow = 4, columnNames = c("word", "date", "rand"), form = "long", generators = c( "word" = RandomWord, "date" = RandomDate, "rand" = runif), rowNamesQ = F )
+dfRes
+```
+
+```{r,  rows.print = 30}
+dfResWide <- dfRes %>% tidyr::pivot_wider( id_cols = "ID", names_from = "Variable", values_from = colnames(dfRes)[3:ncol(dfRes)])
+dfResWide <- dfResWide[, purrr::map_lgl( dfResWide, function(x) sum(is.na(x)) < 1)]
+dfResWide
+```
+
 # Batch execution
 
 ```{r}

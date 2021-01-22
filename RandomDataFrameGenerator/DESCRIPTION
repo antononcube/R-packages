@@ -1,7 +1,7 @@
 Package: RandomDataFrameGenerator
 Type: Package
 Title: Random Data Frame Generator
-Version: 0.1.0
+Version: 0.5.0
 Author: Anton Antonov
 Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: A package that allows the rapid specification of random data frame generation.
