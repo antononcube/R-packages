@@ -79,11 +79,56 @@ NULL
 #' @export
 TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2, dashboardTitle = "Time series search engine", plotOutputHeight = "1000px", noteText = NULL, theme = "cerulean" ) {
 
+  # Arguments processing
   if( is.null(initNNs) ) { initNNs = 12 }
   if( is.null(initNCols) ) { initNCols = 2 }
   if( is.null(dashboardTitle) ) { dashboardTitle = "Time series search engine" }
-  if( length(noteText) == 1 ) { noteText <- c( value = noteText, href = NULL )}
 
+  # Notes argument processing
+  if( is.character(noteText) && length(noteText) > 1 ) { noteText <- list(noteText) }
+
+  if( is.null(noteText) ) {
+
+    lsNotes <- NULL
+
+  } else if( is.character(noteText) &&length(noteText) == 1 ) {
+
+    lsNotes <- list( c( title = "", subtitle = "", value = noteText, href = NULL ) )
+
+  } else if( is.list(noteText) ) {
+
+    lsNotes <-
+      purrr::map( noteText, function(x){
+        res <- c( title = "", subtitle = "", value = "", href = NULL )
+        res[names(x)] <- x[names(x)]
+        res
+      })
+
+    if( length(lsNotes) > 3 ) {
+      warning("Only the first two notes are shown separately. The rest are combined into one.", call. = TRUE )
+      dfNotes <- purrr::map_df( lsNotes, function(x) x )
+
+      note3 <- c(
+        title = paste( dfNotes$title[3:nrow(dfNotes)], collapse = ", " ),
+        subtitle = paste( dfNotes$subtitle[3:nrow(dfNotes)], collapse = ", " ),
+        value = paste( dfNotes$value[3:nrow(dfNotes)], collapse = " " ),
+        href = dfNotes$href[[3]]
+      )
+
+      if(note3[["title"]] == ", ") { note3[["title"]] <- "" }
+      if(note3[["subtitle"]] == ", ") { note3[["subtitle"]] <- "" }
+
+      lsNotes <- c( lsNotes[1:2], list(note3) )
+    }
+
+  } else {
+
+    warning( "Cannot use the notes specification.", call. = TRUE )
+    lsNotes <- NULL
+
+  }
+
+  ## The UI body
   fluidPage(
     theme = shinythemes::shinytheme(theme),
 
@@ -174,16 +219,36 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
 
       tabPanel( title = "Notes",
 
-                infoBox(title = NULL,
-                        value = noteText["value"],
-                        subtitle = NULL,
-                        icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
-                        href = if( length(noteText) == 1 ) { NULL } else { noteText["href"] },
-                        fill = FALSE),
+                if ( is.list(lsNotes) && length(lsNotes) > 0 ) {
+                  infoBox(title = lsNotes[[1]]["title"],
+                          value = lsNotes[[1]]["value"],
+                          subtitle = lsNotes[[1]]["subtitle"],
+                          icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
+                          href = lsNotes[[1]]["href"],
+                          fill = FALSE)
+                } else { NULL },
+
+                if ( is.list(lsNotes) && length(lsNotes) > 1 ) {
+                  infoBox(title = lsNotes[[2]]["title"],
+                          value = lsNotes[[2]]["value"],
+                          subtitle = lsNotes[[2]]["subtitle"],
+                          icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
+                          href = lsNotes[[2]]["href"],
+                          fill = FALSE)
+                } else { NULL },
+
+                if ( is.list(lsNotes) && length(lsNotes) > 2 ) {
+                  infoBox(title = lsNotes[[3]]["title"],
+                          value = lsNotes[[3]]["value"],
+                          subtitle = lsNotes[[3]]["subtitle"],
+                          icon = shiny::icon("sticky-note"), color = "aqua", width = 9,
+                          href = lsNotes[[3]]["href"],
+                          fill = FALSE)
+                } else { NULL },
 
                 hr(),
 
-                box( tableOutput("smrStats"), title = "Summary:" )
+                box( tableOutput("smrStats"), title = "Data objects summary:" )
       )
 
     )
