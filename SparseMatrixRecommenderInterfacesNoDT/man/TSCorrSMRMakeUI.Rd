@@ -41,6 +41,8 @@ Creates the Shiny UI function for a time series search interface.
 \seealso{
 Other Time series search interface functions: 
 \code{\link{TSCorrSMRCreateSearchInterface}()},
-\code{\link{TSCorrSMRMakeServerFunction}()}
+\code{\link{TSCorrSMRExtendRecommendations}()},
+\code{\link{TSCorrSMRMakeServerFunction}()},
+\code{\link{TSCorrSMRPlotRecommendations}()}
 }
 \concept{Time series search interface functions}

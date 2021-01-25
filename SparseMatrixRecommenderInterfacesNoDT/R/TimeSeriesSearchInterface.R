@@ -60,6 +60,83 @@
 #' @import shinythemes
 NULL
 
+
+##===========================================================
+## Extend time series recommendations
+##===========================================================
+
+#' Extend time series recommendations
+#' @description Extends the time series recommendations data frame \code{recs} with
+#' time axis and value axis data from the time series recommender object \code{tsSMR}.
+#' The obtained time series data frame is in long form.
+#' @param tsSMR A time series recommender.
+#' @param recs A data frame with columns \"Score\" and \"Item\".
+#' @param roundDigits Number of decimal places for \code{\link{round}}.
+#' (Used for making the \code{ggplot} panel names.)
+#' @return A data frame
+#' @family Time series search interface functions
+#' @export
+TSCorrSMRExtendRecommendations <- function( tsSMR, recs, roundDigits = 6 ) {
+
+  if( !("TSCorrSMR" %in% class(tsSMR)) ) {
+    stop( "The argument tsSMR is expected to be a time series sparse matrix recommender object with class \"TSCorrSMR\".", call. = TRUE )
+  }
+
+  if( !( is.data.frame(recs) && sum( c( "Score", "Item" ) %in% names(recs) ) == 2 ) ) {
+    stop( "The argument recs is expected to be a data frame with columns \"Score\" and \"Item\".", call. = TRUE )
+  }
+
+  setNames(
+    SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recs$Item, ] ),
+    c("Item", "TimeIntervalBoundaryName", "Value" )
+  ) %>%
+    dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
+    dplyr::inner_join( recs, by = "Item" ) %>%
+    dplyr::arrange( Score, Item, TimeIntervalBoundary ) %>%
+    dplyr::mutate( Item.Score = paste( Item, round(x = Score, digits = roundDigits), sep = " : ") )
+}
+
+
+##===========================================================
+## Plot time series recommendations
+##===========================================================
+
+#' Plot time series recommendations
+#' @description Makes time series plots from the
+#' time series recommendations data frame \code{recs} using
+#' time axis and value axis data from the time series recommender object \code{tsSMR}.
+#' @param tsSMR A time series recommender.
+#' @param recs A data frame with columns \"Score\" and \"Item\".
+#' @param roundDigits Number of decimal places for \code{\link{round}}.
+#' (Used for making the \code{ggplot} panel names.)
+#' @param ncol Number of columns argument for \code{\link{ggplot2::facet_wrap}}.
+#' @param scales Scales argument for \code{\link{ggplot2::facet_wrap}}.
+#' @details Extends the recommendations with \code{\link{TSCorrSMRExtendRecommendations}}.
+#' @return A \code{ggplot} object
+#' @family Time series search interface functions
+#' @export
+TSCorrSMRPlotRecommendations <- function( tsSMR, recs, roundDigits = 6, ncol = NULL, scales = "fixed" ) {
+
+  if( !("TSCorrSMR" %in% class(tsSMR)) ) {
+    stop( "The argument tsSMR is expected to be a time series sparse matrix recommender object with class \"TSCorrSMR\".", call. = TRUE )
+  }
+
+  if( !( is.data.frame(recs) && sum( c( "Score", "Item" ) %in% names(recs) ) == 2 ) ) {
+    stop( "The argument recs is expected to be a data frame with columns \"Score\" and \"Item\".", call. = TRUE )
+  }
+
+  dfGenRecsExtended <- TSCorrSMRExtendRecommendations( tsSMR, recs, roundDigits )
+
+  if( ! is.data.frame( dfGenRecsExtended ) ) {
+    stop( "Extended recommendations did not produce a data frame.", call. = TRUE )
+  }
+
+  ggplot2::ggplot( dfGenRecsExtended  ) +
+    ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = "Value", color = "Item.Score" ), na.rm = T ) +
+    ggplot2::facet_wrap( ~Item.Score, ncol = ncol, scales = scales )
+}
+
+
 ##===========================================================
 ## UI page
 ##===========================================================

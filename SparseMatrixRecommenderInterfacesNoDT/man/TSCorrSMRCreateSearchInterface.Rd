@@ -45,7 +45,9 @@ optional search time series shapes.
 }
 \seealso{
 Other Time series search interface functions: 
+\code{\link{TSCorrSMRExtendRecommendations}()},
 \code{\link{TSCorrSMRMakeServerFunction}()},
-\code{\link{TSCorrSMRMakeUI}()}
+\code{\link{TSCorrSMRMakeUI}()},
+\code{\link{TSCorrSMRPlotRecommendations}()}
 }
 \concept{Time series search interface functions}
