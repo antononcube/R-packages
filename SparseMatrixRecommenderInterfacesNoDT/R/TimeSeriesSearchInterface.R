@@ -308,10 +308,9 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
     recResNNsExtended <- reactive(
 
-      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
+      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recResNNs()$ItemID, ] ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
         # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
         dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
-        dplyr::filter( Entity %in% recResNNs()$ItemID ) %>%
         dplyr::inner_join( recResNNs(), by = c("Entity" = "ItemID" ) ) %>%
         dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
         dplyr::group_by( Entity ) %>%
@@ -323,10 +322,9 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
     recResSVecExtended <- reactive(
 
-      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
+      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recResSVec()$ItemID, ] ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
         # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
         dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
-        dplyr::filter( Entity %in% recResSVec()$ItemID ) %>%
         dplyr::inner_join( recResSVec(), by = c("Entity" = "ItemID" ) ) %>%
         dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
         dplyr::group_by( Entity ) %>%
