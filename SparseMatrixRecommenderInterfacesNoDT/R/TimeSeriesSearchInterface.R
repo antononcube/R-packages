@@ -254,12 +254,13 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                     sidebarPanel(
                       width = 3,
                       selectInput( "searchVectorName", "Search vector type:", names(tsSearchVectors) ),
-                      textInput( "svecFilterRowIDs", "Entities filter pattern:", ""),
+                      checkboxInput( inputId = "showSearchVectorPlot", label = "Separate plot of search vector", value = FALSE ),
                       radioButtons( inputId = "searchVectorColor",
                                     label = "Search vector color:",
                                     choices = c("blue", "lightblue", "black", "gray10", "gray25", "gray50", "gray75", "gray90" ),
                                     selected = "gray75",
                                     inline = TRUE ),
+                      textInput( "svecFilterRowIDs", "Entities filter pattern:", ""),
                       hr(),
                       sliderInput( "numberOfSearchResults", "Number of nearest neighbors:", min = 1, max = 100, step = 1, value = initNNs ),
                       sliderInput( "svecNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = initNCols ),
@@ -285,8 +286,10 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
 
                   mainPanel(
                     width = 9,
-                    plotOutput( "searchVectorPlot", height = "150px", width = "550px" ),
-                    hr(),
+                    conditionalPanel( condition = "output.showSearchVectorPlot",
+                                      plotOutput( "searchVectorPlot", height = "150px", width = "550px" ),
+                                      hr()
+                    ),
                     plotOutput( "searchVectorNNsPlot",  height = plotOutputHeight ),
                     fluid = TRUE
                   )
@@ -483,6 +486,13 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
                            "MemorySize.MB" = c( object.size(tsSMR$TSMat), object.size(tsSMR$SMR$M) ) / 1048576
         )
       )
+
+    ## Options
+    output$showSearchVectorPlot <- reactive({
+      input$showSearchVectorPlot
+    })
+    outputOptions(output, 'showSearchVectorPlot', suspendWhenHidden = FALSE)
+
   }
 }
 
