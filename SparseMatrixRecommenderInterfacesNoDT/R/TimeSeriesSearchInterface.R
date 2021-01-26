@@ -362,11 +362,13 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
         fids <- grep( pattern = input$filterRowIDs, x = rownames(tsSMR$TSMat), value = T )
       }
 
-      SparseMatrixRecommender::TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
-                                                    itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
-                                                    searchRowID = input$searchID, nrecs = input$numberOfNNs,
-                                                    method = input$nnsMethod,
-                                                    filterRowIDs = fids )
+      res <- SparseMatrixRecommender::TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
+                                                           itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
+                                                           searchRowID = input$searchID, nrecs = input$numberOfNNs,
+                                                           method = input$nnsMethod,
+                                                           filterRowIDs = fids )
+
+      res[!is.na(res$Score), ]
 
     })
 
@@ -378,17 +380,19 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
         fids <- grep( pattern = input$svecFilterRowIDs, x = rownames(tsSMR$TSMat), value = T )
       }
 
-      SparseMatrixRecommender::TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
-                                                    itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
-                                                    searchVector = tsSearchVectors[[ input$searchVectorName ]], nrecs = input$numberOfSearchResults,
-                                                    method = input$svecMethod,
-                                                    filterRowIDs = fids )
+      res <- SparseMatrixRecommender::TSPSRCorrelationNNs( timeSeriesMat = tsSMR$TSMat, smr = tsSMR$SMR,
+                                                           itemIDtoNameRules = tsSMR$ItemIDtoNameRules,
+                                                           searchVector = tsSearchVectors[[ input$searchVectorName ]], nrecs = input$numberOfSearchResults,
+                                                           method = input$svecMethod,
+                                                           filterRowIDs = fids )
+
+      res[!is.na(res$Score), ]
 
     })
 
     recResNNsExtended <- reactive(
 
-      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recResNNs()$ItemID, ] ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
+      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recResNNs()$ItemID, , drop = FALSE] ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
         # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
         dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
         dplyr::inner_join( recResNNs(), by = c("Entity" = "ItemID" ) ) %>%
@@ -402,7 +406,7 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
     recResSVecExtended <- reactive(
 
-      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recResSVec()$ItemID, ] ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
+      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recResSVec()$ItemID, , drop = FALSE] ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
         # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
         dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
         dplyr::inner_join( recResSVec(), by = c("Entity" = "ItemID" ) ) %>%
