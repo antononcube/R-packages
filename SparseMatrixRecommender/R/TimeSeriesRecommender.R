@@ -155,7 +155,7 @@ TSPSRCorrelationNNs <- function( timeSeriesMat, smr, itemIDtoNameRules,
     if ( method != 'dot' ) {
       
       ## assertthat::assert_that( mean(dotRecs$Channel.ItemID %in% rownames(timeSeriesMat)) == 1 )
-      recVec <- cor( as.matrix( t(timeSeriesMat[ dotRecs$Channel.ItemID, ]) ), searchVector, method = method )
+      recVec <- cor( as.matrix( t(timeSeriesMat[ dotRecs$Channel.ItemID, ,drop=FALSE]) ), searchVector, method = method )
       recVec <- recVec[ order(-recVec[,1]), ,drop=FALSE]
       recsItemSplit <- setNames( as.data.frame( stringr::str_split_fixed( rownames(recVec), pattern = ":", n = 2 ), stringsAsFactors = F), c( "Channel", "ItemID" ) )
       if( mean( nchar( recsItemSplit$ItemID ) ) < 1 ) {
@@ -327,6 +327,7 @@ ClassifyByProfileVector.TSCorrSMR <- function ( x, profileVec, nTopNNs, voting =
 #' Search time series creation
 #' @description Creates a list of search vectors (time series) for a given time series matrix.
 #' @param tsMat A sparse matrix with rows corresponding to time series.
+#' @param nTrigPeriod 
 #' @details This "helper" function can be used for finding trends of the signals.
 #' @export
 MakeTimeSeriesSearchVectors <- function( tsMat ) {
