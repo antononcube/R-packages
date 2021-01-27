@@ -406,16 +406,19 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
     recResSVecExtended <- reactive(
 
-      setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recResSVec()$ItemID, , drop = FALSE] ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
-        # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
-        dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
-        dplyr::inner_join( recResSVec(), by = c("Entity" = "ItemID" ) ) %>%
-        dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
-        dplyr::group_by( Entity ) %>%
-        dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, input$svecSmoothedWindowSize, align="right", fill=0) ) %>%
-        dplyr::mutate( ItemName.Score = paste( ItemName, round(x = Score, digits = roundDigits), sep = " : ") ) %>%
-        dplyr::ungroup()
-
+      if( is.null(recResSVec()) || nrow(recResSVec()) == 0 ) {
+        NULL
+      } else {
+        setNames( SMRSparseMatrixToTriplets( smat = tsSMR$TSMat[ recResSVec()$ItemID, , drop = FALSE] ), c("Entity", "TimeIntervalBoundaryName", "Value" ) ) %>%
+          # mutate( TimeIntervalBoundary = as.POSIXct( TimeIntervalBoundary, format="%Y-%m-%d") ) %>%
+          dplyr::mutate( TimeIntervalBoundary = tsSMR$TIBNameToTIBRules[ TimeIntervalBoundaryName ] ) %>%
+          dplyr::inner_join( recResSVec(), by = c("Entity" = "ItemID" ) ) %>%
+          dplyr::arrange( Score, Entity, TimeIntervalBoundary) %>%
+          dplyr::group_by( Entity ) %>%
+          dplyr::mutate( Value.ma = RcppRoll::roll_mean(Value, input$svecSmoothedWindowSize, align="right", fill=0) ) %>%
+          dplyr::mutate( ItemName.Score = paste( ItemName, round(x = Score, digits = roundDigits), sep = " : ") ) %>%
+          dplyr::ungroup()
+      }
     )
 
     ## Entity NNs plot
@@ -455,30 +458,33 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
       #   geom_line( aes( x = TimeIntervalBoundary, y = Value.ma, color = ItemName ), na.rm = T ) +
       #   facet_wrap( ~ reorder(ItemName, -Score), ncol = 2, scales = "free" )
 
-      valueColumnName <- input$svecValueColName
-      searchVecPlotDF2 <-
-        purrr::map_df( split( recResSVecExtended(), recResSVecExtended()$ItemName.Score), function(x) {
-          vec = searchVecPlotDF()$Value
-          vec = ( vec - min(vec) ) / ( max(vec) - min(vec) )
-          vec = vec * (max(x[[valueColumnName]]) - min(x[[valueColumnName]])) + min(x[[valueColumnName]])
-          res <- data.frame( Score = 1, TimeIntervalBoundary = searchVecPlotDF()$TimeIntervalBoundary, Value.ma = vec, ItemName.Score = x$ItemName.Score[[1]] )
-          colnames(res) <- c( "Score", "TimeIntervalBoundary", valueColumnName, "ItemName.Score" )
-          res
-        } )
+      if( is.null(recResSVecExtended()) || nrow(recResSVecExtended()) == 0 ) {
+        NULL
+      } else {
+        valueColumnName <- input$svecValueColName
+        searchVecPlotDF2 <-
+          purrr::map_df( split( recResSVecExtended(), recResSVecExtended()$ItemName.Score), function(x) {
+            vec = searchVecPlotDF()$Value
+            vec = ( vec - min(vec) ) / ( max(vec) - min(vec) )
+            vec = vec * (max(x[[valueColumnName]]) - min(x[[valueColumnName]])) + min(x[[valueColumnName]])
+            res <- data.frame( Score = 1, TimeIntervalBoundary = searchVecPlotDF()$TimeIntervalBoundary, Value.ma = vec, ItemName.Score = x$ItemName.Score[[1]] )
+            colnames(res) <- c( "Score", "TimeIntervalBoundary", valueColumnName, "ItemName.Score" )
+            res
+          } )
 
-      ggDF2 <- recResSVecExtended()
-      facDF2 <- unique(ggDF2[, c("ItemName.Score", "Score")])
-      facDF2 <- facDF2[ order(-facDF2$Score), ]
-      ggDF2$ItemName.Score <- factor( x = ggDF2$ItemName.Score, levels = facDF2$ItemName.Score )
+        ggDF2 <- recResSVecExtended()
+        facDF2 <- unique(ggDF2[, c("ItemName.Score", "Score")])
+        facDF2 <- facDF2[ order(-facDF2$Score), ]
+        ggDF2$ItemName.Score <- factor( x = ggDF2$ItemName.Score, levels = facDF2$ItemName.Score )
 
-      searchVecPlotDF2$ItemName.Score <- factor( x = searchVecPlotDF2$ItemName.Score, levels = facDF2$ItemName.Score )
+        searchVecPlotDF2$ItemName.Score <- factor( x = searchVecPlotDF2$ItemName.Score, levels = facDF2$ItemName.Score )
 
-      ggplot2::ggplot( ggDF2  ) +
-        ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName.Score" ), na.rm = T ) +
-        ggplot2::facet_wrap( ~ ItemName.Score, ncol = input$svecNCol, scales = input$svecScales ) +
-        ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
-      #if( is.numeric(ggDF2$TimeIntervalBoundary) ) { ggplot2::scale_x_continuous(position = 'top') } else { ggplot2::scale_x_datetime(position = 'top') }
-
+        ggplot2::ggplot( ggDF2  ) +
+          ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName.Score" ), na.rm = T ) +
+          ggplot2::facet_wrap( ~ ItemName.Score, ncol = input$svecNCol, scales = input$svecScales ) +
+          ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
+        #if( is.numeric(ggDF2$TimeIntervalBoundary) ) { ggplot2::scale_x_continuous(position = 'top') } else { ggplot2::scale_x_datetime(position = 'top') }
+      }
     })
 
     ## Summary
