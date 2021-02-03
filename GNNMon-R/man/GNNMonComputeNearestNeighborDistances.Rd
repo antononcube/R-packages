@@ -4,8 +4,11 @@
 \alias{GNNMonComputeNearestNeighborDistances}
 \title{Compute nearest neighbors distances.}
 \usage{
-GNNMonComputeNearestNeighborDistances(gnnObj, nTopNNs = 6,
-  method = "euclidean")
+GNNMonComputeNearestNeighborDistances(
+  gnnObj,
+  nTopNNs = 6,
+  method = "euclidean"
+)
 }
 \arguments{
 \item{gnnObj}{A GNNMon object}

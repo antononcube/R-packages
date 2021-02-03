@@ -4,7 +4,9 @@
 \name{GNNMonFailureSymbol}
 \alias{GNNMonFailureSymbol}
 \title{Failure symbol for GNNMon.}
-\format{An object of class \code{logical} of length 1.}
+\format{
+An object of class \code{logical} of length 1.
+}
 \usage{
 GNNMonFailureSymbol
 }

@@ -4,8 +4,11 @@
 \alias{GNNMonComputeThresholds}
 \title{Compute proximity radius thresholds.}
 \usage{
-GNNMonComputeThresholds(gnnObj, nnsRadiusFunction = mean,
-  thresholdsIdentifier = OutlierIdentifiers::HampelIdentifierParameters)
+GNNMonComputeThresholds(
+  gnnObj,
+  nnsRadiusFunction = mean,
+  thresholdsIdentifier = OutlierIdentifiers::HampelIdentifierParameters
+)
 }
 \arguments{
 \item{gnnObj}{A GNNMon object}
@@ -21,4 +24,7 @@ A GNNMon object
 }
 \description{
 Estimates the upper threshold of proximity radius.
+}
+\details{
+
 }

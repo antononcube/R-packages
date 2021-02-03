@@ -4,8 +4,10 @@
 \alias{GNNMonTakeNearestNeighborDistances}
 \title{Take NearestNeighborDistances.}
 \usage{
-GNNMonTakeNearestNeighborDistances(gnnObj,
-  functionName = "GNNMonTakeNearestNeighborDistances")
+GNNMonTakeNearestNeighborDistances(
+  gnnObj,
+  functionName = "GNNMonTakeNearestNeighborDistances"
+)
 }
 \arguments{
 \item{gnnObj}{An GNNMon object.}
@@ -19,22 +21,23 @@ A list of functions or \code{GNNMonFailureSymbol}.
 Takes NearestNeighborDistances from the monad object.
 }
 \seealso{
-Other Set/Take functions: \code{\link{GNNMonSetData}},
-  \code{\link{GNNMonSetDistanceMethod}},
-  \code{\link{GNNMonSetLowerThreshold}},
-  \code{\link{GNNMonSetNearestNeighborDistances}},
-  \code{\link{GNNMonSetNumberOfNNs}},
-  \code{\link{GNNMonSetRadiusFunction}},
-  \code{\link{GNNMonSetRadius}},
-  \code{\link{GNNMonSetUpperThreshold}},
-  \code{\link{GNNMonSetValue}},
-  \code{\link{GNNMonTakeData}},
-  \code{\link{GNNMonTakeDistanceMethod}},
-  \code{\link{GNNMonTakeLowerThreshold}},
-  \code{\link{GNNMonTakeNumberOfNNs}},
-  \code{\link{GNNMonTakeRadiusFunction}},
-  \code{\link{GNNMonTakeRadius}},
-  \code{\link{GNNMonTakeUpperThreshold}},
-  \code{\link{GNNMonTakeValue}}
+Other Set/Take functions: 
+\code{\link{GNNMonSetData}()},
+\code{\link{GNNMonSetDistanceMethod}()},
+\code{\link{GNNMonSetLowerThreshold}()},
+\code{\link{GNNMonSetNearestNeighborDistances}()},
+\code{\link{GNNMonSetNumberOfNNs}()},
+\code{\link{GNNMonSetRadiusFunction}()},
+\code{\link{GNNMonSetRadius}()},
+\code{\link{GNNMonSetUpperThreshold}()},
+\code{\link{GNNMonSetValue}()},
+\code{\link{GNNMonTakeData}()},
+\code{\link{GNNMonTakeDistanceMethod}()},
+\code{\link{GNNMonTakeLowerThreshold}()},
+\code{\link{GNNMonTakeNumberOfNNs}()},
+\code{\link{GNNMonTakeRadiusFunction}()},
+\code{\link{GNNMonTakeRadius}()},
+\code{\link{GNNMonTakeUpperThreshold}()},
+\code{\link{GNNMonTakeValue}()}
 }
 \concept{Set/Take functions}

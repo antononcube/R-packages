@@ -4,7 +4,7 @@
 \alias{GNNMonUnit}
 \title{Make a GNNMon Unit}
 \usage{
-GNNMonUnit()
+GNNMonUnit(data)
 }
 \value{
 An S3 class "GNNMon". In other words, a list with the attribute "class" set to "GNNMon".

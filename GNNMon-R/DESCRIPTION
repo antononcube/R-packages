@@ -1,10 +1,10 @@
 Package: GNNMon
 Type: Package
 Title: Geometric Nearest Neighbors Monad
-Version: 0.1.0
-Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+Version: 0.5.0
+Authors@R: person("Anton", "Antonov", email = "antononcube@posteo.net",
                   role = c("aut", "cre"))
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: This package implements in R a software monad for various operations over Geometric Nearest Neighbors (GNN).
     The primary GNN operations are finding nearest points and classification of "membership".
 License: BSD-3
@@ -12,7 +12,7 @@ Language: en-US
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/antononcube/R-packages/tree/master/GNNMon-R
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 Imports:
     magrittr,
     purrr,

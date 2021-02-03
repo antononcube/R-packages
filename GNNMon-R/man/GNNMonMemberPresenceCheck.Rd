@@ -4,9 +4,14 @@
 \alias{GNNMonMemberPresenceCheck}
 \title{General member presence check.}
 \usage{
-GNNMonMemberPresenceCheck(gnnObj, memberName,
-  memberPrettyName = memberName, functionName = "",
-  logicalResultQ = FALSE)
+GNNMonMemberPresenceCheck(
+  gnnObj,
+  memberName,
+  memberPrettyName = memberName,
+  functionName = "",
+  logicalResultQ = FALSE,
+  warningQ = TRUE
+)
 }
 \arguments{
 \item{gnnObj}{An GNNMon object.}
@@ -18,6 +23,8 @@ GNNMonMemberPresenceCheck(gnnObj, memberName,
 \item{functionName}{The name of the delegating function.}
 
 \item{logicalResultQ}{Should the result be a logical value?}
+
+\item{warningQ}{Should a warning be issued or not?}
 }
 \value{
 A logical value or an GNNMon object.

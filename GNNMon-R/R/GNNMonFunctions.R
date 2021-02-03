@@ -125,9 +125,10 @@ GNNMonTakeValue <- function( gnnObj ) {
 #' @param memberPrettyName A pretty member name (for messages).
 #' @param functionName The name of the delegating function.
 #' @param logicalResultQ Should the result be a logical value?
+#' @param warningQ Should a warning be issued or not?
 #' @return A logical value or an GNNMon object.
 #' @export
-GNNMonMemberPresenceCheck <- function( gnnObj, memberName, memberPrettyName = memberName, functionName = "", logicalResultQ = FALSE ) {
+GNNMonMemberPresenceCheck <- function( gnnObj, memberName, memberPrettyName = memberName, functionName = "", logicalResultQ = FALSE, warningQ = TRUE ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -136,7 +137,9 @@ GNNMonMemberPresenceCheck <- function( gnnObj, memberName, memberPrettyName = me
   if( nchar(functionName) > 0 ) { functionName <- paste0( functionName, ":: ") }
 
   if( is.null(gnnObj[[memberName]]) ) {
-    warning( paste0( functionName, paste0("Cannot find ", memberPrettyName, ".") ), call. = TRUE )
+    if( warningQ ) {
+      warning( paste0( functionName, paste0("Cannot find ", memberPrettyName, ".") ), call. = TRUE )
+    }
     res <- FALSE
   }
 
@@ -683,6 +686,7 @@ GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, method =
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
   data <- gnnObj %>% GNNMonTakeData
+
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
   if( ! ( is.numeric(nTopNNs) && length(nTopNNs) == 1 && 0 < nTopNNs && nTopNNs <= nrow(gnnObj$Data) ) ) {
@@ -730,7 +734,16 @@ GNNMonComputeThresholds <- function( gnnObj,
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
   ## Get NN's and distances.
-  dfDists <- gnnObj %>% GNNMonTakeNearestNeighborDistances
+  if( !GNNMonMemberPresenceCheck(gnnObj = gnnObj, memberName = "NearestNeighborDistances", memberPrettyName = "NearestNeighborDistances", functionName = "GNNMonComputeThresholds", logicalResultQ = TRUE, warningQ = FALSE ) ) {
+
+    warning( "Compute the nearest neighbors distances first. (Using GNNMonComputeNearestNeighborDistances).", call. = TRUE )
+    return(GNNMonFailureSymbol)
+
+  } else {
+
+    dfDists <- gnnObj %>% GNNMonTakeNearestNeighborDistances
+
+  }
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -809,15 +822,14 @@ GNNMonFindNearest <- function( gnnObj, point, n = 12, method = "euclidean" )  {
 #' the monad points (TRUE) or too distant (FALSE).
 #' @param gnnObj A GNNMon object
 #' @param points A numeric vector (a point) or a matrix or a data frame
-#' of points.
-#' (I.e. \code{ncol(gnnObj$Data)}).
+#' of points. If NULL monad's data is used.
 #' @details
 #' If points is a matrix or a data frame then its number of columns
 #' should equal the dimension of monad's points.
 #' The result is assigned to \code{gnnObj$Value}.
 #' @return A GNNMon object
 #' @export
-GNNMonClassify <- function( gnnObj, points ) {
+GNNMonClassify <- function( gnnObj, points = NULL ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -832,6 +844,10 @@ GNNMonClassify <- function( gnnObj, points ) {
 
   upperThreshold <- gnnObj %>% GNNMonTakeUpperThreshold
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
+
+  if( is.null(points) ) {
+    points <- data
+  }
 
   if( !is.matrix(points) && is.numeric(points) ) {
     points <- matrix( points, nrow = 1 )

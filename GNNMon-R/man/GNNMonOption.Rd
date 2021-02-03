@@ -15,7 +15,7 @@ GNNMonOption(gnnObj, f)
 A GNNMon object.
 }
 \description{
-Optional function application to monad's object.
+
 }
 \details{
 In general \code{f} should return a monad object,

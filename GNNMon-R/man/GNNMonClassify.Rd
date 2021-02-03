@@ -4,14 +4,13 @@
 \alias{GNNMonClassify}
 \title{Classify for "membership".}
 \usage{
-GNNMonClassify(gnnObj, points)
+GNNMonClassify(gnnObj, points = NULL)
 }
 \arguments{
 \item{gnnObj}{A GNNMon object}
 
 \item{points}{A numeric vector (a point) or a matrix or a data frame
-of points.
-(I.e. \code{ncol(gnnObj$Data)}).}
+of points. If NULL monad's data is used.}
 }
 \value{
 A GNNMon object
