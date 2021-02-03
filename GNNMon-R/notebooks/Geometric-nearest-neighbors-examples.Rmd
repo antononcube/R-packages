@@ -1,11 +1,19 @@
 ---
 title: "Geometric Nearest Neighbors examples"
 author: Anton Antonov
-date: 2019-07-04
+date: "```r Sys.Date()```"
 output: html_notebook
 ---
 
-```{r}
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+```{r setup}
 library(magrittr)
 library(dplyr)
 library(purrr)
@@ -18,52 +26,19 @@ library(GNNMon)
 
 # Introduction
 
-## In brief
-
 The primary motivation for making this Geometric Nearest Neighbors (GNN) software monad
-(GNNMon) is the implementation of a simple Nearest Neighbors (NN's) classifier that tells 
+(`GNNMon`) is the implementation of a simple Nearest Neighbors (NN's) classifier that tells 
 does a point belong to a set of points.
 
 That classification functionality can be also used to find outliers in a set points.
 
-## Usage example
+The rest of the sections show a complete, step-by-step example of using `GNNMon`. 
 
-Make random data:
-
-```{r}
-set.seed(234)
-data <- matrix( c( rnorm( n = 30, mean = 0, sd = 5 ), rnorm( n = 30, mean = 12, sd = 3) ), ncol = 2 )
-colnames(data) <- c("X", "Y")
-```
-
-Make the monad object and compute proximity thresholds:
-
-```{r}
-gnnObj <- 
-  GNNMonUnit( data ) %>% 
-  GNNMonComputeNearestNeighborDistances( nTopNNs = 3, method = "euclidean" ) %>% 
-  GNNMonComputeThresholds( nnsRadiusFunction = mean, thresholdsIdentifier = HampelIdentifierParameters )
-```
-
-```{r}
-gnnObj %>% GNNMonTakeValue
-```
-
-Points to test:
-
-```{r}
-dfPoints <- data.frame( X = c(-6, 2), Y = c(4.5, 16) )
-```
-
-Classification of the testing points:
-
-```{r}
-gnnObj %>% 
-  GNNMonClassify( points = as.matrix(dfPoints) ) %>% 
-  GNNMonTakeValue
-```
+The R-package [AAp1] provides implementation of `GNNMon`. That package uses the outlier identifiers package [AAp2].
 
 # Data
+
+Here we generate random 2D points (a matrix with two columns):
 
 ```{r}
 set.seed(234)
@@ -74,6 +49,16 @@ data
 
 # Monad object
 
+Here using `GNNMon` we do the following steps:
+
+1. Make `GNNMon` object (i.e. lift the data into the monad)
+
+2. For each point compute the Nearest Neighbors (NNs) distances
+
+3. For each point compute statistics over its NNs distances, and derive the lower and upper proximity thresholds
+
+4. Show the results
+
 ```{r}
 gnnObj <- 
   GNNMonUnit( data ) %>% 
@@ -82,33 +67,80 @@ gnnObj <-
   GNNMonEchoValue
 ```
 
-# Nearest Neighbors
+
+# Which member of the set do not belong to it?
+
+If we call `GNNMonClassify` without points argument then monad's object data points are used:
+
+```{r}
+gnnObj <- gnnObj %>% GNNMonClassify()
+```
+
+Here is monad's object value:
+
+```{r}
+gnnObj %>% GNNMonTakeValue
+```
+
+Here we plot monad's object points and color them according the classification result:
+
+```{r}
+ggplot( cbind( gnnObj %>% GNNMonTakeData, gnnObj %>% GNNMonTakeValue ) ) +
+  geom_point( aes( x = X, y = Y, color = Label ) ) +
+  geom_label( aes(x = X, y = Y, label = Index), nudge_x = 0.8, nudge_y = 0.4) +
+  ggtitle( label = "Monad's object set of points", subtitle = "Colored according to their \"belonging\" to the set")
+```
+
+# Nearest neighbors for new, "external" points
+
+Here we make a data frame with two new points:
 
 ```{r}
 dfPoints <- data.frame( X = c(-6,2), Y = c(4.5,16) )
+dfPoints
 ```
+
+Here we plot the original data with flags showing points indexes and the new data points colored in red:
 
 ```{r}
 qDF <- cbind( as.data.frame(data), Index = 1:nrow(data) )
 ggplot(qDF) +
   geom_point( aes( x = X, y = Y ) ) +
-  geom_label( aes(x = X, y = Y, label = Index), nudge_x = 0.6) +
+  geom_label( aes( x = X, y = Y, label = Index), nudge_x = 0.6, nudge_y = 0.4) +
   geom_point( data = dfPoints, aes( x = X , y = Y), color = "red" )
 ```
 
-```{r}
-as.numeric(dfPoints[1,])
-```
+Here we find the top 3 NNs for the second of new points:
 
 ```{r}
 gnnObj %>% 
-  GNNMonFindNearest( point = as.numeric(dfPoints[2,]), 8 ) %>% 
+  GNNMonFindNearest( point = as.numeric(dfPoints[2,]), 3 ) %>% 
   GNNMonTakeValue
 ```
+
+# Classification
+
+Here we classify the two new points and a point monad's object into TRUE and FALSE according to are they considered to belong to the set points in the monad object:
 
 ```{r}
 gnnObj %>% 
   GNNMonClassify( points = rbind( dfPoints, data[8,] ) ) %>% 
   GNNMonTakeValue
 ```
+
+(Compare the result above with the plot above.)
+
+
+
+# References
+
+[AAp1] Anton Antonov,
+[Geometric Nearest Neighbors Monad R-package](https://github.com/antononcube/R-packages/tree/master/GNNMon-R),
+(2019),
+[R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
+
+[AAp2] Anton Antonov,
+[Outlier Identifiers R-package](https://github.com/antononcube/R-packages/tree/master/OutlierIdentifiers),
+(2019),
+[R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
 
