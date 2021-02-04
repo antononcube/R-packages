@@ -1,0 +1,135 @@
+---
+title: "Time series anomalies by partitioning"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    theme: spacelab
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(magrittr)
+library(zoo)
+library(ggplot2)
+library(GNNMon)
+library(OutlierIdentifiers)
+library(MathematicaVsRData)
+```
+
+
+Sidebar {.sidebar}
+=====================================
+
+```{r}
+selectInput( inputId = "dataSpec", label = "Data:", choices = c( "FinancialData", "TemperatureData" ), selected = "FinancialData" )
+
+sliderInput( inputId = "windowSize", label = "Window size:", min = 1, max = 120, step = 1, value = 10 )
+
+selectInput( inputId = "distFuncSpec", label = "Distance function:", choices = c( "euclidean", "cosine" ), selected = "euclidean")
+
+sliderInput( inputId = "nns", label = "Number of nearest neighbors:", min = 1, max = 120, step = 1, value = 10 )
+
+selectInput( inputId = "aggrFuncSpec", label = "Aggregation function:", choices = c( "mean", "midian" ), selected = "mean")
+
+selectInput( inputId = "outlierIdentifier", 
+             label = "Outlier identifier:", 
+             choices = c( "Hampel", "SPLUSQuartile", "Quartile"), 
+             selected = "Hampel" )
+
+```
+
+
+Anomalies finding
+====================================
+
+```{r}
+dataset <- reactive({
+  res <- list( "FinancialData" = dfFinancialData, "TemperatureData" = dfTemperatureData )[[input$dataSpec]]
+  res <- setNames( res,  c("Regressor", "Value") )
+  res <- res[ order(res$Regressor), ]
+})
+
+outlierIdentifierParameters <- reactive({
+  list( 
+    "Hampel" = HampelIdentifierParameters, 
+    "SPLUSQuartile" = SPLUSQuartileIdentifierParameters, 
+    "Quartile" = QuartileIdentifierParameters
+  )[[input$outlierIdentifier]]
+})  
+
+aggrFunc <- reactive({
+  list( "mean" = mean, "median" = median)[[ input$aggrFuncSpec ]]
+})
+
+matIndexes <- reactive({
+  rollapply(data = 1:nrow(dataset()), input$windowSize, by = input$windowSize - 1, c)
+})
+  
+matValues <- reactive({
+  rollapply(data = dataset()$Value, input$windowSize, by = input$windowSize - 1, c)
+})
+    
+gnnObj <- reactive({
+
+  GNNMonUnit( matValues() ) %>%
+    GNNMonComputeNearestNeighborDistances( nTopNNs = input$nns, method = input$distFuncSpec ) %>%
+    GNNMonComputeThresholds( nnsRadiusFunction = aggrFunc(), thresholdsIdentifier = outlierIdentifierParameters() ) %>%
+    GNNMonClassify( points = NULL )
+
+})
+
+lsAnomalies <- reactive({
+  dfRes <- gnnObj() %>% GNNMonTakeValue
+  as.integer( matIndexes()[ !dfRes$Label, ] )
+})
+```
+
+### Plot 
+
+```{r}
+renderPlot({
+
+  if( sum(lsAnomalies())==0 ) {
+    dfRes <- rbind( cbind( Type = "Data", dataset() ) )
+  } else {
+    dfRes <- rbind( cbind( Type = "Data", dataset() ),
+                    cbind( Type = "Anomalies", dataset()[ lsAnomalies(), ] ) )
+  }
+  
+  ggplot(dfRes) +
+    geom_point( aes( x = as.POSIXct(Regressor, origin = "1900-01-01"), y = Value, color = Type ) ) +
+    xlab("Regressor")
+}, height = 400)
+```
+
+
+References
+====================================
+
+#### In brief
+
+The time series anomalies are identified by partitioning the time series into overalapping blocks 
+and using `GNNMon`, [AAp1], to classify the those parts as anomalous or not.
+
+The financial and temperature time series are obtained through the data package MathematicaVsR, [AAp3].
+
+#### Packages
+
+[AAp1] Anton Antonov,
+[Geometric Nearest Neighbors Monad R-package](https://github.com/antononcube/R-packages/tree/master/GNNMon-R),
+(2019),
+[R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
+
+[AAp2] Anton Antonov,
+[Outlier Identifiers R-package](https://github.com/antononcube/R-packages/tree/master/OutlierIdentifiers),
+(2019),
+[R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
+
+[AAp3] Anton Antonov,
+[MathematicaVsRData R-package](https://github.com/antononcube/R-packages/tree/master/MathematicaVsRData),
+(2019),
+[R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
+
+
