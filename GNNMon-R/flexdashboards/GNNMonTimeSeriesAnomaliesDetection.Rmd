@@ -1,5 +1,5 @@
 ---
-title: "Time series anomalies by partitioning"
+title: "GNNMon time series anomalies detection"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -86,7 +86,7 @@ lsAnomalies <- reactive({
 })
 ```
 
-### Plot 
+### Data and anomalies
 
 ```{r}
 renderPlot({
@@ -101,7 +101,23 @@ renderPlot({
   ggplot(dfRes) +
     geom_point( aes( x = as.POSIXct(Regressor, origin = "1900-01-01"), y = Value, color = Type ) ) +
     xlab("Regressor")
-}, height = 400)
+}, height = "auto")
+```
+
+### Multi-dimensional representation
+
+```{r}
+renderPlot({
+  dfMat <- as.data.frame( matValues() )
+  colnames(dfMat) <- formatC(1:ncol(dfMat), width = 3, format = "d", flag = "0")
+  dfMat <- cbind( Row = 1:nrow(dfMat), dfMat)
+  dfMatLong <- tidyr::pivot_longer( data = dfMat, cols = 2:ncol(dfMat) )
+  
+  ggplot( dfMatLong ) +
+    geom_tile( aes( x = Row, y = name, fill = value), colour = "white") +
+    scale_fill_distiller(palette = "RdYlBu", trans = "log10")
+  #  scale_fill_gradient(low = "white", high = "blue")
+})
 ```
 
 
@@ -110,10 +126,21 @@ References
 
 #### In brief
 
-The time series anomalies are identified by partitioning the time series into overalapping blocks 
-and using `GNNMon`, [AAp1], to classify the those parts as anomalous or not.
+The time series anomalies are identified by partitioning the time series into overlapping segments 
+and using the software monad 
+[`GNNMon`](https://github.com/antononcube/R-packages/tree/master/GNNMon-R), 
+[AAp1], to classify those segments into "anomalous" or "not-anomalous".
 
-The financial and temperature time series are obtained through the data package MathematicaVsR, [AAp3].
+The financial and temperature time series are obtained through the data package 
+[`MathematicaVsRData`](https://github.com/antononcube/R-packages/tree/master/MathematicaVsRData), 
+[AAp3].
+
+#### Dashboards
+
+[AAd1] Anton Antonov, 
+[QRMon anomalies detection](https://antononcube.shinyapps.io/QRMonAnomaliesDetection/),
+(2020),
+[shinyapps.io by RStudio](https://www.shinyapps.io).
 
 #### Packages
 
