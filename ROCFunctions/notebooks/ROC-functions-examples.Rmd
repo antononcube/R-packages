@@ -1,0 +1,18 @@
+---
+title: "ROC functions examples"
+author: Anton Antonov
+date: 2021-02-05
+output: html_notebook
+---
+
+```{r}
+ROCAcronymsDictionary()
+```
+
+```{r}
+ComputeROCFunctions( c("TruePositive" = 15, 
+                       "FalsePositive" = 149, 
+                       "TrueNegative" = 1523, 
+                       "FalseNegative" = 15), c("Precision", "Recall") )
+```
+
