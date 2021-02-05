@@ -189,7 +189,8 @@ ComputeROCFunctions <- function( x, rocs = c( "FPR", "TPR" ) ) {
 
     })
 
-  cbind( x[, setdiff(colnames(x), lsROCTypes)], dfRes )
+  x <- x[, setdiff(colnames(x), lsROCTypes), drop=F]
+  cbind(x, dfRes)
 }
 
 
