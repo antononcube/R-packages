@@ -3,7 +3,7 @@
 ##
 ## BSD 3-Clause License
 ##
-## Copyright (c) 2019, Anton Antonov
+## Copyright (c) 2021, Anton Antonov
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
@@ -44,12 +44,22 @@ NULL
 ## Predicates
 ##===========================================================
 
-lsROCTypes <- c("TruePositive", "TrueNegative", "FalsePositive", "FalseNegative" )
+lsROCTypes <- c("TruePositive", "TrueNegative", "FalsePositive", "FalseNegative")
 
-ROCAssociationQ <- function( x ) {
-  is.vector(x) && is.numeric(x) && length( intersect( names(x), lsROCTypes ) ) == length(lsROCTypes)
+#' ROCVectorQ
+#' @description Is an object a vector with ROC names or not.
+#' @param x Object
+#' @return A logical value
+#' @export
+ROCVectorQ <- function( x ) {
+  ( is.numeric(x) || is.integer(x) || is.list(x) && mean(sapply(x,is.numeric)) == 1) && length( intersect( names(x), lsROCTypes ) ) == length(lsROCTypes)
 }
 
+#' ROCDataFrameQ
+#' @description Is an object a data frame with ROC columns or not.
+#' @param x Object
+#' @return A logical value
+#' @export
 ROCDataFrameQ <- function( x ) {
   is.data.frame(x) && length( intersect( names(x), lsROCTypes ) ) == length(lsROCTypes)
 }
@@ -88,7 +98,7 @@ FNR <- function(rocAssoc) {
 }
 
 ACC <- function(rocAssoc) {
-  (rocAssoc[["TruePositive"]] + rocAssoc[["TrueNegative"]]) / Total[Values[rocAssoc]]
+  (rocAssoc[["TruePositive"]] + rocAssoc[["TrueNegative"]]) / sum(rocAssoc)
 }
 
 FOR <- function(rocAssoc) { 1 - NPV(rocAssoc) }
@@ -135,7 +145,7 @@ aROCFunctions <-
 ##===========================================================
 
 #' ROC acronyms dictionary
-#' @description Give a data frame that is a ROC acronyms dictionary.
+#' @description Gives a data frame that is a ROC acronyms dictionary.
 #' @return A data frame
 #' @export
 ROCAcronymsDictionary <- function() {
@@ -157,25 +167,29 @@ ROCAcronymsDictionary <- function() {
 #' @export
 ComputeROCFunctions <- function( x, rocs = c( "FPR", "TPR" ) ) {
 
-  if( ! (ROCAssociationQ(x) || ROCDataFrameQ(x) ) ) {
+  if( ! (ROCVectorQ(x) || ROCDataFrameQ(x) ) ) {
     stop( paste0("The first argument is expected to be a numerical list or data frame with names: ", lsROCTypes, "." ), call. = T)
   }
 
-  if( ROCAssociationQ(x) ) {
+  if( ROCVectorQ(x) ) {
     x <- as.data.frame(as.list(x))
   }
 
-  purrr::map_df( split(x, 1:nrow(x)), function(row) {
-    setNames(
-      purrr::map_dbl( rocs, function(rocFunc) {
-        if( !(rocFunc %in% names(aROCFunctions) ) ) {
-          stop( paste( "Unknown ROC function", rocFunc,". The known ROC functions are:", paste( names(aROCFunctions), collapse = ", "), "." ), call. = TRUE )
-        }
-        aROCFunctions[[rocFunc]](row)
-      }),
-      rocs )
-  })
+  dfRes <-
+    purrr::map_df( split(x, 1:nrow(x)), function(row) {
 
+      setNames(
+        purrr::map_dbl( rocs, function(rocFunc) {
+          if( !(rocFunc %in% names(aROCFunctions) ) ) {
+            stop( paste( "Unknown ROC function", rocFunc,". The known ROC functions are:", paste( names(aROCFunctions), collapse = ", "), "." ), call. = TRUE )
+          }
+          aROCFunctions[[rocFunc]](row)
+        }),
+        rocs )
+
+    })
+
+  cbind( x[, setdiff(colnames(x), lsROCTypes)], dfRes )
 }
 
 

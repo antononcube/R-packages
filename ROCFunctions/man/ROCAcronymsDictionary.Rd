@@ -10,5 +10,5 @@ ROCAcronymsDictionary()
 A data frame
 }
 \description{
-Give a data frame that is a ROC acronyms dictionary.
+Gives a data frame that is a ROC acronyms dictionary.
 }
