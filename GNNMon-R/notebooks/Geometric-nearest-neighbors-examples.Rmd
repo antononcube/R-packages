@@ -13,7 +13,7 @@ output: html_notebook
 }
 </style>
 
-```{r setup}
+```{r setup, message=FALSE}
 library(magrittr)
 library(dplyr)
 library(purrr)
