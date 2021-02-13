@@ -4,13 +4,15 @@
 \name{dfUSAPresidentsSpeeches}
 \alias{dfUSAPresidentsSpeeches}
 \title{USA presidents speeches}
-\format{A data frame
+\format{
+A data frame
 \describe{
     \item{Date}{Date of the speech.}
     \item{Title}{Title of the speech.}
     \item{Name}{Name of the president that gave the speech.}
     \item{Text}{Text of the speech.}
-}}
+}
+}
 \source{
 \url{http://www.gutenberg.org/ebooks/925}
 }
@@ -21,10 +23,15 @@ dfUSAPresidentsSpeeches
 USA presidents speeches together with related metadata.
 }
 \seealso{
-Other MathematicaVsR data: \code{\link{dfDistributionData}},
-  \code{\link{dfFinancialData}}, \code{\link{dfMushroom}},
-  \code{\link{dfSP500}}, \code{\link{dfTemperatureData}},
-  \code{\link{dfTitanic}}, \code{\link{textHamlet}}
+Other MathematicaVsR data: 
+\code{\link{dfAppleCOVID19MobilityData}},
+\code{\link{dfDistributionData}},
+\code{\link{dfFinancialData}},
+\code{\link{dfMushroom}},
+\code{\link{dfSP500}},
+\code{\link{dfTemperatureData}},
+\code{\link{dfTitanic}},
+\code{\link{textHamlet}}
 }
 \concept{MathematicaVsR data}
 \keyword{datasets}

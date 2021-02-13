@@ -4,11 +4,13 @@
 \name{dfDistributionData}
 \alias{dfDistributionData}
 \title{Heteroscedastic distribution data}
-\format{A data frame with 601 rows and 2 columns.
+\format{
+A data frame with 601 rows and 2 columns.
 \describe{
     \item{X}{x-coordinate.}
     \item{Y}{y-coordinate.}
-}}
+}
+}
 \usage{
 dfDistributionData
 }
@@ -18,11 +20,15 @@ The data is generated with the code:
 \code{dfDistributionData <- purrr::map_df( xs, function(x) { data.frame( X = x, Y = exp(-x^2) + rnorm( n = 1, mean = 0, sd =  0.15 * sqrt( abs( 1.5 - x) / 1.5 ) ) ) })}.
 }
 \seealso{
-Other MathematicaVsR data: \code{\link{dfFinancialData}},
-  \code{\link{dfMushroom}}, \code{\link{dfSP500}},
-  \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
-  \code{\link{dfUSAPresidentsSpeeches}},
-  \code{\link{textHamlet}}
+Other MathematicaVsR data: 
+\code{\link{dfAppleCOVID19MobilityData}},
+\code{\link{dfFinancialData}},
+\code{\link{dfMushroom}},
+\code{\link{dfSP500}},
+\code{\link{dfTemperatureData}},
+\code{\link{dfTitanic}},
+\code{\link{dfUSAPresidentsSpeeches}},
+\code{\link{textHamlet}}
 }
 \concept{MathematicaVsR data}
 \keyword{datasets}

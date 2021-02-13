@@ -4,7 +4,9 @@
 \name{textHamlet}
 \alias{textHamlet}
 \title{THE TRAGEDY OF HAMLET, PRINCE OF DENMARK by William Shakespeare}
-\format{A character vector}
+\format{
+A character vector
+}
 \source{
 \url{http://erdani.com/tdpl/hamlet.txt}
 }
@@ -16,11 +18,15 @@ The text of Shakespeare's play Hamlet is split into parts that
 correspond to the dialogue in the play.
 }
 \seealso{
-Other MathematicaVsR data: \code{\link{dfDistributionData}},
-  \code{\link{dfFinancialData}}, \code{\link{dfMushroom}},
-  \code{\link{dfSP500}}, \code{\link{dfTemperatureData}},
-  \code{\link{dfTitanic}},
-  \code{\link{dfUSAPresidentsSpeeches}}
+Other MathematicaVsR data: 
+\code{\link{dfAppleCOVID19MobilityData}},
+\code{\link{dfDistributionData}},
+\code{\link{dfFinancialData}},
+\code{\link{dfMushroom}},
+\code{\link{dfSP500}},
+\code{\link{dfTemperatureData}},
+\code{\link{dfTitanic}},
+\code{\link{dfUSAPresidentsSpeeches}}
 }
 \concept{MathematicaVsR data}
 \keyword{datasets}

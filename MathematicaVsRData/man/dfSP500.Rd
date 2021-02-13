@@ -4,13 +4,15 @@
 \name{dfSP500}
 \alias{dfSP500}
 \title{S&P 500 stock daily closing values}
-\format{A data frame
+\format{
+A data frame
 \describe{
     \item{StockID}{Stock identifier.}
     \item{AbsoluteTime}{Absolute time of the date in seconds from 1900-01-01.}
     \item{Value}{The value of the stock.}
     \item{Date}{The POSIXct date corresponding to \code{dfSP500$AbsoluteTime}.}
-}}
+}
+}
 \source{
 \url{https://reference.wolfram.com/language/ref/FinancialData.html}
 }
@@ -25,11 +27,15 @@ For additional details see \url{https://en.wikipedia.org/wiki/S&P_500_Index} and
 \url{https://en.wikipedia.org/wiki/List_of_S&P_500_companies}.
 }
 \seealso{
-Other MathematicaVsR data: \code{\link{dfDistributionData}},
-  \code{\link{dfFinancialData}}, \code{\link{dfMushroom}},
-  \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
-  \code{\link{dfUSAPresidentsSpeeches}},
-  \code{\link{textHamlet}}
+Other MathematicaVsR data: 
+\code{\link{dfAppleCOVID19MobilityData}},
+\code{\link{dfDistributionData}},
+\code{\link{dfFinancialData}},
+\code{\link{dfMushroom}},
+\code{\link{dfTemperatureData}},
+\code{\link{dfTitanic}},
+\code{\link{dfUSAPresidentsSpeeches}},
+\code{\link{textHamlet}}
 }
 \concept{MathematicaVsR data}
 \keyword{datasets}

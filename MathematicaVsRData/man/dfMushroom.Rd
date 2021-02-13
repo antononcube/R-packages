@@ -4,7 +4,9 @@
 \name{dfMushroom}
 \alias{dfMushroom}
 \title{Mushroom edibility}
-\format{A data frame with 8124 rows and 24 columns.}
+\format{
+A data frame with 8124 rows and 24 columns.
+}
 \source{
 \url{https://datahub.io/machine-learning/mushroom}
 }
@@ -18,11 +20,15 @@ along with their edibility.
 Each row represents one mushroom.
 }
 \seealso{
-Other MathematicaVsR data: \code{\link{dfDistributionData}},
-  \code{\link{dfFinancialData}}, \code{\link{dfSP500}},
-  \code{\link{dfTemperatureData}}, \code{\link{dfTitanic}},
-  \code{\link{dfUSAPresidentsSpeeches}},
-  \code{\link{textHamlet}}
+Other MathematicaVsR data: 
+\code{\link{dfAppleCOVID19MobilityData}},
+\code{\link{dfDistributionData}},
+\code{\link{dfFinancialData}},
+\code{\link{dfSP500}},
+\code{\link{dfTemperatureData}},
+\code{\link{dfTitanic}},
+\code{\link{dfUSAPresidentsSpeeches}},
+\code{\link{textHamlet}}
 }
 \concept{MathematicaVsR data}
 \keyword{datasets}

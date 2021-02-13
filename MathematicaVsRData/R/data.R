@@ -133,3 +133,27 @@
 "dfSP500"
 
 
+#' Apple COVID-19 Mobility data
+#'
+#' Apple COVID-19 Mobility data sample with data for Nice, France only.
+#'
+#' @format A data frame
+#' \describe{
+#'     \item{GeoType}{Geo type}
+#'     \item{Region}{Region name}
+#'     \item{TransportationType}{One of "driving", "transit", "walking".}
+#'     \item{AlternativeName}{Alternative name}
+#'     \item{SubRegion}{Sub region name}
+#'     \item{Country}{Country}
+#'     \item{AbsoluteTime}{Absolute time of the date in seconds from 1900-01-01.}
+#'     \item{Value}{The value of the stock.}
+#'     \item{Date}{The POSIXct date corresponding to \code{dfAppleCOVID19MobilityData$AbsoluteTime}.}
+#' }
+#'
+#' @source \url{https://covid19.apple.com/mobility}
+#'
+#' @details The data from 2020-01-13 to 2021-01-15.
+#'
+#' @family MathematicaVsR data
+"dfAppleCOVID19MobilityData"
+
