@@ -49,11 +49,22 @@ Here is how the result looks like:
     1     1 4.57958 FALSE
     2     2 1.43192  TRUE
 
+-----
 
-Here is more detailed documentation:
-["Geometric Nearest Neighbors Examples"](https://htmlpreview.github.io/?https://github.com/antononcube/R-packages/blob/master/GNNMon-R/notebooks/Geometric-nearest-neighbors-examples.nb.html)
+## Other resources
+
+- The vignette
+  ["Geometric Nearest Neighbors Examples"](https://htmlpreview.github.io/?https://github.com/antononcube/R-packages/blob/master/GNNMon-R/notebooks/Geometric-nearest-neighbors-examples.nb.html)
+  provides more detailed documentation.
+
+
+- The app 
+  [GNNMon time series anomalies dections](https://antononcube.shinyapps.io/GNNMonTimeSeriesAnomaliesDetection/)
+  hosted at
+  [RStudio's shinyapps.io](https://www.shinyapps.io)
+  shows application of `GNNMon` to detection of anomalies in time series.
 
 -----
 
-Anton Antonov
+Anton Antonov   
 Florida, USA, July, 2019.
