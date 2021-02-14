@@ -23,9 +23,11 @@ Sidebar {.sidebar}
 =====================================
 
 ```{r}
-selectInput( inputId = "dataSpec", label = "Data:", choices = c( "FinancialData", "TemperatureData" ), selected = "FinancialData" )
+selectInput( inputId = "dataSpec", label = "Data:", choices = c( "AppleCOVID19MobilityData", "FinancialData", "TemperatureData" ), selected = "FinancialData" )
 
 sliderInput( inputId = "windowSize", label = "Window size:", min = 1, max = 120, step = 1, value = 10 )
+
+sliderInput( inputId = "windowOffset", label = "Window offset:", min = 1, max = 120, step = 1, value = 1 )
 
 selectInput( inputId = "distFuncSpec", label = "Distance function:", choices = c( "euclidean", "cosine" ), selected = "euclidean")
 
@@ -46,7 +48,9 @@ Anomalies finding
 
 ```{r}
 dataset <- reactive({
-  res <- list( "FinancialData" = dfFinancialData, "TemperatureData" = dfTemperatureData )[[input$dataSpec]]
+  res <- list( "AppleCOVID19MobilityData" = dfAppleCOVID19MobilityData[ dfAppleCOVID19MobilityData$TransportationType == "driving", c("AbsoluteTime", "Value")], 
+               "FinancialData" = dfFinancialData, 
+               "TemperatureData" = dfTemperatureData )[[input$dataSpec]]
   res <- setNames( res,  c("Regressor", "Value") )
   res <- res[ order(res$Regressor), ]
 })
@@ -64,11 +68,11 @@ aggrFunc <- reactive({
 })
 
 matIndexes <- reactive({
-  rollapply(data = 1:nrow(dataset()), input$windowSize, by = input$windowSize - 1, c)
+  rollapply(data = 1:nrow(dataset()), input$windowSize, by = max(1, input$windowSize - input$windowOffset), c)
 })
   
 matValues <- reactive({
-  rollapply(data = dataset()$Value, input$windowSize, by = input$windowSize - 1, c)
+  rollapply(data = dataset()$Value, input$windowSize, by = max(1, input$windowSize - input$windowOffset), c)
 })
     
 gnnObj <- reactive({
