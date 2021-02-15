@@ -2471,7 +2471,8 @@ SMRMonRetrievalByProfileStatistics <- function( smrObj, focusTag, focusTagType, 
 #' \code{function(x) OutlierIdentifiers::BottomOutliersOnlyThresholds( OutlierIdentifiers::HampelIdentifierParameters(x) )}
 #' is used.
 #' @param property A string.
-#' One of \code{c("Distances", "SparseMatrix", "RowNames", "OutlierThresholds", "Properties")}
+#' One of \code{c("Similarities", "SparseMatrix", "RowNames", "OutlierThresholds", "Properties")}
+#' @param useBatchRecommendationQ Should batch recommendation be used or not?
 #' @details The computation result is assigned to \code{smrObj$Value}.
 #' The computation steps follow.
 #' (1) For each row of the given data find the specified number of Nearest Neighbors (NNs)in the recommender matrix.
@@ -2480,7 +2481,13 @@ SMRMonRetrievalByProfileStatistics <- function( smrObj, focusTag, focusTagType, 
 #' (4) Identify the outliers using the outlier thresholds.
 #' @return An SMRMon object.
 #' @export
-SMRMonFindAnomalies <- function( smrObj, data = NULL, numberOfNearestNeighbors = 12, aggregationFunction = mean, thresholdsIdentifier = NULL, property = "RowNames" ) {
+SMRMonFindAnomalies <- function( smrObj,
+                                 data = NULL,
+                                 numberOfNearestNeighbors = 12,
+                                 aggregationFunction = mean,
+                                 thresholdsIdentifier = NULL,
+                                 property = "RowNames",
+                                 useBatchRecommendationQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -2521,7 +2528,7 @@ SMRMonFindAnomalies <- function( smrObj, data = NULL, numberOfNearestNeighbors =
   }
 
   ## Processing property
-  lsKnownProperties <- c("Distances", "SparseMatrix", "Indices", "RowNames", "OutlierThresholds", "Properties")
+  lsKnownProperties <- c("Similarities", "SparseMatrix", "Indices", "RowNames", "OutlierThresholds", "Properties")
   if( !( is.character(property) && length(property) == 1 && ( tolower(property) %in% tolower(lsKnownProperties) ) ) ) {
     warning( paste( "The argument property is expected to be a string, one of: ", paste( lsKnownProperties, collapse = ", "), "." ), call. = TRUE )
     return(SMRMonFailureSymbol)
@@ -2536,11 +2543,12 @@ SMRMonFindAnomalies <- function( smrObj, data = NULL, numberOfNearestNeighbors =
   ## Compute the Cosine/Dot distances to the rows of monad's matrix.
   ## (This first version can be sped-up using matrix products.)
 
-  if( optimizedQ ) {
+  if( useBatchRecommendationQ ) {
 
-    if( is.null(data) ) {
-    } else {
-    }
+    dfNNs <-
+      smrObj %>%
+      SMRMonBatchRecommend( data = data, nrecs = numberOfNearestNeighbors, removeHistoryQ = TRUE, normalizeQ = FALSE, targetColumnName = "SearchID" ) %>%
+      SMRMonTakeValue
 
   } else {
 
@@ -2595,7 +2603,7 @@ SMRMonFindAnomalies <- function( smrObj, data = NULL, numberOfNearestNeighbors =
            stringsAsFactors = FALSE )
 
   ## Return result according to the property argument.
-  if( property %in% tolower(c( "Distances", "AggregatedDistances")) ) {
+  if( property %in% tolower(c( "Distances", "AggregatedDistances", "Similarities", "AggregatedSimilarities" )) ) {
 
     smrObj$Value <- dfNNs
 

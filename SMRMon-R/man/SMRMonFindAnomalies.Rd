@@ -10,7 +10,8 @@ SMRMonFindAnomalies(
   numberOfNearestNeighbors = 12,
   aggregationFunction = mean,
   thresholdsIdentifier = NULL,
-  property = "RowNames"
+  property = "RowNames",
+  useBatchRecommendationQ = TRUE
 )
 }
 \arguments{
@@ -30,7 +31,9 @@ If NULL then
 is used.}
 
 \item{property}{A string.
-One of \code{c("Distances", "SparseMatrix", "RowNames", "OutlierThresholds", "Properties")}}
+One of \code{c("Similarities", "SparseMatrix", "RowNames", "OutlierThresholds", "Properties")}}
+
+\item{useBatchRecommendationQ}{Should batch recommendation be used or not?}
 }
 \value{
 An SMRMon object.
