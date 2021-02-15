@@ -23,6 +23,16 @@ RandomWord(6, "Common")
 # Column names
 
 ```{r}
+dfRand <- RandomDataFrame( nrow = 20, ncol = 3, generators = list( c("a", "b", "c"), 1:12 ))
+dfRand
+```
+
+```{r, rows.print = 50 }
+dfRand <- RandomDataFrame( nrow = 20, ncol = 3, generators = list( c("a", "b", "c"), 1:12, rnorm ))
+dfRand[ do.call( order, dfRand), ]
+```
+
+```{r}
 RandomDataFrame( nrow = 4, ncol = 5, columnNames = c("a", "b", "c"))
 ```
 

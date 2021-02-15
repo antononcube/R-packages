@@ -188,7 +188,26 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
       if( nrow(dfX) == 0) {
         setNames( rep_len( x = NA, length.out = nrow), as.character(1:nrow) )
       } else {
-        lsVals <- aGenerators[[ dfX$Col[[1]] ]]( nrow(dfX) )
+
+        genSpec <- aGenerators[[ dfX$Col[[1]] ]]
+
+        if( is.vector(genSpec) ) {
+
+          if( is.list(genSpec) ) {
+            warning( paste("Converting the generator specification for", which( lsColNames %in% dfX$Col[[1]]), "that is a list into a character vector."), call. = TRUE )
+            genSpec <- as.character(genSpec)
+          }
+
+          lsVals <- sample( x = genSpec, size = nrow(dfX), replace = TRUE  )
+
+        } else if( is.function(genSpec) ) {
+
+          lsVals <- genSpec( nrow(dfX) )
+
+        } else {
+          stop( paste("The generator specification for", which( lsColNames %in% dfX$Col[[1]]), "is not a function or a vector."), call. = TRUE )
+        }
+
         lsVals <- setNames( lsVals, as.character(dfX$Row) )
         lsVals <- setNames( lsVals[ as.character(1:nrow) ],  as.character(1:nrow) )
         lsVals
