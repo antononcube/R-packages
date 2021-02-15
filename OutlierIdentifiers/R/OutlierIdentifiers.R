@@ -147,7 +147,7 @@ OutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = ident
 #' @family Outlier identifiers
 #' @export
 TopOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data), valueQ = FALSE ) {
-  pred <- data >= lowerAndUpperThresholds[[2]]
+  pred <- data > lowerAndUpperThresholds[[2]]
   if( valueQ ) { data[ pred ] } else { pred }
 }
 
@@ -161,7 +161,7 @@ TopOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = id
 #' @family Outlier identifiers
 #' @export
 BottomOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data), valueQ = FALSE ) {
-  pred <- data <= lowerAndUpperThresholds[[1]]
+  pred <- data < lowerAndUpperThresholds[[1]]
   if( valueQ ) { data[ pred ] } else { pred }
 }
 
@@ -173,7 +173,7 @@ BottomOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds =
 #' @family Outlier identifiers
 #' @export
 OutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data) ) {
-  which( data <= lowerAndUpperThresholds[[1]] | data >= lowerAndUpperThresholds[[2]] )
+  which( data < lowerAndUpperThresholds[[1]] | data > lowerAndUpperThresholds[[2]] )
 }
 
 #' Top outlier positions finder.
@@ -184,7 +184,7 @@ OutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameter
 #' @family Outlier identifiers
 #' @export
 TopOutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data)  ) {
-  which( data >= lowerAndUpperThresholds[[2]] )
+  which( data > lowerAndUpperThresholds[[2]] )
 }
 
 #' Bottom outlier positions finder.
@@ -195,7 +195,7 @@ TopOutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParame
 #' @family Outlier identifiers
 #' @export
 BottomOutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data)  ) {
-  which( data <= lowerAndUpperThresholds[[1]] )
+  which( data < lowerAndUpperThresholds[[1]] )
 }
 
 
