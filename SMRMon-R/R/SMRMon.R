@@ -1325,6 +1325,7 @@ SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12, ... ) 
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param nrecs Number of recommendations to be returned.
 #' @param removeHistoryQ Should the history be removed from the recommendations?
+#' @param normalizeQ Should the scores be normalized by the maximum score or not?
 #' @param warningQ Should a warning be issued if \code{history} is of unknown type?
 #' @details The recommendations result is a
 #' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
@@ -1332,7 +1333,7 @@ SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12, ... ) 
 #' @return A SMRMon object
 #' @family Recommendations computation functions
 #' @export
-SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE, warningQ = TRUE ) {
+SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE, normalizeQ = FALSE, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1347,6 +1348,11 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
   history <- smrObj %>% SMRMonTakeValue
 
   res <- SMRRecommendations( smr = smrObj, userHistoryItems = history$Item, userRatings = history$Rating, nrecs = nrecs, removeHistory = removeHistoryQ )
+
+  if( normalizeQ ) {
+    maxScore <- max(res$Score)
+    if( maxScore != 0 ) { res$Score <- res$Score / maxScore }
+  }
 
   smrObj$Value <- res
 
@@ -2248,6 +2254,7 @@ SMRMonComputeTopK <- function( smrObj, testData, ks, type = "fraction", ...) {
 #' @param focusTag The tag to be tested.
 #' @param focusTagType The tag type of the tag to be tested.
 #' @param profileTagTypes A character vector of tag types.
+#' @param nrecs Number of recommendations.
 #' @details The computation result is assigned to \code{smrObj$Value}.
 #' The computation steps follow.
 #' (1) Find all items that have \code{focustTag}.
@@ -2256,17 +2263,17 @@ SMRMonComputeTopK <- function( smrObj, testData, ks, type = "fraction", ...) {
 #' (4) Find how many focus tag items (of step 1) are present in the recommendations (of step 3).
 #' @return An SMRMon object.
 #' @export
-SMRMonRetrievalByProfileStatistics <- function( smrObj, focusTag, focusTagType, profileTagTypes, nrecs = c(100) ) {
+SMRMonRetrievalByProfileStatistics <- function( smrObj, focusTag, focusTagType, profileTagTypes, nrecs = 100 ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
   if( ! ( is.character(focusTag) && length(focusTag) == 1 ) ) {
-    warning( "The argument focusTag is expected to be a character vector of length 1.", call. = TRUE )
+    warning( "The argument focusTag is expected to be a string (a character vector of length 1.)", call. = TRUE )
     return(SMRMonFailureSymbol)
   }
 
   if( ! ( is.character(focusTagType) && length(focusTagType) == 1 ) ) {
-    warning( "The argument focusTagType is expected to be a character vector of length 1.", call. = TRUE )
+    warning( "The argument focusTagType is expected to be a string (a character vector of length 1.)", call. = TRUE )
     return(SMRMonFailureSymbol)
   }
 
@@ -2275,8 +2282,8 @@ SMRMonRetrievalByProfileStatistics <- function( smrObj, focusTag, focusTagType, 
     return(SMRMonFailureSymbol)
   }
 
-  if( !( is.numeric(nrecs) && mean(nrecs > 0) == 1 ) ) {
-    warning( "The argument nrecs is expected to be a vector of positive integers.", call. = TRUE )
+  if( !( is.numeric(nrecs) && nrecs > 0 ) ) {
+    warning( "The argument nrecs is expected to be a positive integer.", call. = TRUE )
     return(SMRMonFailureSymbol)
   }
 
@@ -2340,5 +2347,179 @@ SMRMonRetrievalByProfileStatistics <- function( smrObj, focusTag, focusTagType, 
 
   smrObj
 }
+
+
+##===========================================================
+## Find anomalies by nearest neighbors
+##===========================================================
+
+#' Find anomalies by nearest neighbors distances
+#' @description Find anomalies by nearest neighbors distances distributions.
+#' @param smrObj A sparse matrix recommender.
+#' @param data Data vectors to be evaluated as anomalous or not.
+#' If NULL the \code{smrObj$M} is used.
+#' @param numberOfNearestNeighbors Number of nearest neighbors.
+#' @param aggregationFunction Aggregation function for the nearest neighbor distances.
+#' If NULL \code{mean} is used.
+#' @param thresholdsIdentifier Outlier thresholds identifier.
+#' If NULL then
+#' \code{function(x) OutlierIdentifiers::BottomOutliersOnlyThresholds( OutlierIdentifiers::HampelIdentifierParameters(x) )}
+#' is used.
+#' @param property A string.
+#' One of \code{c("Distances", "SparseMatrix", "RowNames", "OutlierThresholds", "Properties")}
+#' @details The computation result is assigned to \code{smrObj$Value}.
+#' The computation steps follow.
+#' (1) For each row of the given data find the specified number of Nearest Neighbors (NNs)in the recommender matrix.
+#' (2) For each row aggregate the NNs scores with the specified aggregation function.
+#' (3) Find outlier thresholds for the list of aggregated values.
+#' (4) Identify the outliers using the outlier thresholds.
+#' @return An SMRMon object.
+#' @export
+SMRMonFindAnomalies <- function( smrObj, data = NULL, numberOfNearestNeighbors = 12, aggregationFunction = mean, thresholdsIdentifier = NULL, property = "RowNames" ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonFindAnomalies",  logicalResultQ = TRUE) ) {
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Processing data
+  if( ! ( is.null(data) || SMRSparseMatrixQ(data) && ncol(data) == ncol(smrObj$M) ) ) {
+    warning( paste( "The argument data is expected to be NULL or a matrix or sparse matrix with the same number of columns as smrObj$M,", ncol(smrObj$M), "."), call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Processing numberOfNearestNeighbors
+  if( is.null(numberOfNearestNeighbors) ) { numberOfNearestNeighbors <- 12 }
+
+  if( ! ( is.numeric(numberOfNearestNeighbors) && length(numberOfNearestNeighbors) == 1 && numberOfNearestNeighbors > 0 ) ) {
+    warning( "The argument numberOfNearestNeighbors is expected to be a positive number or NULL.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Processing aggregationFunction
+  if( is.null(aggregationFunction) ) { aggregationFunction <- mean }
+
+  if( ! ( is.function(aggregationFunction) ) ) {
+    warning( "The argument aggregationFunction is expected to be a function or NULL", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Processing thresholdsIdentifier
+  if( is.null(thresholdsIdentifier) ) {
+    thresholdsIdentifier <- function(x) OutlierIdentifiers::BottomOutliersOnlyThresholds(OutlierIdentifiers::HampelIdentifierParameters(x))
+  }
+
+  if( ! ( is.function(thresholdsIdentifier) ) ) {
+    warning( "The argument thresholdsIdentifier is expected to be a function or NULL", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Processing property
+  lsKnownProperties <- c("Distances", "SparseMatrix", "Indices", "RowNames", "OutlierThresholds", "Properties")
+  if( !( is.character(property) && length(property) == 1 && ( tolower(property) %in% tolower(lsKnownProperties) ) ) ) {
+    warning( paste( "The argument property is expected to be a string, one of: ", paste( lsKnownProperties, collapse = ", "), "." ), call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  property <- tolower(property)
+  if( property == "properties" ) {
+    smrObj$Value <- lsKnownProperties
+    return(smrObj)
+  }
+
+  ## Compute the Cosine/Dot distances to the rows of monad's matrix.
+  ## (This first version can be sped-up using matrix products.)
+
+  if( is.null(data) ) {
+
+    dfNNs <-
+      purrr::map_df( rownames(smrObj$M), function(sid) {
+
+        dfRes <-
+          smrObj %>%
+          SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
+          SMRMonTakeValue
+
+        if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
+
+        cbind( SearchID = sid, dfRes, stringsAsFactors = FALSE)
+      } )
+
+  } else {
+
+    if( is.null(rownames(data)) ) { rownames(data) <- as.character(1:ncol(data)) }
+
+    dfNNs <-
+      purrr::map_df( rownames(data), function(sid) {
+
+        dfRes <-
+          smrObj %>%
+          SMRMonRecommendByProfile( profile = data[sid, , drop=F], nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
+          SMRMonTakeValue
+
+        if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
+
+        cbind( SearchID = sid, dfRes, stringsAsFactors = FALSE)
+      } )
+
+  }
+
+  ## Aggregate
+  dfAggrVals <-
+    dfNNs %>%
+    dplyr::group_by( SearchID ) %>%
+    dplyr::summarise( AValue = aggregationFunction(Score), .groups = "drop_last" )
+
+  ## Find the outlier thresholds
+  lsOutlierThresholds <- thresholdsIdentifier( dfAggrVals$AValue )
+
+  ## Assign outlier or not predicate column.
+  dfAggrVals <-
+    cbind( dfAggrVals,
+           OutlierQ = OutlierIdentifiers::OutlierIdentifier( data = dfAggrVals$AValue, lowerAndUpperThresholds = lsOutlierThresholds ),
+           stringsAsFactors = FALSE )
+
+  ## Return result according to the property argument.
+  if( property %in% tolower(c( "Distances", "AggregatedDistances")) ) {
+
+    smrObj$Value <- dfNNs
+
+  } else if( property %in% tolower(c("Indices", "Indexes")) ) {
+
+    ## This assumes that dplyr preserved the order after using group_by and summarise
+    ## smrObj$Value <- 1:nrow(dfAggrVals)[ dfAggrVals$OutlierQ ]
+
+    smrObj$Value <- dfAggrVals[ dfAggrVals$OutlierQ, ]$SearchID
+
+    if( is.null(data) ) {
+      smrObj$Value <- which( rownames(smrObj$M) %in% smrObj$Value )
+    } else {
+      smrObj$Value <- which( rownames(data) %in% smrObj$Value )
+    }
+
+  } else if( property %in% tolower(c("RowNames")) ) {
+
+    smrObj$Value <- dfAggrVals[ dfAggrVals$OutlierQ, ]$SearchID
+
+  } else if( property %in% tolower(c("Thresholds", "OutlierThresholds")) ) {
+
+    smrObj$Value <- lsOutlierThresholds
+
+  } else if( property %in% tolower(c("Matrix", "SparseMatrix")) ) {
+
+    smrObj$Value <- smrObj$M[  dfAggrVals[ dfAggrVals$OutlierQ, , drop = F]$SearchID, , drop=F]
+
+  } else {
+
+    warning( paste( "The argument property is expected to be a string, one of: ", paste( lsKnownProperties, collapse = ", "), "." ), call. = TRUE )
+    return(SMRMonFailureSymbol)
+
+  }
+
+  smrObj
+
+}
+
 
 

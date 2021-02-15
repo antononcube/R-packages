@@ -9,6 +9,7 @@ SMRMonRecommend(
   history,
   nrecs = 12,
   removeHistoryQ = FALSE,
+  normalizeQ = FALSE,
   warningQ = TRUE
 )
 }
@@ -23,6 +24,8 @@ a character vector, the correspond ratings assumed all to be 1.}
 \item{nrecs}{Number of recommendations to be returned.}
 
 \item{removeHistoryQ}{Should the history be removed from the recommendations?}
+
+\item{normalizeQ}{Should the scores be normalized by the maximum score or not?}
 
 \item{warningQ}{Should a warning be issued if \code{history} is of unknown type?}
 }

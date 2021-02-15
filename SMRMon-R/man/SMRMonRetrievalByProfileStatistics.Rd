@@ -9,7 +9,7 @@ SMRMonRetrievalByProfileStatistics(
   focusTag,
   focusTagType,
   profileTagTypes,
-  nrecs = c(100)
+  nrecs = 100
 )
 }
 \arguments{
@@ -20,6 +20,8 @@ SMRMonRetrievalByProfileStatistics(
 \item{focusTagType}{The tag type of the tag to be tested.}
 
 \item{profileTagTypes}{A character vector of tag types.}
+
+\item{nrecs}{Number of recommendations.}
 }
 \value{
 An SMRMon object.
