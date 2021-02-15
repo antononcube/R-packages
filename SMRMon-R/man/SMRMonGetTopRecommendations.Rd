@@ -25,6 +25,7 @@ This function simplifies certain workflows.
 }
 \seealso{
 Other Recommendations computation functions: 
+\code{\link{SMRMonBatchRecommend}()},
 \code{\link{SMRMonJoinAcross}()},
 \code{\link{SMRMonProveByHistory}()},
 \code{\link{SMRMonProveByMetadata}()},

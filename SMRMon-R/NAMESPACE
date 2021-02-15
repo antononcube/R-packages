@@ -3,6 +3,7 @@
 export(SMRMonApplyTagTypeWeights)
 export(SMRMonApplyTagWeights)
 export(SMRMonApplyTermWeightFunctions)
+export(SMRMonBatchRecommend)
 export(SMRMonClassifyByProfile)
 export(SMRMonComputeTopK)
 export(SMRMonCreate)

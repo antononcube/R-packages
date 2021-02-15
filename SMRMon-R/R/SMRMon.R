@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Written by Anton Antonov,
-# antononcube @ gmail . com,
+# antononcube @@@ posteo ... net ,
 # Windermere, Florida, USA.
 #
 #=======================================================================================
@@ -817,7 +817,7 @@ SMRMonApplyTermWeightFunctions <- function( smrObj, globalWeightFunction = "IDF"
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommend",  logicalResultQ = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonApplyTermWeightFunctions",  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -1328,7 +1328,7 @@ SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12, ... ) 
 #' @param normalizeQ Should the scores be normalized by the maximum score or not?
 #' @param warningQ Should a warning be issued if \code{history} is of unknown type?
 #' @details The recommendations result is a
-#' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
+#' data frame with columns "Score", "Index", \code{smrObj$ItemColumnName};
 #' assigned to \code{smrObj$Value}.
 #' @return A SMRMon object
 #' @family Recommendations computation functions
@@ -1419,6 +1419,111 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = 
   }
 
   smrObj$Value <- res
+
+  smrObj
+}
+
+##===========================================================
+## Batch recommend by matrix
+##===========================================================
+
+#' Batch recommend
+#' @description For each row of a specified matrix of profiles compute recommendations.
+#' @param smrObj An SMRMon object.
+#' @param data A matrix of profiles that has the same number of columns as
+#' \code{smrObj$M}, or a vector of items (i.e. rownames of \code{smrObj$M}.)
+#' If NULL then \code{smrObj$M} is used.
+#' @param nrecs Number of recommendations to be returned.
+#' If NULL all non-zero score recommendations are returned.
+#' @param removeHistoryQ Should the history be removed from the recommendations?
+#' @param normalizeQ Should the scores be normalized by the maximum score or not?
+#' @param targetColumnName The column name for the \code{data} rownames in the result data frame.
+#' (I.e. the column in the recommendations result data frame that has \code{rownames(mat)} as values.)
+#' @param warningQ Should a warning be issued if \code{history} is of unknown type?
+#' @details The recommendations result is a
+#' data frame with columns \code{c(targetColumnName "Score", "Index", smrObj$ItemColumnName)};
+#' assigned to \code{smrObj$Value}.
+#' @return A SMRMon object
+#' @family Recommendations computation functions
+#' @export
+SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistoryQ = FALSE, normalizeQ = FALSE, targetColumnName = "ProfileID", warningQ = TRUE ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommend",  logicalResultQ = TRUE) ) {
+    return(SMRMonFailureSymbol)
+  }
+
+  ## Processing nrecs
+  if( ! ( is.null( nrecs) || is.numeric(nrecs) && length(nrecs) == 1 && nrecs > 0 ) ) {
+    warning("The argument nrecs is expected to be NULL or a positive integer.", call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( is.null(nrecs) ) { nrecs <- nrow(smrObj$M) }
+
+  ## Processing mat
+  if( ! ( is.null(data) ||
+          is.character(data) && mean( data %in% rownames(smrObj$M) ) == 1 ||
+          SMRSparseMatrixQ(data) && ncol(data) == ncol(smrObj$M) ) ) {
+    warning(
+      paste(
+        "The argument data is expected to be NULL, a vector of items (rownames of smrObj$M),",
+        "a matrix or sparse matrix with the same number of columns as smrObj$M,",
+        ncol(smrObj$M), "."), call. = TRUE )
+    return(SMRMonFailureSymbol)
+  }
+
+  if( is.null(data) ) { data <- smrObj$M }
+
+  if( is.character(data) ) { data <- smrObj$M0[data, ] }
+
+
+  data <- as( data, "dgCMatrix")
+
+  if( is.null(row.names(data)) ) { rownames(data) <- as.character(1:nrow(data)) }
+
+  ## Recommendations
+  matRecs <- smrObj$M %*% t(data)
+  dfRecsMat <- SMRSparseMatrixToTriplets( smat = matRecs )
+
+  ## Resolving name collusion
+  if( targetColumnName == (smrObj %>% SMRMonTakeItemColumnName) ) {
+    targetColumnName <- paste0(targetColumnName, ".2")
+    warning( paste( "The argument targetColumnName has the same values as smrObj$ItemColumnName. Using", targetColumnName, "instead." ), call. = TRUE )
+  }
+
+  colnames(dfRecsMat) <- c( smrObj %>% SMRMonTakeItemColumnName, targetColumnName, "Score" )
+  dfRecsMat <- dfRecsMat %>% dplyr::filter( Score > 0 )
+
+  ## Remove history
+  if( removeHistoryQ ) {
+    dfRecsMat <-dfRecsMat[ dfRecsMat[[1]] != dfRecsMat[[2]], ]
+  }
+
+  ## Reverse sort and get top recommendations
+  dfRecsMat <-
+    dfRecsMat %>%
+    dplyr::group_by_at( targetColumnName ) %>%
+    dplyr::arrange( dplyr::desc(Score) ) %>%
+    dplyr::filter( dplyr::row_number() <= nrecs ) %>%
+    dplyr::ungroup() %>%
+    dplyr::select_at( c(targetColumnName, "Score", smrObj %>% SMRMonTakeItemColumnName) )
+
+  dfRecsMat <- setNames(dfRecsMat, c(targetColumnName, "Score", smrObj %>% SMRMonTakeItemColumnName) )
+
+  ## Normalize
+  if( normalizeQ ) {
+    dfRecsMat <-
+      dfRecsMat %>%
+      dplyr::group_by_at( targetColumnName ) %>%
+      dplyr::mutate( Score = ifelse( max(Score) > 0, Score / max(Score), Score ) ) %>%
+      dplyr::ungroup()
+  }
+
+  dfRecsMat <- dfRecsMat[ order( dfRecsMat[[targetColumnName]], - dfRecsMat[["Score"]] ), ]
+
+  smrObj$Value <- dfRecsMat
 
   smrObj
 }
@@ -2431,38 +2536,47 @@ SMRMonFindAnomalies <- function( smrObj, data = NULL, numberOfNearestNeighbors =
   ## Compute the Cosine/Dot distances to the rows of monad's matrix.
   ## (This first version can be sped-up using matrix products.)
 
-  if( is.null(data) ) {
+  if( optimizedQ ) {
 
-    dfNNs <-
-      purrr::map_df( rownames(smrObj$M), function(sid) {
-
-        dfRes <-
-          smrObj %>%
-          SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
-          SMRMonTakeValue
-
-        if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
-
-        cbind( SearchID = sid, dfRes, stringsAsFactors = FALSE)
-      } )
+    if( is.null(data) ) {
+    } else {
+    }
 
   } else {
 
-    if( is.null(rownames(data)) ) { rownames(data) <- as.character(1:ncol(data)) }
+    if( is.null(data) ) {
 
-    dfNNs <-
-      purrr::map_df( rownames(data), function(sid) {
+      dfNNs <-
+        purrr::map_df( rownames(smrObj$M), function(sid) {
 
-        dfRes <-
-          smrObj %>%
-          SMRMonRecommendByProfile( profile = data[sid, , drop=F], nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
-          SMRMonTakeValue
+          dfRes <-
+            smrObj %>%
+            SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
+            SMRMonTakeValue
 
-        if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
+          if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
 
-        cbind( SearchID = sid, dfRes, stringsAsFactors = FALSE)
-      } )
+          cbind( SearchID = sid, dfRes, stringsAsFactors = FALSE)
+        } )
 
+    } else {
+
+      if( is.null(rownames(data)) ) { rownames(data) <- as.character(1:ncol(data)) }
+
+      dfNNs <-
+        purrr::map_df( rownames(data), function(sid) {
+
+          dfRes <-
+            smrObj %>%
+            SMRMonRecommendByProfile( profile = data[sid, , drop=F], nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
+            SMRMonTakeValue
+
+          if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
+
+          cbind( SearchID = sid, dfRes, stringsAsFactors = FALSE)
+        } )
+
+    }
   }
 
   ## Aggregate

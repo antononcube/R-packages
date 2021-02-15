@@ -52,6 +52,7 @@ The argument \code{style} has an effect only when \code{type = "metadata"}.
 }
 \seealso{
 Other Recommendations computation functions: 
+\code{\link{SMRMonBatchRecommend}()},
 \code{\link{SMRMonGetTopRecommendations}()},
 \code{\link{SMRMonJoinAcross}()},
 \code{\link{SMRMonProveByHistory}()},

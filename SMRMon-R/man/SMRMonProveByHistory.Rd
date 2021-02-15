@@ -41,6 +41,7 @@ and it is assigned to \code{smrObj$Value}.
 }
 \seealso{
 Other Recommendations computation functions: 
+\code{\link{SMRMonBatchRecommend}()},
 \code{\link{SMRMonGetTopRecommendations}()},
 \code{\link{SMRMonJoinAcross}()},
 \code{\link{SMRMonProveByMetadata}()},
