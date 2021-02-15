@@ -4,8 +4,12 @@
 \alias{BottomOutlierIdentifier}
 \title{Bottom outlier identifier.}
 \usage{
-BottomOutlierIdentifier(data, identifier,
-  lowerAndUpperThresholds = identifier(data), valueQ = FALSE)
+BottomOutlierIdentifier(
+  data,
+  identifier,
+  lowerAndUpperThresholds = identifier(data),
+  valueQ = FALSE
+)
 }
 \arguments{
 \item{data}{data vector}
@@ -22,3 +26,12 @@ A numeric vector of outliers or a logical vector.
 \description{
 Find the bottom outliers for a data vector.
 }
+\seealso{
+Other Outlier identifiers: 
+\code{\link{BottomOutlierPosition}()},
+\code{\link{OutlierIdentifier}()},
+\code{\link{OutlierPosition}()},
+\code{\link{TopOutlierIdentifier}()},
+\code{\link{TopOutlierPosition}()}
+}
+\concept{Outlier identifiers}

@@ -47,9 +47,39 @@
 ## in [1] than to comprehend the signatures of the different R libraries.
 ##=======================================================================================
 
-#' Hampel identifier parameters.
-#' @description Find an Hampel outlier threshold for a data vector.
+#' Top outliers only thresholds
+#' @description Drops the bottom threshold of a pair of thresholds.
+#' @param pair A pair of bottom and top thresholds.
+#' @family Outlier identifier parameters
+#' @export
+TopOutliersOnlyThresholds <- function( pair ) {
+
+  if( ! ( is.numeric(pair) && length(pair) == 2 ) ) {
+    stop("A pair of numbers is expected as a first argument.", call. = TRUE)
+  }
+
+  c( -Inf, pair[[2]] )
+}
+
+#' Bottom outliers only thresholds
+#' @description Drops the bottom threshold of a pair of thresholds.
+#' @param pair A pair of bottom and top thresholds.
+#' @family Outlier identifier parameters
+#' @export
+BottomOutliersOnlyThresholds <- function( pair ) {
+
+  if( ! ( is.numeric(pair) && length(pair) == 2 ) ) {
+    stop("A pair of numbers is expected as a first argument.", call. = TRUE)
+  }
+
+  c( pair[[1]], Inf )
+}
+
+
+#' Hampel identifier parameters
+#' @description Find an Hampel outlier thresholds for a data vector.
 #' @param data A data vector.
+#' @family Outlier identifier parameters
 #' @export
 HampelIdentifierParameters <- function( data ) {
   x0 <- median(data, na.rm = TRUE )
@@ -60,6 +90,7 @@ HampelIdentifierParameters <- function( data ) {
 #' Quartile identifier parameters
 #' @description Find an Quartile outlier for a data vector.
 #' @param data A data vector.
+#' @family Outlier identifier parameters
 #' @export
 QuartileIdentifierParameters <- function( data ) {
   res <- quantile( data, c( 1/4, 1/2, 3/4 ), na.rm = TRUE )
@@ -72,6 +103,7 @@ QuartileIdentifierParameters <- function( data ) {
 #' SPLUS quartile identifier parameters
 #' @description Find an SPLUS Quartile outlier for a data vector.
 #' @param data A data vector.
+#' @family Outlier identifier parameters
 #' @export
 SPLUSQuartileIdentifierParameters <- function( data ) {
   if ( length(data) <=4 ) {
@@ -95,6 +127,7 @@ SPLUSQuartileIdentifierParameters <- function( data ) {
 #' @return A numeric vector of outliers or a logical vector.
 #' @details The outlier identifier function \code{identifier}
 #' should return a list or tuple of two numbers \code{c(lowerThreshold, upperThreshold)}.
+#' @family Outlier identifiers
 #' @export
 OutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data), valueQ = FALSE ) {
   if( !is.numeric(data) ) {
@@ -111,6 +144,7 @@ OutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = ident
 #' @param lowerAndUpperThresholds Outlier identifier parameters.
 #' @param valueQ Should values be returned or not?
 #' @return A numeric vector of outliers or a logical vector.
+#' @family Outlier identifiers
 #' @export
 TopOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data), valueQ = FALSE ) {
   pred <- data >= lowerAndUpperThresholds[[2]]
@@ -124,6 +158,7 @@ TopOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = id
 #' @param lowerAndUpperThresholds Outlier identifier parameters.
 #' @param valueQ Should values be returned or not?
 #' @return A numeric vector of outliers or a logical vector.
+#' @family Outlier identifiers
 #' @export
 BottomOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds = identifier(data), valueQ = FALSE ) {
   pred <- data <= lowerAndUpperThresholds[[1]]
@@ -135,6 +170,7 @@ BottomOutlierIdentifier <- function( data, identifier, lowerAndUpperThresholds =
 #' @param data A data vector.
 #' @param identifier An outlier identifier function.
 #' @param lowerAndUpperThresholds Outlier identifier parameters.
+#' @family Outlier identifiers
 #' @export
 OutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data) ) {
   which( data <= lowerAndUpperThresholds[[1]] | data >= lowerAndUpperThresholds[[2]] )
@@ -145,6 +181,7 @@ OutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameter
 #' @param data A data vector.
 #' @param identifier An outlier identifier function.
 #' @param lowerAndUpperThresholds Outlier identifier parameters.
+#' @family Outlier identifiers
 #' @export
 TopOutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data)  ) {
   which( data >= lowerAndUpperThresholds[[2]] )
@@ -155,6 +192,7 @@ TopOutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParame
 #' @param data A data vector.
 #' @param identifier An outlier identifier function.
 #' @param lowerAndUpperThresholds Outlier identifier parameters.
+#' @family Outlier identifiers
 #' @export
 BottomOutlierPosition <- function( data, identifier = SPLUSQuartileIdentifierParameters, lowerAndUpperThresholds = identifier(data)  ) {
   which( data <= lowerAndUpperThresholds[[1]] )

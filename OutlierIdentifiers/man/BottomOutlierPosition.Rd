@@ -4,9 +4,11 @@
 \alias{BottomOutlierPosition}
 \title{Bottom outlier positions finder.}
 \usage{
-BottomOutlierPosition(data,
+BottomOutlierPosition(
+  data,
   identifier = SPLUSQuartileIdentifierParameters,
-  lowerAndUpperThresholds = identifier(data))
+  lowerAndUpperThresholds = identifier(data)
+)
 }
 \arguments{
 \item{data}{A data vector.}
@@ -18,3 +20,12 @@ BottomOutlierPosition(data,
 \description{
 Find the bottom outlier positions in a data vector.
 }
+\seealso{
+Other Outlier identifiers: 
+\code{\link{BottomOutlierIdentifier}()},
+\code{\link{OutlierIdentifier}()},
+\code{\link{OutlierPosition}()},
+\code{\link{TopOutlierIdentifier}()},
+\code{\link{TopOutlierPosition}()}
+}
+\concept{Outlier identifiers}

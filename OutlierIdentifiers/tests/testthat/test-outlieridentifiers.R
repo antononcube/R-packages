@@ -53,6 +53,11 @@ test_that("TopOutlierIdentifier equivalences", {
     TopOutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData), valueQ = FALSE )
   )
 
+  expect_equal(
+    TopOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = FALSE ),
+    OutlierIdentifier( data = randData, identifier = function(x) TopOutliersOnlyThresholds(HampelIdentifierParameters(x)), valueQ = FALSE )
+  )
+
 })
 
 test_that("BottomOutlierIdentifier equivalences", {
@@ -75,6 +80,11 @@ test_that("BottomOutlierIdentifier equivalences", {
   expect_equal(
     BottomOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = FALSE ),
     BottomOutlierIdentifier( data = randData, identifier = NULL, lowerAndUpperThresholds = HampelIdentifierParameters(randData), valueQ = FALSE )
+  )
+
+  expect_equal(
+    BottomOutlierIdentifier( data = randData, identifier = HampelIdentifierParameters, valueQ = FALSE ),
+    OutlierIdentifier( data = randData, identifier = function(x) BottomOutliersOnlyThresholds(HampelIdentifierParameters(x)), valueQ = FALSE )
   )
 
 })

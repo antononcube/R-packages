@@ -2,7 +2,7 @@
 % Please edit documentation in R/OutlierIdentifiers.R
 \name{HampelIdentifierParameters}
 \alias{HampelIdentifierParameters}
-\title{Hampel identifier parameters.}
+\title{Hampel identifier parameters}
 \usage{
 HampelIdentifierParameters(data)
 }
@@ -10,5 +10,13 @@ HampelIdentifierParameters(data)
 \item{data}{A data vector.}
 }
 \description{
-Find an Hampel outlier threshold for a data vector.
+Find an Hampel outlier thresholds for a data vector.
 }
+\seealso{
+Other Outlier identifier parameters: 
+\code{\link{BottomOutliersOnlyThresholds}()},
+\code{\link{QuartileIdentifierParameters}()},
+\code{\link{SPLUSQuartileIdentifierParameters}()},
+\code{\link{TopOutliersOnlyThresholds}()}
+}
+\concept{Outlier identifier parameters}

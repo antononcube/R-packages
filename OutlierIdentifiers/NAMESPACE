@@ -2,6 +2,7 @@
 
 export(BottomOutlierIdentifier)
 export(BottomOutlierPosition)
+export(BottomOutliersOnlyThresholds)
 export(HampelIdentifierParameters)
 export(OutlierIdentifier)
 export(OutlierPosition)
@@ -9,3 +10,4 @@ export(QuartileIdentifierParameters)
 export(SPLUSQuartileIdentifierParameters)
 export(TopOutlierIdentifier)
 export(TopOutlierPosition)
+export(TopOutliersOnlyThresholds)

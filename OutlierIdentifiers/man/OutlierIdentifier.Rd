@@ -4,8 +4,12 @@
 \alias{OutlierIdentifier}
 \title{Outlier identifier.}
 \usage{
-OutlierIdentifier(data, identifier,
-  lowerAndUpperThresholds = identifier(data), valueQ = FALSE)
+OutlierIdentifier(
+  data,
+  identifier,
+  lowerAndUpperThresholds = identifier(data),
+  valueQ = FALSE
+)
 }
 \arguments{
 \item{data}{A data vector.}
@@ -26,3 +30,12 @@ Find an outlier threshold for a data vector.
 The outlier identifier function \code{identifier}
 should return a list or tuple of two numbers \code{c(lowerThreshold, upperThreshold)}.
 }
+\seealso{
+Other Outlier identifiers: 
+\code{\link{BottomOutlierIdentifier}()},
+\code{\link{BottomOutlierPosition}()},
+\code{\link{OutlierPosition}()},
+\code{\link{TopOutlierIdentifier}()},
+\code{\link{TopOutlierPosition}()}
+}
+\concept{Outlier identifiers}
