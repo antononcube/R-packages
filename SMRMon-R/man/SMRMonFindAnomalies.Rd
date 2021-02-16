@@ -10,6 +10,7 @@ SMRMonFindAnomalies(
   numberOfNearestNeighbors = 12,
   aggregationFunction = mean,
   thresholdsIdentifier = NULL,
+  normalizeQ = FALSE,
   property = "RowNames",
   useBatchRecommendationQ = TRUE
 )
@@ -30,6 +31,8 @@ If NULL then
 \code{function(x) OutlierIdentifiers::BottomOutliersOnlyThresholds( OutlierIdentifiers::HampelIdentifierParameters(x) )}
 is used.}
 
+\item{normalizeQ}{Should each recommendation scores be normalized or not?}
+
 \item{property}{A string.
 One of \code{c("Similarities", "SparseMatrix", "RowNames", "OutlierThresholds", "Properties")}}
 
@@ -44,8 +47,8 @@ Find anomalies by nearest neighbors distances distributions.
 \details{
 The computation result is assigned to \code{smrObj$Value}.
 The computation steps follow.
-(1) For each row of the given data find the specified number of Nearest Neighbors (NNs)in the recommender matrix.
+(1) For each row of the given data find the specified number of Nearest Neighbors (NNs) in the recommender matrix.
 (2) For each row aggregate the NNs scores with the specified aggregation function.
 (3) Find outlier thresholds for the list of aggregated values.
-(4) Identify the outliers using the outlier thresholds.
+(4) Identify the outliers by using the outlier thresholds.
 }

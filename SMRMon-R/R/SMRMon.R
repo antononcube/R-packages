@@ -1450,7 +1450,7 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
-  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonRecommend",  logicalResultQ = TRUE) ) {
+  if( !SMRMonMemberPresenceCheck( smrObj, memberName = "M", memberPrettyName = "M", functionName = "SMRMonBatchRecommend",  logicalResultQ = TRUE) ) {
     return(SMRMonFailureSymbol)
   }
 
@@ -1517,7 +1517,7 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
     dfRecsMat <-
       dfRecsMat %>%
       dplyr::group_by_at( targetColumnName ) %>%
-      dplyr::mutate( Score = ifelse( max(Score) > 0, Score / max(Score), Score ) ) %>%
+      dplyr::mutate( Score = ifelse( max(Score) != 0, Score / max(Score), Score ) ) %>%
       dplyr::ungroup()
   }
 
@@ -2470,15 +2470,16 @@ SMRMonRetrievalByProfileStatistics <- function( smrObj, focusTag, focusTagType, 
 #' If NULL then
 #' \code{function(x) OutlierIdentifiers::BottomOutliersOnlyThresholds( OutlierIdentifiers::HampelIdentifierParameters(x) )}
 #' is used.
+#' @param normalizeQ Should each recommendation scores be normalized or not?
 #' @param property A string.
 #' One of \code{c("Similarities", "SparseMatrix", "RowNames", "OutlierThresholds", "Properties")}
 #' @param useBatchRecommendationQ Should batch recommendation be used or not?
 #' @details The computation result is assigned to \code{smrObj$Value}.
 #' The computation steps follow.
-#' (1) For each row of the given data find the specified number of Nearest Neighbors (NNs)in the recommender matrix.
+#' (1) For each row of the given data find the specified number of Nearest Neighbors (NNs) in the recommender matrix.
 #' (2) For each row aggregate the NNs scores with the specified aggregation function.
 #' (3) Find outlier thresholds for the list of aggregated values.
-#' (4) Identify the outliers using the outlier thresholds.
+#' (4) Identify the outliers by using the outlier thresholds.
 #' @return An SMRMon object.
 #' @export
 SMRMonFindAnomalies <- function( smrObj,
@@ -2486,6 +2487,7 @@ SMRMonFindAnomalies <- function( smrObj,
                                  numberOfNearestNeighbors = 12,
                                  aggregationFunction = mean,
                                  thresholdsIdentifier = NULL,
+                                 normalizeQ = FALSE,
                                  property = "RowNames",
                                  useBatchRecommendationQ = TRUE ) {
 
@@ -2547,8 +2549,10 @@ SMRMonFindAnomalies <- function( smrObj,
 
     dfNNs <-
       smrObj %>%
-      SMRMonBatchRecommend( data = data, nrecs = numberOfNearestNeighbors, removeHistoryQ = TRUE, normalizeQ = FALSE, targetColumnName = "SearchID" ) %>%
+      SMRMonBatchRecommend( data = data, nrecs = numberOfNearestNeighbors, removeHistoryQ = TRUE, normalizeQ = normalizeQ, targetColumnName = "SearchID" ) %>%
       SMRMonTakeValue
+
+    if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
 
   } else {
 
@@ -2559,7 +2563,7 @@ SMRMonFindAnomalies <- function( smrObj,
 
           dfRes <-
             smrObj %>%
-            SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
+            SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors, removeHistoryQ = TRUE, normalizeQ = normalizeQ ) %>%
             SMRMonTakeValue
 
           if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
@@ -2576,7 +2580,7 @@ SMRMonFindAnomalies <- function( smrObj,
 
           dfRes <-
             smrObj %>%
-            SMRMonRecommendByProfile( profile = data[sid, , drop=F], nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
+            SMRMonRecommendByProfile( profile = data[sid, , drop=F], nrecs = numberOfNearestNeighbors, normalizeQ = normalizeQ ) %>%
             SMRMonTakeValue
 
           if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
@@ -2603,7 +2607,7 @@ SMRMonFindAnomalies <- function( smrObj,
            stringsAsFactors = FALSE )
 
   ## Return result according to the property argument.
-  if( property %in% tolower(c( "Distances", "AggregatedDistances", "Similarities", "AggregatedSimilarities" )) ) {
+  if( property %in% tolower(c( "Similarities", "AggregatedSimilarities" )) ) {
 
     smrObj$Value <- dfNNs
 
