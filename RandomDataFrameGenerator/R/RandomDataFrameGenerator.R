@@ -204,6 +204,16 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
 
           lsVals <- genSpec( nrow(dfX) )
 
+          if( length(lsVals) < nrow(dfX) ) {
+            warning(
+              paste(
+                "The generator specification for", which( lsColNames %in% dfX$Col[[1]]), "produced fewer random values than the required", nrow(dfX), ".",
+                "Using a replicated vector."
+                ), call. = TRUE )
+
+            lsVals <- rep_len( x = lsVals, length.out = nrow(dfX) )
+          }
+
         } else {
           stop( paste("The generator specification for", which( lsColNames %in% dfX$Col[[1]]), "is not a function or a vector."), call. = TRUE )
         }
