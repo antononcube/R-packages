@@ -35,7 +35,6 @@ test_that("Too few values by function specification", {
       ),
     regexp = "The generator specification for .* produced fewer random values" )
 
-
   expect_s3_class( object = dfRes, class = "data.frame" )
 
 })
@@ -53,6 +52,5 @@ test_that("Enough values specification example", {
           list( 1:10, function(n) purrr::map_chr( 1:n, ~ paste(sample(c("java", "javascript", "ide", "agile"), 3, replace = T), collapse = " " )) )
       ),
     class = "data.frame" )
-
 
   })
