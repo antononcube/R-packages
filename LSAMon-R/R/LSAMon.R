@@ -1481,14 +1481,28 @@ LSAMonRepresentByTerms <- function( lsaObj, query, applyTermWeightFunctionsQ = T
 #' in the space of monad's document-term matrix.
 #' @param applyTermWeightFunctionsQ Should the weight term functions
 #' be applied to the result matrix or not?
+#' @param method A string one of "Algebraic" or "Recommendation".
+#' If NULL then "Algebraic" is used.
 #' @return A LSAMon object.
 #' @details If the argument \code{query} is a character then this function
 #' applies first the function \code{\link{LSAMonRepresentByTerms}}.
+#' If the topics were extracted with SVD (i.e. \code{lsaObj$Method == "SVD"})
+#' then the methods "Algebraic" and "Recommendation" are equivalent.
+#' (By the properties of SVD.)
 #' @export
-LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = TRUE ) {
+LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = TRUE, method = "Algebraic" ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
+  ## Process method
+  if( is.null(method) ) { method <- "Algebraic" }
+
+  if( !( is.character(method) && length(method) == 1 && ( tolower(method) %in% tolower(c("Algebraic", "Recommendation")) ) ) ) {
+    warning("The argument method is expected to be NULL or one of 'Algebraic' or 'Recommendation'.", call. = TRUE)
+    return(LSAMonFailureSymbol)
+  }
+
+  ## Main
   if( is.character(query) ) {
 
     qmat <-
@@ -1496,7 +1510,7 @@ LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = 
       LSAMonMakeDocumentTermMatrix( splitPattern = lsaObj$SplitPattern, stemWordsQ = lsaObj$StemWordsQ, stopWords = lsaObj$StopWords ) %>%
       LSAMonTakeDocumentTermMatrix
 
-    lsaObj %>% LSAMonRepresentByTopics( query = qmat, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ )
+    lsaObj %>% LSAMonRepresentByTopics( query = qmat, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ, method = method )
 
   } else if( "dgCMatrix" %in% class(query) ) {
 
@@ -1509,7 +1523,12 @@ LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = 
 
     nnRes <- NonNegativeMatrixFactorization::NNMFNormalizeMatrixProduct( W = lsaObj %>% LSAMonTakeW, H = lsaObj %>% LSAMonTakeH, normalizeLeftQ = FALSE )
 
-    if( lsaObj$Method == "NNMF" ) {
+    if( tolower(method) == "recommendation" ) {
+
+      ## Same as SVD
+      qmat <- qmat %*% t(nnRes$H)
+
+    } else if( lsaObj$Method == "NNMF" ) {
 
       invH <- NonNegativeMatrixFactorization::SparseMatrixPseudoInverse( smat = nnRes$H )
       qmat <- qmat %*% invH

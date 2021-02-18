@@ -4,7 +4,12 @@
 \alias{LSAMonRepresentByTopics}
 \title{Represent by topics.}
 \usage{
-LSAMonRepresentByTopics(lsaObj, query, applyTermWeightFunctionsQ = TRUE)
+LSAMonRepresentByTopics(
+  lsaObj,
+  query,
+  applyTermWeightFunctionsQ = TRUE,
+  method = "Algebraic"
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}
@@ -14,6 +19,9 @@ in the space of monad's document-term matrix.}
 
 \item{applyTermWeightFunctionsQ}{Should the weight term functions
 be applied to the result matrix or not?}
+
+\item{method}{A string one of "Algebraic" or "Recommendation".
+If NULL then "Algebraic" is used.}
 }
 \value{
 A LSAMon object.
@@ -24,4 +32,7 @@ Find the topics representation of a matrix or a document.
 \details{
 If the argument \code{query} is a character then this function
 applies first the function \code{\link{LSAMonRepresentByTerms}}.
+If the topics were extracted with SVD (i.e. \code{lsaObj$Method == "SVD"})
+then the methods "Algebraic" and "Recommendation" are equivalent.
+(By the properties of SVD.)
 }
