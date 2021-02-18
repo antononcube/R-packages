@@ -102,3 +102,33 @@ purrr::map_dfr( lsRDFs, ~ c( NRow = nrow(.), NCol = ncol(.) ) ) %>% dplyr::arran
 RandomWord(5)
 ```
 
+# Insufficient values
+
+
+```{r}
+RandomDataFrame( 
+  nrow = 6, 
+  columnNames = c("ID", "Text"), 
+  generators = 
+    list( 1:10, function(n) purrr::map_chr( 1:n, ~ paste(RandomWord(runif(1,2,4)), collapse = " " )) )
+)
+```
+
+```{r, rows.print=30}
+RandomDataFrame( 
+  nrow = 3, 
+  columnNames = c("ID", "Text"), 
+  generators = 
+    list( 1:10, function(n) purrr::map_chr( 1:n, ~ paste(sample(c("java", "javascript", "ide", "agile"), 3, replace = T), collapse = " " )) )
+)
+```
+
+```{r}
+RandomDataFrame( 
+  nrow = 12, 
+  columnNames = c("ID", "Text"), 
+  generators = 
+    list( 1:10, function(n) RandomWord(4))
+)
+```
+
