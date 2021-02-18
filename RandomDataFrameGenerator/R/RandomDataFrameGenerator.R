@@ -56,7 +56,7 @@ NULL
 #' @param columnNames Column names.
 #' If NULL random strings are used.
 #' @param columnNamesGenerator Generator of the column names.
-#' @param form The form of the generated data frame, one of "long", "wide", or NULL.
+#' @param form The form of the generated data frame, one of "Long", "Wide", or NULL.
 #' If NULL the form is randomly chosen.
 #' @param generators Generator specifications for the column values.
 #' @param maxNumberOfValues Maximum number of non-NA values.
@@ -160,8 +160,8 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
   ## Form
   if( is.null(form) ) { form <- c("long", "wide")[runif(1) <= 0.3] }
 
-  if( !(is.character(form) && tolower(form) %in% c("long", "wide")) ) {
-    warning( "The agument form is expected to be NULL or one of \"long\" and \"wide\". Continuing using \"wide\".", call. = TRUE )
+  if( !(is.character(form) && tolower(form) %in% tolower(c("Long", "Wide"))) ) {
+    warning( "The argument form is expected to be NULL or one of \"Long\" or \"Wide\". Continuing using \"Wide\".", call. = TRUE )
     form <- "wide"
   }
   form <- tolower(form)
