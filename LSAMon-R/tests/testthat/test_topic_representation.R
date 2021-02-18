@@ -40,3 +40,51 @@ test_that("Topic representation for document ID's", {
 ## Mapping of tags when names(tags) == rownames(lsaObj %>% LSAMonTakeW)
 ## TBD...
 
+
+## Test different topic extraction methods.
+
+lsaObjSVD <-
+  LSAMonUnit( textHamlet   ) %>%
+  LSAMonMakeDocumentTermMatrix( stemWordsQ = TRUE, stopWords = NULL, splitPattern = NULL ) %>%
+  LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" )
+
+lsaObjSVD <-
+  lsaObjSVD %>%
+  LSAMonExtractTopics( numberOfTopics = 10, minNumberOfDocumentsPerTerm = 5, maxSteps = 20, method = "SVD")
+
+lsaObjNNMF <-
+  lsaObjSVD %>%
+  LSAMonExtractTopics( numberOfTopics = 10, minNumberOfDocumentsPerTerm = 5, maxSteps = 20, method = "NNMF", profilingQ = FALSE)
+
+test_that("Topic representation by different methods", {
+
+  query1 <-
+    lsaObjSVD %>%
+    LSAMonRepresentByTopics( "the night is coming again", method = "Algebraic") %>%
+    LSAMonTakeValue
+  query1 <- colSums(query1)[ order(-colSums(query1))]
+
+  query2 <-
+    lsaObjSVD %>%
+    LSAMonRepresentByTopics( "the night is coming again", method = "Recommendation") %>%
+    LSAMonTakeValue
+  query2 <- colSums(query2)[ order(-colSums(query2))]
+
+  expect_equal( query1, query2 )
+
+
+  query3 <-
+    lsaObjNNMF %>%
+    LSAMonRepresentByTopics( "the night is coming again", method = "Algebraic") %>%
+    LSAMonTakeValue
+  query3 <- colSums(query3)[ order(-colSums(query3))]
+
+  query4 <-
+    lsaObjNNMF %>%
+    LSAMonRepresentByTopics( "the night is coming again", method = "Recommendation") %>%
+    LSAMonTakeValue
+  query4 <- colSums(query4)[ order(-colSums(query4))]
+
+  expect_equal( sort(names(query3)[1:2]), sort(names(query4)[1:2]) )
+
+})
