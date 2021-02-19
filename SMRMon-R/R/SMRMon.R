@@ -1496,9 +1496,9 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
   colnames(dfRecsMat) <- c( smrObj %>% SMRMonTakeItemColumnName, targetColumnName, "Score" )
   dfRecsMat <- dfRecsMat %>% dplyr::filter( Score > 0 )
 
-  ## Remove history
-  if( removeHistoryQ ) {
-    dfRecsMat <-dfRecsMat[ dfRecsMat[[1]] != dfRecsMat[[2]], ]
+  ## Remove history if using smrObj$M
+  if( removeHistoryQ && !SMRSparseMatrixQ(data) ) {
+    dfRecsMat <- dfRecsMat[ dfRecsMat[[1]] != dfRecsMat[[2]], ]
   }
 
   ## Reverse sort and get top recommendations
@@ -2552,7 +2552,7 @@ SMRMonFindAnomalies <- function( smrObj,
       SMRMonBatchRecommend( data = data, nrecs = numberOfNearestNeighbors, removeHistoryQ = TRUE, normalizeQ = normalizeQ, targetColumnName = "SearchID" ) %>%
       SMRMonTakeValue
 
-    if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
+    if( SMRMonFailureQ(dfNNs) ) { return(SMRMonFailureSymbol) }
 
   } else {
 
