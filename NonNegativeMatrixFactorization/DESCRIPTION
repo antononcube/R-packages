@@ -13,7 +13,8 @@ LazyData: true
 URL: https://github.com/antononcube/R-packages/tree/master/NonNegativeMatrixFactorization
 RoxygenNote: 7.1.1
 Imports:
-    Matrix
+    Matrix,
+    purrr
 Suggests: 
     knitr,
     rmarkdown,
