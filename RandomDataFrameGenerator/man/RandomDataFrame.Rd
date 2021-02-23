@@ -29,7 +29,7 @@ If NULL random strings are used.}
 
 \item{columnNamesGenerator}{Generator of the column names.}
 
-\item{form}{The form of the generated data frame, one of "long", "wide", or NULL.
+\item{form}{The form of the generated data frame, one of "Long", "Wide", or NULL.
 If NULL the form is randomly chosen.}
 
 \item{generators}{Generator specifications for the column values.}

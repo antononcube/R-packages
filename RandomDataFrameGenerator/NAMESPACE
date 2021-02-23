@@ -2,6 +2,7 @@
 
 export(RandomDataFrame)
 export(RandomDate)
+export(RandomPretentiousJobTitle)
 export(RandomString)
 export(RandomWord)
 import(dplyr)

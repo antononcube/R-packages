@@ -186,3 +186,81 @@ RandomDate <- function( size = 1, min = NULL, max = NULL, ... ) {
 
   minDate + res
 }
+
+
+
+##===========================================================
+## RandomPretentiousJobTitle
+##===========================================================
+
+aRandomPretentiousJobTitleWords <-
+  list(
+    "uno" = c("Lead", "Senior", "Direct", "Corporate", "Dynamic",
+              "Future", "Product", "National", "Regional", "District",
+              "Central", "Global", "Relational", "Customer", "Investor",
+              "Dynamic", "International", "Legacy", "Forward", "Interactive",
+              "Internal", "Human", "Chief", "Principal"),
+    "zwei" = c("Solutions", "Program", "Brand", "Security", "Research",
+               "Marketing", "Directives", "Implementation", "Integration",
+               "Functionality", "Response", "Paradigm", "Tactics", "Identity",
+               "Markets", "Group", "Resonance", "Applications", "Optimization",
+               "Operations", "Infrastructure", "Intranet", "Communications",
+               "Web", "Branding", "Quality", "Assurance", "Impact", "Mobility",
+               "Ideation", "Data", "Creative", "Configuration",
+               "Accountability", "Interactions", "Factors", "Usability",
+               "Metrics", "Team"),
+    "trois" = c("Supervisor", "Associate", "Executive", "Liason",
+                "Officer", "Manager", "Engineer", "Specialist", "Director",
+                "Coordinator", "Administrator", "Architect", "Analyst",
+                "Designer", "Planner", "Synergist", "Orchestrator", "Technician",
+                "Developer", "Producer", "Consultant", "Assistant",
+                "Facilitator", "Agent", "Representative", "Strategist")
+  )
+
+#' Random pretentious job title
+#' @description Generates a vector of random POSIXct dates.
+#' @param size Number of job titles
+#' @param numberOfWords Number of words per title.
+#' One of \code{c(1, 2, 3, NULL)} or
+#' a numerical vector of the values \code{c(1, 2, 3)}.
+#' @details See https://www.bullshitjob.com/title/ .
+#' @export
+RandomPretentiousJobTitle <- function( size = 1, numberOfWords = 3 ) {
+
+  if( is.null(numberOfWords) ) {
+    numberOfWords <- 3
+  }
+
+  if( is.numeric(numberOfWords) ) {
+
+    if( length(numberOfWords) < size ) {
+      numberOfWords <- rep_len( x = numberOfWords, length.out = size )
+    } else {
+      numberOfWords <- numberOfWords[1:size]
+    }
+
+    numberOfWords <- ifelse( numberOfWords < 1, 1, numberOfWords )
+    numberOfWords <- ifelse( numberOfWords > 3, 3, numberOfWords )
+
+  } else {
+    stop( "The argument numberOfWords is expected to be NULL, 1, 2, 3, or a numerical vector with values 1, 2, or 3.", call. = TRUE )
+  }
+
+
+  dfRes <-
+    data.frame(
+      "X1" = sample( x = aRandomPretentiousJobTitleWords[[1]], size = length(numberOfWords), replace = TRUE),
+      "X2" = sample( x = aRandomPretentiousJobTitleWords[[2]], size = length(numberOfWords), replace = TRUE),
+      "X3" = sample( x = aRandomPretentiousJobTitleWords[[3]], size = length(numberOfWords), replace = TRUE),
+      "N" = numberOfWords,
+      stringsAsFactors = FALSE
+    )
+
+  setNames(
+    purrr::map_chr( split( dfRes, 1:nrow(dfRes) ), function(dfX) {
+      paste( dfX[1, 1:3, drop=T][ (3 - dfX$N[[1]] + 1) : 3], collapse = " " )
+    }),
+    NULL
+  )
+
+}
