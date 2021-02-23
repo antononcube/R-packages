@@ -219,16 +219,30 @@ aRandomPretentiousJobTitleWords <-
 
 #' Random pretentious job title
 #' @description Generates a vector of random POSIXct dates.
-#' @param size Number of job titles
+#' @param size Number of job titles.
+#' If NULL it is implied from \code{numberOfWords}.
 #' @param numberOfWords Number of words per title.
 #' One of \code{c(1, 2, 3, NULL)} or
 #' a numerical vector of the values \code{c(1, 2, 3)}.
 #' @details See https://www.bullshitjob.com/title/ .
 #' @export
-RandomPretentiousJobTitle <- function( size = 1, numberOfWords = 3 ) {
+RandomPretentiousJobTitle <- function( size = NULL, numberOfWords = 3 ) {
 
   if( is.null(numberOfWords) ) {
     numberOfWords <- 3
+  }
+
+  if( is.null(size) && is.numeric(numberOfWords) ) {
+    size <- length(numberOfWords)
+  }
+
+  if( is.null(size) && is.null(numberOfWords) ) {
+    size <- 1
+    numberOfWords <- 3
+  }
+
+  if( !( is.numeric(size) && length(size) == 1 && size > 0 ) ){
+    stop( "The argument size is expected to be NULL or a positive integer.", call. = TRUE )
   }
 
   if( is.numeric(numberOfWords) ) {
@@ -246,7 +260,7 @@ RandomPretentiousJobTitle <- function( size = 1, numberOfWords = 3 ) {
     stop( "The argument numberOfWords is expected to be NULL, 1, 2, 3, or a numerical vector with values 1, 2, or 3.", call. = TRUE )
   }
 
-
+  ## Generation
   dfRes <-
     data.frame(
       "X1" = sample( x = aRandomPretentiousJobTitleWords[[1]], size = length(numberOfWords), replace = TRUE),
