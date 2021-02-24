@@ -2556,9 +2556,10 @@ SMRMonFindAnomalies <- function( smrObj,
 
   if( useBatchRecommendationQ ) {
 
+    # We have to use numberOfNearestNeighbors + 1 because later on we always remove the self-similarity rows.
     dfNNs <-
       smrObj %>%
-      SMRMonBatchRecommend( data = data, nrecs = numberOfNearestNeighbors, removeHistoryQ = FALSE, normalizeQ = FALSE, targetColumnName = "SearchID" ) %>%
+      SMRMonBatchRecommend( data = data, nrecs = numberOfNearestNeighbors + 1, removeHistoryQ = FALSE, normalizeQ = FALSE, targetColumnName = "SearchID" ) %>%
       SMRMonTakeValue
 
     if( SMRMonFailureQ(dfNNs) ) { return(SMRMonFailureSymbol) }
@@ -2567,12 +2568,13 @@ SMRMonFindAnomalies <- function( smrObj,
 
     if( is.null(data) ) {
 
+      # We have to use numberOfNearestNeighbors + 1 because later on we always remove the self-similarity rows.
       dfNNs <-
         purrr::map_df( rownames(smrObj$M), function(sid) {
 
           dfRes <-
             smrObj %>%
-            SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors, removeHistoryQ = FALSE, normalizeQ = FALSE ) %>%
+            SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors + 1, removeHistoryQ = FALSE, normalizeQ = FALSE ) %>%
             SMRMonTakeValue
 
           if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
