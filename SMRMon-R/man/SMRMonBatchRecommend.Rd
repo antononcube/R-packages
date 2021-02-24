@@ -42,7 +42,13 @@ For each row of a specified matrix of profiles compute recommendations.
 \details{
 The recommendations result is a
 data frame with columns \code{c(targetColumnName "Score", "Index", smrObj$ItemColumnName)};
-assigned to \code{smrObj$Value}.
+assigned to \code{smrObj$Value}. The following steps are taken:
+(1) Make sure the data argument is \code{"dgCMatrix"}.
+(2) Compute matrix-matrix product for the recommendations.
+(3) If specified, remove history.
+(4) Keep the specified top number of recommendations only.
+(5) if specified, normalize per data element the scores by the maximum score.
+(6) Return results.
 }
 \seealso{
 Other Recommendations computation functions: 

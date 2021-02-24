@@ -1442,7 +1442,13 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = 
 #' @param warningQ Should a warning be issued if \code{history} is of unknown type?
 #' @details The recommendations result is a
 #' data frame with columns \code{c(targetColumnName "Score", "Index", smrObj$ItemColumnName)};
-#' assigned to \code{smrObj$Value}.
+#' assigned to \code{smrObj$Value}. The following steps are taken:
+#' (1) Make sure the data argument is \code{"dgCMatrix"}.
+#' (2) Compute matrix-matrix product for the recommendations.
+#' (3) If specified, remove history.
+#' (4) Keep the specified top number of recommendations only.
+#' (5) if specified, normalize per data element the scores by the maximum score.
+#' (6) Return results.
 #' @return A SMRMon object
 #' @family Recommendations computation functions
 #' @export
@@ -1517,10 +1523,13 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
     dfRecsMat <-
       dfRecsMat %>%
       dplyr::group_by_at( targetColumnName ) %>%
-      dplyr::mutate( Score = ifelse( max(Score) != 0, Score / max(Score), Score ) ) %>%
-      dplyr::ungroup()
+      dplyr::mutate( MaxScore = max(abs(Score)) ) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate( Score = ifelse( MaxScore > 0, Score / MaxScore, Score ) ) %>%
+      dplyr::mutate( MaxScore = NULL )
   }
 
+  ## Order scores descendingly
   dfRecsMat <- dfRecsMat[ order( dfRecsMat[[targetColumnName]], - dfRecsMat[["Score"]] ), ]
 
   smrObj$Value <- dfRecsMat
@@ -2549,7 +2558,7 @@ SMRMonFindAnomalies <- function( smrObj,
 
     dfNNs <-
       smrObj %>%
-      SMRMonBatchRecommend( data = data, nrecs = numberOfNearestNeighbors, removeHistoryQ = TRUE, normalizeQ = normalizeQ, targetColumnName = "SearchID" ) %>%
+      SMRMonBatchRecommend( data = data, nrecs = numberOfNearestNeighbors, removeHistoryQ = FALSE, normalizeQ = FALSE, targetColumnName = "SearchID" ) %>%
       SMRMonTakeValue
 
     if( SMRMonFailureQ(dfNNs) ) { return(SMRMonFailureSymbol) }
@@ -2563,7 +2572,7 @@ SMRMonFindAnomalies <- function( smrObj,
 
           dfRes <-
             smrObj %>%
-            SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors, removeHistoryQ = TRUE, normalizeQ = normalizeQ ) %>%
+            SMRMonRecommend( history = sid, nrecs = numberOfNearestNeighbors, removeHistoryQ = FALSE, normalizeQ = FALSE ) %>%
             SMRMonTakeValue
 
           if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
@@ -2580,7 +2589,7 @@ SMRMonFindAnomalies <- function( smrObj,
 
           dfRes <-
             smrObj %>%
-            SMRMonRecommendByProfile( profile = data[sid, , drop=F], nrecs = numberOfNearestNeighbors, normalizeQ = normalizeQ ) %>%
+            SMRMonRecommendByProfile( profile = data[sid, , drop=F], nrecs = numberOfNearestNeighbors, normalizeQ = FALSE ) %>%
             SMRMonTakeValue
 
           if( SMRMonFailureQ(dfRes) ) { return(SMRMonFailureSymbol) }
@@ -2590,6 +2599,20 @@ SMRMonFindAnomalies <- function( smrObj,
 
     }
   }
+
+  ## Normalize
+  if( normalizeQ ) {
+    dfNNs <-
+      dfNNs %>%
+      dplyr::group_by( SearchID ) %>%
+      dplyr::mutate( MaxScore = max(abs(Score)) ) %>%
+      dplyr::ungroup() %>%
+      dplyr::mutate( Score = ifelse( MaxScore > 0, Score / MaxScore, Score ) ) %>%
+      dplyr::mutate( MaxScore = NULL )
+  }
+
+  ## Remove history
+  dfNNs <- dfNNs[ dfNNs$SearchID != dfNNs[[ smrObj %>% SMRMonTakeItemColumnName ]], ]
 
   ## Aggregate
   dfAggrVals <-
