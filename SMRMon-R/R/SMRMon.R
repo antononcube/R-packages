@@ -1447,7 +1447,7 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = 
 #' (2) Compute matrix-matrix product for the recommendations.
 #' (3) If specified, remove history.
 #' (4) Keep the specified top number of recommendations only.
-#' (5) if specified, normalize per data element the scores by the maximum score.
+#' (5) If specified, normalize per data element the scores by the maximum score.
 #' (6) Return results.
 #' @return A SMRMon object
 #' @family Recommendations computation functions
