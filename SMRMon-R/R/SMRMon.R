@@ -1439,7 +1439,6 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = 
 #' @param normalizeQ Should the scores be normalized by the maximum score or not?
 #' @param targetColumnName The column name for the \code{data} rownames in the result data frame.
 #' (I.e. the column in the recommendations result data frame that has \code{rownames(mat)} as values.)
-#' @param warningQ Should a warning be issued if \code{history} is of unknown type?
 #' @details The recommendations result is a
 #' data frame with columns \code{c(targetColumnName "Score", "Index", smrObj$ItemColumnName)};
 #' assigned to \code{smrObj$Value}. The following steps are taken:
@@ -1452,7 +1451,7 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = 
 #' @return A SMRMon object
 #' @family Recommendations computation functions
 #' @export
-SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistoryQ = FALSE, normalizeQ = FALSE, targetColumnName = "ProfileID", warningQ = TRUE ) {
+SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistoryQ = FALSE, normalizeQ = FALSE, targetColumnName = "ProfileID" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1693,7 +1692,7 @@ SMRMonClassifyByProfile <- function( smrObj, tagType, profile, nTopNNs = NULL,
 
     }
 
-    profile = data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE )
+    profile <- data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE )
 
     profileVec <- SMRProfileDFToVector( smr = smrObj, profileDF = profile )
   }
@@ -2202,7 +2201,6 @@ SMRMonMakeTagTypeRecommender <- function( smrObj, tagTypeTo, nTopTags = 1, tagTy
 
       error = function(e) {
         message( "Error attempting to run SMRToMetadataRecommender." )
-        passQ <- FALSE
         print(e)
         return(NULL)
       },
@@ -2242,8 +2240,6 @@ SMRMonMakeTagTypeRecommender <- function( smrObj, tagTypeTo, nTopTags = 1, tagTy
 #' @param tagType The tag type of the nearest neighbors.
 #' @param nrecs Number of nearest neighbors.
 #' @param nrecsProfile Number of recommendations for finding the \code{tags} profile.
-#' @param normalizeQ Should the scores be normalized?
-#' (By dividing by the maximum score.)
 #' @param ... Additional arguments passed to \code{\link{SMRClassifyByProfileVector}}.
 #' @details The result is a list of scored tags that is assigned
 #' to \code{smrObj$Value}.
@@ -2252,7 +2248,7 @@ SMRMonMakeTagTypeRecommender <- function( smrObj, tagTypeTo, nTopTags = 1, tagTy
 #' (The columns of that matrix are assumed to be unique.)
 #' @return An SMRMon object.
 #' @export
-SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsProfile = 100, normalizeQ, ...) {
+SMRMonTagNearestNeighbors <- function( smrObj, tags, tagType, nrecs = 12, nrecsProfile = 100, ...) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
