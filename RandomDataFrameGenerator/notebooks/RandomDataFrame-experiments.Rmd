@@ -132,3 +132,16 @@ RandomDataFrame(
 )
 ```
 
+```{r, rows.print=20}
+dfRand <- 
+  RandomDataFrame( 
+    nrow = 12, 
+    columnNames = c("ID", "Name", "Score", "Weight"), 
+    generators = 
+      list( function(n) RandomWord(4), function(n) RandomWord(3), runif, runif)
+  )
+dfRand %>% 
+  dplyr::arrange( ID, Score )
+```
+
+
