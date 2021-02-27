@@ -4,14 +4,18 @@
 \alias{RandomPretentiousJobTitle}
 \title{Random pretentious job title}
 \usage{
-RandomPretentiousJobTitle(size = 1, numberOfWords = 3)
+RandomPretentiousJobTitle(size = NULL, numberOfWords = 3, language = "English")
 }
 \arguments{
-\item{size}{Number of job titles}
+\item{size}{Number of job titles.
+If NULL it is implied from \code{numberOfWords}.}
 
 \item{numberOfWords}{Number of words per title.
 One of \code{c(1, 2, 3, NULL)} or
 a numerical vector of the values \code{c(1, 2, 3)}.}
+
+\item{language}{Which language to use?
+One of "Bulgarian", "English", or NULL.}
 }
 \description{
 Generates a vector of random POSIXct dates.

@@ -29,14 +29,15 @@ test_that("Too few values by function specification", {
     object =
       dfRes <-
       RandomDataFrame(
-        nrow = 12,
-        columnNames = c("ID", "Text"),
-        generators = list( 1:10, function(n) RandomWord(4) )
+        nrow = 20,
+        columnNames = c("ID", "Text", "Score"),
+        generators = list( 1:10, function(n) RandomWord(4), runif )
       ),
     regexp = "The generator specification for .* produced fewer random values" )
 
   expect_s3_class( object = dfRes, class = "data.frame" )
 
+  expect_true( length(unique(dfRes$Score)) == nrow(dfRes) )
 })
 
 
