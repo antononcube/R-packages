@@ -260,3 +260,28 @@ as.matrix(qmat3)
 ```
 
 
+# Represent by topics
+
+```{r}
+lsaObj2 <-
+  LSAMonUnit( textHamlet   ) %>% 
+  LSAMonMakeDocumentTermMatrix( stemWordsQ = TRUE, stopWords = NULL, splitPattern = NULL ) %>% 
+  LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
+  LSAMonExtractTopics( numberOfTopics = 10, minNumberOfDocumentsPerTerm = 5, maxSteps = 20, method = "SVD")
+```
+
+```{r}
+matQuery1 <- 
+  lsaObj2 %>% 
+  LSAMonRepresentByTopics( "the night is coming again", method = "Algebraic") %>% 
+  LSAMonTakeValue
+colSums(matQuery1)[ order(-colSums(matQuery1))]
+```
+
+```{r}
+matQuery2 <- 
+  lsaObj2 %>% 
+  LSAMonRepresentByTopics( "the night is coming again", method = "Recommendation") %>% 
+  LSAMonTakeValue
+colSums(matQuery2)[ order(-colSums(matQuery2))]
+```
