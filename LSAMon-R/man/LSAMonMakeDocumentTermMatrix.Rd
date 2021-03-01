@@ -8,6 +8,7 @@ LSAMonMakeDocumentTermMatrix(
   lsaObj,
   splitPattern = "[[:space:]]|[[:punct:]]",
   stemWordsQ = FALSE,
+  stemRules = NULL,
   stopWords = NULL
 )
 }
@@ -17,7 +18,13 @@ LSAMonMakeDocumentTermMatrix(
 \item{splitPattern}{Pattern to use for splitting the documents into words.
 If NULL \code{"[[:space:]]|[[:punct:]]"} is used.}
 
-\item{stemWordsQ}{Should the words be stemmed or not?}
+\item{stemWordsQ}{Should the words be stemmed or not?
+If \code{stemWordsQ = TRUE} and \code{stemRules = NULL}
+then \code{\link{SnowballC::wordStem}} is used.}
+
+\item{stemRules}{A character vector with named elements or NULL.
+(A vector of "stemming rules".)
+If \code{stemWordsQ = FALSE} then \code{stemRules} is ignored.}
 
 \item{stopWords}{A character vector with stop words to be removed.}
 }
@@ -32,4 +39,5 @@ using specified word splitting and optional word stemming.
 The obtained sparse matrix is \code{lsaObj$DocumentTermMatrix}.
 The documents are expected to have ID's. If \code{is.null(names(lsaObj$Documents))}
 then the ID's are just the indexes of the documents list/vector.
+Stop words can be supplied with \code{\link{stopwords::stopwords}}.
 }

@@ -680,17 +680,24 @@ LSAMonTakeMethod <- function( lsaObj, functionName = "LSAMonTakeMethod" ) {
 #' @param splitPattern Pattern to use for splitting the documents into words.
 #' If NULL \code{"[[:space:]]|[[:punct:]]"} is used.
 #' @param stemWordsQ Should the words be stemmed or not?
+#' If \code{stemWordsQ = TRUE} and \code{stemRules = NULL}
+#' then \code{\link{SnowballC::wordStem}} is used.
+#' @param stemRules A character vector with named elements or NULL.
+#' (A vector of "stemming rules".)
+#' If \code{stemWordsQ = FALSE} then \code{stemRules} is ignored.
 #' @param stopWords A character vector with stop words to be removed.
 #' @return A LSAMon object.
 #' @details The obtained sparse matrix is \code{lsaObj$DocumentTermMatrix}.
 #' The documents are expected to have ID's. If \code{is.null(names(lsaObj$Documents))}
 #' then the ID's are just the indexes of the documents list/vector.
+#' Stop words can be supplied with \code{\link{stopwords::stopwords}}.
 #' @export
-LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[:punct:]]", stemWordsQ = FALSE, stopWords = NULL ) {
+LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[:punct:]]", stemWordsQ = FALSE, stemRules = NULL, stopWords = NULL ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
-  documents <- lsaObj %>% LSAMonTakeDocuments()
+  ## Process documents
+  documents <- lsaObj %>% LSAMonTakeDocuments(functionName = "LSAMonMakeDocumentTermMatrix")
 
   if( is.null(documents) ) {
     warning("Assign documents first. (Using LSAMonSetDocuments.)", call. = TRUE )
@@ -702,6 +709,7 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
     return(LSAMonFailureSymbol)
   }
 
+  ## Process splitPattern
   if( !( is.null(splitPattern) || is.character(splitPattern) ) ) {
     warning("The argument splitPattern is expected to be a string or NULL.", call. = TRUE )
     return(LSAMonFailureSymbol)
@@ -711,15 +719,34 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
     splitPattern <- "[[:space:]]|[[:punct:]]"
   }
 
-  if( is.null(stemWordsQ) ) {
-    stemWordsQ <- FALSE
-  }
-
+  ## Process stopWords
   if( !( is.null(stopWords) || is.character(stopWords) ) ) {
     warning("The argument stopWords is expected to be a character vector or NULL.", call. = TRUE )
     return(LSAMonFailureSymbol)
   }
 
+  ## Process stemRules and stemWordsQ
+  if( !( is.null(stemRules) || is.character(stemRules) ) ) {
+    warning("The argument stemRules is expected to be a character vector with named elements or NULL.", call. = TRUE )
+    return(LSAMonFailureSymbol)
+  }
+
+  if( is.character(stemRules) && !is.character(names(stemRules)) ) {
+    warning("If the argument stemRules is a character vector it is expected to be with named elements.", call. = TRUE )
+    return(LSAMonFailureSymbol)
+  }
+
+  ## Should this message be given?
+  if( is.logical(stemWordsQ) && !stemWordsQ && is.character(stemRules) ) {
+    warning("The argument is stemWordsQ is FALSE, but the agrument stemRules is not NULL. Continuing by without stemming.", call. = TRUE )
+    stemRules <- NULL
+  }
+
+  if( is.null(stemWordsQ) ) {
+    stemWordsQ <- FALSE
+  }
+
+  ## Process documents
   if( is.list(documents) ) {
     documents <- as.character(documents)
   }
@@ -746,8 +773,22 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
   ss <- ss[ purrr::map_int(ss, length) > 0 ]
 
   ## Convert all words to lower case and stem
-  if ( stemWordsQ ) {
-    ss <- purrr::map( ss, function(x) SnowballC::wordStem( tolower(x) ) )
+  if ( stemWordsQ && is.null(stemRules) ) {
+    ss <-
+      purrr::map( ss, function(x) {
+        x3 <- SnowballC::wordStem( tolower(x) )
+        x3[ nchar(x3) > 0 ]
+      })
+  } else if ( stemWordsQ && is.character(stemRules) ) {
+    ss <-
+      purrr::map( ss, function(x) {
+        x <- tolower(x)
+        pred <- x %in% names(stemRules)
+        x1 <- x[ pred ]
+        x2 <- x[ !pred ]
+        x3 <- c( stemRules[ x1 ], x2 )
+        x3[ nchar(x3) > 0 ]
+      })
   } else {
     ss <- purrr::map( ss, function(x) tolower(x) )
   }
@@ -762,12 +803,14 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
 
   dtMat <- xtabs( formula = ~ ID + Term, ssDF, sparse = TRUE )
 
+  ## Assign monad object elements
   lsaObj$Documents <- documents
   lsaObj$DocumentTermMatrix <- dtMat
   lsaObj$StopWords <- stopWords
   lsaObj$StemWordsQ <- stemWordsQ
   lsaObj$SplitPattern <- splitPattern
 
+  ## Return object
   lsaObj
 }
 
