@@ -47,9 +47,10 @@
 ## Start date: 2016-10-5
 ##---
 
-library(purrr)
-library(stringr)
-library(stringi)
+#' import purrr
+#' import stringr
+#' import stringi
+NULL
 
 
 ##===========================================================
