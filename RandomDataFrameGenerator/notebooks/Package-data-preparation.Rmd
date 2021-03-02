@@ -37,12 +37,16 @@ dfPetNameCounts <- read.csv( file = "../inst/extdata/dfPetNameCounts.csv", strin
 ```
 
 ```{r}
-dfPetNameCounts$Name <- gsub( '\"', '"', dfPetNameCounts$Name) 
+dfPetNameCounts$Name <- gsub( '\"', '\'', dfPetNameCounts$Name, fixed = F) 
+sum(grepl( '\"', dfPetNameCounts$Name, fixed= T))
+sum(grepl( "'", dfPetNameCounts$Name, fixed= T))
 ```
 
 ```{r}
 Summary(dfPetNameCounts)
 ```
+
+
 
 # Make the data
 
