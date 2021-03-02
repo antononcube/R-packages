@@ -2,6 +2,7 @@
 
 export(RandomDataFrame)
 export(RandomDate)
+export(RandomPetName)
 export(RandomPretentiousJobTitle)
 export(RandomString)
 export(RandomWord)

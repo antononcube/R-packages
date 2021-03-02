@@ -18,8 +18,8 @@ a numerical vector of the values \code{c(1, 2, 3)}.}
 One of "Bulgarian", "English", or NULL.}
 }
 \description{
-Generates a vector of random POSIXct dates.
+Generates a vector of random pretentious job titles.
 }
 \details{
-See https://www.bullshitjob.com/title/ .
+See \url{https://www.bullshitjob.com/title/}.
 }

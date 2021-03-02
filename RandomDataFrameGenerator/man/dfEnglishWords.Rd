@@ -7,7 +7,7 @@
 \format{
 A data frame with 84996 rows and 4 columns.
 \describe{
-  \item{Word}{English word}
+  \item{Word}{English word.}
   \item{KnownWordQ}{Is the \code{Word} value a known word or not?}
   \item{CommonWordQ}{Is the \code{Word} value a common word or not?}
   \item{StopWordQ}{Is the \code{Word} value a stop word or not?}

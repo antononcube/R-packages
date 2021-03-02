@@ -244,7 +244,7 @@ aRandomPretentiousJobTitleWords <-
     )
 
 #' Random pretentious job title
-#' @description Generates a vector of random POSIXct dates.
+#' @description Generates a vector of random pretentious job titles.
 #' @param size Number of job titles.
 #' If NULL it is implied from \code{numberOfWords}.
 #' @param numberOfWords Number of words per title.
@@ -252,7 +252,7 @@ aRandomPretentiousJobTitleWords <-
 #' a numerical vector of the values \code{c(1, 2, 3)}.
 #' @param language Which language to use?
 #' One of "Bulgarian", "English", or NULL.
-#' @details See https://www.bullshitjob.com/title/ .
+#' @details See \url{https://www.bullshitjob.com/title/}.
 #' @export
 RandomPretentiousJobTitle <- function( size = NULL, numberOfWords = 3, language = "English" ) {
 
@@ -339,5 +339,57 @@ RandomPretentiousJobTitle <- function( size = NULL, numberOfWords = 3, language 
     }
 
   setNames(res, NULL)
+
+}
+
+
+##===========================================================
+## RandomPetName
+##===========================================================
+
+#' Random pet name
+#' @description Generates a vector of random pet names
+#' @param size Number of pet names.
+#' @param species Which species to use?
+#' One of \code{c(NULL, "Cat", "Dog", "Goat", "Pig")}.
+#' If NULL all species are used.
+#' @param weighted Should the random choice of pet names be based on their popularity or not?
+#' @details See \url{https://catalog.data.gov/dataset/seattle-pet-licenses}.
+#' @export
+RandomPetName <- function( size = NULL, species = NULL, weighted = FALSE ) {
+
+  if( !( is.numeric(size) && length(size) == 1 && size > 0 ) ){
+    stop( "The argument size is expected to be a positive integer.", call. = TRUE )
+  }
+
+  lsAllSpecies <- c("Cat", "Dog", "Goat", "Pig")
+  if( is.null(species) ) {
+    species <- lsAllSpecies
+  }
+
+  if( !is.character(species) ){
+    stop( "The argument species is expected to be a character vector.", call. = TRUE )
+  }
+
+  if( length(intersect(species, lsAllSpecies)) == 0 ){
+    stop( paste("The argument species has no known species. The known species are:", lsAllSpecies, "."), call. = TRUE )
+  }
+
+  dfRes <-
+    if( weighted ) {
+
+      dfPetNameCounts %>%
+        dplyr::filter( Species %in% species ) %>%
+        dplyr::sample_n( size = size, replace = TRUE )
+
+    } else {
+
+      dfPetNameCounts %>%
+        dplyr::filter( Species %in% species ) %>%
+        dplyr::sample_n( size = size, weighted = Count, replace = TRUE )
+
+    }
+
+  dfRes$Name
 
 }
