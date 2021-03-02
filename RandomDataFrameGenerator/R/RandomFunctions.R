@@ -258,9 +258,9 @@ RandomPretentiousJobTitle <- function( size = NULL, numberOfWords = 3, language 
   ## Generation
   dfRes <-
     data.frame(
-      "X1" = sample( x = aJobTitleWords[[1]], size = length(numberOfWords), replace = TRUE),
-      "X2" = sample( x = aJobTitleWords[[2]], size = length(numberOfWords), replace = TRUE),
-      "X3" = sample( x = aJobTitleWords[[3]], size = length(numberOfWords), replace = TRUE),
+      "X1" = sample( x = aJobTitleWords[["uno"]], size = length(numberOfWords), replace = TRUE),
+      "X2" = sample( x = aJobTitleWords[["zwei"]], size = length(numberOfWords), replace = TRUE),
+      "X3" = sample( x = aJobTitleWords[["trois"]], size = length(numberOfWords), replace = TRUE),
       "N" = numberOfWords,
       stringsAsFactors = FALSE
     )
@@ -277,7 +277,7 @@ RandomPretentiousJobTitle <- function( size = NULL, numberOfWords = 3, language 
       purrr::map_chr( split( dfRes, 1:nrow(dfRes) ), function(dfX) {
         lsWords <- dfX[1, 1:3, drop=T][ (3 - dfX$N[[1]] + 1) : 3]
 
-        conj <- if( runif(1) > 0.5 ) { "на" } else { "по" }
+        conj <- sample( aJobTitleWords[["conjunction"]], 1 )
 
         if( length(lsWords) == 2 ) {
           lsWords <- c( lsWords[2], conj, lsWords[1] )
@@ -288,7 +288,7 @@ RandomPretentiousJobTitle <- function( size = NULL, numberOfWords = 3, language 
       })
 
     } else {
-      ## This should be happening. Putting this else branch for completeness.
+      ## This must not be happening. Putting in this else branch for completeness.
       NA
     }
 
