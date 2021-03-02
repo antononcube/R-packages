@@ -23,7 +23,7 @@
 #' in the years 2015-2020 in Seattle, WA, USA.
 #' For extensive data analysis see: Anton Antonov, "Pets licensing data analysis", (2020), WordPress.
 #'
-#' @format A data frame with 84996 rows and 4 columns.
+#' @format A data frame with 20790 rows and 3 columns.
 #' \describe{
 #'   \item{Species}{The species of the pet animal.}
 #'   \item{Name}{Name of pet animal.}
@@ -31,3 +31,15 @@
 #' }
 #' @source \url{https://catalog.data.gov/dataset/seattle-pet-licenses}
 "dfPetNameCounts"
+
+
+#' Pretentious job title words
+#'
+#' @description Pretentious job title words in different languages.
+#'
+#' @format A list of list with named elements.
+#' \describe{
+#'   \item{names}{Language.}
+#' }
+#' @source \url{https://www.bullshitjob.com/title/}
+"aPretentiousJobTitleWords"

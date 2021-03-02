@@ -197,55 +197,6 @@ RandomDate <- function( size = 1, min = NULL, max = NULL, ... ) {
 ## RandomPretentiousJobTitle
 ##===========================================================
 
-aRandomPretentiousJobTitleWords <-
-  list(
-    "english" =
-      list(
-        "uno" = c("Lead", "Senior", "Direct", "Corporate", "Dynamic",
-                  "Future", "Product", "National", "Regional", "District",
-                  "Central", "Global", "Relational", "Customer", "Investor",
-                  "Dynamic", "International", "Legacy", "Forward", "Interactive",
-                  "Internal", "Human", "Chief", "Principal"),
-        "zwei" = c("Solutions", "Program", "Brand", "Security", "Research",
-                   "Marketing", "Directives", "Implementation", "Integration",
-                   "Functionality", "Response", "Paradigm", "Tactics", "Identity",
-                   "Markets", "Group", "Resonance", "Applications", "Optimization",
-                   "Operations", "Infrastructure", "Intranet", "Communications",
-                   "Web", "Branding", "Quality", "Assurance", "Impact", "Mobility",
-                   "Ideation", "Data", "Creative", "Configuration",
-                   "Accountability", "Interactions", "Factors", "Usability",
-                   "Metrics", "Team"),
-        "trois" = c("Supervisor", "Associate", "Executive", "Liason",
-                    "Officer", "Manager", "Engineer", "Specialist", "Director",
-                    "Coordinator", "Administrator", "Architect", "Analyst",
-                    "Designer", "Planner", "Synergist", "Orchestrator", "Technician",
-                    "Developer", "Producer", "Consultant", "Assistant",
-                    "Facilitator", "Agent", "Representative", "Strategist")
-      ),
-    "bulgarian" =
-      list(
-        "uno" = c("Бъдещ", "Водещ", "Главен", "Старши", "Човешки", "Вътрешен",
-          "Глобален", "Директен", "Клиентов", "Областен", "Динамичен",
-          "Динамичен", "Централен", "Инвестиращ", "Национален", "Регионален",
-          "Релационен", "Наследствен", "Прогресивен", "Интерактивен",
-          "Корпоративен", "Международен", "Продукционен"),
-        "zwei" = c("Идеи", "Групи", "Данни", "Екипи", "Марки", "Мрежи",
-          "Пазари", "Отговори", "Решения", "Тактики", "Фактори", "Интранет",
-          "Качество", "Операции", "Програми", "Директиви", "Маркетинг",
-          "Мобилност", "Отчетност", "Парадигми", "Прилагане", "Резонанси",
-          "Сигурност", "Брандиране", "Интеграция", "Показатели", "Приложения",
-          "Въздействие", "Идентичност", "Изследвания", "Комуникации",
-          "Креативност", "Оптимизация", "Осигуряване", "Конфигурации",
-          "Използваемост", "Взаимодействия", "Функционалности",
-          "Инфраструктурата"),
-        "trois" = c("Агент", "Плановик", "Техник", "Инженер", "Стратег",
-          "Архитект", "Асистент", "Дизайнер", "Директор", "Мениджър",
-          "Началник", "Служител", "Посредник", "Продуцент", "Синергист",
-          "Сътрудник", "Анализатор", "Изпълнител", "Консултант", "Специалист",
-          "Координатор", "Оркестратор", "Разработчик", "Супервайзор",
-          "Фасилитатор", "Представител", "Проектант", "Администратор")
-        )
-    )
 
 #' Random pretentious job title
 #' @description Generates a vector of random pretentious job titles.
@@ -302,8 +253,7 @@ RandomPretentiousJobTitle <- function( size = NULL, numberOfWords = 3, language 
 
   language <- tolower(language)
 
-  aJobTitleWords <-
-    aRandomPretentiousJobTitleWords[[ language ]]
+  aJobTitleWords <- aPretentiousJobTitleWords[[ language ]]
 
   ## Generation
   dfRes <-

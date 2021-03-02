@@ -5,7 +5,7 @@
 \alias{dfPetNameCounts}
 \title{Pet name counts}
 \format{
-A data frame with 84996 rows and 4 columns.
+A data frame with 20790 rows and 3 columns.
 \describe{
   \item{Species}{The species of the pet animal.}
   \item{Name}{Name of pet animal.}

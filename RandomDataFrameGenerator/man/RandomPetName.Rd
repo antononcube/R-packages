@@ -4,7 +4,7 @@
 \alias{RandomPetName}
 \title{Random pet name}
 \usage{
-RandomPetName(size = NULL, species = NULL, weighted = FALSE)
+RandomPetName(size = 1, species = NULL, weighted = FALSE)
 }
 \arguments{
 \item{size}{Number of pet names.}
