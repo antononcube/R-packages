@@ -8,7 +8,7 @@ output: html_notebook
 # Ingest word data
 
 ```{r}
-dfEnglishWords <- read.csv( file = "../inst/extdata/EnglishWords.csv", stringsAsFactors = FALSE)
+dfEnglishWords <- read.csv( file = "../inst/extdata/dfEnglishWords.csv", stringsAsFactors = FALSE)
 ```
 
 ```{r}
@@ -30,9 +30,27 @@ summary(dfEnglishWords)
 ```
 
 
+# Ingest pet names data
+
+```{r}
+dfPetNameCounts <- read.csv( file = "../inst/extdata/dfPetNameCounts.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+dfPetNameCounts$Name <- gsub( '\"', '"', dfPetNameCounts$Name) 
+```
+
+```{r}
+Summary(dfPetNameCounts)
+```
 
 # Make the data
 
 ```{r, eval=F}
 usethis::use_data(dfEnglishWords)
+```
+
+
+```{r, eval=F}
+usethis::use_data(dfPetNameCounts, overwrite = T)
 ```
