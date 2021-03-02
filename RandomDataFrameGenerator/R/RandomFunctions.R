@@ -157,6 +157,10 @@ RandomWord <- function( size = 1, type = "Any") {
 #' @export
 RandomDate <- function( size = 1, min = NULL, max = NULL, ... ) {
 
+  if( !( is.numeric(size) && length(size) == 1 && size > 0 ) ){
+    stop( "The argument size is expected to be a positive integer.", call. = TRUE )
+  }
+
   minDate <- min
   maxDate <- max
 
@@ -356,7 +360,7 @@ RandomPretentiousJobTitle <- function( size = NULL, numberOfWords = 3, language 
 #' @param weighted Should the random choice of pet names be based on their popularity or not?
 #' @details See \url{https://catalog.data.gov/dataset/seattle-pet-licenses}.
 #' @export
-RandomPetName <- function( size = NULL, species = NULL, weighted = FALSE ) {
+RandomPetName <- function( size = 1, species = NULL, weighted = FALSE ) {
 
   if( !( is.numeric(size) && length(size) == 1 && size > 0 ) ){
     stop( "The argument size is expected to be a positive integer.", call. = TRUE )
@@ -371,21 +375,21 @@ RandomPetName <- function( size = NULL, species = NULL, weighted = FALSE ) {
     stop( "The argument species is expected to be a character vector.", call. = TRUE )
   }
 
-  if( length(intersect(species, lsAllSpecies)) == 0 ){
-    stop( paste("The argument species has no known species. The known species are:", lsAllSpecies, "."), call. = TRUE )
+  if( length(intersect(tolower(species), tolower(lsAllSpecies))) == 0 ){
+    stop( paste("The argument species has no known species. The known species are:", paste(lsAllSpecies, collapse = ", "), "."), call. = TRUE )
   }
 
   dfRes <-
     if( weighted ) {
 
       dfPetNameCounts %>%
-        dplyr::filter( Species %in% species ) %>%
+        dplyr::filter( tolower(Species) %in% tolower(species) ) %>%
         dplyr::sample_n( size = size, replace = TRUE )
 
     } else {
 
       dfPetNameCounts %>%
-        dplyr::filter( Species %in% species ) %>%
+        dplyr::filter( tolower(Species) %in% tolower(species) ) %>%
         dplyr::sample_n( size = size, weighted = Count, replace = TRUE )
 
     }
