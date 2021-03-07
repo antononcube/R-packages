@@ -535,11 +535,11 @@ SMRRecommendationsVectorToDF <- function( rvec, history, nrecs, removeHistory ) 
   rvec <- as.numeric(rvec)
   if ( is.null(nrecs) ) {
     ## take all non-zero
-    recInds <- rev(order(rvec))
+    recInds <- order(rvec, decreasing = T)
     recInds <- recInds[ rvec[recInds] > 0 ]
     nrecs <- length(recInds)
   } else {
-    recInds <- rev(order(rvec))[1:(nrecs + length(history))]
+    recInds <- order(rvec, decreasing = T)[1:(nrecs + length(history))]
   }
   
   if ( removeHistory ) {
@@ -586,7 +586,7 @@ SMRRecommendations <- function( smr, userHistoryItems, userRatings, nrecs, remov
   hvec <- sparseMatrix(i=rep(1,length(userHistoryItems)), j=userHistoryItems, x=userRatings, dims=c(1,dim(smr$M)[1]))
   rvec <- smr$M %*% t(hvec %*% smr$M)
   rvec <- as.array(rvec)
-  recInds <- rev(order(rvec))[1:(nrecs+length(userHistoryItems))]
+  recInds <- order(rvec, decreasing = T)[1:(nrecs+length(userHistoryItems))]
   
   if ( removeHistory ) {
     dropInds <- recInds %in% userHistoryItems
@@ -815,7 +815,7 @@ SMRProfileDF <- function( smr, itemHistory ) {
   res <- data.frame( Score = pvecScores, Index = pvecInds, stringsAsFactors = FALSE  )
   res <- cbind( res, Tag = colnames(smr$M)[ pvecInds ], stringsAsFactors = FALSE )
   names(res) <- c("Score","Index","Tag")
-  res[ rev( order(res$Score) ),]
+  res[ order(res$Score, decreasing = T),]
 }
 
 #' Conversion of a profile vector to a data frame
@@ -836,7 +836,7 @@ SMRProfileDFFromVector <- function( smr, pvec ) {
   res <- data.frame( Score = pvecScores, Index = pvecInds, stringsAsFactors = FALSE )
   res <- cbind( res, Tag = colnames(smr$M)[ pvecInds ], stringsAsFactors = FALSE )
   names(res) <- c("Score","Index","Tag")
-  res[ rev( order(res$Score) ), ]
+  res[ order(res$Score, decreasing = T), ]
 }
 
 #' Conversion of a profile data frame to a vector
@@ -1010,7 +1010,7 @@ SMRReorderRecommendations <- function( smr, recs, tagIDs ) {
   newOrder <- smr$M[recs[[2]], ] %*% profileVec
   
   if ( sum( newOrder ) > 0 ) {
-    newOrder <- rev( order( as.vector(newOrder) ) )
+    newOrder <- order(as.vector(newOrder), decreasing = T)
     recs[ newOrder, ]
   } else {
     recs
@@ -1107,7 +1107,7 @@ SMRHistoryProofs <- function( smr, toBeLovedItem, history, normalizeScores=TRUE 
     }
   }
   
-  res <- res[rev(order(res$Score)),]
+  res <- res[order(res$Score, decreasing = T),]
   res
 }
 
