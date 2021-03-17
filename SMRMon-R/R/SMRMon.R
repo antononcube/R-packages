@@ -123,6 +123,8 @@ SMRMonTakeValue <- function( smrObj ) {
 #' @export
 SMRMonMemberPresenceCheck <- function( smrObj, memberName, memberPrettyName = memberName, functionName = "", logicalResultQ = FALSE, warningQ = TRUE ) {
 
+  if( !is.list(smrObj) ) { return(SMRMonFailureSymbol) }
+
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
   res <- TRUE
