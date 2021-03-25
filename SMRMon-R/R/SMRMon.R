@@ -1081,13 +1081,14 @@ SMRMonGetHistoryDataFrame <- function( smrObj, history, functionName = "SMRMonGe
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param functionName A string that is a name of this function or a delegating function.
+#' @param ignoreUnknownTagsQ Should the unknown tags be ignored or not?
 #' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
 #' @details The result data frame is with columns "Score", \code{smr$ItemColumnName};
 #' assigned to \code{smrObj$Value}.
 #' If \code{profile = NULL} then \code{smrObj$Value} is used.
 #' @return A SMRMon object
 #' @export
-SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGetProfileDataFrame", warningQ = TRUE ) {
+SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGetProfileDataFrame", ignoreUnknownTagsQ = FALSE, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1119,7 +1120,13 @@ SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGe
 
   }
 
-  smrObj$Value <- data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE )
+  res <- data.frame( Score = profileScores, Tag = profileTags, stringsAsFactors = FALSE )
+
+  if( ignoreUnknownTagsQ ) {
+    res <- res[ res$Tag %in% colnames(smrObj$M), ]
+  }
+
+  smrObj$Value <- res
 
   smrObj
 }
@@ -1140,13 +1147,14 @@ SMRMonGetProfileDataFrame <- function( smrObj, profile, functionName = "SMRMonGe
 #' @param tagType Tag type over which the vector is made.
 #' @param uniqueColumnsQ Should the tags in the profile have unique indexes in the columns of \code{smrObj$M}?
 #' @param functionName A string that is a name of this function or a delegating function.
+#' @param ignoreUnknownTagsQ Should the unknown tags be ignored or not?
 #' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
 #' @details The result profile vector (sparse matrix) is
 #' assigned to \code{smrObj$Value}.
 #' If \code{profile = NULL} then \code{smrObj$Value} is used.
 #' @return A SMRMon object
 #' @export
-SMRMonGetProfileVector <- function( smrObj, profile, tagType = NULL, uniqueColumnsQ = TRUE, functionName = "SMRMonGetProfileVector", warningQ = TRUE ) {
+SMRMonGetProfileVector <- function( smrObj, profile, tagType = NULL, uniqueColumnsQ = TRUE, functionName = "SMRMonGetProfileVector", ignoreUnknownTagsQ = FALSE, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1167,6 +1175,10 @@ SMRMonGetProfileVector <- function( smrObj, profile, tagType = NULL, uniqueColum
       return(SMRMonFailureSymbol)
     }
 
+    if( ignoreUnknownTagsQ ) {
+      profile <- profile[ rownames(profile) %in% colnames(smrObj$M), , drop = FALSE]
+    }
+
     if( nrow(profile) != ncol(smrObj$M) ) {
       warning( paste0( "The profile vector given to the function ", functionName,
                        " is expected to be a sparse matrix with ", ncol(smrObj$M),
@@ -1184,12 +1196,20 @@ SMRMonGetProfileVector <- function( smrObj, profile, tagType = NULL, uniqueColum
       return(SMRMonFailureSymbol)
     }
 
+    if( ignoreUnknownTagsQ ) {
+      profile <- profile[ profile$Tag %in% colnames(smrObj$M), ]
+    }
+
     profile <- SMRProfileDFToVector( smr = smrObj,
                                      profileDF = profile,
                                      tagType = tagType,
                                      uniqueColumns = uniqueColumnsQ )
 
   } else if ( is.character(profile) ) {
+
+    if( ignoreUnknownTagsQ ) {
+      profile <- profile[ names(profile) %in% colnames(smrObj$M) ]
+    }
 
     profile <- SMRProfileDFToVector( smr = smrObj,
                                      profileDF = data.frame( Score = 1, Tag = profile, stringsAsFactors = FALSE),
@@ -1285,11 +1305,17 @@ SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12, ... ) 
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
+  lsArgs <- list(...)
+
   if ( is.null(spec) ) {
 
-    res <- smrObj %>% SMRMonRecommend( smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE, ... )
+    if( !("ignoreUnknownTagsQ" %in% names(lsArgs)) ) {
 
-    if( !SMRMonFailureQ(res) ) { return(res) }
+      res <- smrObj %>% SMRMonRecommend( smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE, ... )
+
+      if( !SMRMonFailureQ(res) ) { return(res) }
+
+    }
 
     res <- smrObj %>% SMRMonRecommendByProfile(  smrObj %>% SMRMonTakeValue, nrecs = nrecs, warningQ = FALSE, ... )
 
@@ -1299,11 +1325,15 @@ SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12, ... ) 
 
   } else {
 
-    res <- smrObj %>% SMRMonRecommend( spec, nrecs = nrecs, ... )
+    if( !("ignoreUnknownTagsQ" %in% names(lsArgs)) ) {
 
-    if( !SMRMonFailureQ(res) ) { return(res) }
+      res <- smrObj %>% SMRMonRecommend( history = spec, nrecs = nrecs, warningQ = FALSE, ... )
 
-    res <- smrObj %>% SMRMonRecommendByProfile( spec, nrecs = nrecs, ... )
+      if( !SMRMonFailureQ(res) ) { return(res) }
+
+    }
+
+    res <- smrObj %>% SMRMonRecommendByProfile( profile = spec, nrecs = nrecs, warningQ = FALSE, ... )
 
     if( SMRMonFailureQ(res) ) {
       warning( "The argument spec is not a history or profile specification.", call. = TRUE )
@@ -1376,6 +1406,7 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 #' a sparse matrix with 1 column and a number of rows that equals \code{ncol(smrObj$M)}.
 #' @param nrecs Number of recommendations to be returned.
 #' @param normalizeQ Should the scores be normalized by the maximum score or not?
+#' @param ignoreUnknownTagsQ Should the unknown tags be ignored or not?
 #' @param warningQ Should a warning be issued if \code{profile} is of unknown type?
 #' @details The recommendations result is a
 #' data frame with columns "Score", "Index", \code{smr$ItemColumnName};
@@ -1383,7 +1414,7 @@ SMRMonRecommend <- function( smrObj, history, nrecs = 12, removeHistoryQ = FALSE
 #' @return A SMRMon object
 #' @family Recommendations computation functions
 #' @export
-SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = FALSE, warningQ = TRUE ) {
+SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = FALSE, ignoreUnknownTagsQ = FALSE, warningQ = TRUE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1393,7 +1424,7 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = 
 
   if( SparseMatrixRecommender::SMRSparseMatrixQ(profile) ) {
 
-    smrObj <- smrObj %>% SMRMonGetProfileVector( profile = profile, functionName = "SMRMonRecommendByProfile", warningQ = warningQ )
+    smrObj <- smrObj %>% SMRMonGetProfileVector( profile = profile, functionName = "SMRMonRecommendByProfile", ignoreUnknownTagsQ = ignoreUnknownTagsQ, warningQ = warningQ )
 
     if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1403,7 +1434,7 @@ SMRMonRecommendByProfile <- function( smrObj, profile, nrecs = 12, normalizeQ = 
 
   } else {
 
-    smrObj <- smrObj %>% SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonRecommendByProfile", warningQ = warningQ )
+    smrObj <- smrObj %>% SMRMonGetProfileDataFrame( profile = profile, functionName = "SMRMonRecommendByProfile", ignoreUnknownTagsQ = ignoreUnknownTagsQ, warningQ = warningQ )
 
     if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 

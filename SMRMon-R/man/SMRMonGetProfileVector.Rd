@@ -10,6 +10,7 @@ SMRMonGetProfileVector(
   tagType = NULL,
   uniqueColumnsQ = TRUE,
   functionName = "SMRMonGetProfileVector",
+  ignoreUnknownTagsQ = FALSE,
   warningQ = TRUE
 )
 }
@@ -26,6 +27,8 @@ a character vector, the correspond ratings assumed all to be 1.}
 \item{uniqueColumnsQ}{Should the tags in the profile have unique indexes in the columns of \code{smrObj$M}?}
 
 \item{functionName}{A string that is a name of this function or a delegating function.}
+
+\item{ignoreUnknownTagsQ}{Should the unknown tags be ignored or not?}
 
 \item{warningQ}{Should a warning be issued if \code{profile} is of unknown type?}
 }

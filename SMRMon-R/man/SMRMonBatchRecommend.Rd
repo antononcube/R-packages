@@ -10,8 +10,7 @@ SMRMonBatchRecommend(
   nrecs = 12,
   removeHistoryQ = FALSE,
   normalizeQ = FALSE,
-  targetColumnName = "ProfileID",
-  warningQ = TRUE
+  targetColumnName = "ProfileID"
 )
 }
 \arguments{
@@ -30,8 +29,6 @@ If NULL all non-zero score recommendations are returned.}
 
 \item{targetColumnName}{The column name for the \code{data} rownames in the result data frame.
 (I.e. the column in the recommendations result data frame that has \code{rownames(mat)} as values.)}
-
-\item{warningQ}{Should a warning be issued if \code{history} is of unknown type?}
 }
 \value{
 A SMRMon object
@@ -47,7 +44,7 @@ assigned to \code{smrObj$Value}. The following steps are taken:
 (2) Compute matrix-matrix product for the recommendations.
 (3) If specified, remove history.
 (4) Keep the specified top number of recommendations only.
-(5) if specified, normalize per data element the scores by the maximum score.
+(5) If specified, normalize per data element the scores by the maximum score.
 (6) Return results.
 }
 \seealso{

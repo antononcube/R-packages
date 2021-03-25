@@ -10,7 +10,6 @@ SMRMonTagNearestNeighbors(
   tagType,
   nrecs = 12,
   nrecsProfile = 100,
-  normalizeQ,
   ...
 )
 }
@@ -24,9 +23,6 @@ SMRMonTagNearestNeighbors(
 \item{nrecs}{Number of nearest neighbors.}
 
 \item{nrecsProfile}{Number of recommendations for finding the \code{tags} profile.}
-
-\item{normalizeQ}{Should the scores be normalized?
-(By dividing by the maximum score.)}
 
 \item{...}{Additional arguments passed to \code{\link{SMRClassifyByProfileVector}}.}
 }

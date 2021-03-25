@@ -9,6 +9,7 @@ SMRMonRecommendByProfile(
   profile,
   nrecs = 12,
   normalizeQ = FALSE,
+  ignoreUnknownTagsQ = FALSE,
   warningQ = TRUE
 )
 }
@@ -24,6 +25,8 @@ a sparse matrix with 1 column and a number of rows that equals \code{ncol(smrObj
 \item{nrecs}{Number of recommendations to be returned.}
 
 \item{normalizeQ}{Should the scores be normalized by the maximum score or not?}
+
+\item{ignoreUnknownTagsQ}{Should the unknown tags be ignored or not?}
 
 \item{warningQ}{Should a warning be issued if \code{profile} is of unknown type?}
 }
