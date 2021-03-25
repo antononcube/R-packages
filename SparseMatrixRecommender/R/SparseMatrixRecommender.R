@@ -2163,8 +2163,9 @@ ClassifyByProfileVector.SMR <- function ( x, tagType, profileVec, nTopNNs, votin
 ##===========================================================
 ## Here is way to construct a composite recommender object:
 
-# rcObj <- list( Recommenders = list( "SMR1" = smr1, "SMRFreq1" = smrFreq1, "SMR2" = smr2, "SMR3" = smr3 ), Weights = c(1,0.5,1,1),
-#               NormalizationType = "quantileIntervals", MergeFunction = length )
+# rcObj <- list( Recommenders = list( "SMR1" = smr1, "SMRFreq1" = smrFreq1, "SMR2" = smr2, "SMR3" = smr3 ), 
+#                Weights = c(1,0.5,1,1),
+#                NormalizationType = "quantileIntervals", MergeFunction = length )
 # class(rcObj) <- "CompositeRecommender"
 
 #' Calculate recommendations with a composite recommender
