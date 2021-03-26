@@ -48,6 +48,7 @@ is executed first.
 }
 \seealso{
 Other Pareto plots: 
+\code{\link{ParetoPlotForVariables}()},
 \code{\link{ParetoPlot}()}
 }
 \concept{Pareto plots}

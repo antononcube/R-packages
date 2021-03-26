@@ -5,14 +5,20 @@ date: 2019-03-01
 output: html_notebook
 ---
 
+```{r setup}
+library(ParetoPrincipleAdherence)
+library(RandomDataFrameGenerator)
+```
+
 # Introduction
 
 This notebook shows examples of the adherence of different datasets to the [Pareto Principle](https://en.wikipedia.org/wiki/Pareto_principle).
 
 ## Package installation
 
-```{r, eval=T}
+```{r, eval=F}
 devtools::install_github( "antononcube/R-packages", subdir = "ParetoPrincipleAdherence")
+devtools::install_github( "antononcube/R-packages", subdir = "RandomDataFrameGenerator")
 ```
 
 # Examples
@@ -30,6 +36,20 @@ summary(diamonds)
 
 ```{r}
 ParetoPlotForColumns(data = diamonds, columnNames = c("carat", "cut", "color", "clarity", "price"), normalizeQ = F, scales = "free", nrow = 2 )
+```
+
+```{r}
+matDiamonds <- RandomDataFrame( nrow = 200, columnNames = c("Carat", "Depth", "Table"), generators = list( function(n) {res <- rnorm(n, 1, 0.6); ifelse(res < 0.1, 0.1, res)}, function(n) rnorm(n, 10, 2), function(n) rnorm(n, 50, 20) ) )
+matDiamonds <- as.matrix(matDiamonds)
+head(matDiamonds)
+```
+
+```{r}
+ParetoForVariables(matDiamonds)
+```
+
+```{r}
+ParetoPlotForVariables( matDiamonds )
 ```
 
 Here we compute the Pareto statistic for a selected column:

@@ -183,6 +183,108 @@ ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
 #' Pareto for variables.
 #' @description Computes the Pareto statistic for each of the specified columns.
 #' @param data A data frame.
+#' @param variables The variables to calculate upon.
+#' If NULL then it is automatically selected depending on the value given to \code{form}.
+#' @param normalizeQ Should the Pareto statistic be normalized with the total or not?
+#' @param form In what form \code{data} is.
+#' One of NULL, "Long", or "Wide".
+#' If NULL then it is the same as "Wide".
+#' @return A data frame with columns \code{c("Variable", "Item", "ParetoFraction")}.
+#' @details This function works on both long form and wide form data.
+#' It redirects to the functions
+#' \code{\link{ParetoForLongForm}} and \code{\link{ParetoForWideForm}}
+#' respectively.
+#' @export
+ParetoForVariables <- function( data, variables = NULL, normalizeQ = TRUE, form = "Wide" ) {
+
+  if( is.null(form) || tolower(form) == "long" ) {
+
+    ParetoForLongForm( data = data, variables = variables, normalizeQ = normalizeQ )
+
+  } else {
+
+    ParetoForWideForm( data = data, variables = variables, normalizeQ = normalizeQ )
+
+  }
+
+}
+
+
+#' Pareto for wide form data.
+#' @description Computes the Pareto statistic for each of the specified columns.
+#' @param data A data frame.
+#' @param variables The variables to calculate upon.
+#' If NULL then \code{variables = colnames(data)}.
+#' @param normalizeQ Should the Pareto statistic be normalized with the total or not?
+#' @return A data frame with columns \code{c("Variable", "Item", "ParetoFraction")}.
+#' @details This function works on wide form data.
+#' It delegates to the function \code{\link{ParetoForWeightedItems}}.
+#' Note that the specified columns can be a mix of categorical and numerical columns.
+#' @export
+ParetoForWideForm <- function( data, variables = colnames(data), normalizeQ = TRUE ) {
+
+  if( is.matrix(data) && is.numeric(data) ) {
+
+    data <- as.data.frame(data)
+
+    if( is.null(colnames(data)) ) {
+      colnames(data) <- make.names(as.character(1:ncol(data)))
+    }
+  }
+
+  if( !is.data.frame(data) ) {
+    stop( "The argument data is expected to be a data frame or a numeric matrix.", call. = TRUE )
+  }
+
+  if( is.null(variables) ) { variables = colnames(data) }
+
+  if( sum(variables %in% colnames(data)) < length(variables) ) {
+    warning( "Some of the specified column names are unknown.", call. = TRUE )
+    variables <- variables[ variables %in% colnames(data) ]
+  }
+
+
+  if( ! is.character(variables) ) {
+    stop( "The argument variables is expected to be a non-empty character vector with column names of the argument data.", call. = TRUE )
+  }
+
+  purrr::map_dfr( variables, function(x) {
+    cbind( Variable = x, ParetoForWeightedItems( data = data[[x]], normalizeQ = normalizeQ ), stringsAsFactors = FALSE )
+  })
+
+}
+
+
+#' Pareto for long form data.
+#' @description Computes the Pareto statistic for each of the specified columns.
+#' @param data A data frame with columns \code{c("Variable", "Item", "Weight")}.
+#' @param variables The variables to calculate upon.
+#' If NULL then \code{variables = colnames(data)}.
+#' @param normalizeQ Should the Pareto statistic be normalized with the total or not?
+#' @return A data frame with columns \code{c("Variable", "Item", "ParetoFraction")}.
+#' @details This function works on long form data.
+#' It delegates to the function \code{\link{ParetoForWeightedItems}}.
+#' The data is partitioned according to \code{data$Variable}.
+#' If \code{normalizeQ = TRUE} then for each part \code{data2} the Pareto statistic is computed with the formula:
+#' \code{ cumsum(sort(data2$Weight, decreasing=TRUE)) / sum(data2$Weight) }.
+#' @export
+ParetoForLongForm <- function( data, variables = NULL, normalizeQ = TRUE ) {
+
+  lsExpectedColumnNames <- c("Variable", "Item", "Weight")
+  if( !is.data.frame(data ) && sum( lsExpectedColumnNames %in% colnames(data) ) < length(lsExpectedColumnNames) ) {
+    stop( paste0( "The argument data is expected to be a data frame with columns: ", paste( lsExpectedColumnNames, collapse = ", " ) ), call. = TRUE )
+  }
+
+  purrr::map_dfr( split(data, data$Variable), function(dfX) {
+    cbind( Variable = dfX$Variable[[1]], ParetoForWeightedItems( data = dfX[, c("Item", "Weight")], normalizeQ = normalizeQ ), stringsAsFactors = FALSE )
+  })
+
+}
+
+
+#' Pareto for variables. (Obsolete.)
+#' @description Computes the Pareto statistic for each of the specified columns.
+#' @param data A data frame.
 #' @param columnNames The column names of the variables.
 #' @param normalizeQ Should the Pareto statistic be normalized with the total or not?
 #' @return A data frame with columns \code{c("Variable", "Item", "ParetoFraction")}.
@@ -190,7 +292,7 @@ ParetoForWeightedItems <- function( data, normalizeQ = TRUE ) {
 #' (The function \code{\link{ParetoForWeightedItems}} works on long form data.)
 #' Note that the specified columns can be a mix of categorical and numerical columns.
 #' @export
-ParetoForVariables <- function( data, columnNames = colnames(data), normalizeQ = TRUE ) {
+ParetoForVariablesObsolete <- function( data, columnNames = colnames(data), normalizeQ = TRUE ) {
 
   if( sum(columnNames %in% colnames(data)) < length(columnNames) ) {
     warning( "Some of the specified column names are unknown.", call. = TRUE )
@@ -206,6 +308,7 @@ ParetoForVariables <- function( data, columnNames = colnames(data), normalizeQ =
   })
 
 }
+
 
 
 ##===========================================================
@@ -282,6 +385,82 @@ ParetoPlot <- function( data, ... ) {
 #' Pareto plot for variables.
 #' @description Make a plot that demonstrates the adherence to the Pareto Principle
 #' of a data frame with item names and weight values.
+#' @param data A data frame.
+#' @param normalizeQ Should the Pareto cumulative values be normalized or not?
+#' @param form In what form \code{data} is.
+#' One of NULL, "Long", or "Wide".
+#' If NULL then it is the same as "Wide".
+#' @param separatedPlotsQ Should the plotted Pareto curves be separated or not?
+#' @param main A string for the title of the plot.
+#' @param scales Sames as \code{scales} of \code{ggplot2::facet_wrap}.
+#' @param nrow Sames as \code{nrow} of \code{\link{ggplot2::facet_wrap}}.
+#' @param ncol Sames as \code{ncol} of \code{\link{ggplot2::facet_wrap}}.
+#' @param ... Parameters for \code{\link{ggplot2::theme}}
+#' @details
+#' The data frame \code{data} is transformed by
+#' \code{ParetoForLongForm} or \code{ParetoForWideForm} according to the
+#' value of \code{form}
+#' The column \code{data$Value} is used to make the Pareto Principle curves.
+#' Each plot has percentage vertical lines.
+#' @family Pareto plots
+#' @export
+ParetoPlotForVariables <- function( data,
+                                     normalizeQ = TRUE,
+                                     form = "Wide",
+                                     separatedPlotsQ = TRUE,
+                                     main = NULL, scales = "fixed", nrow = NULL, ncol = NULL, ...  ) {
+
+
+  pres <- ParetoForVariables( data = data, form = form, normalizeQ = normalizeQ )
+
+  qdf <-
+    purrr::map_df( split( pres, pres[["Variable"]] ), function(dfX) {
+
+      if( nrow(dfX) == 0 ) {
+
+        NULL
+
+      } else {
+
+        pres <- cbind( dfX, Index = 1:nrow(dfX) )
+
+        cbind( pres,
+               p10 = 0.1*nrow(pres), p20 = 0.2*nrow(pres), p30 = 0.3*nrow(pres),  p40 = 0.4*nrow(pres),  p50 = 0.5*nrow(pres) )
+      }
+
+    })
+
+
+  if( separatedPlotsQ ) {
+
+    ggplot2::ggplot(qdf) +
+      ggplot2::geom_line(  ggplot2::aes( x = Index, y = ParetoFraction ) ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p10), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p20), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p30), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p40), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p50), linetype = 3 ) +
+      ggplot2::facet_wrap( ~ Variable, scales = scales, nrow = nrow, ncol = ncol ) +
+      ggplot2::theme( ... )
+
+  } else {
+
+    ggplot2::ggplot(qdf) +
+      ggplot2::geom_line(  ggplot2::aes( x = Index, y = ParetoFraction, color = Variable ) ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p10), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p20), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p30), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p40), linetype = 3 ) +
+      ggplot2::geom_vline( ggplot2::aes( xintercept = p50), linetype = 3 ) +
+      ggplot2::theme( ... )
+
+  }
+}
+
+
+#' Pareto plot for variables. (Obsolete.)
+#' @description Make a plot that demonstrates the adherence to the Pareto Principle
+#' of a data frame with item names and weight values.
 #' @param data A two column data frame with the first column of a variable name
 #' and second column a numerical vector \code{c("Variable", "Value")}.
 #' @param normalizeQ Should the Pareto cumulative values be normalized or not?
@@ -297,8 +476,8 @@ ParetoPlot <- function( data, ... ) {
 #' Each plot has percentage vertical lines.
 #' @details Pareto plots
 #' @export
-ParetoPlotForVariables <- function( data, normalizeQ = TRUE, separatedPlotsQ = TRUE,
-                                    main = NULL, scales = "fixed", nrow = NULL, ncol = NULL, ...  ) {
+ParetoPlotForVariablesObsolete <- function( data, normalizeQ = TRUE, separatedPlotsQ = TRUE,
+                                            main = NULL, scales = "fixed", nrow = NULL, ncol = NULL, ...  ) {
 
   if( !is.data.frame(data) || sum( c("Variable", "Value") %in% colnames(data) ) < 2 ) {
     stop( "The argument data is expected to be a data frame with columns \"Variable\" and \"Value\".")

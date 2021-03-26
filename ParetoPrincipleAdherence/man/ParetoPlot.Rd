@@ -19,6 +19,7 @@ This function is a shortcut to \code{\link{ParetoPlotForVariables}}.
 }
 \seealso{
 Other Pareto plots: 
-\code{\link{ParetoFramePlot}()}
+\code{\link{ParetoFramePlot}()},
+\code{\link{ParetoPlotForVariables}()}
 }
 \concept{Pareto plots}
