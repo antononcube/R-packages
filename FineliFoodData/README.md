@@ -17,3 +17,6 @@ Here is an excerpt from that web-page:
 > - Data description in file descript.txt
 > - Instructions (pdf)
 > - Food components (pdf)
+
+In this package the content of Fineli's text file "descript.txt" is copied in [Descriptions.md](./notebooks/Descriptions.md).
+The original file is placed here [descript.txt](./txt/descript.txt).
