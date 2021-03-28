@@ -1,0 +1,59 @@
+---
+title: "Package data preparation"
+author: Anton Antonov
+date: 2021-03-28
+output: html_notebook
+params:
+  fineliDataDirName: "~/Datasets/Fineli/Fineli_Rel20"
+---
+
+```{r setup}
+library(tidyverse)
+devtools::load_all()
+```
+
+# Introduction 
+
+In this notebook we create the data structures of this data package.
+
+# Read Data
+
+
+# Read data
+
+```{r}
+lsFileNames <- list.files( path = params$fineliDataDirName, pattern = "*.csv", full.names = F)
+lsFullFileNames <- list.files( path = params$fineliDataDirName, pattern = "*.csv", full.names = T)
+length(lsFullFileNames)
+```
+
+```{r}
+lsFineliFoodDataTables <- 
+  purrr::map( lsFullFileNames, function(ffname) {
+    read.csv2( file = ffname, fill = TRUE, stringsAsFactors = FALSE )
+  })
+names(lsFineliFoodDataTables) <- gsub( "\\.csv", "", lsFileNames )
+```
+
+```{r}
+mean(sapply( lsFineliFoodDataTables, is.data.frame))
+```
+
+
+```{r}
+SummarizeTables(lsFineliFoodDataTables)
+```
+```{r}
+is.character(MakeDictionary("foodname", lang = "SV"))
+```
+
+```{r}
+MakeDictionary( "food", nameFrom = "FOODID", nameTo = "IGCLASSd", lang = "English" )
+```
+
+# Make the data
+
+```{r, eval=F}
+usethis::use_data(lsFineliFoodDataTables)
+```
+
