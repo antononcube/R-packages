@@ -18,5 +18,27 @@ Here is an excerpt from that web-page:
 > - Instructions (pdf)
 > - Food components (pdf)
 
-In this package the content of Fineli's text file "descript.txt" is copied in [Descriptions.md](./notebooks/Descriptions.md).
-The original file is placed here [descript.txt](./txt/descript.txt).
+In this package the content of Fineli's text file "descript.txt" is copied in ["Descriptions.md"](./notebooks/Descriptions.md).
+The original file is placed here: ["descript.txt"](./txt/descript.txt).
+
+
+## Installation
+
+```r
+devtools::install_github("antononcube/R-packages", subdir = "FineliFoodData")
+```
+
+## Example code
+
+Load the packages and show summary of its tables:
+
+```r
+library(FineliFoodData)
+SummarizeTables()
+```
+
+Make a dictionary of food class codes to English descriptions:
+
+```r
+MakeDictionary("fuclass", nameFrom = "THSCODE", nameTo = "DESCRIPT", lang = "English")
+```
