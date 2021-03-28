@@ -98,9 +98,11 @@ SummarizeTables <- function( tables = NULL ) {
 #' @param lang Language for the interpretations.
 #' One of \code{c("EN", "English", "FI", "Finnish", "SV", "Swedish")}.
 #' If NULL then it is the same as "English".
+#' @param columnNamePrefixesQ Should the column names be used as prefixes or not?
+#' @param sep Separator for the prefixes of the columns names.
 #' @return A list with named elements.
 #' @export
-MakeDictionary <- function( table, nameFrom = NULL, nameTo = NULL, lang = "English" ) {
+MakeDictionary <- function( table, nameFrom = NULL, nameTo = NULL, lang = "English", columnNamePrefixesQ = FALSE, sep = ":" ) {
 
   if( is.null(lang) ) { lang <- "English" }
 
@@ -154,6 +156,9 @@ MakeDictionary <- function( table, nameFrom = NULL, nameTo = NULL, lang = "Engli
     stop( "The value of nameTo is not a column of the argument table.", call. = TRUE )
   }
 
-  setNames( table[[nameTo]], table[[nameFrom]])
-
+  if( columnNamePrefixesQ ) {
+    setNames( paste0( nameTo, sep, table[[nameTo]]), paste0( nameFrom, sep, table[[nameFrom]]) )
+  } else {
+    setNames( table[[nameTo]], table[[nameFrom]])
+  }
 }

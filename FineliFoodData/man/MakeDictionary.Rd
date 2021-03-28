@@ -4,7 +4,14 @@
 \alias{MakeDictionary}
 \title{Make dictionary}
 \usage{
-MakeDictionary(table, nameFrom = NULL, nameTo = NULL, lang = "English")
+MakeDictionary(
+  table,
+  nameFrom = NULL,
+  nameTo = NULL,
+  lang = "English",
+  columnNamePrefixesQ = FALSE,
+  sep = ":"
+)
 }
 \arguments{
 \item{table}{A data frame or a string of Fineli Food Data table name.
@@ -19,6 +26,10 @@ If NULL the first character column is used.}
 \item{lang}{Language for the interpretations.
 One of \code{c("EN", "English", "FI", "Finnish", "SV", "Swedish")}.
 If NULL then it is the same as "English".}
+
+\item{columnNamePrefixesQ}{Should the column names be used as prefixes or not?}
+
+\item{sep}{Separator for the prefixes of the columns names.}
 }
 \value{
 A list with named elements.
