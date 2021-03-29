@@ -8,6 +8,8 @@ output: html_notebook
 ```{r setup}
 library(ParetoPrincipleAdherence)
 library(RandomDataFrameGenerator)
+library(ggplot2)
+library(magrittr)
 ```
 
 # Introduction
@@ -26,9 +28,6 @@ devtools::install_github( "antononcube/R-packages", subdir = "RandomDataFrameGen
 
 ## The diamonds dataset
 
-```{r}
-data("diamonds")
-```
 
 ```{r}
 summary(diamonds)
@@ -50,6 +49,14 @@ ParetoForVariables(matDiamonds)
 
 ```{r}
 ParetoPlotForVariables( matDiamonds )
+```
+
+```{r}
+matDiamonds[,1]
+```
+
+```{r}
+ParetoPlot( matDiamonds[,1])
 ```
 
 Here we compute the Pareto statistic for a selected column:
