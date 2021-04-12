@@ -89,12 +89,12 @@ SplitVariableValues <- function( data, variableToSplit, splitPattern = ";", idCo
 
     return(
       Reduce(
-        f = function(a,x) SplitVariablValues( data = a,
-                                              variableToSplit = x,
-                                              splitPattern = splitPattern,
-                                              idColumn = idColumn,
-                                              variableColumn = variableColumn,
-                                              valueColumn = valueColumn),
+        f = function(a,x) SplitVariableValues( data = a,
+                                               variableToSplit = x,
+                                               splitPattern = splitPattern,
+                                               idColumn = idColumn,
+                                               variableColumn = variableColumn,
+                                               valueColumn = valueColumn),
         init = data,
         x = variableToSplit,
       )
