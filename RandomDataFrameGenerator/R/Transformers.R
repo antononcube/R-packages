@@ -68,7 +68,7 @@ SplitVariableValues <- function( data, variableToSplit, splitPattern = ";", idCo
     stop("The argument variableToSplit is expected to be a character vector.", call. = TRUE)
   }
 
-  if( !( is.character(splitPattern) && length(sep) == 1 ) ) {
+  if( !( is.character(splitPattern) && length(splitPattern) == 1 ) ) {
     stop("The argument splitPattern is expected to be a string.", call. = TRUE)
   }
 
@@ -87,21 +87,23 @@ SplitVariableValues <- function( data, variableToSplit, splitPattern = ";", idCo
   ## Batch processing of multiple split variables
   if( length(variableToSplit) > 1 ) {
 
-    Reduce(
-      f = function(a,x) SplitVariablValues( data = a,
-                                            variableToSplit = x,
-                                            sep = sep,
-                                            idColumn = idColumn,
-                                            variableColumn = variableColumn,
-                                            valueColumn = valueColumn),
-      init = data,
-      x = variableToSplit,
+    return(
+      Reduce(
+        f = function(a,x) SplitVariablValues( data = a,
+                                              variableToSplit = x,
+                                              splitPattern = splitPattern,
+                                              idColumn = idColumn,
+                                              variableColumn = variableColumn,
+                                              valueColumn = valueColumn),
+        init = data,
+        x = variableToSplit,
+      )
     )
 
   }
 
   ## Single variable to split
-  dfRandLongFormPart <- dfRandLongForm[ dfRandLongForm[[variableColumn]] == variableToSplit, ]
+  dfRandLongFormPart <- data[ data[[variableColumn]] == variableToSplit, ]
 
   dfRandLongFormPart <-
     purrr::map_df( split(dfRandLongFormPart, 1:nrow(dfRandLongFormPart) ), function(dfX) {
@@ -111,10 +113,9 @@ SplitVariableValues <- function( data, variableToSplit, splitPattern = ";", idCo
 
   dfRandLongForm2 <-
     rbind(
-      dfRandLongForm[ dfRandLongForm[[variableColumn]] != variableToSplit, ],
+      data[ data[[variableColumn]] != variableToSplit, ],
       dfRandLongFormPart
-    ) %>%
-    dplyr::mutate( Weight = 1, Value = tolower(Value) )
+    )
 
   dfRandLongForm2[ order(dfRandLongForm2[[idColumn]]), ]
 }
