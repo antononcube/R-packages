@@ -193,6 +193,8 @@ SMRCreateItemTagMatrix <- function( dataRows, itemColumnName, tagType, sparse = 
 #' @export
 SMRCreate <- function(dataRows, tagTypes = names(dataRows)[-1], itemColumnName = names(dataRows)[1], ... ){
   
+  tagTypes <- setdiff(tagTypes, itemColumnName)
+  
   matrices <- purrr::map(tagTypes, function(x){
     SMRCreateItemTagMatrix(dataRows, tagType=x, itemColumnName=itemColumnName)
   })
