@@ -229,8 +229,10 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
     stop( "The argument tagTypeTo is not a known tag type of the recommender smr.", call. = TRUE )
   }
   
+  if( is.null(nTopTags) ) { nTopTags <- nrow(smr$M) }
+  
   if( !( is.numeric(nTopTags) && length(nTopTags) == 1 && nTopTags > 0 ) ) {
-    stop( "The argument nTopTags is expected to be a positive number.", call. = TRUE )
+    stop( "The argument nTopTags is expected to be a positive number or NULL.", call. = TRUE )
   }
   
   if( nTopTags > 1 ) {
@@ -283,10 +285,12 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
     dplyr::group_by_at( .vars = c( smr$ItemColumnName ) ) %>% 
     dplyr::arrange(dplyr::desc(Weight)) %>% 
     dplyr::filter( dplyr::row_number() <= nTopTags ) %>% 
-    dplyr::ungroup()
+    dplyr::ungroup() %>% 
+    dplyr::mutate( NewID = Value ) %>% 
+    dplyr::select_at( .vars = c(smr$ItemColumnName, "NewID") )
   
   
-  lsIDToTag <- setNames( dfIDToTag$Value, dfIDToTag[[smr$ItemColumnName]] )
+  lsIDToTag <- setNames( dfIDToTag$NewID, dfIDToTag[[smr$ItemColumnName]] )
   
   ## Remove tagTypeTo records from long form
   dfVectorTypesLongForm <- 
@@ -298,10 +302,27 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
     stop( "Empty long form was obtained.", call. = TRUE )
   }
   
-  ## Map items to tagTypeTo values
-  dfVectorTypesLongForm[[ smr$ItemColumnName ]] = lsIDToTag[ dfVectorTypesLongForm[[ smr$ItemColumnName ]]  ]
-  
-  dfVectorTypesLongForm <- dfVectorTypesLongForm[ !is.na(dfVectorTypesLongForm[[ smr$ItemColumnName ]]), ]
+  ## Transform the long form with mapping
+  if( nTopTags == 1 ) {
+    ## Map items to tagTypeTo values
+    
+    dfVectorTypesLongForm[[ smr$ItemColumnName ]] <- lsIDToTag[ dfVectorTypesLongForm[[ smr$ItemColumnName ]]  ]
+    
+    dfVectorTypesLongForm <- dfVectorTypesLongForm[ !is.na(dfVectorTypesLongForm[[ smr$ItemColumnName ]]), ]
+    
+  } else {
+    ## Using inner join for the new IDs (that are tagTypeTo values)
+
+    dfVectorTypesLongForm <- 
+      dfVectorTypesLongForm %>% 
+      dplyr::inner_join( dfIDToTag, by = smr$ItemColumnName )
+    
+    dfVectorTypesLongForm[[ smr$ItemColumnName ]] <- dfVectorTypesLongForm[[ "NewID" ]]
+    
+    dfVectorTypesLongForm <- 
+      dfVectorTypesLongForm %>% 
+      dplyr::mutate( NewID = NULL )
+  }
 
   ## Create contingency matrices from the transformed long form
   smats <- 
