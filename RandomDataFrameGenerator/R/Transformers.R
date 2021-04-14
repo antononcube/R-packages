@@ -107,8 +107,20 @@ SplitVariableValues <- function( data, variableToSplit, splitPattern = ";", idCo
 
   dfRandLongFormPart <-
     purrr::map_df( split(dfRandLongFormPart, 1:nrow(dfRandLongFormPart) ), function(dfX) {
-      res <- data.frame( ID = dfX[[idColumn]], Variable = dfX[[variableColumn]], Value = trimws(strsplit(dfX[[valueColumn]], splitPattern)[[1]]) )
-      setNames(res, c(idColumn, variableColumn, valueColumn))
+
+      if( nrow(dfX) == 0 ) {
+        NULL
+      } else {
+
+        res <- trimws(strsplit(dfX[[valueColumn]], splitPattern)[[1]])
+
+        if( length(res) == 0 ) {
+          NULL
+        } else {
+          res <- data.frame( ID = dfX[[idColumn]], Variable = dfX[[variableColumn]], Value = res  )
+          setNames(res, c(idColumn, variableColumn, valueColumn))
+        }
+      }
     })
 
   dfRandLongForm2 <-
@@ -119,3 +131,17 @@ SplitVariableValues <- function( data, variableToSplit, splitPattern = ";", idCo
 
   dfRandLongForm2[ order(dfRandLongForm2[[idColumn]]), ]
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
