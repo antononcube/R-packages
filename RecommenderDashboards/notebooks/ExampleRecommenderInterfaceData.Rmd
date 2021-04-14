@@ -1,0 +1,162 @@
+---
+title: "Example recommender interface data"
+author: Anton Antonov
+date: 2021-04-14
+output: html_notebook
+---
+
+
+```{r}
+library(magrittr)
+library(tidyverse)
+library(Matrix)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(LSAMon)
+library(OutlierIdentifiers)
+library(ParetoPrincipleAdherence)
+library(RandomDataFrameGenerator)
+```
+
+
+# Introduction
+
+This notebook creates data for the example recommender interface.
+
+# Generated data
+
+```{r}
+set.seed(4932)
+numberOfUsers <- 30
+numberOfDays <- 90
+lsSources <- RandomWord(200,type = "Common")
+dfGoods <- 
+  RandomDataFrame( 
+    nrow = 200,
+    columnNames = c("ID", "UserID", "Good", "Source", "Country", "TimeStamp"),
+    generators = 
+      list(
+        function(n) as.character(round(runif(n = n, min = 10^6, max = 16^8 ))),
+        RandomString(numberOfUsers, lambda = 6, charClasses = "[a-z]"),
+        c("palms", "washing machines", "cars", "milk", "ham"),
+        function(n) purrr::map_chr(1:n, function(x) paste( sample( x = lsSources, size = 12, replace = F), collapse = "; " )),
+        c("China", "Germany", "Denmark", "Spain", "USA"),
+        function(n) as.character(sort(RandomDate(size = n, min = Sys.time(), max = Sys.time() + numberOfDays*24*3600)))
+      )
+    )
+```
+
+```{r}
+head(dfGoods)
+```
+
+```{r}
+summary(as.data.frame(unclass(dfGoods), stringsAsFactors = T))
+```
+
+```{r}
+xtabs(~ UserID + Good, dfGoods )
+```
+
+
+# Transform data
+
+```{r}
+dfRandLongForm <- 
+  tidyr::pivot_longer( data = dfGoods, cols = setdiff( names(dfGoods), "ID"), names_to = "Variable", values_to = "Value")
+dim(dfRandLongForm)
+```
+
+```{r}
+dfRandLongFormPart <- 
+  dfRandLongForm %>% 
+  dplyr::filter( Variable == "Source")
+dfRandLongFormPart <- 
+  purrr::map_df( split(dfRandLongFormPart, 1:nrow(dfRandLongFormPart) ), function(dfX) {
+    data.frame( ID = dfX$ID, Variable = dfX$Variable, Value = trimws(strsplit(dfX$Value, ";")[[1]]) )
+  })
+summary(as.data.frame(unclass(dfRandLongForm), stringsAsFactors = T))
+```
+
+```{r}
+dfRandLongForm2 <- 
+  rbind(
+    dfRandLongForm %>% dplyr::filter( Variable != "Source"),
+    dfRandLongFormPart
+  ) %>% 
+  dplyr::mutate( Weight = 1, Value = tolower(Value) )
+dim(dfRandLongForm2)
+```
+
+# Make recommender
+
+Make invoice-centric, frequencies recommender:
+
+```{r}
+smrGoodsFreq <- SMRCreateFromLongForm( data = dfRandLongForm2, itemColumnName = "ID", tagTypeColumnName = "Variable", valueColumnName = "Value", weightColumnName = "Weight", addTagTypesToColumnNamesQ = T )
+smrGoodsFreq %>% SMRMonTakeTagTypeRanges
+```
+
+```{r}
+summary(smrGoodsFreq$M@x)
+```
+
+(Heuristically) tuned recommender:
+
+```{r}
+smrGoods <- 
+  smrGoodsFreq %>% 
+  SMRMonApplyTermWeightFunctions("IDF", "None", "Cosine")
+```
+
+```{r}
+smrGoods %>% SMRMonTakeTagTypeRanges
+```
+
+```{r}
+summary(smrGoods$M@x)
+```
+
+# Example recommendations
+
+```{r}
+smrGoods %>% 
+  SMRMonRecommendByProfile(c("Good:milk")) %>% 
+  SMRMonJoinAcross( data = dfGoods, by = "ID" ) %>% 
+  SMRMonTakeValue
+```
+
+# LSA
+
+```{r}
+lsaGoods <- 
+  LSAMonUnit( setNames(dfGoods$Source, dfGoods$ID) ) %>% 
+  LSAMonMakeDocumentTermMatrix() %>% 
+  LSAMonExtractTopics( numberOfTopics = 2, minNumberOfDocumentsPerTerm = 1, method = "SVD" ) %>% 
+  LSAMonEchoTopicsTable( numberOfTerms = 15, wideFormQ = T)
+```
+
+# Extend core food recommender
+
+```{r}
+matWords <- lsaGoods %>% LSAMonTakeWeightedDocumentTermMatrix
+matTopics <- lsaGoods %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = F) %>% LSAMonTakeW
+```
+
+```{r}
+smrGoods <- 
+  smrGoods %>% 
+  SMRAnnexSubMatrix( newSubMat = matWords, newTagType = "Word", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
+  SMRAnnexSubMatrix( newSubMat = matTopics, newTagType = "Topic", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
+  SMRMonApplyTermWeightFunctions( "None", "None", "Cosine")
+```
+
+
+# Save
+
+```{r}
+save( smrGoods, file = file.path( "../flexdashboards/", "smrGoods.RData") )
+save( lsaGoods, file = file.path( "../flexdashboards/", "lsaGoods.RData") )
+save( dfGoods,  file = file.path( "../flexdashboards/", "dfGoods.RData") )
+```
+
