@@ -279,7 +279,7 @@ StMonTakeData <- function( qrObj, functionName = "StMonTakeData" ) {
 
   if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
 
-  if( !StMonMemberPresenceCheck( qrObj, memberName = "Data", memberPrettyName = "Data", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !StMonMemberPresenceCheck( qrObj, memberName = "Data", memberPrettyName = "Data", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(StMonFailureSymbol)
   }
 
@@ -301,7 +301,7 @@ StMonTakeRegressionFunctions <- function( qrObj, functionName = "StMonTakeRegres
 
   if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
 
-  if( !StMonMemberPresenceCheck( qrObj, memberName = "RegressionFunctions", memberPrettyName = "RegressionFunctions", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !StMonMemberPresenceCheck( qrObj, memberName = "RegressionFunctions", memberPrettyName = "RegressionFunctions", functionName = functionNameQ,  logicalResultQ = TRUE) ) {
     return(StMonFailureSymbol)
   }
 
@@ -323,7 +323,7 @@ StMonTakeOutliers <- function( qrObj, functionName = "StMonTakeOutliers" ) {
 
   if( StMonFailureQ(qrObj) ) { return(StMonFailureSymbol) }
 
-  if( !StMonMemberPresenceCheck( qrObj, memberName = "Outliers", memberPrettyName = "Outliers", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !StMonMemberPresenceCheck( qrObj, memberName = "Outliers", memberPrettyName = "Outliers", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(StMonFailureSymbol)
   }
 

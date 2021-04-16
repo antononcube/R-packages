@@ -14,7 +14,7 @@ MStateTakeMEMBER <- function( msObj, functionName = "MStateTakeMEMBER" ) {
 
   if( MStateFailureQ(msObj) ) { return(MStateFailureSymbol) }
 
-  if( !MStateMemberPresenceCheck( msObj, memberName = "MEMBER", memberPrettyName = "MEMBER", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !MStateMemberPresenceCheck( msObj, memberName = "MEMBER", memberPrettyName = "MEMBER", functionName = functionName,  logicalResultQ = TRUE) ) {
     return(MStateFailureSymbol)
   }
 
