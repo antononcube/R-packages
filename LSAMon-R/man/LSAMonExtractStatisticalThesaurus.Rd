@@ -8,7 +8,7 @@ LSAMonExtractStatisticalThesaurus(
   lsaObj,
   searchWords,
   numberOfNearestNeighbors = 12,
-  fixed = TRUE
+  fixedQ = TRUE
 )
 }
 \arguments{
@@ -19,7 +19,7 @@ thesauri for. The words can be patterns.}
 
 \item{numberOfNearestNeighbors}{Number of words in each thesaurus entry.}
 
-\item{fixed}{Should \code{searchWords} be considered fixed or pattern strings?}
+\item{fixedQ}{Should \code{searchWords} be considered fixed or pattern strings?}
 }
 \value{
 A LSAMon object.

@@ -1320,6 +1320,19 @@ LSAMonMakeTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE
 }
 
 
+#' Get topics table.
+#' @description Gets (makes) a table of (the calculated) topics.
+#' @param lsaObj A LSAMon object.
+#' @param numberOfTerms Number of terms per topic.
+#' @param wideFormQ Should the topics table be in wide form or not?
+#' @param numberOfTableColumns Number of table columns.
+#' (Dummy argument at this point.)
+#' @return A LSAMon object.
+#' @details A synonym \code{\link{LSAMonMakeTopicsTable}}.
+#' @export
+LSAMonGetTopicsTable <- LSAMonMakeTopicsTable
+
+
 ##===========================================================
 ## Echo topics table
 ##===========================================================
@@ -1353,6 +1366,34 @@ LSAMonEchoTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE
 
 
 ##===========================================================
+## Take topics table
+##===========================================================
+
+#' Take topics table.
+#' @description Takes a table of (the calculated) topics.
+#' @param lsaObj A LSAMon object.
+#' @param numberOfTerms Number of terms per topic.
+#' @param wideFormQ Should the topics table be in wide form or not?
+#' @param numberOfTableColumns Number of table columns.
+#' (Dummy argument at this point.)
+#' @param echoQ Should the result be echoed or not?
+#' @return A LSAMon object.
+#' @export
+LSAMonTakeTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE, numberOfTableColumns = NA ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  lsaObj <-
+    lsaObj %>%
+    LSAMonMakeTopicsTable( numberOfTerms = numberOfTerms, wideFormQ = wideFormQ, numberOfTableColumns = numberOfTableColumns  )
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  lsaObj %>% LSAMonTakeValue
+}
+
+
+##===========================================================
 ## Statistical thesauri
 ##===========================================================
 
@@ -1362,13 +1403,13 @@ LSAMonEchoTopicsTable <- function( lsaObj, numberOfTerms = 12, wideFormQ = FALSE
 #' @param searchWords A character vector with words to find statistical
 #' thesauri for. The words can be patterns.
 #' @param numberOfNearestNeighbors Number of words in each thesaurus entry.
-#' @param fixed Should \code{searchWords} be considered fixed or pattern strings?
+#' @param fixedQ Should \code{searchWords} be considered fixed or pattern strings?
 #' @return A LSAMon object.
 #' @details This function calls
 #' \code{\link{NonNegativeMatrixFactorization::NearestWords}}.
 #' The obtained list of thesaurus entries is assigned to \code{lsaObj$Value}.
 #' @export
-LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, numberOfNearestNeighbors = 12, fixed = TRUE ) {
+LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, numberOfNearestNeighbors = 12, fixedQ = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -1384,7 +1425,7 @@ LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, numberOfNear
 
         if ( word %in% colnames(lsaObj$H) ) {
           cbind( SearchTerm = word,
-                 Word = NonNegativeMatrixFactorization::NearestWords( lsaObj$H, word, fixed = fixed, n = numberOfNearestNeighbors ),
+                 Word = NonNegativeMatrixFactorization::NearestWords( lsaObj$H, word, fixed = fixedQ, n = numberOfNearestNeighbors ),
                  stringsAsFactors = FALSE )
         } else { NULL }
       })
@@ -1397,18 +1438,19 @@ LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, numberOfNear
 
 
 ##===========================================================
-## Echo statistical thesaurus table
+## Get statistical thesaurus table
 ##===========================================================
 
-#' Echo statistical thesaurus table.
-#' @description Echoes a table of statistical thesaurus entries for specified words.
+#' Get statistical thesaurus table.
+#' @description Gets a table of statistical thesaurus entries for specified words.
 #' @param lsaObj A LSAMon object.
 #' @param words Words to find thesaurus entries for.
 #' @param numberOfNearestNeighbors Number of nearest neighbors per specified word.
 #' @param wideFormQ Should the thesaurus table be in wide form or not?
+#' @param echoQ Should the thesaurus table be echoed or not?
 #' @return A LSAMon object.
 #' @export
-LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE ) {
+LSAMonGetStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE, echoQ = FALSE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -1430,15 +1472,69 @@ LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighb
       dplyr::select( SearchTerm, Rank, Word.Word )
     nnsDF2 <- reshape2::dcast( formula = SearchTerm ~ Rank, data = nnsDF2, value.var = "Word.Word" )
 
-    print(nnsDF2)
+    lsaObj$Value <- nnsDF2
 
   } else {
 
-    print(nnsDF)
+    lsaObj$Value <- nnsDF
 
   }
 
+  if( echoQ ) {
+    print(lsaObj$Value)
+  }
+
   lsaObj
+}
+
+
+##===========================================================
+## Echo statistical thesaurus table
+##===========================================================
+
+#' Echo statistical thesaurus table.
+#' @description Echoes a table of statistical thesaurus entries for specified words.
+#' @param lsaObj A LSAMon object.
+#' @param words Words to find thesaurus entries for.
+#' @param numberOfNearestNeighbors Number of nearest neighbors per specified word.
+#' @param wideFormQ Should the thesaurus table be in wide form or not?
+#' @return A LSAMon object.
+#' @details This function is a shortcut of \code{\link{LSAMonGetStatisticalThesaurus}}.
+#' @export
+LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  lsaObj <-
+    lsaObj %>%
+    LSAMonGetStatisticalThesaurus( words = words, numberOfNearestNeighbors = numberOfNearestNeighbors, wideFormQ = wideFormQ, echoQ = TRUE )
+
+  lsaObj
+}
+
+
+##===========================================================
+## Take statistical thesaurus table
+##===========================================================
+
+#' Take statistical thesaurus table.
+#' @description Takes a table of statistical thesaurus entries for specified words.
+#' @param lsaObj A LSAMon object.
+#' @param words Words to find thesaurus entries for.
+#' @param numberOfNearestNeighbors Number of nearest neighbors per specified word.
+#' @param wideFormQ Should the thesaurus table be in wide form or not?
+#' @return A LSAMon object.
+#' @details This function is a shortcut of \code{\link{LSAMonGetStatisticalThesaurus}}.
+#' @export
+LSAMonTakeStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  lsaObj <-
+    lsaObj %>%
+    LSAMonGetStatisticalThesaurus( words = words, numberOfNearestNeighbors = numberOfNearestNeighbors, wideFormQ = wideFormQ, echoQ = FALSE )
+
+  lsaObj$Value
 }
 
 
