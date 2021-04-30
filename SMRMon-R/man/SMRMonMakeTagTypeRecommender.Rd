@@ -2,45 +2,40 @@
 % Please edit documentation in R/SMRMon.R
 \name{SMRMonMakeTagTypeRecommender}
 \alias{SMRMonMakeTagTypeRecommender}
-\title{Make tag type recommender}
+\title{Convert to a metadata recommender}
 \usage{
 SMRMonMakeTagTypeRecommender(
   smrObj,
   tagTypeTo,
-  nTopTags = 1,
   tagTypes = NULL,
-  tagSelectionCriteria = NULL,
-  ...
+  tagTypeMatrix = NULL,
+  normalizerFunc = NULL
 )
 }
 \arguments{
-\item{smrObj}{A sparse matrix recommender.}
-
 \item{tagTypeTo}{Tag type to make a recommender for.}
-
-\item{nTopTags}{Number of top tags from \code{tagTypeTo} when making item-tag
-replacements.}
 
 \item{tagTypes}{A vector tag types (strings) to make the data frame with.
 If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.}
 
-\item{tagSelectionCriteria}{Tag selection criteria.
-If a positive integer for each tag type the number of \code{tagSelectionCriteria} top tags are taken.
-If a function that function is expected to give a list of booleans for a given list of tag weights.
-The tags with weights that correspond to TRUE are selected.}
+\item{tagTypeMatrix}{A sparse matrix of item IDs vs tags of \code{tagTypeTo}.
+If NULL then \code{SMRSubMatrix(smr, tagTypeTo)} is used.}
 
-\item{...}{Additional arguments for \code{\link{SMRMatricesToLongForm}} or \code{\link{SMRCreateFromMatrices}}.}
+\item{normalizerFunc}{An LSI normalizer function.
+One of NULL, "None", "Cosine", "Sum", or "Max".
+If NULL then it is same as "None".
+See \code{SMRApplyTermWeightFunctions}}
+
+\item{smr}{A sparse matrix recommender.}
 }
 \value{
 A sparse matrix recommender
 }
 \description{
-Converts the recommender into a recommender for one of the tag types.
+Converts the recommender object into a recommender for a
+specified tag type using replacements in the long form representation of the
+recommender matrix.
 }
 \details{
-This monad function calls the function \code{\link{SMRToMetadataRecommender}}.
-The following steps are taken.
-(1) The long form of the recommender is made.
-(2) The items are replaced with the top tags of \code{tagTypeTo}.
-(3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
+
 }

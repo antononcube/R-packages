@@ -2197,11 +2197,12 @@ SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, m
 
 
 ##===========================================================
-## Make tag type recommender
+## Make tag type recommender by replacement
 ##===========================================================
 
-#' Make tag type recommender
-#' @description Converts the recommender into a recommender for one of the tag types.
+#' Make tag type recommender by replacement
+#' @description Converts the recommender into a recommender for one of the tag types
+#' using replacement in the long form of the recommender matrix.
 #' @param smrObj A sparse matrix recommender.
 #' @param tagTypeTo Tag type to make a recommender for.
 #' @param nTopTags Number of top tags from \code{tagTypeTo} when making item-tag
@@ -2215,13 +2216,13 @@ SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, m
 #' @param ... Additional arguments for \code{\link{SMRMatricesToLongForm}} or \code{\link{SMRCreateFromMatrices}}.
 #' @return A sparse matrix recommender
 #' @details
-#' This monad function calls the function \code{\link{SMRToMetadataRecommender}}.
+#' This monad function calls the function \code{\link{SMRMonMakeTagTypeRecommenderByReplacement}}.
 #' The following steps are taken.
 #' (1) The long form of the recommender is made.
 #' (2) The items are replaced with the top tags of \code{tagTypeTo}.
 #' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
 #' @export
-SMRMonMakeTagTypeRecommender <- function( smrObj, tagTypeTo, nTopTags = 1, tagTypes = NULL, tagSelectionCriteria = NULL, ...) {
+SMRMonMakeTagTypeRecommenderByReplacement <- function( smrObj, tagTypeTo, nTopTags = 1, tagTypes = NULL, tagSelectionCriteria = NULL, ...) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -2230,7 +2231,76 @@ SMRMonMakeTagTypeRecommender <- function( smrObj, tagTypeTo, nTopTags = 1, tagTy
     tryCatch(
 
       expr = {
-        smrTagTypeObj <- SMRToMetadataRecommender( smr = smrObj, tagTypeTo = tagTypeTo, nTopTags = nTopTags, tagTypes = tagTypes, tagSelectionCriteria = tagSelectionCriteria, ... )
+        smrTagTypeObj <- SMRToMetadataRecommenderByReplacement( smr = smrObj, tagTypeTo = tagTypeTo, nTopTags = nTopTags, tagTypes = tagTypes, tagSelectionCriteria = tagSelectionCriteria, ... )
+      },
+
+      error = function(e) {
+        message( "Error attempting to run SMRToMetadataRecommenderByReplacement." )
+        print(e)
+        return(NULL)
+      },
+
+      warning = function(w) {
+        message( "Warning attempting to run SMRToMetadataRecommenderByReplacement." )
+        print(w)
+        return(NULL)
+      },
+
+      finally = { }
+    )
+
+  if( is.null(smrTagTypeObj) ) {
+
+    warning("Failure while running SMRToMetadataRecommenderByReplacement.")
+
+    return(SMRMonFailureSymbol)
+
+  } else if( SMRSparseMatrixRecommenderQ(smrTagTypeObj) ) {
+
+    return(smrTagTypeObj)
+
+  }
+
+}
+
+
+##===========================================================
+## Make tag type recommender
+##===========================================================
+
+#' Convert to a metadata recommender
+#' @description Converts the recommender object into a recommender for a
+#' specified tag type using replacements in the long form representation of the
+#' recommender matrix.
+#' @param smr A sparse matrix recommender.
+#' @param tagTypeTo Tag type to make a recommender for.
+#' @param tagTypes 	A vector tag types (strings) to make the data frame with.
+#' If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.
+#' @param tagTypeMatrix A sparse matrix of item IDs vs tags of \code{tagTypeTo}.
+#' If NULL then \code{SMRSubMatrix(smr, tagTypeTo)} is used.
+#' @param normalizerFunc An LSI normalizer function.
+#' One of NULL, "None", "Cosine", "Sum", or "Max".
+#' If NULL then it is same as "None".
+#' See \code{SMRApplyTermWeightFunctions}
+#' @return A sparse matrix recommender
+#' @details
+#' This monad function calls the function \code{\link{SMRToMetadataRecommender}}.
+#' The following steps are taken.
+#' (1) If \code{tagTypeMatrix} is NULL then \code{tagTypeMatrix <- SMRSubMatrix(smr, tagTypeTo)}.
+#' (2) Normalize the columns of \code{tagTypeMatrix} using \code{normalizerFunc}.
+#' (2) Each recommender sub-matrix is is multiplied by \code{tagTypeMatrix}, i.e. \code{ t(tagTypeMatrix) %*% }
+#' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
+#' @export
+SMRMonMakeTagTypeRecommender <- function( smrObj, tagTypeTo, tagTypes = NULL, tagTypeMatrix = NULL, normalizerFunc = NULL) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+
+  smrTagTypeObj <-
+    tryCatch(
+
+      expr = {
+        smrTagTypeObj <- SMRToMetadataRecommender( smr = smrObj, tagTypeTo = tagTypeTo, tagTypes = tagTypes, tagTypeMatrix = tagTypeMatrix, normalizerFunc = normalizerFunc )
       },
 
       error = function(e) {

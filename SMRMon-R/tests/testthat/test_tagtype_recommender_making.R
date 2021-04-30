@@ -4,12 +4,7 @@ library(SMRMon)
 
 test_that("Metadata recommender matrix same as contingency matrix", {
 
-  expect_s3_class( smrObj <- SMRMonUnit( data = dfTitanic ) %>% SMRMonCreate( itemColumnName = "id" ), "SMR" )
-
-  expect_s3_class( smrMetaObj <- smrObj %>% SMRMonMakeTagTypeRecommender( tagTypeTo = "passengerClass" ), "SMR" )
-
-  expect_s4_class( smrMetaObj$M, "dgCMatrix" )
-
+  ## Contingency matrices
   expect_s4_class(
     matXTabs <-
       cbind(
@@ -19,6 +14,21 @@ test_that("Metadata recommender matrix same as contingency matrix", {
       ),
     "dgCMatrix"
     )
+
+  ## Make SMR
+  expect_s3_class( smrObj <- SMRMonUnit( data = dfTitanic ) %>% SMRMonCreate( itemColumnName = "id" ), "SMR" )
+
+  ## By replacement
+  expect_s3_class( smrMetaObjRepl <- smrObj %>% SMRMonMakeTagTypeRecommenderByReplacement( tagTypeTo = "passengerClass" ), "SMR" )
+
+  expect_s4_class( smrMetaObjRepl$M, "dgCMatrix" )
+
+  expect_equal( smrMetaObjRepl$M, matXTabs )
+
+  ## By matrix
+  expect_s3_class( smrMetaObj <- smrObj %>% SMRMonMakeTagTypeRecommender( tagTypeTo = "passengerClass" ), "SMR" )
+
+  expect_s4_class( smrMetaObj$M, "dgCMatrix" )
 
   expect_equal( smrMetaObj$M, matXTabs )
 
