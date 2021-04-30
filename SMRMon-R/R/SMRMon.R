@@ -1518,6 +1518,7 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
 
 
   data <- as( data, "dgCMatrix")
+  data <- Matrix::drop0(data)
 
   if( is.null(row.names(data)) ) { rownames(data) <- as.character(1:nrow(data)) }
 
