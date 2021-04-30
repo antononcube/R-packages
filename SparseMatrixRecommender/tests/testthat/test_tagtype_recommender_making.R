@@ -6,13 +6,13 @@ test_that("Metadata recommender matrix same as contingency matrix", {
 
   expect_s3_class( smrObj <- SMRCreate( dataRows = dfTitanic, tagTypes = colnames(dfTitanic)[-1], itemColumnName = "id" ), "SMR" )
 
-  expect_warning( smrMetaObj <- SMRToMetadataRecommender( smr = smrObj, tagTypeTo = "passengerClass", tagTypes = smrObj$TagTypes ), regexp = "^Removing" )
+  expect_warning( smrMetaObj <- SMRToMetadataRecommenderByReplacement( smr = smrObj, tagTypeTo = "passengerClass", tagTypes = smrObj$TagTypes ), regexp = "^Removing" )
   
   expect_s3_class( smrMetaObj, "SMR" )
 
   expect_s4_class( smrMetaObj$M, "dgCMatrix" )
   
-  expect_s3_class( smrMetaObj2 <- SMRToMetadataRecommender( smr = smrObj, tagTypeTo = "passengerClass", tagTypes = NULL ), "SMR" )
+  expect_s3_class( smrMetaObj2 <- SMRToMetadataRecommenderByReplacement( smr = smrObj, tagTypeTo = "passengerClass", tagTypes = NULL ), "SMR" )
   
   expect_s4_class( smrMetaObj2$M, "dgCMatrix" )
 

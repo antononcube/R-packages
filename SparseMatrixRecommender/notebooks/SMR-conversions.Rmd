@@ -16,11 +16,23 @@ library(SparseMatrixRecommender)
 smrTitanic <- SMRCreate( dataRows = dfTitanic)
 ```
 
+```{r}
+smrMushroom <- SMRCreate( dataRows = dfMushroom,  addTagTypesToColumnNamesQ = TRUE)
+```
+
+```{r}
+smrMushroomGillColor <- SMRCreate( dataRows = dfMushroom[, -1], itemColumnName = "gill.Color" )
+```
+
+------
+
 # Long form
 
 ```{r}
 SMRMatricesToLongForm(smrTitanic)
 ```
+
+------
 
 # Wide form
 
@@ -28,18 +40,44 @@ SMRMatricesToLongForm(smrTitanic)
 SMRMatricesToWideForm( smr = smrTitanic )
 ```
 
-# To metadata recommender
+```{r}
+Summary(SMRMatricesToWideForm( smr = smrMushroomGillColor ), maxsum = 12)
+```
+
+------
+
+# To metadata recommender (Titanic)
 
 ```{r}
 SMRSparseMatrixToTriplets(smrTitanic$M)
 ```
 
+## By matrix product
+
 ```{r}
-smrAge <- SMRToMetadataRecommender( smr = smrTitanic, tagTypeTo = "passengerAge", tagTypes = NULL, tagSelection = function(x) c( TRUE, rep_len(x = FALSE, length.out = length(x)-1 )), addTagTypesToColumnNamesQ = TRUE )
+smrAge <- SMRToMetadataRecommender( smr = smrTitanic, tagTypeTo = "passengerAge", tagTypes = NULL )
 ```
 
 ```{r}
-smrAge <- SMRToMetadataRecommender( smr = smrTitanic, tagTypeTo = "passengerAge", tagTypes = NULL, tagSelection = 3, addTagTypesToColumnNamesQ = TRUE )
+smrAge
+```
+
+```{r}
+xtabs( ~ passengerAge + passengerSex, dfTitanic)
+```
+
+## By replacement
+
+```{r}
+smrAge <- SMRToMetadataRecommenderByReplacement( smr = smrTitanic, tagTypeTo = "passengerAge", tagTypes = NULL, tagSelection = function(x) c( TRUE, rep_len(x = FALSE, length.out = length(x)-1 )), addTagTypesToColumnNamesQ = TRUE )
+```
+
+```{r}
+smrAge2 <- SMRToMetadataRecommenderByReplacement( smr = smrTitanic, tagTypeTo = "passengerAge", tagTypes = NULL, tagSelection = 3, addTagTypesToColumnNamesQ = TRUE )
+```
+
+```{r}
+smrAge3 <- SMRToMetadataRecommenderByReplacement( smr = smrTitanic, tagTypeTo = "passengerAge", tagTypes = NULL, nTopTags = 3, tagSelection = 3, addTagTypesToColumnNamesQ = TRUE )
 ```
 
 ```{r}
@@ -47,8 +85,56 @@ as.matrix(smrAge$M)
 ```
 
 ```{r}
-as.matrix(smrAge$M)
+as.matrix(smrAge2$M)
 ```
+
+
+```{r}
+as.matrix(smrAge3$M)
+```
+
+------
+
+# To metadata recommender (Mushroom)
+
+## By matrix product
+
+```{r}
+smrGillColor1 <- SMRToMetadataRecommender( smr = smrMushroom, tagTypeTo = "odor", tagTypes = NULL, normalizerFunc = "Cosine" )
+```
+
+
+```{r}
+as.matrix(smrGillColor1$M)[, grepl("ring", colnames(smrGillColor1$M))]
+```
+```{r}
+xtabs( ~ odor + ring.Type, dfMushroom)
+```
+
+## By replacement
+
+```{r}
+smrGillColor1 <- SMRToMetadataRecommenderByReplacement( smr = smrMushroomGillColor, tagTypeTo = "odor", tagTypes = NULL, nTopTags = 4 )
+smrGillColor2 <- SMRToMetadataRecommenderByReplacement( smr = smrMushroomGillColor, tagTypeTo = "odor", tagTypes = NULL, nTopTags = 4 )
+```
+
+```{r}
+xtabs( ~ gill.Color + ring.Type, dfMushroom)
+```
+
+```{r}
+xtabs( ~ odor + ring.Type, dfMushroom)
+```
+
+```{r}
+as.matrix(smrGillColor1$M)[, grepl("ring", colnames(smrGillColor1$M))]
+```
+
+```{r}
+as.matrix(smrGillColor2$M)
+```
+
+
 # Unitize matrices
 
 ```{r}

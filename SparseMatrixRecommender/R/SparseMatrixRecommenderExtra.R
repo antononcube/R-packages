@@ -192,12 +192,13 @@ SMRSparseMatrixSelectByRow <- function( smat, selectionCriteria ) {
 
 
 ##===========================================================
-## SMRToMetadataRecommender
+## SMRToMetadataRecommenderByReplacement
 ##===========================================================
 
-#' Convert to a metadata recommender
+#' Convert to a metadata recommender by replacement
 #' @description Converts the recommender object into a recommender for a 
-#' specified tag type.
+#' specified tag type using replacements in the long form representation of the
+#' recommender matrix.
 #' @param smr A sparse matrix recommender.
 #' @param tagTypeTo Tag type to make a recommender for.
 #' @param nTopTags Number of top tags from \code{tagTypeTo} when making item-tag 
@@ -215,7 +216,7 @@ SMRSparseMatrixSelectByRow <- function( smat, selectionCriteria ) {
 #' (2) The items are replaced with the top tags of \code{tagTypeTo}.
 #' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
 #' @export
-SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = NULL, tagSelectionCriteria = NULL, ... ) {
+SMRToMetadataRecommenderByReplacement <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = NULL, tagSelectionCriteria = NULL, ...) {
   
   if( !SMRSparseMatrixRecommenderQ(smr) ) {
     stop( "The argument smr is expected to be a sparse matrix recommender.", call. = TRUE )
@@ -345,6 +346,117 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, nTopTags = 1, tagTypes = N
     matrices = smats, 
     itemColumnName = tagTypeTo, 
     imposeSameRowNamesQ = lsAllArgs[["imposeSameRowNamesQ"]], 
-    addTagTypesToColumnNamesQ = lsAllArgs[["addTagTypesToColumnNamesQ"]] 
+    addTagTypesToColumnNamesQ = lsAllArgs[["addTagTypesToColumnNamesQ"]],
+    sep = lsAllArgs[["sep"]]
   )
 } 
+
+
+##===========================================================
+## SMRToMetadataRecommender (by matrix product)
+##===========================================================
+
+#' Convert to a metadata recommender
+#' @description Converts the recommender object into a recommender for a 
+#' specified tag type using replacements in the long form representation of the
+#' recommender matrix.
+#' @param smr A sparse matrix recommender.
+#' @param tagTypeTo Tag type to make a recommender for.
+#' @param tagTypes 	A vector tag types (strings) to make the data frame with. 
+#' If NULL all tag types are used. Passed to \code{\link{SMRMatricesToLongForm}}.
+#' @param tagTypeMatrix A sparse matrix of item IDs vs tags of \code{tagTypeTo}.
+#' If NULL then \code{SMRSubMatrix(smr, tagTypeTo)} is used. 
+#' @param normalizerFunc An LSI normalizer function.
+#' One of NULL, "None", "Cosine", "Sum", or "Max".
+#' If NULL then it is same as "None". 
+#' See \code{SMRApplyTermWeightFunctions}
+#' @return A sparse matrix recommender
+#' @details The following steps are taken.
+#' (1) If \code{tagTypeMatrix} is NULL then \code{tagTypeMatrix <- SMRSubMatrix(smr, tagTypeTo)}.
+#' (2) Normalize the columns of \code{tagTypeMatrix} using \code{normalizerFunc}.
+#' (2) Each recommender sub-matrix is is multiplied by \code{tagTypeMatrix}, i.e. \code{ t(tagTypeMatrix) %*% }
+#' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
+#' @export
+SMRToMetadataRecommender <- function( smr, tagTypeTo, tagTypes = NULL, tagTypeMatrix = NULL, normalizerFunc = NULL ) {
+  
+  if( !SMRSparseMatrixRecommenderQ(smr) ) {
+    stop( "The argument smr is expected to be a sparse matrix recommender.", call. = TRUE )
+  }
+  
+  ## Process tagTypeTo
+  if( !( is.character(tagTypeTo) && length(tagTypeTo) == 1 ) ) {
+    stop( "The argument tagTypeTo is expected to be a string (a character vector of length one.)", call. = TRUE )
+  }
+  
+  if( !( tagTypeTo %in% smr$TagTypes ) ) {
+    stop( "The argument tagTypeTo is not a known tag type of the recommender smr.", call. = TRUE )
+  }
+  
+  ## Process tagTypes
+  if( is.null(tagTypes) ) {
+    tagTypes <- setdiff(smr$TagTypes, tagTypeTo)
+  }
+  
+  if( tagTypeTo %in% tagTypes ) {
+    warning( "Removing the value of tagTypeTo from value of tagTypes.", call. = TRUE )
+    tagTypes <- setdiff(tagTypes, tagTypeTo)
+  }
+  
+  if( sum(tagTypes %in% smr$TagTypes) == 0) {
+    stop( "The argument tagTypes has no known tag type of the recommender smr.", call. = TRUE )
+  }
+  
+  ## Process tagTypeMatrix
+  if( !( is.null(tagTypeMatrix) || SMRSparseMatrixQ(tagTypeMatrix) ) ) {
+    stop( "The argument tagTypeMatrix is expected to be NULL or a sparse matrix.", call. = TRUE )
+  }
+  
+  if( is.null(tagTypeMatrix) ) {
+    tagTypeMatrix <- SMRSubMatrix( smr, tagTypeTo )
+  }
+  
+  if( ! ( mean( rownames(tagTypeMatrix) == rownames(smr$M) ) == 1 ) ) {
+    stop( "The argument tagTypeMatrix has rownames that different than the rownames of smr$M.", call. = TRUE )
+  }
+  
+  ## Process normalizerFunc
+  if( !( is.null(normalizerFunc) || is.character(normalizerFunc) && length(normalizerFunc) == 1 ) ) {
+    stop( "The argument normalizerFunc is expected to be NULL or a string (a character vector of length one.)", call. = TRUE )
+  }
+  
+  ## Obtain tagTypeMatrix
+  tagTypeMatrix <- t(tagTypeMatrix)
+  
+  ## Normalize the columns of tagTypeMatrix
+  if( !( is.null(normalizerFunc) || normalizerFunc == "None") ) {
+    tagTypeMatrix <- 
+      SMRApplyTermWeightFunctions( 
+        docTermMat = tagTypeMatrix, 
+        globalWeightFunction = "None",
+        localWeightFunction = "None",
+        normalizerFunction = normalizerFunc )
+  }
+  
+  ## Get the recommeder contingency matrices 
+  smats <- 
+    purrr::map( tagTypes, function(tt) { 
+      SMRSubMatrix(smr, tt)
+    } )
+  names(smats) <- tagTypes
+  
+
+  ## Multiply sub-matrices
+  smats <- 
+      purrr::map( smats, function(m) { 
+        tagTypeMatrix %*% m
+      } )
+  
+
+  ## Create recommender
+  SMRCreateFromMatrices( 
+    matrices = smats, 
+    itemColumnName = tagTypeTo, 
+    imposeSameRowNamesQ = TRUE
+  )
+} 
+
