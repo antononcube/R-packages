@@ -8,6 +8,8 @@ MakeTimeSeriesSearchVectors(tsMat)
 }
 \arguments{
 \item{tsMat}{A sparse matrix with rows corresponding to time series.}
+
+\item{nTrigPeriod}{}
 }
 \description{
 Creates a list of search vectors (time series) for a given time series matrix.
