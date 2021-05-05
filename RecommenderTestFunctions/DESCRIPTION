@@ -1,0 +1,22 @@
+Package: RecommenderTestFunctions
+Type: Package
+Title: Recommender test functions
+Version: 0.1.0
+Author: Anton Antonov
+Maintainer: <antononcube@posteo.net>
+Description: This package has functions for making and applying tests of a recommender system.
+License: BSD-3
+Encoding: UTF-8
+LazyData: true
+Suggests: 
+    testthat
+Depends: 
+    R (>= 2.10)
+RoxygenNote: 7.1.1
+Imports:
+    dplyr,
+    Matrix,
+    magrittr,
+    purrr,
+    SMRMon,
+    SparseMatrixRecommender
