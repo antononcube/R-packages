@@ -26,7 +26,7 @@ If NULL then \code{SMRSubMatrix(smr, tagTypeTo)} is used.}
 \item{normalizerFunc}{An LSI normalizer function.
 One of NULL, "None", "Cosine", "Sum", or "Max".
 If NULL then it is same as "None". 
-See \code{SMRApplyTermWeightFunctions}}
+See \code{SMRApplyTermWeightFunctions}.}
 }
 \value{
 A sparse matrix recommender

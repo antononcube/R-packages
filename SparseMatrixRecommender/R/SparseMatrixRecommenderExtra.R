@@ -369,12 +369,12 @@ SMRToMetadataRecommenderByReplacement <- function( smr, tagTypeTo, nTopTags = 1,
 #' @param normalizerFunc An LSI normalizer function.
 #' One of NULL, "None", "Cosine", "Sum", or "Max".
 #' If NULL then it is same as "None". 
-#' See \code{SMRApplyTermWeightFunctions}
+#' See \code{SMRApplyTermWeightFunctions}.
 #' @return A sparse matrix recommender
 #' @details The following steps are taken.
 #' (1) If \code{tagTypeMatrix} is NULL then \code{tagTypeMatrix <- SMRSubMatrix(smr, tagTypeTo)}.
 #' (2) Normalize the columns of \code{tagTypeMatrix} using \code{normalizerFunc}.
-#' (2) Each recommender sub-matrix is is multiplied by \code{tagTypeMatrix}, i.e. \code{ t(tagTypeMatrix) %*% }
+#' (2) Each recommender sub-matrix \code{m} is is multiplied by \code{tagTypeMatrix}, i.e. \code{t(tagTypeMatrix) %*% m}
 #' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
 #' @export
 SMRToMetadataRecommender <- function( smr, tagTypeTo, tagTypes = NULL, tagTypeMatrix = NULL, normalizerFunc = NULL ) {
