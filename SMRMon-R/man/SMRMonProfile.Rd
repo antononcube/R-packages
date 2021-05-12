@@ -4,7 +4,7 @@
 \alias{SMRMonProfile}
 \title{Profile for a history specification}
 \usage{
-SMRMonProfile(smrObj, history, tagTypesQ = FALSE)
+SMRMonProfile(smrObj, history, tagTypesQ = FALSE, normalizeQ = FALSE)
 }
 \arguments{
 \item{smrObj}{An SMRMon object.}
@@ -15,6 +15,8 @@ a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
 
 \item{tagTypesQ}{Should the tag types be included or not?}
+
+\item{normalizeQ}{Should the tag scores be normalized or not?}
 }
 \value{
 A SMRMon object

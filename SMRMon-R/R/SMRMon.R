@@ -1583,13 +1583,14 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param tagTypesQ Should the tag types be included or not?
+#' @param normalizeQ Should the tag scores be normalized or not?
 #' @details
 #' The profile data frame is assigned to \code{smrObj$Value}.
 #' If \code{tagTypesQ = FALSE} then its are columns "Score", "Index", "Tag".
 #' If \code{tagTypesQ = TRUE} then its are columns "Score", "Index", "TagType", "Tag".
 #' @return A SMRMon object
 #' @export
-SMRMonProfile <- function( smrObj, history, tagTypesQ = FALSE ) {
+SMRMonProfile <- function( smrObj, history, tagTypesQ = FALSE, normalizeQ = FALSE ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -1614,6 +1615,10 @@ SMRMonProfile <- function( smrObj, history, tagTypesQ = FALSE ) {
     res <- cbind( res, TagType = rownames(smrObj$TagTypeRanges)[ tts ], stringsAsFactors = FALSE )
 
     res <- res[ , c( "Score", "Index", "TagType", "Tag") ]
+  }
+
+  if( normalizeQ && max(abs(res$Score)) > 0) {
+    res$Score <- res$Score / max(abs(res$Score))
   }
 
   smrObj$Value <- res
