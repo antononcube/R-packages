@@ -210,6 +210,181 @@ DT::renderDataTable(
 ) 
 ```
 
+
+
+Profiles
+=======================================================================
+
+Row {data-height=800}
+-----------------------------------------------------------------------
+
+### Items
+
+```{r}
+textAreaInput( inputId = "profileTagsText", label = "Items text (points)", width = "600px", cols = 300, rows = 8 )
+
+lsItemsHist <- 
+  reactive({
+    
+    if( nchar(input$profileTagsText) == 0) { 
+      NULL 
+    } else {
+      res <- trimws( strsplit(input$profileTagsText, split = ",")[[1]] )
+      res <- res[ nchar(res) > 0 ]
+      res <- res[ res %in% rownames(smrObj()$M) ] 
+    }
+  })
+```
+
+Known items:
+
+```{r}
+renderText(paste(lsItemsHist(), collapse = ", "))
+```
+
+### Free text
+
+```{r}
+textAreaInput( 
+  inputId = "profileFreeText", 
+  label = "Free text (description)", 
+  placeholder = "Milk unverbalised", 
+  width = "600px", cols = 300, rows = 8 )
+
+lsProfileFreeWordsProf <- 
+  reactive({
+    
+    if( nchar(input$profileFreeText) == 0) { 
+      NULL 
+    } else {
+      
+      matRes <- 
+        lsaObj() %>% 
+        LSAMonRepresentByTerms( query = input$profileFreeText ) %>% 
+        LSAMonTakeValue
+      
+      lsCSums <- colSums(matRes)
+      lsProf <- lsCSums[lsCSums>0]
+      
+      names(lsProf) <- paste0( "Word:", names(lsProf) )
+      lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+      rev(sort(lsProf))
+    }
+    
+  })
+
+lsProfileFreeTopicsProf <- 
+  reactive({
+    
+    if( nchar(input$profileFreeText) == 0) { 
+      NULL 
+    } else {
+      
+      matRes <- 
+        lsaObj() %>% 
+        LSAMonRepresentByTopics( query = input$profileFreeText ) %>% 
+        LSAMonTakeValue
+      
+      matRes <- SMRApplyTermWeightFunctions( matRes, "None", "None", "Cosine" )
+      
+      lsCSums <- colSums(matRes)
+      lsProf <- lsCSums[lsCSums>0]
+      
+      names(lsProf) <- paste0( "Topic:", names(lsProf) )
+      lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+      rev(sort(lsProf))
+    }
+    
+  })
+
+dfItemsByFreeText <- 
+  reactive({
+    smrObj() %>% 
+      SMRMonApplyTagTypeWeights( 
+        weights = 
+          c( 
+            Word = input$wordTagTypeWeight, 
+            Topic = input$topicTagTypeWeight
+          ), 
+        default = 1 ) %>% 
+      SMRMonRecommendByProfile( profile = lsProfileFreeProf(), nrecs = input$numberOfRecs, normalizeQ = TRUE ) %>% 
+      SMRMonTakeValue
+  })
+    
+dfProfileByFreeText <- 
+  reactive({
+    smrObj() %>% 
+      SMRMonProfile( history = setNames(dfItemsByFreeText(), c("Rating", "Index", "Item")), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
+      SMRMonTakeValue
+  })
+```
+
+
+Extracted words and topics:
+
+```{r}
+lsProfileFreeProf <- reactive({ c( lsProfileFreeWordsProf(), lsProfileFreeTopicsProf() ) })
+DT::renderDataTable(
+  expr = data.frame( Word = names(lsProfileFreeProf()), Score =  lsProfileFreeProf() ),
+  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
+)
+```
+
+
+Row
+-----------------------------------------------------------------------
+
+### Profile of items
+
+```{r}
+dfProfileByItemsHist <- 
+  reactive({
+    smrObj() %>%     
+      SMRMonApplyTagTypeWeights( 
+        weights = 
+          c( 
+            TitleVector = input$titleVectorTagTypeWeight,
+            SkillsVector = input$skillsVectorTagTypeWeight,
+            AcronymVector = input$acronymVectorTagTypeWeight,
+            KeywordVector = input$keywordVectorTagTypeWeight
+          ), 
+        default = 1 ) %>% 
+      SMRMonProfile( history = lsItemsHist(), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
+      SMRMonTakeValue
+  })
+```
+
+```{r}
+DT::renderDataTable( dfProfileByItemsHist(),
+  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
+) 
+```
+
+
+### Profile by free text
+
+```{r}
+DT::renderDataTable(
+  dfProfileByFreeText(),
+  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
+) 
+```
+
+
+### Profile by both items and free text
+
+```{r}
+
+DT::renderDataTable(
+  rbind( dfProfileByItemsHist(), dfProfileByFreeText() ) %>% 
+    dplyr::group_by( TagType, Tag) %>% 
+    dplyr::summarise( Score = sum(Score), .groups = "drop_last") %>% 
+    dplyr::arrange(desc(Score)) %>% 
+    dplyr::select( Score, TagType, Tag),
+  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
+) 
+```
+
 Summary
 =======================================================================
 
