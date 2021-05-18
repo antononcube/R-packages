@@ -49,13 +49,8 @@ selectInput( inputId = "recommender",
              label = "Type:", 
              choices = setNames( names(lsRecommenders), paste( names(lsRecommenders), "recommender" ) ), 
              selected = "Goods")
-
-sliderInput( inputId = "numberOfRecs", label = "Number of recommendations:", min = 1, max = 300, value = 10, step = 1 )
-
-sliderInput( inputId = "wordTagTypeWeight", label = "Word weight:", min = 0, max = 1, value = 1, step = 0.01 )
-
-sliderInput( inputId = "topicTagTypeWeight", label = "Topic weight:", min = 0, max = 1, value = 1, step = 0.01 )
 ```
+
 
 ```{r}
 smrObj <- 
@@ -73,6 +68,33 @@ dfData <-
     lsData[[ input$recommender ]]
   })
 ```
+
+```{r}
+sliderInput( inputId = "numberOfRecs", label = "Number of recommendations:", min = 1, max = 300, value = 10, step = 1 )
+```
+
+```{r, echo=F}
+uiOutput("dynamic")
+
+
+output$dynamic <- renderUI({ 
+  
+  do.call( tagList,
+          purrr::map( smrObj() %>% SMRMonTakeTagTypes, function(tt) {
+            sliderInput( inputId = paste0( tt, "Weight"), label = paste0( tt, " weight:"), min = 0, max = 1, value = 1, step = 0.01 )
+            })
+          )
+
+})
+```
+
+```{r}
+tagTypeWeights <- 
+  reactive(
+    purrr::map_dbl( smrObj() %>% SMRMonTakeTagTypes, function(tt) { input[[ paste0( tt, "Weight") ]] }) 
+  )
+```
+
 
 Main
 =======================================================================
@@ -196,11 +218,7 @@ DT::renderDataTable(
   } else {
     smrObj() %>% 
       SMRMonApplyTagTypeWeights( 
-        weights = 
-          c( 
-            Word = input$wordTagTypeWeight, 
-            Topic = input$topicTagTypeWeight
-          )[ smrObj() %>% SMRMonTakeTagTypes ], 
+        weights = tagTypeWeights(), 
         default = 1 ) %>% 
       SMRMonRecommendByProfile( profile = lsProf(), nrecs = input$numberOfRecs ) %>% 
       SMRMonJoinAcross( dfData() ) %>% 
@@ -301,11 +319,7 @@ dfItemsByFreeText <-
   reactive({
     smrObj() %>% 
       SMRMonApplyTagTypeWeights( 
-        weights = 
-          c( 
-            Word = input$wordTagTypeWeight, 
-            Topic = input$topicTagTypeWeight
-          ), 
+        weights = tagTypeWeights(),
         default = 1 ) %>% 
       SMRMonRecommendByProfile( profile = lsProfileFreeProf(), nrecs = input$numberOfRecs, normalizeQ = TRUE ) %>% 
       SMRMonTakeValue
@@ -341,13 +355,7 @@ dfProfileByItemsHist <-
   reactive({
     smrObj() %>%     
       SMRMonApplyTagTypeWeights( 
-        weights = 
-          c( 
-            TitleVector = input$titleVectorTagTypeWeight,
-            SkillsVector = input$skillsVectorTagTypeWeight,
-            AcronymVector = input$acronymVectorTagTypeWeight,
-            KeywordVector = input$keywordVectorTagTypeWeight
-          ), 
+        weights = tagTypeWeights(), 
         default = 1 ) %>% 
       SMRMonProfile( history = lsItemsHist(), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
       SMRMonTakeValue
