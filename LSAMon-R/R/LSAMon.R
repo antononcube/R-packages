@@ -1645,9 +1645,9 @@ LSAMonRepresentByTopics <- function( lsaObj, query, applyTermWeightFunctionsQ = 
   if( is.character(query) ) {
 
     qmat <-
-      LSAMonUnit( query ) %>%
-      LSAMonMakeDocumentTermMatrix( splitPattern = lsaObj$SplitPattern, stemWordsQ = lsaObj$StemWordsQ, stopWords = lsaObj$StopWords ) %>%
-      LSAMonTakeDocumentTermMatrix
+      lsaObj %>%
+      LSAMonRepresentByTerms(query = query, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ) %>%
+      LSAMonTakeValue
 
     lsaObj %>% LSAMonRepresentByTopics( query = qmat, applyTermWeightFunctionsQ = applyTermWeightFunctionsQ, method = method )
 
