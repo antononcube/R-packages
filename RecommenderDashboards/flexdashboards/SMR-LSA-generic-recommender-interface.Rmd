@@ -108,7 +108,7 @@ Row {data-height=800}
 textAreaInput( 
   inputId = "tagsText", 
   label = "Tag text (metadata)", 
-  placeholder = "Good:milk, Country:denmark", 
+  placeholder = "Good:milk, Country:denmark, Good:ham:1.1, Country:china:0.85", 
   width = "600px", cols = 300, rows = 8 )
 
 lsTagsProf <- 
@@ -119,7 +119,18 @@ lsTagsProf <-
     } else {
       res <- trimws( strsplit(input$tagsText, split = ",")[[1]] )
       res <- res[ nchar(res) > 0 ]
-      res <- res[ res %in% colnames(smrObj()$M) ] 
+      
+      dfRes <- as.data.frame(stringr::str_split_fixed( string = res, pattern = ":", n = 3))
+      
+      dfRes[[3]] <- as.numeric(dfRes[[3]])
+      dfRes[[3]][is.na(dfRes[[3]])] <- 1
+      
+      dfRes <- 
+        purrr::map_df( split(dfRes,1:nrow(dfRes)), function(dfX) {
+          data.frame( Tag = paste0( dfX[[1,1]], ":", dfX[[1,2]] ), Score = dfX[[1,3]] )
+        })
+      dfRes <- dfRes[ dfRes$Tag %in% colnames(smrObj()$M), ] 
+      setNames( dfRes$Score, dfRes$Tag )
     }
   })
 ```
@@ -127,7 +138,7 @@ lsTagsProf <-
 Known tags:
 
 ```{r}
-renderText(paste(lsTagsProf(), collapse = ", "))
+renderText(paste(names(lsTagsProf()), collapse = ", "))
 ```
 
 ### Free text
@@ -156,6 +167,8 @@ lsFreeWordsProf <-
       
       names(lsProf) <- paste0( "Word:", names(lsProf) )
       lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+      
+      if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
       rev(sort(lsProf))
     }
     
@@ -180,6 +193,8 @@ lsFreeTopicsProf <-
       
       names(lsProf) <- paste0( "Topic:", names(lsProf) )
       lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+      
+      if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
       rev(sort(lsProf))
     }
     
@@ -207,7 +222,7 @@ Row
 lsProf <- 
   reactive({ 
     c( 
-      setNames( rep_len( x = 1, length.out = length(lsTagsProf())), lsTagsProf() ), 
+      lsTagsProf(),
       lsFreeProf() 
     ) 
   })
@@ -249,7 +264,14 @@ lsItemsHist <-
     } else {
       res <- trimws( strsplit(input$profileTagsText, split = ",")[[1]] )
       res <- res[ nchar(res) > 0 ]
-      res <- res[ res %in% rownames(smrObj()$M) ] 
+      
+      dfRes <- setNames( as.data.frame(stringr::str_split_fixed( string = res, pattern = ":", n = 2)), c("Item", "Rating"))
+      
+      dfRes[[2]] <- as.numeric(dfRes[[2]])
+      dfRes[[2]][is.na(dfRes[[2]])] <- 1
+      
+      dfRes <- dfRes[ dfRes$Item %in% rownames(smrObj()$M), ] 
+      setNames( dfRes$Rating, dfRes$Item )
     }
   })
 ```
@@ -257,7 +279,7 @@ lsItemsHist <-
 Known items:
 
 ```{r}
-renderText(paste(lsItemsHist(), collapse = ", "))
+renderText(paste(names(lsItemsHist()), collapse = ", "))
 ```
 
 ### Free text
@@ -286,6 +308,8 @@ lsProfileFreeWordsProf <-
       
       names(lsProf) <- paste0( "Word:", names(lsProf) )
       lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+      
+      if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
       rev(sort(lsProf))
     }
     
@@ -310,6 +334,8 @@ lsProfileFreeTopicsProf <-
       
       names(lsProf) <- paste0( "Topic:", names(lsProf) )
       lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+      
+      if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
       rev(sort(lsProf))
     }
     
