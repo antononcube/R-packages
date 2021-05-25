@@ -3,6 +3,14 @@ title: "Example recommender interface data"
 author: Anton Antonov
 date: 2021-04-14
 output: html_notebook
+params:
+  randomSeed: 4932
+  numberOfRows: 200
+  testRunID: "RandomGoods"
+  saveDirectory: "../flexdashboards"
+  exportDirectory: "../export"
+  saveQ: TRUE
+  exportQ: TRUE
 ---
 
 
@@ -23,16 +31,37 @@ library(RandomDataFrameGenerator)
 
 This notebook creates data for the example recommender interface.
 
+
+# Parameters
+
+```{r testRunID}
+testRunID <- params$testRunID
+if( is.null(testRunID) ) {
+  testRunID <- paste0( stri_rand_strings(1,4), "-", gsub( " ", "T", as.character(Sys.time()) ) )
+  testRunID <- gsub(":", "-", testRunID)
+}
+
+predefinedTestsFullFileName <- file.path( params$predefinedTestsDirectoryName, params$predefinedTestsFileName )
+```
+
+```{r parameters, rows.print=20}
+dfParamsExport <- data.frame( Parameter = names(params), Value = as.character(params) )
+rownames(dfParamsExport) <- names(params)
+dfParamsExport["testRunID", "Parameter"] <- "testRunID"
+dfParamsExport["testRunID", "Value"] <- testRunID
+dfParamsExport
+```
+
 # Generated data
 
 ```{r}
-set.seed(4932)
+set.seed(params$randomSeed)
 numberOfUsers <- 30
 numberOfDays <- 90
 lsSources <- RandomWord(200,type = "Common")
 dfGoods <- 
   RandomDataFrame( 
-    nrow = 200,
+    nrow = params$numberOfRows,
     columnNames = c("ID", "UserID", "Good", "Source", "Country", "TimeStamp"),
     generators = 
       list(
@@ -128,15 +157,21 @@ smrGoods %>%
 
 # LSA
 
+
 ```{r}
 lsaGoods <- 
-  LSAMonUnit( setNames(dfGoods$Source, dfGoods$ID) ) %>% 
+  LSAMonUnit( setNames(paste( dfGoods$Source, dfGoods$Country, dfGoods$Good, sep = "; "), dfGoods$ID) ) %>% 
   LSAMonMakeDocumentTermMatrix() %>% 
+  LSAMonApplyTermWeightFunctions() %>% 
   LSAMonExtractTopics( numberOfTopics = 2, minNumberOfDocumentsPerTerm = 1, method = "SVD" ) %>% 
   LSAMonEchoTopicsTable( numberOfTerms = 15, wideFormQ = T)
 ```
 
-# Extend core food recommender
+```{r}
+dim(lsaGoods %>% LSAMonTakeDocumentTermMatrix)
+```
+
+# Extend core goods recommender
 
 ```{r}
 matWords <- lsaGoods %>% LSAMonTakeWeightedDocumentTermMatrix
@@ -151,12 +186,102 @@ smrGoods <-
   SMRMonApplyTermWeightFunctions( "None", "None", "Cosine")
 ```
 
+# Recommendation examples
+
+## By profile
+
+```{r, rows.print = 20}
+smrGoods %>% 
+  SMRMonRecommendByProfile( profile = c( "Good:milk", "Country:denmark", "UserID:frehvojwf"), nrecs = 10 ) %>% 
+  SMRMonTakeValue
+```
+## Topics
+
+```{r}
+query <- "perambulate formic acquired" 
+matTerms <- 
+  lsaGoods %>% 
+  LSAMonRepresentByTerms( query = query, applyTermWeightFunctionsQ = T) %>% 
+  LSAMonTakeValue
+  
+matTerms %>% 
+  colSums %>% 
+  ( function(x) x[x>0] )
+```
+
+```{r}
+lsaGoods %>% 
+  LSAMonRepresentByTopics( query = query, applyTermWeightFunctionsQ = T, method = "Recommendation") %>% 
+  LSAMonTakeValue %>% 
+  colSums
+```
 
 # Save
 
 ```{r}
-save( smrGoods, file = file.path( "../flexdashboards/", "smrGoods.RData") )
-save( lsaGoods, file = file.path( "../flexdashboards/", "lsaGoods.RData") )
-save( dfGoods,  file = file.path( "../flexdashboards/", "dfGoods.RData") )
+if( params$saveQ ) {
+  save( smrGoods, file = file.path( params$saveDirectory, "smrGoods.RData") )
+  save( lsaGoods, file = file.path( params$saveDirectory, "lsaGoods.RData") )
+  save( dfGoods,  file = file.path( params$saveDirectory, "dfGoods.RData") )
+}
 ```
+
+# Export TTR
+
+```{r export-SMR-matrix}
+if( params$exportQ ) {
+  dfTTRSMRMatrixToExport <- SMRMatricesToLongForm( smr = smrGoods )
+  dfTTRSMRMatrixToExport <- cbind( TestRunID = testRunID, dfTTRSMRMatrixToExport )
+  write.csv( x = dfTTRSMRMatrixToExport, 
+             file = file.path( params$exportDirectory, paste0( testRunID, "-dfSMRMatrix.csv")), 
+             row.names = FALSE)
+}
+```
+
+
+# Export LSA data
+
+```{r export-LSA-data-1}
+if( params$exportQ ) {
+  
+  dfWordToTopicMatrix <- setNames( SMRSparseMatrixToTriplets( lsaGoods %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = FALSE) %>% LSAMonTakeH ), c("Topic", "Word", "Weight"))
+  dfWordToTopicMatrix <- cbind( TestRunID = testRunID, dfWordToTopicMatrix, stringsAsFactors = FALSE )
+
+  write.csv( x = dfWordToTopicMatrix, 
+             file = file.path( params$exportDirectory, paste0( testRunID, "-dfLSATopicWordMatrix.csv")), 
+             row.names = FALSE)
+}
+```
+
+
+```{r export-LSA-data-2}
+if( params$exportQ ) {
+  
+  lsWords <- names(lsaGoods$GlobalWeights)
+  lsWeights <- setNames(lsaGoods$GlobalWeights,NULL)
+  if ( is.null(lsWords) ) { 
+    lsWords <- colnames(lsaGoods %>% LSAMonTakeDocumentTermMatrix) 
+  }
+  dfGlobalWeights <- data.frame( TestRunID = testRunID, Word = lsWords, Weight = lsWeights, stringsAsFactors = FALSE )
+  rownames(dfGlobalWeights) <- NULL
+
+  write.csv( x = dfGlobalWeights, 
+             file = file.path( params$exportDirectory, paste0( testRunID, "-dfLSAWordGlobalWeights.csv")), 
+             row.names = FALSE)
+}
+```
+
+Note that no stemming is done; this step is just for completeness.
+
+```{r export-stem-rules}
+if( params$exportQ ) {
+  
+  dfStemRules <- data.frame( Word = names(lsaGoods$GlobalWeights), Stem = names(lsaGoods$GlobalWeights), stringsAsFactors = FALSE)
+
+  write.csv( x = dfStemRules, 
+             file = file.path( params$exportDirectory, paste0( testRunID, "-dfStemRules.csv")), 
+             row.names = FALSE)
+}
+```
+
 
