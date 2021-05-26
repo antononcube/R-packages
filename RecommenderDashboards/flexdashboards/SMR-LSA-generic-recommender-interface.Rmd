@@ -163,13 +163,17 @@ lsFreeWordsProf <-
         LSAMonTakeValue
       
       lsCSums <- colSums(matRes)
-      lsProf <- lsCSums[lsCSums>0]
+      lsProf <- lsCSums[abs(lsCSums) > 0]
       
-      names(lsProf) <- paste0( "Word:", names(lsProf) )
-      lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
-      
-      if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
-      rev(sort(lsProf))
+      if( length(lsProf) > 0 ) { 
+        names(lsProf) <- paste0( "Word:", names(lsProf) )
+        lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+        
+        if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
+        rev(sort(lsProf))
+      } else {
+        NULL
+      }
     }
     
   })
@@ -189,13 +193,17 @@ lsFreeTopicsProf <-
       matRes <- SMRApplyTermWeightFunctions( matRes, "None", "None", "Cosine" )
       
       lsCSums <- colSums(matRes)
-      lsProf <- lsCSums[lsCSums>0]
+      lsProf <- lsCSums[abs(lsCSums) > 0]
       
-      names(lsProf) <- paste0( "Topic:", names(lsProf) )
-      lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
-      
-      if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
-      rev(sort(lsProf))
+      if( length(lsProf) > 0 ) { 
+        names(lsProf) <- paste0( "Topic:", names(lsProf) )
+        lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+        
+        if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
+        rev(sort(lsProf))
+      } else {
+        NULL
+      }
     }
     
   })
@@ -304,13 +312,17 @@ lsProfileFreeWordsProf <-
         LSAMonTakeValue
       
       lsCSums <- colSums(matRes)
-      lsProf <- lsCSums[lsCSums>0]
+      lsProf <- lsCSums[abs(lsCSums) > 0]
       
-      names(lsProf) <- paste0( "Word:", names(lsProf) )
-      lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
-      
-      if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
-      rev(sort(lsProf))
+      if( length(lsProf) > 0 ) { 
+        names(lsProf) <- paste0( "Word:", names(lsProf) )
+        lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+        
+        if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
+        rev(sort(lsProf))
+      } else {
+        NULL
+      }
     }
     
   })
@@ -330,13 +342,17 @@ lsProfileFreeTopicsProf <-
       matRes <- SMRApplyTermWeightFunctions( matRes, "None", "None", "Cosine" )
       
       lsCSums <- colSums(matRes)
-      lsProf <- lsCSums[lsCSums>0]
+      lsProf <- lsCSums[abs(lsCSums) > 0]
       
-      names(lsProf) <- paste0( "Topic:", names(lsProf) )
-      lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
-      
-      if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
-      rev(sort(lsProf))
+      if( length(lsProf) > 0 ) { 
+        names(lsProf) <- paste0( "Topic:", names(lsProf) )
+        lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+        
+        if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
+        rev(sort(lsProf))
+      } else {
+        NULL
+      }
     }
     
   })
