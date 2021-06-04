@@ -230,6 +230,11 @@ TSCorrSMRCreate <- function( timeSeriesMatrix, smr,
 
 #' Time series recommendations calculation
 #' @description Specialization of Recommendations for TSCorrSMR objects.
+#' @param x A recommender object.
+#' @param historyItems A list of history items.
+#' @param historyRatings A list of history ratings.
+#' @param nrecs Number of required recommendations.
+#' @param removeHistory Should the history be removed or not?
 #' @return A data frame with columns "Score", "Item".
 #' @export
 Recommendations.TSCorrSMR <- function( x, historyItems, historyRatings, nrecs, removeHistory = TRUE, ... ) {
@@ -267,6 +272,11 @@ Recommendations.TSCorrSMR <- function( x, historyItems, historyRatings, nrecs, r
   if ( removeHistory ) {
     recs[ !( recs$Item %in% historyItems ), ]
   }
+  
+  if( nrow(recs) > nrecs ) {
+    recs <- recs[1:nrecs, ]
+  }
+  
   recs
 }
 

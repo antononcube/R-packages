@@ -13,6 +13,17 @@
   ...
 )
 }
+\arguments{
+\item{x}{A recommender object.}
+
+\item{historyItems}{A list of history items.}
+
+\item{historyRatings}{A list of history ratings.}
+
+\item{nrecs}{Number of required recommendations.}
+
+\item{removeHistory}{Should the history be removed or not?}
+}
 \value{
 A data frame with columns "Score", "Item".
 }
