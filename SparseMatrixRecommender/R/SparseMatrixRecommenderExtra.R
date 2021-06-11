@@ -128,20 +128,49 @@ SMRSparseMatrixCor <- function( x ) {
 #' Unitize sub-matrices
 #' @description Unitizes the sub-matrices of a sparse matrix recommender.
 #' @param smr A sparse matrix recommender.
+#' @param tagTypes A character vector with tag types to unitize.
+#' If NULL all tag types of \code{smr} are unitized.
 #' @param tol A positive number. 
 #' Matrix entries with absolute values below \code{tol} are put to 0.
 #' @return A sparse matrix recommender
 #' @export
-SMRUnitizeSubMatrices <- function( smr, tol = 0 ) {
+SMRUnitizeSubMatrices <- function( smr, tagTypes = NULL, tol = 0 ) {
   
   if( !SMRSparseMatrixRecommenderQ(smr) ) {
     stop( "The argument smr is expected to be a sparse matrix recommender object.", call. = TRUE )
   }
     
-  smats <- purrr::map( smr$TagTypes, function(x) SMRUnitize( smat = SMRSubMatrix(smr = smr, tagType = x), tol = tol ) )
+  if( is.null(tagTypes) ) { tagTypes <- smr$TagTypes }
   
-  SMRCreateFromMatrices( matrices = smats, 
-                         tagTypes = smr$TagTypes, 
+  if( !is.character(tagTypes) ) {
+    stop( "The argument tagTypes is expected to be a vector with known tag types or NULL.", call. = TRUE )
+  }
+  
+  lenTagTypes <- length(tagTypes)
+  
+  tagTypes <- intersect( x = tagTypes, y = smr$TagTypes )
+
+  if( length(tagTypes) == 0 ) {
+    stop( "None of the elements of the argument tagTypes are known tag types.", call. = TRUE )
+  } else if ( length(tagTypes) < lenTagTypes ) {
+    warning( "Not all elements of the argument tagTypes are known tag types.", call. = TRUE )
+  }
+  
+  smats <- purrr::map( tagTypes, function(x) SMRUnitize( smat = SMRSubMatrix(smr = smr, tagType = x), tol = tol ) )
+  names(smats) <- tagTypes
+  
+  if( length(tagTypes) < length(smr$TagTypes) ) {
+    
+    tagTypes2 <- setdiff( smr$TagTypes, tagTypes)
+    
+    smats2 <- purrr::map( tagTypes2, function(x) SMRSubMatrix(smr = smr, tagType = x) )
+    names(smats2) <- tagTypes2
+    
+    smats <- c( smats, smats2 )
+  } 
+  
+  SMRCreateFromMatrices( matrices = smats[smr$TagTypes], 
+                         tagTypes = NULL,
                          itemColumnName = smr$ItemColumnName, 
                          imposeSameRowNamesQ = FALSE,
                          addTagTypesToColumnNamesQ = FALSE,

@@ -4,10 +4,13 @@
 \alias{SMRUnitizeSubMatrices}
 \title{Unitize sub-matrices}
 \usage{
-SMRUnitizeSubMatrices(smr, tol = 0)
+SMRUnitizeSubMatrices(smr, tagTypes = NULL, tol = 0)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
+
+\item{tagTypes}{A character vector with tag types to unitize.
+If NULL all tag types of \code{smr} are unitized.}
 
 \item{tol}{A positive number. 
 Matrix entries with absolute values below \code{tol} are put to 0.}
