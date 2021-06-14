@@ -10,8 +10,3 @@ devtools::install_github( repo = "antononcube/R-packages", subdir = "SMRMon-R")
 devtools::install_github( repo = "antononcube/R-packages", subdir = "SparseMatrixRecommenderInterfacesNoDT")
 devtools::install_github( repo = "antononcube/R-packages", subdir = "NonNegativeMatrixFactorization")
 devtools::install_github( repo = "antononcube/R-packages", subdir = "LSAMon-R")
-devtools::install_github( repo = "antononcube/R-packages", subdir = "RandomDataFrameGenerator")
-
-
-
-
