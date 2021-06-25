@@ -489,3 +489,66 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, tagTypes = NULL, tagTypeMa
   )
 } 
 
+
+##===========================================================
+## SMRCrossTabulateTagTypes
+##===========================================================
+
+#' Cross tabulate tag types
+#' @description Cross tabulates two specified tag types.
+#' @param smr An SMR object.
+#' @param tagType1 Tag type corresponding to the rows of the cross tabulation.
+#' @param tagType2 Tag type corresponding to the common of the cross tabulation.
+#' @param value Which value to use in the cross tabulation formula?
+#' One of \code{c("none", "left", "right", "multiply")}.
+#' If "none" then \code{xtabs( ~ tagType1 + tagType2, ...)} is used.
+#' @param normalizerFunction A string specifying the normalization function 
+#' for the result sparse matrix. 
+#' If NULL then no normalization is done.
+#' @details Uses \code{\link{xtabs}} and \code{\link{SMRApplyTermWeightFunctions}}.
+#' @return A sparse matrix
+#' @export
+SMRCrossTabulateTagTypes <- function( smr, tagType1, tagType2, value = "none", normalizerFunction = NULL ) {
+  
+  expectedValueValues = c( "none", "left", "right", "multiply" )
+  if( ! ( value %in% expectedValueValues )  ) {
+    stop( paste0( "The expected value of the argument value is one of: '", paste0(expectedValueValues, collapse = "', '"), "'."  ), call. = TRUE )
+  }
+  
+  ## Join
+  dfQuery <- 
+    SMRSparseMatrixToDataFrame( smr, tagType = tagType1 ) %>% 
+    dplyr::inner_join( SMRSparseMatrixToDataFrame( smr, tagType = tagType2 ), by = smr$ItemColumnName )
+  
+  ## Formula
+  if( value == "none" ) {
+    
+    frm <- as.formula( paste0( " ~ ", tagType1, " + ", tagType2 ) )
+    
+  } else if( value == "left" ) {
+    
+    frm <- as.formula( paste0( "Weight.x ~ ", tagType1, " + ", tagType2 ) )
+    
+  } else if( value == "right" ) {
+    
+    frm <- as.formula( paste0( "Weight.y ~ ", tagType1, " + ", tagType2 ) )
+    
+  } else {
+    ## value == "multiply"
+    dfQuery <- 
+      dfQuery %>% 
+      dplyr::mutate( Weight = Weight.x * Weight.y )
+    
+    frm <- as.formula( paste0( "Weight ~ ", tagType1, " + ", tagType2 ) )
+  }
+  
+  ## Cross tabulate
+  matProfiles <- xtabs( frm, dfQuery, sparse = TRUE ) 
+  
+  ## Normalize
+  if( !is.null(normalizerFunction) ) {
+    matProfiles <- SMRApplyTermWeightFunctions( matProfiles, globalWeightFunction = "None", localWeightFunction = "None", normalizerFunction = normalizerFunction )
+  }
+  
+  matProfiles
+}
