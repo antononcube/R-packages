@@ -47,9 +47,9 @@ test_that("Not unitizing all matrices", {
   
   expect_is( smr4, "SMR" )
   
-  expect_true( norm(as.matrix( SMRSubMatrix(smr = smr3, tagType = "passengerSex") - SMRSubMatrix(smr = smr2, tagType = "passengerSex") ) ) < 1E-14 )
+  expect_true( norm(as.matrix( SMRSubMatrix(smr = smr4, tagType = "passengerSex") - SMRSubMatrix(smr = smr2, tagType = "passengerSex") ) ) < 1E-14 )
   
-  expect_true( norm(as.matrix( SMRSubMatrix(smr = smr3, tagType = "passengerClass") - SMRSubMatrix(smr = smr2, tagType = "passengerClass") ) ) < 1E-14 )
+  expect_true( norm(as.matrix( SMRSubMatrix(smr = smr4, tagType = "passengerClass") - SMRSubMatrix(smr = smr2, tagType = "passengerClass") ) ) < 1E-14 )
 
   expect_true( norm(as.matrix( SMRSubMatrix(smr = smr4, tagType = "passengerAge") - SMRSubMatrix(smr = smr2, tagType = "passengerAge") ) ) > 1 )
   
