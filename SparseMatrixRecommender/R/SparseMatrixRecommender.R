@@ -1447,9 +1447,9 @@ SMRRemoveTagTypes <- function( smr, removeTagTypes, warningQ = TRUE ) {
     Reduce( 
       f = function( mat, tt ) {
         if ( is.null(mat) ) { 
-          newSMR$M01[, newSMR$TagTypeRanges[tt,]$Begin : newSMR$TagTypeRanges[tt,]$End ] 
+          newSMR$M01[, newSMR$TagTypeRanges[tt,]$Begin : newSMR$TagTypeRanges[tt,]$End, drop = FALSE ] 
         } else { 
-          cbind( mat, newSMR$M01[, newSMR$TagTypeRanges[tt,]$Begin : newSMR$TagTypeRanges[tt,]$End ] ) 
+          cbind( mat, newSMR$M01[, newSMR$TagTypeRanges[tt,]$Begin : newSMR$TagTypeRanges[tt,]$End, drop = FALSE ] ) 
         }
       },
       
@@ -1458,7 +1458,7 @@ SMRRemoveTagTypes <- function( smr, removeTagTypes, warningQ = TRUE ) {
       init =  NULL 
     )
   
-  newSMR$TagTypeRanges <- newSMR$TagTypeRanges[pos, ]
+  newSMR$TagTypeRanges <- newSMR$TagTypeRanges[pos, , drop = FALSE ]
   
   newSMR$TagTypes <- newSMR$TagTypes[pos]
   
