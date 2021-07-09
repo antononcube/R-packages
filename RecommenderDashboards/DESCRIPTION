@@ -1,11 +1,25 @@
-Package: RecommenderDashboards
+Package: RecommenderDashbaords
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Recommender Dashboards
+Version: 0.2.0
+Authors@R: person("Anton", "Antonov", email = "antononcube@posteo.net",
+                  role = c("aut", "cre"))
+Maintainer: Anton Antonov <antononcube@posteo.net>
+Description: This package implements interactive interfaces for recommender systems.
+License: BSD-3
+Language: en-US
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/antononcube/R-packages/RecommenderDashboards
+RoxygenNote: 7.1.1
+Imports:
+    tidyverse,
+    shiny,
+    flexdashboard,
+    DT,
+    stopwords,
+    SnowballC
+Suggests: 
+    knitr,
+    rmarkdown,
+VignetteBuilder: knitr
