@@ -14,7 +14,7 @@ params:
 ---
 
 
-```{r}
+```{r setup}
 library(magrittr)
 library(tidyverse)
 library(Matrix)
@@ -226,13 +226,13 @@ if( params$saveQ ) {
 }
 ```
 
-# Export TTR
+# Export SMR
 
 ```{r export-SMR-matrix}
 if( params$exportQ ) {
-  dfTTRSMRMatrixToExport <- SMRMatricesToLongForm( smr = smrGoods )
-  dfTTRSMRMatrixToExport <- cbind( TestRunID = testRunID, dfTTRSMRMatrixToExport )
-  write.csv( x = dfTTRSMRMatrixToExport, 
+  dfSMRMatrixToExport <- SMRMatricesToLongForm( smr = smrGoods )
+  dfSMRMatrixToExport <- cbind( TestRunID = testRunID, dfSMRMatrixToExport )
+  write.csv( x = dfSMRMatrixToExport, 
              file = file.path( params$exportDirectory, paste0( testRunID, "-dfSMRMatrix.csv")), 
              row.names = FALSE)
 }
