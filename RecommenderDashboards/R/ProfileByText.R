@@ -30,7 +30,7 @@ ProfileByText <- function( smrObj, lsaObj, tagTypeWeights, text, nrecs = 10, rep
         LSAMonRepresentByTerms( query = text ) %>%
         LSAMonTakeValue
 
-      lsCSums <- colSums(matRes)
+      lsCSums <- Matrix::colSums(matRes)
       lsProf <- lsCSums[abs(lsCSums) > 0]
 
       if( length(lsProf) > 0 ) {
@@ -56,7 +56,7 @@ ProfileByText <- function( smrObj, lsaObj, tagTypeWeights, text, nrecs = 10, rep
 
       matRes <- SMRApplyTermWeightFunctions( matRes, "None", "None", "Cosine" )
 
-      lsCSums <- colSums(matRes)
+      lsCSums <- Matrix::colSums(matRes)
       lsProf <- lsCSums[abs(lsCSums) > 0]
 
       if( length(lsProf) > 0 ) {
@@ -76,6 +76,7 @@ ProfileByText <- function( smrObj, lsaObj, tagTypeWeights, text, nrecs = 10, rep
   if ( length(lsProfileFreeProf) == 0 ) {
     NULL
   } else {
+
     dfItemsByFreeText <-
       smrObj %>%
       SMRMonApplyTagTypeWeights(
@@ -90,7 +91,7 @@ ProfileByText <- function( smrObj, lsaObj, tagTypeWeights, text, nrecs = 10, rep
       SMRMonTakeValue
 
     ## Result
-    list( ItemsByFreeText = dfItemsByFreeText, ProfileByFreeText = dfProfileByFreeText)
+    list( ItemsByText = dfItemsByFreeText, ProfileByText = dfProfileByFreeText)
   }
 
 }
