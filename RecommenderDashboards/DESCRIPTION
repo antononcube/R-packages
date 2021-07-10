@@ -1,4 +1,4 @@
-Package: RecommenderDashbaords
+Package: RecommenderDashboards
 Type: Package
 Title: Recommender Dashboards
 Version: 0.2.0
@@ -10,7 +10,7 @@ License: BSD-3
 Language: en-US
 Encoding: UTF-8
 LazyData: true
-URL: https://github.com/antononcube/R-packages/RecommenderDashboards
+URL: https://github.com/antononcube/R-packages/tree/master/RecommenderDashboards
 RoxygenNote: 7.1.1
 Imports:
     tidyverse,
