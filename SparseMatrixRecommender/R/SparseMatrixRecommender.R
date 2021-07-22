@@ -1751,13 +1751,9 @@ SMRSparseMatrixToDataFrame <- function( smr, tagType  ) {
   }
   
   smat <- SMRSubMatrix( smr = smr, tagType = tagType )
-  df <- Matrix::summary(smat)
-  df <- df[ df$x > 0, ]
+  dfTemp <- SMRSparseMatrixToTriplets(smat = smat)
   
-  df <- data.frame(  Rownames = rownames(smat)[df$i], Colnames = colnames(smat)[df$j], Weight = df$x, stringsAsFactors = FALSE )
-  
-  names(df) <- c( smr$ItemColumnName, tagType, "Weight")
-  df
+  setNames(dfTemp, c(smr$ItemColumnName, tagType, "Weight"))
 }
 
 #' Sub-matrices to data frame long form conversion

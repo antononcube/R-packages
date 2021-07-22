@@ -134,7 +134,6 @@ as.matrix(smrGillColor1$M)[, grepl("ring", colnames(smrGillColor1$M))]
 as.matrix(smrGillColor2$M)
 ```
 
-
 # Unitize matrices
 
 ```{r}
@@ -147,5 +146,11 @@ colSums(smrFreq$M)
 
 ```{r}
 summary(smrFreq$M@x)
+```
+
+# SMR matrix to data frame
+
+```{r}
+SMRSparseMatrixToDataFrame( smrTitanic, tagType = "passengerAge" )
 ```
 
