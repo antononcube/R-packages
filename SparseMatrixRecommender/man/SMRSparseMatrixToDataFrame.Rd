@@ -9,7 +9,8 @@ SMRSparseMatrixToDataFrame(smr, tagType)
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
-\item{tagType}{A tag type (string).}
+\item{tagType}{A tag type (string).
+If NULL the whole matrix is used. (I.e. \code{smr$M})}
 }
 \value{
 A data frame.

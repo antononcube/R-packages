@@ -151,6 +151,10 @@ summary(smrFreq$M@x)
 # SMR matrix to data frame
 
 ```{r}
+SMRSparseMatrixToDataFrame( smrTitanic, tagType = NULL )
+```
+
+```{r}
 SMRSparseMatrixToDataFrame( smrTitanic, tagType = "passengerAge" )
 ```
 

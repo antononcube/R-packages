@@ -1742,16 +1742,23 @@ SMRSameTags <- function( smrTo, smrFrom ) {
 #' that corresponds to a tag type.
 #' @param smr A sparse matrix recommender.
 #' @param tagType A tag type (string).
+#' If NULL the whole matrix is used. (I.e. \code{smr$M}) 
 #' @return A data frame.
 #' @export
 SMRSparseMatrixToDataFrame <- function( smr, tagType  ) {
   
-  if( !(tagType %in% smr$TagTypes) ) {
-    stop("The parameter tagType is not of the tag types of the SMR object.")
+  if( is.null(tagType) ) {
+    
+    dfTemp <- SMRSparseMatrixToTriplets(smat = smr$M)
+    
+  } else {
+    if( !(tagType %in% smr$TagTypes) ) {
+      stop("The parameter tagType is not one of the tag types of the SMR object or NULL.")
+    }
+    
+    smat <- SMRSubMatrix( smr = smr, tagType = tagType )
+    dfTemp <- SMRSparseMatrixToTriplets(smat = smat)
   }
-  
-  smat <- SMRSubMatrix( smr = smr, tagType = tagType )
-  dfTemp <- SMRSparseMatrixToTriplets(smat = smat)
   
   setNames(dfTemp, c(smr$ItemColumnName, tagType, "Weight"))
 }
