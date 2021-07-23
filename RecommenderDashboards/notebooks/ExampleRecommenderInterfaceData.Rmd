@@ -6,6 +6,9 @@ output: html_notebook
 params:
   randomSeed: 4932
   numberOfRows: 200
+  numberOfUsers: 10
+  numberOfDays: 90
+  numberOfSources: 12
   testRunID: "RandomGoods"
   saveDirectory: "../flexdashboards"
   exportDirectory: "../export"
@@ -56,23 +59,37 @@ dfParamsExport
 
 ```{r}
 set.seed(params$randomSeed)
-numberOfUsers <- 30
-numberOfDays <- 90
 lsSources <- RandomWord(200,type = "Common")
+
+MakeRowIDS <- function(n) tolower(paste0( RandomWord(n), "-", round(runif(n = n, min = 0, max = 10 )), "-", RandomString(size = n, lambda = 2)))
+lsRowIDs <- MakeRowIDS(params$numberOfRows)
+assertthat::assert_that( length(unique(lsRowIDs)) == params$numberOfRows )
+```
+
+
+```{r}
 dfGoods <- 
   RandomDataFrame( 
     nrow = params$numberOfRows,
     columnNames = c("ID", "UserID", "Good", "Source", "Country", "TimeStamp"),
     generators = 
       list(
-        function(n) as.character(round(runif(n = n, min = 10^6, max = 16^8 ))),
-        RandomString(numberOfUsers, lambda = 6, charClasses = "[a-z]"),
+        function(n) tolower(RandomWord(n)),
+        gsub( " ", "-", RandomPetName(params$numberOfUsers)),
         c("palms", "washing machines", "cars", "milk", "ham"),
-        function(n) purrr::map_chr(1:n, function(x) paste( sample( x = lsSources, size = 12, replace = F), collapse = "; " )),
+        function(n) purrr::map_chr(1:n, function(x) paste( sample( x = lsSources, size = params$numberOfSources, replace = F), collapse = "; " )),
         c("China", "Germany", "Denmark", "Spain", "USA"),
-        function(n) as.character(sort(RandomDate(size = n, min = Sys.time(), max = Sys.time() + numberOfDays*24*3600)))
+        function(n) as.character(sort(RandomDate(size = n, min = Sys.time(), max = Sys.time() + params$numberOfDays*24*3600)))
       )
     )
+```
+
+```{r}
+dfGoods <- 
+  dfGoods %>% 
+  dplyr::group_by( ID ) %>% 
+  dplyr::mutate( ID = paste0( ID, "-", dplyr::row_number() ) ) %>%
+  dplyr::ungroup()
 ```
 
 ```{r}
@@ -146,15 +163,6 @@ smrGoods %>% SMRMonTakeTagTypeRanges
 summary(smrGoods$M@x)
 ```
 
-# Example recommendations
-
-```{r}
-smrGoods %>% 
-  SMRMonRecommendByProfile(c("Good:milk")) %>% 
-  SMRMonJoinAcross( data = dfGoods, by = "ID" ) %>% 
-  SMRMonTakeValue
-```
-
 # LSA
 
 
@@ -162,7 +170,7 @@ smrGoods %>%
 lsaGoods <- 
   LSAMonUnit( setNames(paste( dfGoods$Source, dfGoods$Country, dfGoods$Good, sep = "; "), dfGoods$ID) ) %>% 
   LSAMonMakeDocumentTermMatrix() %>% 
-  LSAMonApplyTermWeightFunctions() %>% 
+  LSAMonApplyTermWeightFunctions("IDF", "None", "Cosine") %>% 
   LSAMonExtractTopics( numberOfTopics = 2, minNumberOfDocumentsPerTerm = 1, method = "SVD" ) %>% 
   LSAMonEchoTopicsTable( numberOfTerms = 15, wideFormQ = T)
 ```
@@ -176,25 +184,38 @@ dim(lsaGoods %>% LSAMonTakeDocumentTermMatrix)
 ```{r}
 matWords <- lsaGoods %>% LSAMonTakeWeightedDocumentTermMatrix
 matTopics <- lsaGoods %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = F) %>% LSAMonTakeW
+matTopics <- SMRApplyTermWeightFunctions( matTopics, "None", "None", "Cosine" )
 ```
 
 ```{r}
-smrGoods <- 
-  smrGoods %>% 
-  SMRAnnexSubMatrix( newSubMat = matWords, newTagType = "Word", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
-  SMRAnnexSubMatrix( newSubMat = matTopics, newTagType = "Topic", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
-  SMRMonApplyTermWeightFunctions( "None", "None", "Cosine")
+smrGoods <-
+  smrGoods %>%
+  SMRAnnexSubMatrix( newSubMat = matWords, newTagType = "Word", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>%
+  SMRAnnexSubMatrix( newSubMat = matTopics, newTagType = "Topic", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T)
 ```
 
+
 # Recommendation examples
+
+## By history
+
+```{r}
+focusItem <- rownames(smrGoods$M)[1]
+focusItem <- "diametrical-1"
+smrGoods %>% 
+  SMRMonRecommend(focusItem, nrecs = 10, removeHistoryQ = F, normalizeQ =  F ) %>% 
+  SMRMonJoinAcross( data = dfGoods, by = "ID" ) %>% 
+  SMRMonTakeValue
+```
 
 ## By profile
 
 ```{r, rows.print = 20}
 smrGoods %>% 
-  SMRMonRecommendByProfile( profile = c( "Good:milk", "Country:denmark", "UserID:frehvojwf"), nrecs = 10 ) %>% 
+  SMRMonRecommendByProfile( profile = c( "Good:milk", "Country:denmark"), nrecs = 10 ) %>% 
   SMRMonTakeValue
 ```
+
 ## Topics
 
 ```{r}
@@ -216,6 +237,17 @@ lsaGoods %>%
   colSums
 ```
 
+# Example profiles
+
+```{r, rows.print=20}
+focusItem <- rownames(smrGoods$M)[1]
+focusItem <- "diametrical-1"
+smrGoods %>% 
+  SMRMonProfile(focusItem) %>% 
+  SMRMonTakeValue
+```
+
+
 # Save
 
 ```{r}
@@ -230,14 +262,13 @@ if( params$saveQ ) {
 
 ```{r export-SMR-matrix}
 if( params$exportQ ) {
-  dfSMRMatrixToExport <- SMRMatricesToLongForm( smr = smrGoods )
+  dfSMRMatrixToExport <- SMRMatricesToLongForm( smr = smrGoods %>% SMRMonSetItemColumnName("Item") )
   dfSMRMatrixToExport <- cbind( TestRunID = testRunID, dfSMRMatrixToExport )
   write.csv( x = dfSMRMatrixToExport, 
              file = file.path( params$exportDirectory, paste0( testRunID, "-dfSMRMatrix.csv")), 
              row.names = FALSE)
 }
 ```
-
 
 # Export LSA data
 
