@@ -240,6 +240,10 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                                     choices = c( "Raw" = "Value", "Smoothed" = "Value.ma" ),
                                     inline = TRUE ),
                       sliderInput( "nnsSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ),
+                      hr(),
+                      checkboxInput( inputId = "showPlotLegendNNs",
+                                     label = ": show plot legend",
+                                     value = T),
                       fluid = TRUE
                     ),
 
@@ -281,6 +285,10 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                                     choices = c( "Raw" = "Value", "Smoothed" = "Value.ma"),
                                     inline = TRUE ),
                       sliderInput( "svecSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ),
+                      hr(),
+                      checkboxInput( inputId = "showPlotLegendTrends",
+                                     label = ": show plot legend",
+                                     value = T),
                       fluid = TRUE
                     ),
 
@@ -429,11 +437,17 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
       facDF <- facDF[ order(-facDF$Score), ]
       ggDF$ItemName.Score <- factor( x = ggDF$ItemName.Score, levels = facDF$ItemName.Score )
 
-      ggplot2::ggplot( ggDF ) +
+      grRes <-
+        ggplot2::ggplot( ggDF ) +
         ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = input$nnsValueColName, color = "ItemName.Score" ), na.rm = T ) +
         ggplot2::facet_wrap( ~ItemName.Score, ncol = input$nnsNCol, scales = input$nnsScales )
       # if( is.numeric(ggDF$TimeIntervalBoundary) ) { ggplot2::scale_x_continuous(position = 'top') } else { ggplot2::scale_x_datetime(position = 'top') }
 
+      if( !input$showPlotLegendNNs ) {
+        grRes <- grRes + ggplot2::theme(legend.position = "none")
+      }
+
+      grRes
     })
 
 
@@ -447,7 +461,6 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
       ggplot2::ggplot( searchVecPlotDF() ) +
         ggplot2::geom_line( ggplot2::aes( x = TimeIntervalBoundary, y = Value ), na.rm = T ) +
         ggplot2::ggtitle( "Search vector" )
-
     })
 
 
@@ -479,11 +492,18 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
         searchVecPlotDF2$ItemName.Score <- factor( x = searchVecPlotDF2$ItemName.Score, levels = facDF2$ItemName.Score )
 
-        ggplot2::ggplot( ggDF2  ) +
+        grRes <-
+          ggplot2::ggplot( ggDF2  ) +
           ggplot2::geom_line( ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName, color = "ItemName.Score" ), na.rm = T ) +
           ggplot2::facet_wrap( ~ ItemName.Score, ncol = input$svecNCol, scales = input$svecScales ) +
           ggplot2::geom_line( data = searchVecPlotDF2, ggplot2::aes_string( x = "TimeIntervalBoundary", y = valueColumnName), color = input$searchVectorColor )
         #if( is.numeric(ggDF2$TimeIntervalBoundary) ) { ggplot2::scale_x_continuous(position = 'top') } else { ggplot2::scale_x_datetime(position = 'top') }
+
+        if( !input$showPlotLegendTrends ) {
+          grRes <- grRes + ggplot2::theme(legend.position = "none")
+        }
+
+        grRes
       }
     })
 
