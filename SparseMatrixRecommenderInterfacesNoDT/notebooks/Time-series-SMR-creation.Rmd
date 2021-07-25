@@ -121,6 +121,32 @@ txtNote <- "The S&P 500, or simply the S&P, is a stock market index that measure
 ```
 
 ```{r}
+txtNote <- 
+  list(
+    c( 
+      title = "FIRST",
+      value = "This is the first note",
+      href = "https://en.wikipedia.org/wiki/S%26P_500"
+    ),
+    c( 
+      title = "SECOND",
+      value = "The S&P 500, or simply the S&P, is a stock market index that measures the stock performance of 500 large companies listed on stock exchanges in the United States. It is one of the most commonly followed equity indices.", 
+      href = "https://en.wikipedia.org/wiki/S%26P_500"
+    ),
+    c( 
+      title = "THIRD",
+      value = "Some third statement",
+      href = "https://en.wikipedia.org/wiki/S%26P_500"
+    ),
+    c( 
+      title = "FOURTH",
+      value = "Let the forth be with you.",
+      href = "https://en.wikipedia.org/wiki/S%26P_500"
+    )
+  )
+```
+
+```{r}
 shiny::runApp( TSCorrSMRCreateSearchInterface( tsSMR = tssmrSP500, initNNs = 6, initNCols = 2, roundDigits = 4, plotOutputHeight = "800px", dashboardTitle = "S&P 500 search engine", noteText = txtNote, theme = "slate" ) )
 ```
 ```{r}
