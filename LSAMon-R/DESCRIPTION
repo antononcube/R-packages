@@ -18,6 +18,7 @@ Imports:
     SnowballC,
     lattice,
     irlba,
+    ggplot2,
     NonNegativeMatrixFactorization,
     SparseMatrixRecommender
 Suggests: 

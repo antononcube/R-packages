@@ -25,6 +25,7 @@
 #' @import Matrix
 #' @import magrittr
 #' @import irlba
+#' @import ggplot2
 #' @import NonNegativeMatrixFactorization
 #' @import SparseMatrixRecommender
 NULL
@@ -811,6 +812,65 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
   lsaObj$SplitPattern <- splitPattern
 
   ## Return object
+  lsaObj
+}
+
+
+##===========================================================
+## Echo document-term matrix statistics
+##===========================================================
+
+#' Echo document-term matrix statistics.
+#' @description Echoes a table and histograms of document-term matrix statistics.
+#' @param lsaObj A LSAMon object.
+#' @param logBase Logarithmic base for the document-term matrix row and column sums.
+#' @param echoQ Should the result be echoed or not?
+#' @return A LSAMon object.
+#' @export
+LSAMonEchoDocumentTermMatrixStatistics <- function( lsaObj, logBase = NULL, echoQ = T ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !(is.null(logBase) || is.numeric(logBase) && logBase > 1) ) {
+    warning( "The value of the argument logBase is expected to be a number greater than 1.", call. = TRUE )
+    return(LSAMonFailureSymbol)
+  }
+
+  smat <- lsaObj %>% LSAMonTakeDocumentTermMatrix()
+
+  if( LSAMonFailureQ(smat) ) { return(LSAMonFailureSymbol) }
+
+  dfMatStats <- data.frame( Variable = c( "NRow", "NCol", "FillIn"), Value = c( nrow(smat), ncol(smat), length(smat@x) / length(smat) ))
+
+  lsaObj$Value <- dfMatStats
+
+  if( echoQ ) {
+
+    lsRowSums <- Matrix::rowSums(smat)
+    lsColSums <- Matrix::colSums(smat)
+
+    prefix <- ""
+    if( is.numeric(logBase) ) {
+      lsRowSums <- log(x = lsRowSums, base = logBase)
+      lsColSums <- log(x = lsColSums, base = logBase)
+      prefix <- paste0("log(", logBase, ") of")
+    }
+
+    dfPlotData <- rbind(
+      data.frame( Type = paste( prefix, "Number of terms per document"), Value = lsRowSums ),
+      data.frame( Type = paste( prefix, "Number of documents per term"), Value = lsColSums )
+      )
+
+    gr <-
+      ggplot2::ggplot(dfPlotData) +
+      ggplot2::geom_histogram( aes(x = Value, fill = Type), bins = 30 ) +
+      ggplot2::facet_wrap( facets = ~Type, scales = "free" ) +
+      ggplot2::theme( legend.position = "none" )
+
+    print(dfMatStats)
+    print(gr)
+  }
+
   lsaObj
 }
 
