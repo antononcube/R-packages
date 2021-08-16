@@ -824,10 +824,11 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
 #' @description Echoes a table and histograms of document-term matrix statistics.
 #' @param lsaObj A LSAMon object.
 #' @param logBase Logarithmic base for the document-term matrix row and column sums.
+#' @param paretoPrinciplePlotsQ Should Pareto principle adherence plots be shown or not?
 #' @param echoQ Should the result be echoed or not?
 #' @return A LSAMon object.
 #' @export
-LSAMonEchoDocumentTermMatrixStatistics <- function( lsaObj, logBase = NULL, echoQ = T ) {
+LSAMonEchoDocumentTermMatrixStatistics <- function( lsaObj, logBase = NULL, paretoPrinciplePlotsQ = T, echoQ = T ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -846,35 +847,81 @@ LSAMonEchoDocumentTermMatrixStatistics <- function( lsaObj, logBase = NULL, echo
 
   if( echoQ ) {
 
+    ## Frequency matrix
+    lsRowSums <- Matrix::rowSums(smat)
     lsColSums <- Matrix::colSums(smat)
 
-    lsRowSums <- Matrix::rowSums(smat)
+    lsRowSumsPareto <- cumsum(sort(lsRowSums, decreasing = T))
+    lsRowSumsPareto <- lsRowSumsPareto / lsRowSumsPareto[length(lsRowSumsPareto)]
 
+    lsColSumsPareto <- cumsum(sort(lsColSums, decreasing = T))
+    lsColSumsPareto <- lsColSumsPareto / lsColSumsPareto[length(lsColSumsPareto)]
+
+    ## Unitized matrix
     smat@x[smat@x > 0] <- 1
     lsRowSums2 <- Matrix::rowSums(smat)
+    lsColSums2 <- Matrix::colSums(smat)
 
+    lsRowSums2Pareto <- cumsum(sort(lsRowSums2, decreasing = T))
+    lsRowSums2Pareto <- lsRowSums2Pareto / lsRowSums2Pareto[length(lsRowSums2Pareto)]
+
+    lsColSums2Pareto <- cumsum(sort(lsColSums2, decreasing = T))
+    lsColSums2Pareto <- lsColSums2Pareto / lsColSums2Pareto[length(lsColSums2Pareto)]
+
+    ## Log if specified
     prefix <- ""
     if( is.numeric(logBase) ) {
       lsColSums <- log(x = lsColSums, base = logBase)
+      lsColSums2 <- log(x = lsColSums2, base = logBase)
+
       lsRowSums <- log(x = lsRowSums, base = logBase)
       lsRowSums2 <- log(x = lsRowSums2, base = logBase)
       prefix <- paste0("log(", logBase, ") of")
     }
 
+    ## Plots data
     dfPlotData <- rbind(
-      data.frame( Type = paste( prefix, "Number of documents per term"), Value = lsColSums ),
+      data.frame( Type = paste( prefix, "Number of term occurences"), Value = lsColSums ),
+      data.frame( Type = paste( prefix, "Number of documents per term"), Value = lsColSums2 ),
       data.frame( Type = paste( prefix, "Number of terms per document"), Value = lsRowSums ),
-      data.frame( Type = paste( prefix, "Number of term occurences"), Value = lsRowSums2 )
+      data.frame( Type = paste( prefix, "Number of unique terms per document"), Value = lsRowSums2 )
     )
 
+    ## Plot
     gr <-
       ggplot2::ggplot(dfPlotData) +
       ggplot2::geom_histogram( ggplot2::aes(x = Value, fill = Type), bins = 30 ) +
       ggplot2::facet_wrap( facets = ~Type, scales = "free", ncol = 2) +
-      ggplot2::theme( legend.position = "none" )
+      ggplot2::theme(legend.position = "none") +
+      ggplot2::ggtitle(label = "Distributions")
 
+
+    ## Echo
     print(dfMatStats)
     print(gr)
+
+    ## Pareto plots
+    if( paretoPrinciplePlotsQ ) {
+
+      dfParetoPlotData <- rbind(
+        data.frame( Type = "Term occurences", Index = 1:length(lsColSumsPareto), ParetoFraction = lsColSumsPareto ),
+        data.frame( Type = "Term occurences (unique associations)", Index = 1:length(lsColSums2Pareto), ParetoFraction = lsColSums2Pareto ),
+        data.frame( Type = "Document sizes", Index = 1:length(lsRowSumsPareto), ParetoFraction = lsRowSumsPareto ),
+        data.frame( Type = "Document sizes (unique associations)", Index = 1:length(lsRowSums2Pareto), ParetoFraction = lsRowSums2Pareto )
+      )
+
+      ## Plot
+      gr2 <-
+        ggplot2::ggplot(dfParetoPlotData) +
+        ggplot2::geom_line( ggplot2::aes(x = Index, y = ParetoFraction) ) +
+        ggplot2::facet_wrap( facets = ~Type, scales = "free", ncol = 2) +
+        ggplot2::theme(legend.position = "none") +
+        ggplot2::ggtitle(label = "Pareto principle adherence")
+
+
+      ## Echo
+      print(gr2)
+    }
   }
 
   lsaObj

@@ -4,12 +4,19 @@
 \alias{LSAMonEchoDocumentTermMatrixStatistics}
 \title{Echo document-term matrix statistics.}
 \usage{
-LSAMonEchoDocumentTermMatrixStatistics(lsaObj, logBase = NULL, echoQ = T)
+LSAMonEchoDocumentTermMatrixStatistics(
+  lsaObj,
+  logBase = NULL,
+  paretoPrinciplePlotsQ = T,
+  echoQ = T
+)
 }
 \arguments{
 \item{lsaObj}{A LSAMon object.}
 
 \item{logBase}{Logarithmic base for the document-term matrix row and column sums.}
+
+\item{paretoPrinciplePlotsQ}{Should Pareto principle adherence plots be shown or not?}
 
 \item{echoQ}{Should the result be echoed or not?}
 }
