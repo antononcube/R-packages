@@ -846,25 +846,31 @@ LSAMonEchoDocumentTermMatrixStatistics <- function( lsaObj, logBase = NULL, echo
 
   if( echoQ ) {
 
-    lsRowSums <- Matrix::rowSums(smat)
     lsColSums <- Matrix::colSums(smat)
+
+    lsRowSums <- Matrix::rowSums(smat)
+
+    smat@x[smat@x > 0] <- 1
+    lsRowSums2 <- Matrix::rowSums(smat)
 
     prefix <- ""
     if( is.numeric(logBase) ) {
-      lsRowSums <- log(x = lsRowSums, base = logBase)
       lsColSums <- log(x = lsColSums, base = logBase)
+      lsRowSums <- log(x = lsRowSums, base = logBase)
+      lsRowSums2 <- log(x = lsRowSums2, base = logBase)
       prefix <- paste0("log(", logBase, ") of")
     }
 
     dfPlotData <- rbind(
+      data.frame( Type = paste( prefix, "Number of documents per term"), Value = lsColSums ),
       data.frame( Type = paste( prefix, "Number of terms per document"), Value = lsRowSums ),
-      data.frame( Type = paste( prefix, "Number of documents per term"), Value = lsColSums )
-      )
+      data.frame( Type = paste( prefix, "Number of term occurences"), Value = lsRowSums2 )
+    )
 
     gr <-
       ggplot2::ggplot(dfPlotData) +
-      ggplot2::geom_histogram( aes(x = Value, fill = Type), bins = 30 ) +
-      ggplot2::facet_wrap( facets = ~Type, scales = "free" ) +
+      ggplot2::geom_histogram( ggplot2::aes(x = Value, fill = Type), bins = 30 ) +
+      ggplot2::facet_wrap( facets = ~Type, scales = "free", ncol = 2) +
       ggplot2::theme( legend.position = "none" )
 
     print(dfMatStats)
