@@ -20,6 +20,8 @@ extensibility.
 
 Here is component diagram that describes "infracture backbone" of both interactive interfaces:
 
+![DSL-Web-Service-via-Cro-with-WE-QAS](./DSL-evaluations-flexdashboard/DSL-Web-Service-via-Cro-with-WE-QAS.jpg)
+
 - A server at RStudio's [shinyapps.io](https://www.shinyapps.io)
 
   - Launched on demand
