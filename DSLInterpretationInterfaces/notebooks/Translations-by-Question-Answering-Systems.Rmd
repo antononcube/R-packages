@@ -1,0 +1,396 @@
+---
+title: "Translations by Question Answering Systems"
+author: Anton Antonov
+date: 2021-08-14
+output: html_notebook
+---
+
+```{r setup}
+library(magrittr)
+library(Matrix)
+library(RandomDataFrameGenerator)
+library(LSAMon)
+library(QRMon)
+library(SparseMatrixRecommender)
+library(SMRMon)
+
+library(MathematicaVsRData)
+library(ExternalParsersHookUp)
+```
+
+```{r}
+dfAbstracts <- read.csv("https://raw.githubusercontent.com/antononcube/SimplifiedMachineLearningWorkflows-book/master/Data/Wolfram-Technology-Conference-2016-to-2019-abstracts.csv")
+aAbstracts <- setNames( dfAbstracts$Abstract, dfAbstracts$ID)
+length(aAbstracts)
+```
+# Latent Semantic Analysis
+
+```{r}
+length(aAbstracts)
+```
+
+```{r}
+eval(parse( text = 'lsaObj <-
+LSAMonUnit(aAbstracts) %>%
+LSAMonMakeDocumentTermMatrix(stemWordsQ = NULL, stopWords = NULL) %>%
+LSAMonEchoDocumentTermMatrixStatistics(logBase = 10) %>% 
+LSAMonApplyTermWeightFunctions(globalWeightFunction = \"IDF\", localWeightFunction = \"None\", normalizerFunction = \"Cosine\") %>%
+LSAMonExtractTopics(numberOfTopics = 20, method = \"NNMF\", maxSteps = 16, minNumberOfDocumentsPerTerm = 20) %>%
+LSAMonEchoTopicsTable(numberOfTerms = 10, wideFormQ = T) %>%
+LSAMonEchoStatisticalThesaurus(words = c(\"neural\", \"function\", \"notebook\"))'))
+```
+
+# Quantile regression
+
+```{r}
+parse( text = 'qrObj <-
+QRMonUnit(dfTemperatureData) %>%
+QRMonEchoDataSummary() %>%
+QRMonQuantileRegression(df = 12, probabilities = c(0.1, 0.7, 0.9), degree = 3) %>%
+QRMonPlot(datePlotQ = TRUE ) %>%
+QRMonErrorsPlot(relativeErrors = FALSE, datePlotQ = TRUE)') %>% eval
+```
+# Random Tabular Dataset
+
+
+```{r}
+RandomDataFrame
+```
+
+```{r}
+parse( text = 'RandomDataFrame(nrow = 10, ncol = 5, columnNamesGenerator = RandomString, form =  \"Wide\", maxNumberOfValues = NULL, minNumberOfValues = NULL, rowNamesQ = FALSE)') %>% eval
+```
+
+# Sparse Matrix Recommender
+
+```{r}
+parse( text = 'smrObj <-
+SMRMonUnit() %>%
+SMRMonCreate( data = dfTitanic) %>%
+SMRMonRecommendByProfile( profile = c(\"male\", \"1st\"), nrecs = 20) %>%
+SMRMonJoinAcross( data = dfTitanic) %>%
+SMRMonEchoValue()') %>%  eval
+```
+
+# FindTextualAnswer
+
+```{r}
+httr::GET( "http://accendodata.net:5040/find-textual-answer?text=It%20is%2034%20degrees%20hot%20today.&question=What%20is%20the%20temperature?")
+```
+
+
+```{r}
+MakeDSLWebServiceURL( command = NULL, path = "find-textual-answer", query = list( text = "It is 34 degrees hot today.", question = "What is the temperature?" ) )
+```
+
+```{r}
+InterpretByDSLWebService( command = NULL, url = "http://accendodata.net:5040/find-textual-answer", query = list( text = "It is 34 degrees hot today.", question = "What is the temperature?" ) )
+```
+
+```{r}
+InterpretByDSLWebService( command = NULL, path = "find-textual-answer", query = list( text = "It is 34 degrees hot today.", question = "What is the temperature?", properties = "String,Segment" ) )
+```
+```{r}
+myText <- 
+"Running Raku code can be done using the REPL (Read-Eval-Print Loop). To do this, open a terminal, type raku into the terminal window, and hit [Enter]. This will cause a prompt of > to appear. Next, type a line of code and hit [Enter]. The REPL will print out the value of the line. You may then type another line, or type exit and hit [Enter] to leave the REPL.
+
+Alternatively, write your code in a file, save it and run it. It is recommended that Raku scripts have a .raku file name extension. Run the file by typing raku filename.raku into the terminal window and hitting [Enter]. Unlike the REPL, this will not automatically print the result of each line: the code must contain a statement like say to print output.
+
+The REPL is mostly used for trying a specific piece of code, typically a single line. For programs with more than a single line it is recommended to store them in a file and then run them.
+
+Single lines may also be tried non-interactively on the command-line by typing raku -e 'your code here' and hitting [Enter]."
+```
+
+```{r}
+myText2 <- "
+Nikola Tesla (/ˈtɛslə/ TESS-lə; Serbian Cyrillic: Никола Тесла,[2] pronounced [nǐkola têsla];[a] 10 July [O.S. 28 June] 1856 – 7 January 1943) was a Serbian-American[5][6][7] inventor, electrical engineer, mechanical engineer, and futurist best known for his contributions to the design of the modern alternating current (AC) electricity supply system.[8]
+Born and raised in the Austrian Empire, Tesla studied engineering and physics in the 1870s without receiving a degree, gaining practical experience in the early 1880s working in telephony and at Continental Edison in the new electric power industry. In 1884 he emigrated to the United States, where he became a naturalized citizen. He worked for a short time at the Edison Machine Works in New York City before he struck out on his own. With the help of partners to finance and market his ideas, Tesla set up laboratories and companies in New York to develop a range of electrical and mechanical devices. His alternating current (AC) induction motor and related polyphase AC patents, licensed by Westinghouse Electric in 1888, earned him a considerable amount of money and became the cornerstone of the polyphase system which that company eventually marketed.
+"
+```
+
+
+```{r}
+myText3 <- "
+Description
+
+The Sr. Infrastructure Associate, Active Directory administers and maintains the underlying application and database infrastructure, supporting an innovative suite of financial services applications. As trusted advisor, the incumbent creates and maintains effective customer relationships so as to insure customer satisfaction. Maintains knowledge of leading edge technologies and industry/market domain knowledge. Actively contribute to the Company's solutions portfolio by providing information ranging from technical knowledge to methodologies. Candidate should be bi-lingual with ability to speak Spanish.
+
+Essential Functions:
+
+Develops and implements policies and procedures to ensure that systems support the organization's business requirements and meet the needs of end users.
+Defines system platforms based on user/client needs, cost, and required integration with existing applications, systems, or other platforms.
+Defines technical standards and functionality tests. Develop specifications, prototypes, or initial user guides as well as be familiar with a variety of the field's concepts, practices, and procedures.
+Relies on extensive experience and judgment to plan, develop, and implement a system platform framework applicable to the existing environment to accomplish goals and objectives. A wide degree of creativity and latitude is expected.
+Establishes the basic structure of the system, define the essential core design features and elements that provide the framework for all that follows.
+Works closely with business and technical staff and acts as a key contributor to support complex and critical platform environments.
+Ensures that the application/systems, data and technology aspects of the architecture are driven by the business imperatives of the organization and that the requirements are managed consistently and effectively to drive the overall architecture.
+Advises on and participates in governance boards to ensure that the overall architecture delivers the desired benefits to the organization.
+Serves as a subject matter expert for architectural frameworks, methods and tools and will act as coach to advise and assist varied business and technical staff with appropriate strategy and design disciplines.
+Primarily responsible for designing and maintaining Microsoft Active Directory environments, group policy, etc.
+Management of the corporate internal and external DNS infrastructure.
+Oversee the corporate EnTrust IdentityGuard two factor authentication mechanisms.
+Coordinate with other Santander entities complex application connectivity requirements and multi-domain authentication troubleshooting
+Work with different audit and compliance teams to remediate findings and provide evidence of compliance.
+
+Other Functions:
+
+Other duties as assigned.
+
+Requirements:
+
+Education -
+Bachelor's Degree: in Computer Science/Software Engineering or equivalent field.
+or equivalent work experience
+Experience -
+9-12 years System administration leadership in a large matrixed organization.
+9-12 years Deploying and maintaining software products in a cloud environment.
+9-12 years Experience managing cloud software projects utilizing agile methodologies in a mission-critical environment.
+Enterprise Active Directory support and design.
+Group policy design and implementation.
+O365 migration experience a plus.
+Skills & Abilities - 
+Leadership skills to drive evolution and change
+Ability to drive product vision, strategy, and development roadmap in alignment with sales, business and market direction, and strategy
+Expert command of DevOps concepts, processes and best practices
+In-depth knowledge of industry security practices, with special focus on securing and monitoring cloud-based solutions
+Successful track record of managing a network of partnerships with technical teams to resolve system problems and application-specific issues
+Ability to quickly ascertain technical status of issues raised using limited information and formulating the best possible issue-resolution plan
+Understanding of software performance tools, metrics and benchmarks
+History of building detailed technical artifacts documenting software deployment processes
+Excellent communication skills, both written and verbal
+Strong process-oriented approach to all work products
+Strong customer relationship management skills with ability to prioritize and develop creative solutions to problems
+Record of managing multiple simultaneous projects on time and on budget
+Well-versed with a wide range of technologies across web, database, integrations, interfaces, services and server side
+Strong working knowledge and/or a passion to explore and aptitude to quickly learn a wide range of frameworks, technologies and software development, testing, integration and deployment tools
+Practical experience and appreciation for DevOps practices and processes that foster automation and collaboration with a goal to build, test and release software and products faster and reliably
+Ability to speak Spanish
+
+Working Conditions:
+
+Frequently: Minimal physical effort such as sitting, standing, and walking.
+Occasional moving and lifting of equipment and furniture is required to support onsite and offsite meeting setup and teardown.
+Physically capable of lifting up to fifty pounds, able to bend, kneel, climb ladders.
+
+Employers Rights:
+
+This job description does not list all the duties of the job. You may be asked by your supervisors or managers to perform other duties. You will be evaluated in part based upon your performance of the tasks listed in this job description.
+The employer has the right to revise this job description at any time. This job description is not a contract for employment, and either you or the employer may terminate employment at any time, for any reason.
+"
+```
+
+```{r}
+myText4 <- "
+Olivia Harrison
+1234 Avenue Street, City, State 12345
+ITSpecialist@domain.com | 555.555.5555
+
+Summary of Qualifications
+
+Promote optimal performance, reliability, and security across core business systems
+
+Results-driven professional offering a progressive, seven-year career in information technology.
+Repeated success directing IT projects from inception to execution, strategically allocating resources and delegating tasks to achieve on-time, on-budget delivery.
+Expertly manage technical support operations, diligently troubleshooting issues to identify root causes and prevent recurrence.
+Process improvement champion with a history of implementing new procedures and technologies to strengthen security posture, enhance operational efficiency, and control costs.
+– Areas of Expertise –
+
+Testing & Troubleshooting | Project Management | System Administration
+
+Vendor Relations | Strategic Planning | Resource Allocation | Effective Communication
+
+Team Leadership | Business Continuity | Data Backup & Recovery
+
+ 
+
+Technical Proficiencies
+
+Platforms
+
+Windows Vista/7/10; Mac OS X; Oracle; SAP
+
+Software
+
+Microsoft Office (Word, Excel, Outlook, PowerPoint, Project), SQL, and SharePoint; QuickBooks; Salesforce.com
+
+Languages
+
+Java, HTML, C++, PHP, Python, Ruby
+
+ 
+
+Professional Experience
+
+Gray & Associates, Seattle, Washington - 10/2010 to Present
+
+System Administrator (6/2012 to Present)
+
+Promoted to leadership role accountable for maintaining key business applications and systems. Partner with senior leadership to guide short- and long-range technology planning. Plan, coordinate, and execute hardware and software upgrades. Serve as vital resource for Help Desk staff, overseeing daily support operations and providing assistance on complex trouble tickets. Cultivate and maintain relationships with IT vendors.
+
+Selected projects…
+
+Successfully directed the on-time, on-budget completion of company-wide upgrade to Windows 10 and Office 365 impacting more than 50 onsite staff and five remote employees.
+Initiated transformative IT policies designed to harden system security, including enhanced measures for password requirements and user access.
+Spearheaded new procedures for Help Desk documentation, enabling the development of a comprehensive knowledge base of common issues and solutions to improve Help Desk efficiency.
+Technical Support Specialist (10/2010 to 6/2012)
+
+Provided technical support to end-users, leveraging broad-based expertise to handle problem identification, diagnosis, resolution, and escalation via helpdesk system, telephone, and remote support tools. Performed security administration functions for user, data, and remote access.
+
+Selected projects…
+
+Played an instrumental role in companywide migration from legacy customer relationship management (CRM) system to Salesforce.com by providing end-user training and support.
+Developed step-by-step training manuals for end-users to ensure a seamless transition following application upgrades.
+Anderson Consulting, Portland, Oregon
+
+Help Desk Technician (3/2007 to 8/2010)
+
+Performed troubleshooting, repair, and maintenance of computer systems, hardware, peripherals, and telephony. Analyzed system requirements to efficiently isolate and resolve a wide array of technical issues. Participated in large-scale upgrades and installations.
+
+Selected Accomplishments…
+
+Quickly learned and master proprietary applications.
+Demonstrated outstanding customer services skills, consistently receiving high rating on client satisfaction surveys.
+Excelled in previous roles as Desktop Support Technician for ABC Enterprises in Portland, Oregon(2004 to 2007) and as an Operations Manager for Fancy Restaurant in Eugene, Oregon (2000 to 2004)
+
+Professional Development
+
+Project Management Professional (PMP) Certification | Microsoft Certified Professional (MCP)
+
+Microsoft Certified Solutions Expert (MCSE) | Microsoft Certified Solutions Associate (MCSA)
+
+CompTIA A+ | CompTIA Security+ | CompTIA Network+ | CompTIA Project+
+"
+```
+
+
+
+```{r}
+txtLines <- paste( lsLines, collapse = "\n") 
+txtLines <- gsub( '"', '\'', txtLines) 
+```
+
+```{r}
+txtLines
+```
+
+```{r}
+resp <- 
+  InterpretByDSLWebService( command = NULL, hostname = "localhost", port = "10000", path = "find-textual-answer", 
+                            query = 
+                              list( 
+                                text = iconv(txtLines), 
+                                question = "What are the dates?",
+                                nAnswers = "10", 
+                                properties = "" 
+                              ) )
+resp
+```
+```{r}
+resp$Content
+```
+
+
+```{r}
+dfAnswers <- purrr::map_df( resp$Content, function(x) data.frame( Probility = x$Probability, String = x$String, Position.Start = as.integer(x$Position[[1]]), Position.End = as.integer(x$Position[[2]])) )
+dfAnswers
+```
+```{r}
+offsetLeft <- 30
+offsetRight <- 30
+purrr::map_df( split( dfAnswers, 1:nrow(dfAnswers)), function(dfX) {
+  cbind( dfX, Fragment = substr( x = myText, start = max( 1, dfX$Position.Start - offsetLeft), stop = min( nchar(myText), dfX$Position.End + offsetRight) ) )
+})
+```
+# Debug failure
+
+```{r}
+command <- "what is this about? can I use data set dfTitanic for quantile regression?"
+command2 <- "what is this about can I use data set dfTitanic for quantile regression"
+```
+
+```{r}
+url <- DSLWebServiceInterpretationURL(command, url = "http://localhost:10000/translate/qas/")
+url
+```
+```{r}
+resp <- httr::GET(url)
+resp
+```
+```{r}
+resp$content
+```
+
+```{r}
+httr::content(resp, type = "application/json" )
+```
+
+```{r}
+InterpretByDSLWebService(command, url = "http://localhost:10000/translate/qas/")
+```
+
+# Get URL plain text
+
+## Definitions
+
+Following https://volkovanotes.wordpress.com/2016/03/19/convert-html-to-text-in-r/
+
+```{r}
+clean_link <- function(link) {
+  html = getURL(link, followlocation = TRUE)
+  
+  # parse html
+  doc = htmlParse(html, asText=TRUE)
+  plain.text <- xpathSApply(doc, "//text()[not(ancestor::script)][not(ancestor::style)][not(ancestor::noscript)][not(ancestor::form)]", xmlValue)
+  text <- paste(plain.text, collapse = "\n")
+  return(text)
+}
+```
+
+```{r}
+cleanStrings <- function(s) {
+  # first fix the unicode ' characters to be all consistent
+  s <- gsub("\xe2\x80\x99", "'", s, perl=TRUE)
+  s <- gsub("\u0091|\u0092|\u0093|\u0094|\u0060|\u0027|\u2019|\u000A", "'", s, perl=TRUE)
+  
+  # Strip unwanted UTF-8 characters
+  s <- iconv(s, "UTF-8", "ASCII", "?")
+  # strip unused characters but leave ' and -
+  # s <- gsub("[^[:alpha:][:space:]'-]", " ", s)
+  
+  # now let's get rid of single quotes that are quoted strings and not in the middle of a word
+  # this will leave contractions like don't, I'm, etc.
+  s <- gsub("(?<!\\w)[-'](?<!\\w)" , " ", s, perl=TRUE) # just leave - and ' in the middle of words
+  
+  s <- gsub("[[:space:]]+", " ", s, perl=TRUE) # consolidate spaces
+  s <- gsub("^[[:space:]]+", "", s, perl=TRUE) # strip leading spaces
+  s <- tolower(s)
+  
+  return(s)
+}
+```
+
+## Experiments
+
+```{r}
+textURL <- "https://en.wikipedia.org/wiki/Lykke_Li"
+```
+
+```{r}
+library(RCurl)
+library(XML)
+lsLines <- XML::htmlParse( RCurl::getURL(textURL), asText=TRUE )
+length(lsLines)
+```
+
+```{r}
+cleanStrings(clean_link(textURL))
+```
+
+## First tries
+
+```{r, eval=FALSE}
+# Not that good
+library(readr)
+readr::read_lines( file = textURL  n_max = 12, )
+```
+

@@ -1,0 +1,88 @@
+---
+title: "Translations utilization examples"
+author: Anton Antonov
+date: 2021-08-08
+output: html_notebook
+---
+
+```{r setup}
+library(magrittr)
+library(tidyverse)
+library(Matrix)
+
+library(QRMon)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(LSAMon)
+
+library(MathematicaVsRData)
+library(ExternalParsersHookUp)
+```
+
+
+------
+
+# Data wrangling
+
+```{r}
+dfTitanic
+```
+
+```{r}
+eval(expression(obj <- dfTitanic, obj <- na.omit(obj), obj <- obj[obj[["passengerSex"]] == 
+    "male" & obj[["passengerSurvival"]] == "died" | obj[["passengerSurvival"]] == 
+    "survived", ], obj <- xtabs(formula = passengerAge ~ passengerClass + passengerSurvival, data = obj)))
+```
+
+```{r}
+obj
+```
+
+------
+
+# Latent Semantic Analysis
+
+```{r}
+lsaObj <- 
+    eval(
+        expression(LSAMonUnit(textHamlet) %>% 
+                       LSAMonMakeDocumentTermMatrix(stemWordsQ = F, stopWords = NULL) %>% LSAMonApplyTermWeightFunctions(globalWeightFunction = "IDF", 
+    localWeightFunction = "None", normalizerFunction = "Cosine") %>% 
+    LSAMonExtractTopics(numberOfTopics = 12, method = "SVD", maxSteps = 12, minNumberOfDocumentsPerTerm = 2) %>% 
+    LSAMonEchoTopicsTable(numberOfTerms = 12, wideFormQ = T) %>% 
+    LSAMonEchoStatisticalThesaurus(words = c("king", "castle", "grave", "poison"), wideFormQ = T)))
+```
+
+------
+
+# Quantile Regression
+
+```{r}
+dfTemperatureData
+```
+
+```{r}
+qrObj <- eval(expression(
+    QRMonUnit(data = dfTemperatureData) %>% 
+        QRMonEchoDataSummary() %>% 
+        QRMonQuantileRegression(df = 20, probabilities = c(0.5, 0.7)) %>% 
+        QRMonPlot(datePlotQ = TRUE, dateOrigin = "1900-01-01") %>% 
+        QRMonErrorsPlot(relativeErrorsQ = TRUE, datePlotQ=T, dateOrigin = "1900-01-01")))
+```
+
+------
+
+# Recommendations
+
+```{r}
+dfTitanic
+```
+
+```{r}
+smrObj <- eval(expression(SMRMonCreate(data = dfTitanic) %>% SMRMonCreate() %>% 
+    SMRMonRecommendByProfile(profile = c("male")) %>%         
+        SMRMonJoinAcross(data = dfTitanic) %>% 
+    SMRMonEchoValue()))
+```
+
+
