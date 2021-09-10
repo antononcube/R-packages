@@ -12,6 +12,7 @@ runtime: shiny
 
 ```{r setup, include=FALSE}
 library(shiny)
+library(shinybusy)
 library(knitr)
 library(flexdashboard)
 library(DT)
@@ -66,6 +67,13 @@ hr()
 checkboxInput( inputId = "parseQ", label = ": parse to R expression?", value = FALSE )
 ```
 
+```{r}
+# Use this function somewhere in UI.
+# See https://www.color-hex.com/color-palette/895
+# or https://www.color-hex.com/color/994d00
+# Dark orange: #994d00
+add_busy_bar(color = "#ff6f69")
+```
 
 
 Main
