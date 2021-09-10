@@ -26,19 +26,18 @@ library(LSAMon)
 ```
 
 ```{r get-data, include=FALSE}
+load( file = "smrGoods.RData" )
+load( file = "lsaGoods.RData" )
+load( file = "dfGoods.RData" )
 
-  load( file = "smrGoods.RData" )
-  load( file = "lsaGoods.RData" )
-  load( file = "dfGoods.RData" )
-  
-  lsRecommenders <- list( "Goods" = smrGoods)
-  lsLSAObjects   <- list( "Goods" = lsaGoods)
-  lsData         <- list( "Goods" = dfGoods)
-  
-  lsRecommenders <- 
-    purrr::map( lsRecommenders, function(smr) {
-      smr %>% SMRMonApplyTermWeightFunctions( "None", "None", "Cosine" )
-    })
+lsRecommenders <- list( "Goods" = smrGoods)
+lsLSAObjects   <- list( "Goods" = lsaGoods)
+lsData         <- list( "Goods" = dfGoods)
+
+lsRecommenders <- 
+  purrr::map( lsRecommenders, function(smr) {
+    smr %>% SMRMonApplyTermWeightFunctions( "None", "None", "Cosine" )
+  })
 ```
 
 Parameters {.sidebar}
@@ -99,7 +98,7 @@ tagTypeWeights <-
 Recommendations
 =======================================================================
 
-Row {data-height=800}
+Row {data-height=400}
 -----------------------------------------------------------------------
 
 ### Tags
@@ -117,20 +116,60 @@ lsTagsProf <-
     if( nchar(input$tagsText) == 0) { 
       NULL 
     } else {
+      
       res <- trimws( strsplit(input$tagsText, split = ",")[[1]] )
       res <- res[ nchar(res) > 0 ]
+      res <- res[ !grepl("^Item:", res) ]
       
-      dfRes <- as.data.frame(stringr::str_split_fixed( string = res, pattern = ":", n = 3))
+      if ( length(res) > 0 ) {
+        
+        dfRes <- as.data.frame(stringr::str_split_fixed( string = res, pattern = ":", n = 3))
+        
+        dfRes[[3]] <- as.numeric(dfRes[[3]])
+        dfRes[[3]][is.na(dfRes[[3]])] <- 1
+        
+        dfRes <- 
+          purrr::map_df( split(dfRes,1:nrow(dfRes)), function(dfX) {
+            data.frame( Tag = paste0( dfX[[1,1]], ":", dfX[[1,2]] ), Score = dfX[[1,3]] )
+          })
+        dfRes <- dfRes[ dfRes$Tag %in% colnames(smrObj()$M), ] 
+        setNames( dfRes$Score, dfRes$Tag )
+        
+      } else {
+        NULL
+      }
+    }
+  })
+
+lsNNItems <- 
+  reactive({
+    
+    if( nchar(input$tagsText) == 0) { 
+      NULL 
+    } else if ( grepl("Item:", input$tagsText) ) {
       
-      dfRes[[3]] <- as.numeric(dfRes[[3]])
-      dfRes[[3]][is.na(dfRes[[3]])] <- 1
+      res <- trimws( strsplit(input$tagsText, split = ",")[[1]] )
+      res <- res[ nchar(res) > 0 ]
+      res <- res[ grepl("^Item:", res) ]
       
-      dfRes <- 
-        purrr::map_df( split(dfRes,1:nrow(dfRes)), function(dfX) {
-          data.frame( Tag = paste0( dfX[[1,1]], ":", dfX[[1,2]] ), Score = dfX[[1,3]] )
-        })
-      dfRes <- dfRes[ dfRes$Tag %in% colnames(smrObj()$M), ] 
-      setNames( dfRes$Score, dfRes$Tag )
+      if ( length(res) > 0 ) {
+        dfRes <- as.data.frame(stringr::str_split_fixed( string = res, pattern = ":", n = 3))
+        
+        dfRes[[3]] <- as.numeric(dfRes[[3]])
+        dfRes[[3]][is.na(dfRes[[3]])] <- 1
+        
+        dfRes <- 
+          purrr::map_df( split(dfRes,1:nrow(dfRes)), function(dfX) {
+            data.frame( Tag = paste0( dfX[[1,1]], ":", dfX[[1,2]] ), Score = dfX[[1,3]] )
+          })
+        dfRes$Tag <- gsub( "^Item:", "", dfRes$Tag)
+        dfRes <- dfRes[ dfRes$Tag %in% rownames(smrObj()$M), ] 
+        setNames( dfRes$Score, dfRes$Tag )
+      } else {
+        NULL
+      }      
+    } else {
+      NULL
     }
   })
 ```
@@ -220,7 +259,7 @@ DT::renderDataTable(
 )
 ```
 
-Row
+Row {.tabset}
 -----------------------------------------------------------------------
 
 
@@ -243,7 +282,7 @@ DT::renderDataTable(
       SMRMonApplyTagTypeWeights( 
         weights = tagTypeWeights(), 
         default = 1 ) %>% 
-      SMRMonRecommendByProfile( profile = lsProf(), nrecs = input$numberOfRecs ) %>% 
+      SMRMonRecommendByProfile( profile = lsProf(), nrecs = input$numberOfRecs, normalizeQ = TRUE ) %>% 
       SMRMonJoinAcross( dfData() ) %>% 
       SMRMonTakeValue
     },
@@ -252,11 +291,34 @@ DT::renderDataTable(
 ```
 
 
+### Recommendations with items
+
+```{r}
+DT::renderDataTable(
+
+  if( is.null(lsNNItems()) || length(lsNNItems()) == 0 ) {
+    NULL
+  } else {
+    
+    smrObj() %>%     
+      SMRMonApplyTagTypeWeights( 
+        weights = tagTypeWeights(),
+        default = 1 ) %>% 
+      SMRMonRecommend( history = lsNNItems(), nrecs = input$numberOfRecs, normalizeQ = TRUE, removeHistoryQ = FALSE ) %>% 
+      SMRMonJoinAcross( dfData() ) %>% 
+      SMRMonTakeValue
+  },
+  
+  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE),
+  selection = "none"
+) 
+```
+
 
 Profiles
 =======================================================================
 
-Row {data-height=800}
+Row {data-height=400}
 -----------------------------------------------------------------------
 
 ### Items
@@ -359,19 +421,28 @@ lsProfileFreeTopicsProf <-
 
 dfItemsByFreeText <- 
   reactive({
-    smrObj() %>% 
-      SMRMonApplyTagTypeWeights( 
-        weights = tagTypeWeights(),
-        default = 1 ) %>% 
-      SMRMonRecommendByProfile( profile = lsProfileFreeProf(), nrecs = input$numberOfRecs, normalizeQ = TRUE ) %>% 
-      SMRMonTakeValue
+    if ( is.null(lsProfileFreeProf()) ) { 
+      NULL
+    } else {
+      
+      smrObj() %>% 
+        SMRMonApplyTagTypeWeights( 
+          weights = tagTypeWeights(),
+          default = 1 ) %>% 
+        SMRMonRecommendByProfile( profile = lsProfileFreeProf(), nrecs = input$numberOfRecs, normalizeQ = TRUE ) %>% 
+        SMRMonTakeValue
+    }
   })
     
 dfProfileByFreeText <- 
   reactive({
-    smrObj() %>% 
-      SMRMonProfile( history = setNames(dfItemsByFreeText(), c("Rating", "Index", "Item")), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
-      SMRMonTakeValue
+    if ( is.null(dfItemsByFreeText()) ) { 
+      NULL
+    } else {
+      smrObj() %>% 
+        SMRMonProfile( history = setNames(dfItemsByFreeText(), c("Rating", "Index", "Item")), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
+        SMRMonTakeValue
+    }
   })
 ```
 
@@ -387,7 +458,7 @@ DT::renderDataTable(
 ```
 
 
-Row
+Row {.tabset}
 -----------------------------------------------------------------------
 
 ### Profile of items
@@ -395,17 +466,25 @@ Row
 ```{r}
 dfProfileByItemsHist <- 
   reactive({
-    smrObj() %>%     
-      SMRMonApplyTagTypeWeights( 
-        weights = tagTypeWeights(), 
-        default = 1 ) %>% 
-      SMRMonProfile( history = lsItemsHist(), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
-      SMRMonTakeValue
+    
+    if( is.null(lsItemsHist()) || length(lsItemsHist()) == 0 ) {
+      NULL
+    } else {
+      
+      smrObj() %>%     
+        SMRMonApplyTagTypeWeights( 
+          weights = tagTypeWeights(), 
+          default = 1 ) %>% 
+        SMRMonProfile( history = lsItemsHist(), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
+        SMRMonTakeValue
+    }
   })
 ```
 
 ```{r}
-DT::renderDataTable( dfProfileByItemsHist(),
+DT::renderDataTable( 
+  if( is.null(dfProfileByItemsHist()) ) { NULL } 
+  else { dfProfileByItemsHist() }, 
   options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
 ) 
 ```
@@ -415,7 +494,8 @@ DT::renderDataTable( dfProfileByItemsHist(),
 
 ```{r}
 DT::renderDataTable(
-  dfProfileByFreeText(),
+  if( is.null(dfProfileByFreeText()) ) { NULL } 
+  else { dfProfileByFreeText() },
   options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
 ) 
 ```
@@ -426,11 +506,19 @@ DT::renderDataTable(
 ```{r}
 
 DT::renderDataTable(
-  rbind( dfProfileByItemsHist(), dfProfileByFreeText() ) %>% 
-    dplyr::group_by( TagType, Tag) %>% 
-    dplyr::summarise( Score = sum(Score), .groups = "drop_last") %>% 
-    dplyr::arrange(desc(Score)) %>% 
-    dplyr::select( Score, TagType, Tag),
+  if( is.null(dfProfileByItemsHist()) && is.null(dfProfileByFreeText())  ) {
+    
+    NULL
+    
+  } else {
+    
+    rbind( dfProfileByItemsHist(), dfProfileByFreeText() ) %>% 
+      dplyr::group_by( TagType, Tag) %>% 
+      dplyr::summarise( Score = sum(Score), .groups = "drop_last") %>% 
+      dplyr::arrange(desc(Score)) %>% 
+      dplyr::select( Score, TagType, Tag)
+    
+  },
   options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
 ) 
 ```
