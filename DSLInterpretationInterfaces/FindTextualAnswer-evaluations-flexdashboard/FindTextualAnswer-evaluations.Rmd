@@ -12,6 +12,7 @@ runtime: shiny
 
 ```{r setup, include=FALSE}
 library(shiny)
+library(shinybusy)
 library(knitr)
 library(flexdashboard)
 library(DT)
@@ -47,6 +48,7 @@ radioButtons( inputId = "questionsPreset",
                 "Generic" = "Generic",
                 "Financial" = "Financial",
                 "Food preparation" = "FoodPreparation",
+                "Programming" = "Programming",
                 "Recruitment" = "Recruitment"
               ),
               selected = "Generic"
@@ -68,6 +70,9 @@ output$dynamic <- renderUI({
     } else if( input$questionsPreset == "FoodPreparation" ) {
       c( "How many eggs?", "What kind of vegetables?", "What kind of meat?", "How much flour?", "How long to cook?", "How long to boil?", "What are the ingredients?", "How much water?", "Which spices?",
          "What temperature to preheat to?", "What temperature to cook with?")
+    } else if ( input$questionsPreset == "Programming" ) {
+      c("Which programming language?", "What packages to use?", "Which libraries?", "What profile?", "Which implementation?", "What kind of data?", "Which dataset?", 
+        "Where to deploy?", "What is the schema?", "What is the URL?")
     } else if ( input$questionsPreset == "Recruitment" ) {
       c("What is person's name?", "Has sales experience?", "Worked in sales?", "Work places?", "Where did that person work?", "Worked in which companies?", "Where did they live?", 
         "Where lived?", "What this person knows the most?", "What is the best skill?", "What are the skills?", "What jobs?", "How many jobs?", "What is the favorite job?")
@@ -129,6 +134,13 @@ checkboxInput( inputId = "showAnswerPositionsQ",
 ```
 
 
+```{r}
+# Use this function somewhere in UI.
+# See https://www.color-hex.com/color-palette/895
+# or https://www.color-hex.com/color/994d00
+# Dark orange: #994d00
+add_busy_bar(color = "#ff6f69")
+```
 
 Main
 =======================================================================
@@ -308,22 +320,43 @@ Column {.tabset}
 
 ### Biography
 
-```
-Nikola Tesla (/ˈtɛslə/ TESS-lə; Serbian Cyrillic: Никола Тесла,[2] pronounced [nǐkola têsla];[a] 10 July [O.S. 28 June] 1856 – 7 January 1943) was a Serbian-American[5][6][7] inventor, electrical engineer, mechanical engineer, and futurist best known for his contributions to the design of the modern alternating current (AC) electricity supply system.[8]
+```{r}
+txtBiography <- "Nikola Tesla (/ˈtɛslə/ TESS-lə; Serbian Cyrillic: Никола Тесла,[2] pronounced [nǐkola têsla];[a] 10 July [O.S. 28 June] 1856 – 7 January 1943) was a Serbian-American[5][6][7] inventor, electrical engineer, mechanical engineer, and futurist best known for his contributions to the design of the modern alternating current (AC) electricity supply system.[8]
 
 Born and raised in the Austrian Empire, Tesla studied engineering and physics in the 1870s without receiving a degree, gaining practical experience in the early 1880s working in telephony and at Continental Edison in the new electric power industry. In 1884 he emigrated to the United States, where he became a naturalized citizen. He worked for a short time at the Edison Machine Works in New York City before he struck out on his own. With the help of partners to finance and market his ideas, Tesla set up laboratories and companies in New York to develop a range of electrical and mechanical devices. His alternating current (AC) induction motor and related polyphase AC patents, licensed by Westinghouse Electric in 1888, earned him a considerable amount of money and became the cornerstone of the polyphase system which that company eventually marketed.
 
 Attempting to develop inventions he could patent and market, Tesla conducted a range of experiments with mechanical oscillators/generators, electrical discharge tubes, and early X-ray imaging. He also built a wireless-controlled boat, one of the first-ever exhibited. Tesla became well known as an inventor and demonstrated his achievements to celebrities and wealthy patrons at his lab, and was noted for his showmanship at public lectures. Throughout the 1890s, Tesla pursued his ideas for wireless lighting and worldwide wireless electric power distribution in his high-voltage, high-frequency power experiments in New York and Colorado Springs. In 1893, he made pronouncements on the possibility of wireless communication with his devices. Tesla tried to put these ideas to practical use in his unfinished Wardenclyffe Tower project, an intercontinental wireless communication and power transmitter, but ran out of funding before he could complete it.[9]
 
-After Wardenclyffe, Tesla experimented with a series of inventions in the 1910s and 1920s with varying degrees of success. Having spent most of his money, Tesla lived in a series of New York hotels, leaving behind unpaid bills. He died in New York City in January 1943.[10] Tesla's work fell into relative obscurity following his death, until 1960, when the General Conference on Weights and Measures named the SI unit of magnetic flux density the tesla in his honor.[11] There has been a resurgence in popular interest in Tesla since the 1990s.[12]
+After Wardenclyffe, Tesla experimented with a series of inventions in the 1910s and 1920s with varying degrees of success. Having spent most of his money, Tesla lived in a series of New York hotels, leaving behind unpaid bills. He died in New York City in January 1943.[10] Tesla's work fell into relative obscurity following his death, until 1960, when the General Conference on Weights and Measures named the SI unit of magnetic flux density the tesla in his honor.[11] There has been a resurgence in popular interest in Tesla since the 1990s.[12]"
+```
+
+```{r}
+cat(txtBiography)
 ```
 
 Taken from https://en.wikipedia.org/wiki/Nikola_Tesla .
 
+```{r}
+## Copy Biography text
+actionButton(inputId = "copyBiographyButton", 
+             label = "Clone it", 
+             icon = icon("clone"), 
+             class = "btn-secondary btn-sm")
+## Alternative style spec:
+#             style = "color: #fff; background-color: #7289da; border-color: #7289da")
+```
+
+
+```{r}
+observeEvent(input$copyBiographyButton, {
+  updateTextInput( inputId = "userText", value = txtBiography)
+})
+```
+
 ### Finance
 
-```
-Bitcoin
+```{r}
+txtFinanace <- "Bitcoin
 
 Prevailing bitcoin logo
 Denominations
@@ -336,7 +369,7 @@ Subunits
  1⁄100000000	satoshi[2]
 Development
 Original author(s)	Satoshi Nakamoto
-White paper	"Bitcoin: A Peer-to-Peer Electronic Cash System"[4]
+White paper	'Bitcoin: A Peer-to-Peer Electronic Cash System'[4]
 Implementation(s)	Bitcoin Core
 Initial release	0.1.0 / 9 January 2009 (12 years ago)
 Latest release	0.21.1 / 2 May 2021 (3 months ago)[3]
@@ -362,15 +395,36 @@ This article contains special characters. Without proper rendering support, you 
 Bitcoin (₿) is a decentralized digital currency, without a central bank or single administrator, that can be sent from user to user on the peer-to-peer bitcoin network without the need for intermediaries.[7] Transactions are verified by network nodes through cryptography and recorded in a public distributed ledger called a blockchain. The cryptocurrency was invented in 2008 by an unknown person or group of people using the name Satoshi Nakamoto.[8] The currency began use in 2009[9] when its implementation was released as open-source software.[6]:ch. 1
 Bitcoins are created as a reward for a process known as mining. They can be exchanged for other currencies, products, and services,[10] but the real-world value of the coins is extremely volatile.[11] Research produced by the University of Cambridge estimated that in 2017, there were 2.9 to 5.8 million unique users using a cryptocurrency wallet, most of them using bitcoin.[12]
 Bitcoin has been criticized for its use in illegal transactions, the large amount of electricity (and thus carbon footprint) used by mining, price volatility, and thefts from exchanges. Some economists and commentators have characterized it as a speculative bubble at various times. Bitcoin has also been used as an investment, although several regulatory agencies have issued investor alerts about bitcoin.[11][13][14]
-The word bitcoin was defined in a white paper published on 31 October 2008.[4][15] It is a compound of the words bit and coin.[16] No uniform convention for bitcoin capitalization exists; some sources use Bitcoin, capitalized, to refer to the technology and network and bitcoin, lowercase, for the unit of account.[17] The Wall Street Journal,[18] The Chronicle of Higher Education,[19] and the Oxford English Dictionary[16] advocate the use of lowercase bitcoin in all cases.
+The word bitcoin was defined in a white paper published on 31 October 2008.[4][15] It is a compound of the words bit and coin.[16] No uniform convention for bitcoin capitalization exists; some sources use Bitcoin, capitalized, to refer to the technology and network and bitcoin, lowercase, for the unit of account.[17] The Wall Street Journal,[18] The Chronicle of Higher Education,[19] and the Oxford English Dictionary[16] advocate the use of lowercase bitcoin in all cases."
+```
+
+
+```{r}
+cat(txtFinanace)
 ```
 
 Taken from https://en.wikipedia.org/wiki/Bitcoin .
 
+```{r}
+## Copy Biography text
+actionButton(inputId = "copyFinanceButton", 
+             label = "Clone it", 
+             icon = icon("clone"), 
+             class = "btn-secondary btn-sm")
+```
+
+
+```{r}
+observeEvent(input$copyFinanceButton, {
+  updateTextInput( inputId = "userText", value = txtFinanace)
+})
+```
+
+
 ### Food preparation
 
-```
-A comfort food classic, this Greek casserole is really delicious the day after, and believe it or not, it’s great straight out of the fridge for breakfast. Don't ask us how we know this, but if you like cold pizza, you'll like cold moussaka.
+```{r}
+txtFoodPreparation <- "A comfort food classic, this Greek casserole is really delicious the day after, and believe it or not, it’s great straight out of the fridge for breakfast. Don't ask us how we know this, but if you like cold pizza, you'll like cold moussaka.
 
 Ingredients
 
@@ -421,21 +475,41 @@ Step 4
 Heat butter in a medium saucepan over medium until foaming. Add flour and cook, whisking constantly, until combined, about 1 minute. Whisk in warm milk and bring sauce to a boil. Cook béchamel, whisking often, until very thick (it should have the consistency of pudding), about 5 minutes; stir in salt. Remove from heat and whisk in farmer cheese and half of the Pecorino. Let sit 10 minutes for cheese to melt, then add egg yolks and vigorously whisk until combined and béchamel is golden yellow.
 
 Step 5
-Brush a 13x9" baking pan with remaining 1 Tbsp. lamb fat. Layer half of eggplant in pan, covering the bottom entirely. Spread half of lamb mixture over eggplant in an even layer. Repeat with remaining eggplant and lamb to make another layer of each. Top with béchamel and smooth surface; sprinkle with remaining Pecorino.
+Brush a 13x9'' baking pan with remaining 1 Tbsp. lamb fat. Layer half of eggplant in pan, covering the bottom entirely. Spread half of lamb mixture over eggplant in an even layer. Repeat with remaining eggplant and lamb to make another layer of each. Top with béchamel and smooth surface; sprinkle with remaining Pecorino.
 
 Step 6
 Bake moussaka until bubbling vigorously and béchamel is browned in spots, 30–45 minutes. Let cool 30 minutes before serving.
 Step 7
 
-Do Ahead: Moussaka can be baked 1 day ahead. Let cool, then cover and chill, or freeze up to 3 months. Thaw before reheating in a 250° oven until warmed through, about 1 hour.
+Do Ahead: Moussaka can be baked 1 day ahead. Let cool, then cover and chill, or freeze up to 3 months. Thaw before reheating in a 250° oven until warmed through, about 1 hour."
+```
+
+```{r}
+cat(txtFoodPreparation)
 ```
 
 Taken from https://www.bonappetit.com/recipe/moussaka .
 
+```{r}
+## Copy Biography text
+actionButton(inputId = "copyFoodPreparationButton", 
+             label = "Clone it", 
+             icon = icon("clone"), 
+             class = "btn-secondary btn-sm")
+```
+
+
+```{r}
+observeEvent(input$copyFoodPreparationButton, {
+  updateTextInput( inputId = "userText", value = txtFoodPreparation)
+})
+```
+
+
 ### Recruitment
 
-```
-Olivia Harrison
+```{r}
+txtRecruitment <- "Olivia Harrison
 1234 Avenue Street, City, State 12345
 ITSpecialist@domain.com | 555.555.5555
 
@@ -512,11 +586,29 @@ Project Management Professional (PMP) Certification | Microsoft Certified Profes
 
 Microsoft Certified Solutions Expert (MCSE) | Microsoft Certified Solutions Associate (MCSA)
 
-CompTIA A+ | CompTIA Security+ | CompTIA Network+ | CompTIA Project+
+CompTIA A+ | CompTIA Security+ | CompTIA Network+ | CompTIA Project+"
+```
+
+```{r}
+cat(txtRecruitment)
 ```
 
 Taken from: https://www.monster.com/career-advice/article/sample-resume-for-it-professional .
 
+```{r}
+## Copy Biography text
+actionButton(inputId = "copyRecruitmentButton", 
+             label = "Clone it", 
+             icon = icon("clone"), 
+             class = "btn-secondary btn-sm")
+```
+
+
+```{r}
+observeEvent(input$copyRecruitmentButton, {
+  updateTextInput( inputId = "userText", value = txtRecruitment)
+})
+```
 
 
 References
