@@ -4,7 +4,7 @@
 \alias{SMRExportToDirectory}
 \title{Exports recommender to a directory}
 \usage{
-SMRExportToDirectory(smr, directoryPath, dataNameInfix = "")
+SMRExportToDirectory(smr, directoryPath, dataNameInfix = "", digits = NULL)
 }
 \arguments{
 \item{smr}{A sparse matrix recommender.}
@@ -12,6 +12,11 @@ SMRExportToDirectory(smr, directoryPath, dataNameInfix = "")
 \item{directoryPath}{A path to a directory.}
 
 \item{dataNameInfix}{A string designating the exported SMR object.}
+
+\item{digits}{An integer for the number of digits to round to.
+See \code{\link{round}}.
+If NULL no rounding is done.
+Only applies to the file with the name pattern "SMR-M01-from-*.csv".}
 }
 \value{
 A logical.
