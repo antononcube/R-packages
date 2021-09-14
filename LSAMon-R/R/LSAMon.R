@@ -809,6 +809,7 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
   lsaObj$DocumentTermMatrix <- dtMat
   lsaObj$StopWords <- stopWords
   lsaObj$StemWordsQ <- stemWordsQ
+  lsaObj$StemRules <- if( stemWordsQ ) { stemRules }
   lsaObj$SplitPattern <- splitPattern
 
   ## Return object
@@ -2003,3 +2004,108 @@ MostImportantSentences <- function( sentences,
   cbind( lsaObj %>% LSAMonTakeValue, Sentence = res, stringsAsFactors = FALSE )
 }
 
+
+##===========================================================
+## Export to directory
+##===========================================================
+
+#' Export to a directory
+#' @description Exports the LSAMon to specified directory.
+#' @param lsaObj An LSAMon object
+#' @param directoryPath A path to a directory.
+#' @param dataNameInfix A string infix designating the exported LSA object.
+#' @param csvTripletsQ Should the LSA matrix be also exported to a CSV file.
+#' @param digits An integer for the number of digits to round to.
+#' See \code{\link{round}}.
+#' If NULL no rounding is done.
+#' Only applies to the file with the name pattern "SMR-M01-from-*.csv".
+#' @details The sparse matrix \code{lsaObj %>% LSAMonTakeDocumentTermMatrix} is
+#' exported using \code{\link{SparseMatrixRecommender::SMRSparseMatrixExportToDirectory}}.
+#' The arguments \code{csvTripletsQ} and \code{digits} are used to specify that
+#' the document-term matrix has to be also exported as a CSV file and the
+#' weights are rounded (if \code{digits} is numeric.)
+#' @return A LSAMon object
+#' @export
+LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNameInfix = "", csvTripletsQ = FALSE, digits = NULL ) {
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !LSAMonMemberPresenceCheck( lsaObj = lsaObj,
+                                  memberName = "DocumentTermMatrix",
+                                  functionName = "LSAMonExportToDirectory",
+                                  logicalResult = T) ) {
+
+    return(LSAMonFailureSymbol)
+  }
+
+  if( !is.character(directoryPath) ) {
+    warning( "The argument directoryPath is expected to be a string.", call. = TRUE )
+    return(LSAMonFailure)
+  }
+
+  if( !file.exists(directoryPath) ) {
+    warning( "The argument directoryPath is expected to be a valid directory path.", call. = TRUE )
+    return(LSAMonFailure)
+  }
+
+  if( !is.character(dataNameInfix) ) {
+    warning( "The argument dataNameInfix is expected to be a string.", call. = TRUE )
+    return(LSAMonFailure)
+  }
+
+  ## Global weights
+  lsWords <- names(lsaObj$GlobalWeights)
+  lsWeights <- setNames(lsaObj$GlobalWeights, NULL)
+  if ( is.null(lsWords) ) {
+    lsWords <- colnames(lsaObj %>% LSAMonTakeDocumentTermMatrix)
+  }
+  dfGlobalWeights <- data.frame( Word = lsWords, Weight = lsWeights, stringsAsFactors = FALSE )
+  rownames(dfGlobalWeights) <- NULL
+
+  write.csv( x = dfGlobalWeights,
+             file = file.path( directoryPath, paste0("LSAMon-GlobalWeights-from-", dataNameInfix, ".csv")),
+             row.names = FALSE)
+
+  ## Stemming rules
+  if( lsaObj$StemWordsQ && is.character(lsaObj$StemRules) ) {
+
+    dfStemRules <- data.frame( Word = names(lsaObj$StemRules), Stem = lsaObj$StemRules, stringsAsFactors = FALSE)
+
+    write.csv( x = dfStemRules,
+               file = file.path( directoryPath, paste0("LSAMon-StemRules-from-", dataNameInfix, ".csv")),
+               row.names = FALSE)
+
+  } else if( lsaObj$StemWordsQ && !is.character(lsaObj$StemRules) ) {
+
+    warning("Stemming has been appled, but no stemming rules are available, hence, no stem rules are exported into a file.", call. = TRUE)
+
+  }
+
+
+  ## Document-term matrix
+  res <-
+    SparseMatrixRecommender::SMRSparseMatrixExportToDirectory( smat = lsaObj %>% LSAMonTakeDocumentTermMatrix,
+                                                               directoryPath = directoryPath,
+                                                               dataNamePrefix = 'LSAMon-DocumentTermMatrix',
+                                                               dataNameInfix = paste0("from-", dataNameInfix),
+                                                               csvTripletsQ = as.logical(csvTripletsQ),
+                                                               digits = digits)
+
+  if( !res) { return(LSAMonFailureSymbol) }
+
+  ## Topic matrix (right factor)
+  res <-
+    SparseMatrixRecommender::SMRSparseMatrixExportToDirectory( smat = lsaObj %>% LSAMonNormalizeMatrixProduct( normalizeLeftQ = F) %>% LSAMonTakeH,
+                                                               directoryPath = directoryPath,
+                                                               dataNamePrefix = 'LSAMon-TopicMatrix',
+                                                               dataNameInfix = paste0("from-", dataNameInfix),
+                                                               csvTripletsQ = as.logical(csvTripletsQ),
+                                                               digits = digits)
+
+  if( !res) { return(LSAMonFailureSymbol) }
+
+  ## Result
+  lsaObj$Value <- TRUE
+
+  return(lsaObj)
+}
