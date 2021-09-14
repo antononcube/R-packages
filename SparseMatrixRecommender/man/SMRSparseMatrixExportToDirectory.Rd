@@ -39,6 +39,6 @@ Exports the recommender to specified directory.
 The sparse matrix \code{smat} is
 exported using \code{\link{writeMM}}.
 The arguments \code{csvTripletsQ} and \code{digits} are used to specify that
-the recommender matrix has to be also exported as a CSV file and the 
+the matrix has to be also exported as a CSV file and the 
 weights are rounded (if \code{digits} is numeric.)
 }

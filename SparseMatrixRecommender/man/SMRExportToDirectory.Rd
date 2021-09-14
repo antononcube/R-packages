@@ -34,7 +34,7 @@ Exports the recommender to specified directory.
 }
 \details{
 The sparse matrix recommender \code{smr} is
-exported using \code{\link{writeMM}}.
+exported using \code{\link{SMRSparseMatrixExportToDirectory}}.
 The arguments \code{csvTripletsQ} and \code{digits} are used to specify that
 the recommender matrix has to be also exported as a CSV file and the 
 weights are rounded (if \code{digits} is numeric.)
