@@ -20,7 +20,7 @@ Create recommender and apply LSI functions to its matrix:
 
 ```{r}
 smrTitanic <- SMRCreate(dfTitanic)
-smrTitanic$M <- SMRApplyTermWeightFunctions( smrTitanic$M, "IDF", "None", "Cosine" )
+smrTitanic$M01 <- SMRApplyTermWeightFunctions( smrTitanic$M01, "IDF", "None", "None" )
 ```
 
 # Export recommender
@@ -28,7 +28,7 @@ smrTitanic$M <- SMRApplyTermWeightFunctions( smrTitanic$M, "IDF", "None", "Cosin
 Export recommender to specified directory using a specified recommender file names infix:
 
 ```{r}
-SMRExportToDirectory( smr = smrTitanic, directoryPath = "../SMR-export", dataNameInfix = "Titanic" )
+SMRExportToDirectory( smr = smrTitanic, directoryPath = "../SMR-export", dataNameInfix = "Titanic", csvTripletsQ = TRUE, digits = 4 )
 ```
 
 
@@ -41,6 +41,12 @@ smrTitanic2 <- SMRImportFromDirectory( directoryPath = "../SMR-export", dataName
 ```
 
 # Verify
+
+Same tag types:
+
+```{r}
+mean(smrTitanic$TagTypes == smrTitanic$TagTypes)
+```
 
 Same row names:
 

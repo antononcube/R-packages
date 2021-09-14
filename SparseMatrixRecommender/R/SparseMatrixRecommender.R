@@ -1831,6 +1831,86 @@ SMRMatricesToWideForm <- function( smr, tagTypes = NULL, sep = ", ",  removeTagT
 
 
 ##===========================================================
+## Sparse matrix export
+##===========================================================
+
+#' Exports sparse matrix to a directory
+#' @description Exports the recommender to specified directory.
+#' @param smat A sparse matrix.
+#' @param directoryPath A path to a directory.
+#' @param dataNamePrefix A string prefix for the export files.
+#' @param dataNameInfix A string infix for the export files.
+#' @param csvTripletsQ Should the recommender matrix be also exported to a CSV file.
+#' @param digits An integer for the number of digits to round to.
+#' See \code{\link{round}}.
+#' If NULL no rounding is done.
+#' Only applies to the file with the name pattern "SMR-M01-from-*.csv".
+#' @details The sparse matrix \code{smat} is
+#' exported using \code{\link{writeMM}}.
+#' The arguments \code{csvTripletsQ} and \code{digits} are used to specify that
+#' the matrix has to be also exported as a CSV file and the 
+#' weights are rounded (if \code{digits} is numeric.)
+#' @return A logical.
+#' @export
+SMRSparseMatrixExportToDirectory <- function( smat, directoryPath, 
+                                              dataNamePrefix = "", dataNameInfix = "", 
+                                              csvTripletsQ = FALSE, digits = NULL ) {
+  
+  if( ! SMRSparseMatrixQ(smat) ) {
+    stop( "The first argument is expected to be a sparse matrix.", call. = TRUE )
+  }
+  
+  if( !is.character(directoryPath) ) {
+    stop( "The argument directoryPath is expected to be a string.", call. = TRUE )
+  }
+  
+  if( !file.exists(directoryPath) ) {
+    stop( "The argument directoryPath is expected to be a valid directory path.", call. = TRUE )
+  }
+
+  
+  if( !is.character(dataNamePrefix) && length(dataNamePrefix) == 1 && nchar(dataNamePrefix[[1]]) > 0 ) {
+    stop( "The argument dataNamePrefix is expected to be a non-empty string.", call. = TRUE )
+  }
+  
+  if( !is.character(dataNameInfix) && length(dataNamePrefix) == 1 ) {
+    stop( "The argument dataNameInfix is expected to be a string.", call. = TRUE )
+  }
+  
+  if( nchar(dataNameInfix) > 0 && !grepl("^-", dataNameInfix) ) {
+    dataNameInfix <- paste0("-", dataNameInfix)
+  }
+
+  ## Sparse matrices row names and column names
+  write.csv(
+    data.frame( ColumnName = colnames(smat), stringsAsFactors = FALSE ), 
+    file.path( directoryPath, paste0(dataNamePrefix, "-colnames", dataNameInfix, ".csv") )
+  )
+  
+  write.csv(
+    data.frame( RowName = rownames(smat), stringsAsFactors = FALSE ), 
+    file.path( directoryPath, paste0(dataNamePrefix, "-rownames", dataNameInfix, ".csv") )
+  )
+  
+  ## Sparse matrix
+  Matrix::writeMM( obj = smat, file = file.path( directoryPath, paste0(dataNamePrefix, dataNameInfix, ".mm") ) )
+  
+  ## Sparse matrix triplets
+  if( csvTripletsQ ) {
+    
+    dfExport <- as.data.frame(summary(smat))
+    
+    if( is.numeric(digits) ) {
+      dfExport$x <- round( x = dfExport$x, digits = digits)
+    }
+    
+    write.csv( x = dfExport, file = file.path( directoryPath, paste0(dataNamePrefix, dataNameInfix, ".csv") ), row.names = FALSE )
+  }
+  
+  return(TRUE)
+}
+
+##===========================================================
 ## Recommender export
 ##===========================================================
 
@@ -1845,7 +1925,7 @@ SMRMatricesToWideForm <- function( smr, tagTypes = NULL, sep = ", ",  removeTagT
 #' If NULL no rounding is done.
 #' Only applies to the file with the name pattern "SMR-M01-from-*.csv".
 #' @details The sparse matrix recommender \code{smr} is
-#' exported using \code{\link{writeMM}}.
+#' exported using \code{\link{SMRSparseMatrixExportToDirectory}}.
 #' The arguments \code{csvTripletsQ} and \code{digits} are used to specify that
 #' the recommender matrix has to be also exported as a CSV file and the 
 #' weights are rounded (if \code{digits} is numeric.)
@@ -1874,30 +1954,12 @@ SMRExportToDirectory <- function( smr, directoryPath, dataNameInfix = "", csvTri
              file.path( directoryPath, paste0("SMR-TagTypeRanges-from-", dataNameInfix, ".csv") ) ) 
 
   ## Sparse matrices row names and column names
-  write.csv(
-    data.frame( ColumnName = colnames(smr$M01), stringsAsFactors = FALSE ), 
-    file.path( directoryPath, paste0("SMR-colnames-from-", dataNameInfix, ".csv") )
-  )
-  
-  write.csv(
-    data.frame( RowName = rownames(smr$M01), stringsAsFactors = FALSE ), 
-    file.path( directoryPath, paste0("SMR-rownames-from-", dataNameInfix, ".csv") )
-  )
-  
-  ## Sparse matrix
-  Matrix::writeMM( obj = smr$M01, file = file.path( directoryPath, paste0("SMR-M01-from-", dataNameInfix, ".mm") ) )
-
-  ## Sparse matrix triplets
-  if( csvTripletsQ ) {
-    
-    dfExport <- as.data.frame(summary(smr$M01))
-    
-    if( is.numeric(digits) ) {
-      dfExport$x <- round( x = dfExport$x, digits = digits)
-    }
-    
-    write.csv( x = dfExport, file = file.path( directoryPath, paste0("SMR-M01-from-", dataNameInfix, ".csv") ), row.names = FALSE )
-  }
+  SMRSparseMatrixExportToDirectory( smat = smr$M01, 
+                                    directoryPath = directoryPath, 
+                                    dataNamePrefix = "SMR-M01", 
+                                    dataNameInfix = paste0("from-", dataNameInfix), 
+                                    csvTripletsQ = csvTripletsQ, 
+                                    digits = digits )
   
   return(TRUE)
 }
@@ -1941,9 +2003,9 @@ SMRImportFromDirectory <- function( directoryPath, dataNameInfix = "", itemColum
   #smr$TagTypeRanges <- read.csv( file = file.path(directoryPath, paste("SMR-TagTypeRanges-from-", dataNameInfix, ".csv", sep="") ) ) 
   
   ## Sparse matrices row names and column names
-  dfColnames <- read.csv( file = file.path(directoryPath, paste0("SMR-colnames-from-", dataNameInfix, ".csv") ) )
+  dfColnames <- read.csv( file = file.path(directoryPath, paste0("SMR-M01-colnames-from-", dataNameInfix, ".csv") ) )
   
-  dfRownames <- read.csv( file = file.path(directoryPath, paste0("SMR-rownames-from-", dataNameInfix, ".csv") ) )
+  dfRownames <- read.csv( file = file.path(directoryPath, paste0("SMR-M01-rownames-from-", dataNameInfix, ".csv") ) )
 
   ## Sparse matrix
   smr$M01 <- Matrix::readMM( file.path(directoryPath, paste0("SMR-M01-from-", dataNameInfix, ".mm") ) )
