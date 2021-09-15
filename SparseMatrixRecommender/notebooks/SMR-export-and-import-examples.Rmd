@@ -28,7 +28,7 @@ smrTitanic$M01 <- SMRApplyTermWeightFunctions( smrTitanic$M01, "IDF", "None", "N
 Export recommender to specified directory using a specified recommender file names infix:
 
 ```{r}
-SMRExportToDirectory( smr = smrTitanic, directoryPath = "../SMR-export", dataNameInfix = "Titanic", csvTripletsQ = TRUE, digits = 4 )
+SMRExportToDirectory( smr = smrTitanic, directoryPath = "../SMR-export", dataNamePrefix = "Titanic", dataNameInfix = "DFDWKL", csvTripletsQ = TRUE, digits = 4 )
 ```
 
 
@@ -37,7 +37,7 @@ SMRExportToDirectory( smr = smrTitanic, directoryPath = "../SMR-export", dataNam
 Import recommender from specified directory and recommender file names infix:
 
 ```{r}
-smrTitanic2 <- SMRImportFromDirectory( directoryPath = "../SMR-export", dataNameInfix = "Titanic" )
+smrTitanic2 <- SMRImportFromDirectory( directoryPath = "../SMR-export", dataNamePrefix = "Titanic", dataNameInfix = "DFDWKL" )
 ```
 
 # Verify

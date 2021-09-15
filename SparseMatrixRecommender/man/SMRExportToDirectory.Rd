@@ -7,6 +7,7 @@
 SMRExportToDirectory(
   smr,
   directoryPath,
+  dataNamePrefix = "",
   dataNameInfix = "",
   csvTripletsQ = FALSE,
   digits = NULL
@@ -17,7 +18,9 @@ SMRExportToDirectory(
 
 \item{directoryPath}{A path to a directory.}
 
-\item{dataNameInfix}{A string designating the exported SMR object.}
+\item{dataNamePrefix}{A string prefix designating the exported SMR object.}
+
+\item{dataNameInfix}{A string infix designating the exported SMR object.}
 
 \item{csvTripletsQ}{Should the recommender matrix be also exported to a CSV file.}
 

@@ -6,6 +6,7 @@
 \usage{
 SMRImportFromDirectory(
   directoryPath,
+  dataNamePrefix = "",
   dataNameInfix = "",
   itemColumnName = "ID"
 )
@@ -13,7 +14,9 @@ SMRImportFromDirectory(
 \arguments{
 \item{directoryPath}{A path to a directory.}
 
-\item{dataNameInfix}{A string designating the exported SMR object.}
+\item{dataNamePrefix}{A string prefix designating the exported SMR object.}
+
+\item{dataNameInfix}{A string infix designating the exported SMR object.}
 
 \item{itemColumnName}{A string to be set to results "ItemColumnName" element.}
 }
