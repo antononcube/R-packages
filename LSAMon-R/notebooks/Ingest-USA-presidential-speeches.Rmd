@@ -1,0 +1,64 @@
+---
+title: "Ingest USA presidential speeches"
+author: Anton Antonov
+date: 2019-04-12
+output: html_notebook
+---
+
+```{r}
+library(ndjson)
+```
+# Read TSV file
+
+```{r}
+usaPresidentsTexts <- read.csv( file = "~/Datasets/USA presidential speeches/speeches_texts.tsv", sep = "\t", stringsAsFactors = F, header = F, quote = "\"")
+usaPresidentsTexts <- as.character(usaPresidentsTexts$V1)
+dplyr::glimpse(usaPresidentsTexts)
+```
+
+```{r}
+dfUSAPresidentsSpeeches <- read.csv( file = "~/Datasets/USA presidential speeches/speeches.tsv", sep = "\t", stringsAsFactors = F, header = T, quote = "\"")
+dfUSAPresidentsSpeeches <- dfUSAPresidentsSpeeches[ nchar(dfUSAPresidentsSpeeches$Text) > 10, ]
+dfUSAPresidentsSpeeches$Date <- as.Date(dfUSAPresidentsSpeeches$DateString)
+dfUSAPresidentsSpeeches <- dfUSAPresidentsSpeeches[, -ncol(dfUSAPresidentsSpeeches)]
+dfUSAPresidentsSpeeches <- dfUSAPresidentsSpeeches[order(dfUSAPresidentsSpeeches$Date),]
+trim <- function (x) gsub("^\\s+|\\s+$", "", x)
+dfUSAPresidentsSpeeches$Title <- trim(dfUSAPresidentsSpeeches$Title)
+dplyr::glimpse(dfUSAPresidentsSpeeches)
+```
+
+```{r,eval=F}
+usethis::use_data(dfUSAPresidentsSpeeches, compress = "xz", overwrite = F)
+```
+
+```{r}
+dfUSAPresidentsSpeeches %>% 
+  dplyr::group_by(Name) %>% 
+  dplyr::count() %>% 
+  dplyr::arrange(desc(n))
+```
+
+# Read JSON file
+
+```{r, eval=F}
+# speeches <- jsonlite::fromJSON( txt = "~/Datasets/USA presidential speeches/speeches.json", encoding = "utf8")
+speeches <- jsonlite::read_json( txt = "~/Datasets/USA presidential speeches/speeches.json", encoding = "UTF-8", warn = TRUE )
+```
+
+```{r}
+texts <- ndjson::stream_in( path = "~/Datasets/USA presidential speeches/speeches_texts.json" )
+```
+
+```{r}
+dplyr::glimpse(texts)
+```
+
+```{r}
+length(texts)
+```
+
+```{r}
+nchar(speeches$Text)
+```
+
+

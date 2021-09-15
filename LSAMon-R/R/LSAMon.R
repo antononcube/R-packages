@@ -2013,6 +2013,7 @@ MostImportantSentences <- function( sentences,
 #' @description Exports the LSAMon to specified directory.
 #' @param lsaObj An LSAMon object
 #' @param directoryPath A path to a directory.
+#' @param dataNamePrefix A string prefix designating the exported LSA object.
 #' @param dataNameInfix A string infix designating the exported LSA object.
 #' @param csvTripletsQ Should the LSA matrix be also exported to a CSV file.
 #' @param digits An integer for the number of digits to round to.
@@ -2026,7 +2027,7 @@ MostImportantSentences <- function( sentences,
 #' weights are rounded (if \code{digits} is numeric.)
 #' @return A LSAMon object
 #' @export
-LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNameInfix = "", csvTripletsQ = FALSE, digits = NULL ) {
+LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "", dataNameInfix = "", csvTripletsQ = FALSE, digits = NULL ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -2048,9 +2049,22 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNameInfix = "", 
     return(LSAMonFailure)
   }
 
-  if( !is.character(dataNameInfix) ) {
+  if( !( is.character(dataNamePrefix) && length(dataNamePrefix) == 1 ) ) {
+    warning( "The argument dataNamePrefix is expected to be a string.", call. = TRUE )
+    return(LSAMonFailure)
+  }
+
+  if( !( is.character(dataNameInfix) && length(dataNameInfix) == 1 ) ) {
     warning( "The argument dataNameInfix is expected to be a string.", call. = TRUE )
     return(LSAMonFailure)
+  }
+
+  if( nchar(dataNamePrefix) > 0 && !grepl( "-&", dataNamePrefix) ) {
+    dataNamePrefix <- paste0(dataNamePrefix, "-")
+  }
+
+  if( nchar(dataNameInfix) > 0 && !grepl( "^-", dataNameInfix) ) {
+    dataNameInfix <- paste0("-", dataNameInfix)
   }
 
   ## Global weights
@@ -2063,7 +2077,7 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNameInfix = "", 
   rownames(dfGlobalWeights) <- NULL
 
   write.csv( x = dfGlobalWeights,
-             file = file.path( directoryPath, paste0("LSAMon-GlobalWeights-from-", dataNameInfix, ".csv")),
+             file = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-GlobalWeights", dataNameInfix, ".csv")),
              row.names = FALSE)
 
   ## Stemming rules
@@ -2072,7 +2086,7 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNameInfix = "", 
     dfStemRules <- data.frame( Word = names(lsaObj$StemRules), Stem = lsaObj$StemRules, stringsAsFactors = FALSE)
 
     write.csv( x = dfStemRules,
-               file = file.path( directoryPath, paste0("LSAMon-StemRules-from-", dataNameInfix, ".csv")),
+               file = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".csv")),
                row.names = FALSE)
 
   } else if( lsaObj$StemWordsQ && !is.character(lsaObj$StemRules) ) {
@@ -2086,8 +2100,8 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNameInfix = "", 
   res <-
     SparseMatrixRecommender::SMRSparseMatrixExportToDirectory( smat = lsaObj %>% LSAMonTakeDocumentTermMatrix,
                                                                directoryPath = directoryPath,
-                                                               dataNamePrefix = 'LSAMon-DocumentTermMatrix',
-                                                               dataNameInfix = paste0("from-", dataNameInfix),
+                                                               dataNamePrefix = paste0(dataNamePrefix, 'LSAMon-DocumentTermMatrix'),
+                                                               dataNameInfix = dataNameInfix,
                                                                csvTripletsQ = as.logical(csvTripletsQ),
                                                                digits = digits)
 
@@ -2097,8 +2111,8 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNameInfix = "", 
   res <-
     SparseMatrixRecommender::SMRSparseMatrixExportToDirectory( smat = lsaObj %>% LSAMonNormalizeMatrixProduct( normalizeLeftQ = F) %>% LSAMonTakeH,
                                                                directoryPath = directoryPath,
-                                                               dataNamePrefix = 'LSAMon-TopicMatrix',
-                                                               dataNameInfix = paste0("from-", dataNameInfix),
+                                                               dataNamePrefix = paste0(dataNamePrefix, 'LSAMon-TopicMatrix'),
+                                                               dataNameInfix = dataNameInfix,
                                                                csvTripletsQ = as.logical(csvTripletsQ),
                                                                digits = digits)
 

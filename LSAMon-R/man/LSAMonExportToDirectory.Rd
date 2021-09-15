@@ -7,6 +7,7 @@
 LSAMonExportToDirectory(
   lsaObj,
   directoryPath,
+  dataNamePrefix = "",
   dataNameInfix = "",
   csvTripletsQ = FALSE,
   digits = NULL
@@ -16,6 +17,8 @@ LSAMonExportToDirectory(
 \item{lsaObj}{An LSAMon object}
 
 \item{directoryPath}{A path to a directory.}
+
+\item{dataNamePrefix}{A string prefix designating the exported LSA object.}
 
 \item{dataNameInfix}{A string infix designating the exported LSA object.}
 
