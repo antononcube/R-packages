@@ -809,7 +809,7 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
   lsaObj$DocumentTermMatrix <- dtMat
   lsaObj$StopWords <- stopWords
   lsaObj$StemWordsQ <- stemWordsQ
-  lsaObj$StemRules <- if( stemWordsQ ) { stemRules }
+  lsaObj$StemRules <- if( stemWordsQ ) { stemRules } else { NULL }
   lsaObj$SplitPattern <- splitPattern
 
   ## Return object
