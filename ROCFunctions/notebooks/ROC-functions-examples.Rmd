@@ -2,17 +2,47 @@
 title: "ROC functions examples"
 author: Anton Antonov
 date: 2021-02-05
-output: html_notebook
+output:
+  md_document:
+    variant: markdown_github
 ---
+
+```{r}
+library(ROCFunctions)
+library(RandomDataFrameGenerator)
+```
+
+Dictionary of Receiver Operating Characteristic (ROC) functions abbreviations and their (descriptive) full names:
 
 ```{r}
 ROCAcronymsDictionary()
 ```
 
+Here we compute specified ROCs for a numeric list:
+
 ```{r}
 ComputeROCFunctions( c("TruePositive" = 15, 
                        "FalsePositive" = 149, 
                        "TrueNegative" = 1523, 
-                       "FalseNegative" = 15), c("Precision", "Recall") )
+                       "FalseNegative" = 15), c("Precision", "Recall", "PPV") )
+```
+
+Here we generate a random data frame with specific column names used to compute ROCs:
+
+```{r}
+dfRand <- RandomDataFrame(nrow =  3, columnNames = c("TruePositive", "TrueNegative", "FalsePositive", "FalseNegative"), generators = c( function(x) round(runif(x,0,100))) )
+dfRand
+```
+
+Verify it is ROC-data-frame:
+
+```{r}
+ROCDataFrameQ(dfRand)
+```
+
+Here we compute ROCs over the random data frame above:
+
+```{r}
+ROCFunctions::ComputeROCFunctions(dfRand)
 ```
 

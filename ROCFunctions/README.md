@@ -78,6 +78,15 @@ dfRand
     ## 2           79           16             7            18
     ## 3           67           68            52             3
 
+
+Verify it is ROC-data-frame:
+
+```r
+ROCDataFrameQ(dfRand)
+```
+
+    ## TRUE
+    
 Here we compute ROCs over the random data frame above:
 
 ``` r
