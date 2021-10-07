@@ -7,7 +7,15 @@ output:
     variant: markdown_github
 ---
 
+
+Here we install/load the `ROCFunctions` package from GitHub; 
+we also install/load 
+[`RandomDataFrameGenerator`](https://github.com/antononcube/R-packages/tree/master/RandomDataFrameGenerator)
+which is used in the examples below:
+
 ```{r}
+#devtools::install_github(repo = "antononcube/R-packages", subdir = "ROCFunctions")
+#devtools::install_github(repo = "antononcube/R-packages", subdir = "RandomDataFrameGenerator")
 library(ROCFunctions)
 library(RandomDataFrameGenerator)
 ```
@@ -34,7 +42,7 @@ dfRand <- RandomDataFrame(nrow =  3, columnNames = c("TruePositive", "TrueNegati
 dfRand
 ```
 
-Verify it is ROC-data-frame:
+Verify it is a ROC-data-frame:
 
 ```{r}
 ROCDataFrameQ(dfRand)

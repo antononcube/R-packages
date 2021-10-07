@@ -11,7 +11,8 @@ functions.
 ## Installation
 
 Here we install the `ROCFunctions` package from GitHub; 
-we also install [`RandomDataFrameGenerator`](https://github.com/antononcube/R-packages/tree/master/RandomDataFrameGenerator)
+we also install 
+[`RandomDataFrameGenerator`](https://github.com/antononcube/R-packages/tree/master/RandomDataFrameGenerator)
 which is used in the examples below:
 
 ``` r
@@ -79,7 +80,7 @@ dfRand
     ## 3           67           68            52             3
 
 
-Verify it is ROC-data-frame:
+Verify it is a ROC-data-frame:
 
 ```r
 ROCDataFrameQ(dfRand)
