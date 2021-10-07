@@ -53,4 +53,21 @@ Here we compute ROCs over the random data frame above:
 ```{r}
 ROCFunctions::ComputeROCFunctions(dfRand)
 ```
+```{r}
+dfRand2 <- 
+  RandomDataFrameGenerator::RandomDataFrame( nrow = 200, 
+                                             columnNames = c("ActualLBL", "Prob"), 
+                                             generators = list( "ActualLBL" = c("0", "1", "9"), "Prob" = function(x) runif(n = x, min = 0, max = 1) )
+  )
+dfRand2
+```
+
+```{r}
+ComputeROCTypeCounts(dfRand2, actualColumnName = "ActualLBL", probColumnName = "Prob", thresholds = seq(0,1,0.1))
+```
+
+```{r}
+ComputeROCTypeCounts(dfRand2, actualColumnName = "ActualLBL", probColumnName = "Prob", thresholds = seq(0,4,0.1))
+```
+
 

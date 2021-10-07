@@ -7,7 +7,7 @@
 ## All rights reserved.
 ##
 ## Redistribution and use in source and binary forms, with or without
-## modification, are permitted provided that the following conditions are met:
+## modification, are permitted provided that the following conditions are met:A
 ##
 ## * Redistributions of source code must retain the above copyright notice, this
 ## list of conditions and the following disclaimer.
@@ -37,6 +37,8 @@
 ##===========================================================
 
 #' @import purrr
+#' @import dplyr
+#' @import tidyr
 NULL
 
 
@@ -194,3 +196,82 @@ ComputeROCFunctions <- function( x, rocs = c( "FPR", "TPR" ) ) {
 }
 
 
+
+
+##===========================================================
+## Computation of core ROC counts
+##===========================================================
+
+dfROCTypes <-
+  dplyr::tribble(
+    ~Actual,     ~Predicted, ~ROCType,
+    "0",         "0",        "TrueNegative",
+    "1",         "1",        "TruePositive",
+    "1",         "0",        "FalseNegative",
+    "0",         "1",        "FalsePositive"
+  )
+
+#' Compute ROC type counts
+#' @description Computes core Receiver Operating Characteristic (ROC)
+#' counts over a data frame with predictions data.
+#' @param data A data frame
+#' @param actualColumnName A string with the actual labels column name.
+#' @param probColumnName A string with the column name of the probabilities
+#' to assign the "true" label.
+#' @param thresholds A numeric vector with numbers between 0 and 1.
+#' @param trueLabel A string that is "true" label.
+#' @param falseLabel A string that is "false" label.
+#' @details If \code{form == "wide"}
+#' them it produces a data frame with the columns
+#' \code{ c("Threshold", "TruePositive", "TrueNegative", "FalsePositive", "FalseNegative" )}.
+#' Otherwise the long form version is returned.
+#' @return A data frame
+#' @export
+ComputeROCTypeCounts <- function( data, actualColumnName, probColumnName,
+                                  thresholds = seq(0, 1, 0.05),
+                                  falseLabel = '0',
+                                  trueLabel = '1',
+                                  form = 'wide' ) {
+
+
+  if( is.logical(data[[actualColumnName]]) ) {
+    data[[actualColumnName]] <- as.character(as.numeric(data[[actualColumnName]]))
+  }
+
+  if( mean( data[[actualColumnName]] %in% c(falseLabel, trueLabel) ) < 1 ) {
+    stop( paste0( "The actual values column '", actualColumnName, "' has values that are not one of the provided true/false labels."), call. = T)
+  }
+
+  if( is.null(thresholds) ) {
+    thresholds <- seq(0, 1, 0.05)
+  }
+
+  if( mean( 0 <= thresholds & thresholds <= 1 ) < 1 ) {
+    stop( "The thresholds argument is expected to have values between 0 and 1.", call. = T)
+  }
+
+
+  dfROCTypeCounts <-
+    purrr::map_df( thresholds, function(th) {
+      dfTemp <-
+        cbind(
+          data,
+          Actual = data[[actualColumnName]],
+          Predicted = ifelse( data[[probColumnName]] < th, falseLabel, trueLabel)
+        )
+      dfGrid <- setNames(expand.grid(c(trueLabel, falseLabel), c(trueLabel, falseLabel)), c("Actual", "Predicted"))
+      dfTemp <- xtabs( ~ Actual + Predicted, dfTemp )
+      dfTemp <- as.data.frame(dfTemp)
+      dfTemp <- tidyr::complete( data = dfTemp, dfGrid, fill = list( Freq = 0) )
+      dfTemp <- cbind( Threshold = th, dfTemp)
+      dplyr::inner_join(dfTemp, dfROCTypes, by = c("Actual", "Predicted"))
+    })
+
+  if ( tolower(form) == "wide" ) {
+    dfROCTypeCountsWide <- tidyr::pivot_wider( data = dfROCTypeCounts, id_cols = "Threshold", names_from = "ROCType", values_from = "Freq" )
+    dfROCTypeCountsWide[ is.na(dfROCTypeCountsWide) ] <- 0
+    dfROCTypeCountsWide
+  } else {
+    dplyr::rename( .data = dfROCTypeCounts, Count = Freq )
+  }
+}
