@@ -2,7 +2,7 @@
 
 ## In brief
 
-This project has different types of data that can be for statistical learning tasks like
+This project has different types of data that can be used for statistical learning tasks like
 classification, recommendations, regression, natural language processing, and others.
 
 Most of the data is taken from Mathematica's data functions. See the function pages:
