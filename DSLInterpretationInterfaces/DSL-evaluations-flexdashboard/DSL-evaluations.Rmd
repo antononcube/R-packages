@@ -364,6 +364,15 @@ See [SMRMon-R at GitHub](https://github.com/antononcube/R-packages/tree/master/S
 References
 =======================================================================
 
+#### Articles
+
+[JL1] Jérôme Louradour, 
+["New in the Wolfram Language: FindTextualAnswer"](https://blog.wolfram.com/2018/02/15/new-in-the-wolfram-language-findtextualanswer/),
+(2018),
+[blog.wolfram.com](https://blog.wolfram.com).
+
+[Wk1] Wikipedia entry, [Question answering](https://en.wikipedia.org/wiki/Question_answering).
+
 #### Books
 
 [AAb1] Anton Antonov,
