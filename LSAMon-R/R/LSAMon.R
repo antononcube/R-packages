@@ -26,6 +26,7 @@
 #' @import magrittr
 #' @import irlba
 #' @import ggplot2
+#' @import feather
 #' @import NonNegativeMatrixFactorization
 #' @import SparseMatrixRecommender
 NULL
@@ -2015,7 +2016,8 @@ MostImportantSentences <- function( sentences,
 #' @param directoryPath A path to a directory.
 #' @param dataNamePrefix A string prefix designating the exported LSA object.
 #' @param dataNameInfix A string infix designating the exported LSA object.
-#' @param csvTripletsQ Should the LSA matrix be also exported to a CSV file.
+#' @param format Export format, one of "CSV", "CSVHarwellBoeing", "feather", or NULL.
+#' If NULL then "CSVHarwellBoeing" is used.
 #' @param digits An integer for the number of digits to round to.
 #' See \code{\link{round}}.
 #' If NULL no rounding is done.
@@ -2027,7 +2029,7 @@ MostImportantSentences <- function( sentences,
 #' weights are rounded (if \code{digits} is numeric.)
 #' @return A LSAMon object
 #' @export
-LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "", dataNameInfix = "", csvTripletsQ = FALSE, digits = NULL ) {
+LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "", dataNameInfix = "", format = NULL, digits = NULL ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -2067,6 +2069,8 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "",
     dataNameInfix <- paste0("-", dataNameInfix)
   }
 
+  if( is.null(format) ) { format <- "CSV" }
+
   ## Global weights
   lsWords <- names(lsaObj$GlobalWeights)
   lsWeights <- setNames(lsaObj$GlobalWeights, NULL)
@@ -2076,18 +2080,41 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "",
   dfGlobalWeights <- data.frame( Word = lsWords, Weight = lsWeights, stringsAsFactors = FALSE )
   rownames(dfGlobalWeights) <- NULL
 
-  write.csv( x = dfGlobalWeights,
-             file = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-GlobalWeights", dataNameInfix, ".csv")),
-             row.names = FALSE)
+  if( tolower(format) %in% tolower(c("CSV", "CSVHarwellBoeing")) ) {
+
+    write.csv( x = dfGlobalWeights,
+               file = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-GlobalWeights", dataNameInfix, ".csv")),
+               row.names = FALSE)
+
+  } else if ( tolower(format) == "feather" ) {
+
+    feather::write_feather(
+      x = dfGlobalWeights,
+      path = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-GlobalWeights", dataNameInfix, ".feather")))
+
+  } else {
+
+    stop("Unknown format.", call. = TRUE)
+
+  }
 
   ## Stemming rules
   if( lsaObj$StemWordsQ && is.character(lsaObj$StemRules) ) {
 
     dfStemRules <- data.frame( Word = names(lsaObj$StemRules), Stem = lsaObj$StemRules, stringsAsFactors = FALSE)
 
-    write.csv( x = dfStemRules,
-               file = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".csv")),
-               row.names = FALSE)
+    if( tolower(format) %in% tolower(c("CSV", "CSVHarwellBoeing")) ) {
+
+      write.csv( x = dfStemRules,
+                 file = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".csv")),
+                 row.names = FALSE)
+    } else {
+
+      feather::write_feather(
+        x = dfStemRules,
+        path = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".csv")))
+
+    }
 
   } else if( lsaObj$StemWordsQ && !is.character(lsaObj$StemRules) ) {
 
@@ -2102,7 +2129,7 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "",
                                                                directoryPath = directoryPath,
                                                                dataNamePrefix = paste0(dataNamePrefix, 'LSAMon-DocumentTermMatrix'),
                                                                dataNameInfix = dataNameInfix,
-                                                               csvTripletsQ = as.logical(csvTripletsQ),
+                                                               format = format,
                                                                digits = digits)
 
   if( !res) { return(LSAMonFailureSymbol) }
@@ -2113,7 +2140,7 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "",
                                                                directoryPath = directoryPath,
                                                                dataNamePrefix = paste0(dataNamePrefix, 'LSAMon-TopicMatrix'),
                                                                dataNameInfix = dataNameInfix,
-                                                               csvTripletsQ = as.logical(csvTripletsQ),
+                                                               format = format,
                                                                digits = digits)
 
   if( !res) { return(LSAMonFailureSymbol) }
