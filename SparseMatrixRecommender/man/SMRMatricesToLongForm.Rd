@@ -25,5 +25,9 @@ If NULL all tag types are used.}
 A data frame.
 }
 \description{
-Long form of the data frame.
+Long form of the data frame the corresponds to 
+recommender's sub-matrices.
+}
+\details{
+\code{smr$M} is used via \code{\link{SMRSparseMatrixToDataFrame}}.
 }

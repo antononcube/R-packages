@@ -25,6 +25,7 @@
 #' @import dplyr
 #' @import purrr
 #' @import magrittr
+#' @import feather
 NULL
 
 
@@ -551,4 +552,41 @@ SMRCrossTabulateTagTypes <- function( smr, tagType1, tagType2, value = "none", n
   }
   
   matProfiles
+}
+
+
+##===========================================================
+## SMRExportToFeatherFile
+##===========================================================
+
+#' Export to feather format file
+#' @description Exports an SMR object to a feather format file.
+#' @param smr An SMR object.
+#' @param path Path to feather file.
+#' @details Uses \code{\link{SMRMatricesToLongForm}} and \code{\link{feather::write_feather}}.
+#' @return NULL
+#' @export
+SMRExportToFeatherFile <- function( smr, path ) {
+  
+  feather::write_feather( x = SMRMatricesToLongForm(smr = smr), path = path )
+  
+}
+  
+
+##===========================================================
+## SMRImportFromFeatherFile
+##===========================================================
+
+#' Import from feather format file
+#' @description Exports an SMR object to a feather format file.
+#' @param path Path to feather file.
+#' @details Uses \code{\link{SMRCreateFromLongForm}} and \code{\link{feather::read_feather}}.
+#' @return An SMR object
+#' @export
+SMRImportFromFeatherFile <- function( path ) {
+  
+  data <- feather::read_feather( path = path )
+  
+  SMRCreateFromLongForm( data = data, itemColumnName = colnames(data)[[1]] )
+  
 }

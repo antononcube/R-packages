@@ -1764,12 +1764,14 @@ SMRSparseMatrixToDataFrame <- function( smr, tagType  ) {
 }
 
 #' Sub-matrices to data frame long form conversion
-#' @description Long form of the data frame.
+#' @description Long form of the data frame the corresponds to 
+#' recommender's sub-matrices.
 #' @param smr A sparse matrix recommender.
 #' @param tagTypes A vector tag types (strings) to make the data frame with.
 #' If NULL all tag types are used.
 #' @param removeTagTypePrefixesQ Should the tag type prefixes be removed from the tags?
 #' @param sep Separator between tag type prefixes and tags.
+#' @details \code{smr$M} is used via \code{\link{SMRSparseMatrixToDataFrame}}.
 #' @return A data frame.
 #' @export
 SMRMatricesToLongForm <- function( smr, tagTypes = NULL, removeTagTypePrefixesQ = FALSE, sep = ":" ) {
