@@ -60,7 +60,9 @@ test_that("Import from CSV-HarwellBoeing format", {
 
   expect_equal( Matrix::norm(lsaObj$DocumentTermMatrix - lsaObj2$DocumentTermMatrix[, colnames(lsaObj$DocumentTermMatrix)], type = "1"), 0)
 
-  #expect_true( norm(lsaObj$H - lsaObj2$H[, colnames(lsaObj$H)], "1") / norm(lsaObj$H, "1") < 0.2 )
+  smatH <- lsaObj %>% LSAMonNormalizeMatrixProduct( normalizeLeftQ = F) %>% LSAMonTakeH
+
+  expect_true( norm(smatH - lsaObj2$H, type = "1") / norm(smatH, type = "1") < 0.001 )
 })
 
 
@@ -100,5 +102,7 @@ test_that("Import from feather format", {
 
   expect_equal( Matrix::norm(lsaObj$DocumentTermMatrix - lsaObj3$DocumentTermMatrix[, colnames(lsaObj$DocumentTermMatrix)], type = "1"), 0)
 
-  #expect_true( norm(lsaObj$H - lsaObj3$H[, colnames(lsaObj$H)]) / norm(lsaObj$H) < 0.2 )
+  smatH <- lsaObj %>% LSAMonNormalizeMatrixProduct( normalizeLeftQ = F) %>% LSAMonTakeH
+
+  expect_true( norm(smatH - lsaObj3$H, type = "1") / norm(smatH, type = "1") < 0.001 )
 })
