@@ -1951,6 +1951,7 @@ SMRSparseMatrixExportToDirectory <- function( smat, directoryPath,
   return(TRUE)
 }
 
+
 ##===========================================================
 ## Recommender export
 ##===========================================================
@@ -2037,6 +2038,92 @@ SMRExportToDirectory <- function( smr, directoryPath, dataNamePrefix = "", dataN
 
 
 ##===========================================================
+## Sparse matrix import
+##===========================================================
+
+#' Imports sparse matrix from a directory
+#' @description Import a sparse matrix from a specified directory.
+#' @param directoryPath A path to a directory.
+#' @param dataNamePrefix A string prefix designating the exported SMR object.
+#' @param dataNameInfix A string infix designating the exported SMR object.
+#' @param format Export format, one of "CSV", "CSVHarwellBoeing", "feather", or NULL.
+#' If NULL then "CSVHarwellBoeing" is used.
+#' @details If the format "CSVHarwellBoeing" then the sparse matrix is 
+#' imported using \code{\link{readMM}}.
+#' @return A sparse matrix
+#' @export
+SMRSparseMatrixImportFromDirectory <- function( directoryPath, dataNamePrefix = "", dataNameInfix = "", format = NULL ) {
+  
+  if( !is.character(directoryPath) ) {
+    stop( "The argument directoryPath is expected to be a string.", call. = TRUE )
+  }
+  
+  if( !file.exists(directoryPath) ) {
+    stop( "The argument directoryPath is expected to be a valid directory path.", call. = TRUE )
+  }
+  
+  if( !( is.character(dataNamePrefix) && length(dataNamePrefix) == 1 ) ) {
+    stop( "The argument dataNamePrefix is expected to be a string.", call. = TRUE )
+  }
+  
+  if( !( is.character(dataNameInfix) && length(dataNameInfix) == 1 ) ) {
+    stop( "The argument dataNameInfix is expected to be a string.", call. = TRUE )
+  }
+  
+  if( nchar(dataNameInfix) > 0 && !grepl( "^-", dataNameInfix) ) {
+    dataNameInfix <- paste0("-", dataNameInfix)
+  }
+  
+  if( is.null(format) ) {
+    format <- "CSVHarwellBoeing"
+  }
+  
+    
+  ## Sparse matrices row names and column names
+  if( tolower(format) %in% tolower(c("CSV", "CSVHarwellBoeing")) ) {
+  
+    dfColnames <- read.csv( file = file.path(directoryPath, paste0(dataNamePrefix, "-colnames", dataNameInfix, ".csv") ) )
+    dfRownames <- read.csv( file = file.path(directoryPath, paste0(dataNamePrefix, "-rownames", dataNameInfix, ".csv") ) )
+    
+  } else if ( tolower(format) == "feather" ) {
+
+    dfColnames <- feather::read_feather( path = file.path(directoryPath, paste0(dataNamePrefix, "-colnames", dataNameInfix, ".feather") ) )
+    dfRownames <- feather::read_feather( path = file.path(directoryPath, paste0(dataNamePrefix, "-rownames", dataNameInfix, ".feather") ) )
+    
+  } else {
+    stop("Unknown format.", call. = TRUE)
+  }
+  
+  ## Sparse matrix
+  if( tolower(format) == tolower("CSVHarwellBoeing") ) {
+    
+    smat <- Matrix::readMM( file = file.path(directoryPath, paste0(dataNamePrefix, dataNameInfix, ".mm") ) )
+    
+  } else if ( tolower(format) == "csv" ) {
+    
+    smat <- read.csv( file = file.path(directoryPath, paste0(dataNamePrefix, dataNameInfix, ".csv") ) )
+    smat <- xtabs( formula = x ~ i + j, data = smat, sparse = TRUE)
+    
+  } else if ( tolower(format) == "feather" ) {
+    
+    smat <- feather::read_feather( path = file.path(directoryPath, paste0(dataNamePrefix, dataNameInfix, ".feather") ) )
+    smat <- xtabs( formula = x ~ i + j, data = smat, sparse = TRUE)
+    
+  }
+  
+  ## Convert sparse matrix if needed
+  if( "ngTMatrix" %in% class(smat) ) { 
+    smat <- as(1.0 * smat, "dgCMatrix")
+  }
+  
+  colnames(smat) <- dfColnames$ColumnName
+  rownames(smat) <- dfRownames$RowName
+  
+  return(smat)
+}
+
+
+##===========================================================
 ## Recommender import
 ##===========================================================
 
@@ -2048,8 +2135,8 @@ SMRExportToDirectory <- function( smr, directoryPath, dataNamePrefix = "", dataN
 #' @param itemColumnName A string to be set to results "ItemColumnName" element.
 #' @param format Export format, one of "CSV", "CSVHarwellBoeing", "feather", or NULL.
 #' If NULL then "CSVHarwellBoeing" is used.
-#' @details The sparse matrix recommender \code{smr} is
-#' imported using \code{\link{readMM}}.
+#' @details If the format "CSVHarwellBoeing" then the recommender sparse matrix is 
+#' imported using \code{\link{readMM}}.T
 #' @return A sparse matrix recommender object
 #' @export
 SMRImportFromDirectory <- function( directoryPath, dataNamePrefix = "", dataNameInfix = "", itemColumnName = "ID", format = NULL ) {
@@ -2083,59 +2170,30 @@ SMRImportFromDirectory <- function( directoryPath, dataNamePrefix = "", dataName
   if( is.null(format) ) {
     format <- "CSVHarwellBoeing"
   }
-  
+
+  ## Ranges  
   if( tolower(format) %in% tolower(c("CSV", "CSVHarwellBoeing")) ) {
     
-    ## Ranges
     smr$TagTypeRanges <- read.csv( file = file.path(directoryPath, paste0(dataNamePrefix, "SMR-TagTypeRanges", dataNameInfix, ".csv") ) )
     
-    ## Sparse matrices row names and column names
-    dfColnames <- read.csv( file = file.path(directoryPath, paste0(dataNamePrefix, "SMR-M01-colnames", dataNameInfix, ".csv") ) )
-    dfRownames <- read.csv( file = file.path(directoryPath, paste0(dataNamePrefix, "SMR-M01-rownames", dataNameInfix, ".csv") ) )
-    
-    
   } else if ( tolower(format) == "feather" ) {
-    ## Ranges
+
     smr$TagTypeRanges <- feather::read_feather( path = file.path(directoryPath, paste0(dataNamePrefix, "SMR-TagTypeRanges", dataNameInfix, ".feather") ))
-    
-    ## Sparse matrices row names and column names
-    dfColnames <- feather::read_feather( path = file.path(directoryPath, paste0(dataNamePrefix, "SMR-M01-colnames", dataNameInfix, ".feather") ) )
-    dfRownames <- feather::read_feather( path = file.path(directoryPath, paste0(dataNamePrefix, "SMR-M01-rownames", dataNameInfix, ".feather") ) )
-    
+
   } else {
-    
     stop("Unknown format.", call. = TRUE)
-    
   }
   
   ## Tag types
   smr$TagTypes <- rownames(smr$TagTypeRanges)
   
-
   ## Sparse matrix
-  if( tolower(format) == tolower("CSVHarwellBoeing") ) {
-    
-    smr$M01 <- Matrix::readMM( file = file.path(directoryPath, paste0(dataNamePrefix, "SMR-M01", dataNameInfix, ".mm") ) )
-    
-  } else if ( tolower(format) == "csv" ) {
-    
-    smr$M01 <- read.csv( file = file.path(directoryPath, paste0(dataNamePrefix, "SMR-M01", dataNameInfix, ".csv") ) )
-    smr$M01 <- xtabs( formula = x ~ i + j, data = smr$M01, sparse = TRUE)
-    
-  } else if ( tolower(format) == "feather" ) {
-    
-    smr$M01 <- feather::read_feather( path = file.path(directoryPath, paste0(dataNamePrefix, "SMR-M01", dataNameInfix, ".feather") ) )
-    smr$M01 <- xtabs( formula = x ~ i + j, data = smr$M01, sparse = TRUE)
-    
-  }
-  
-  ## Convert sparse matrix if needed
-  if( "ngTMatrix" %in% class(smr$M01) ) { 
-    smr$M01 <- as(1.0 * smr$M01, "dgCMatrix")
-  }
-  
-  colnames(smr$M01) <- dfColnames$ColumnName
-  rownames(smr$M01) <- dfRownames$RowName
+  smr$M01 <- 
+    SMRSparseMatrixImportFromDirectory( 
+      directoryPath = directoryPath, 
+      dataNamePrefix = paste0(dataNamePrefix, "SMR-M01"), 
+      dataNameInfix = dataNameInfix, 
+      format = format)
   
   smr$M <- smr$M01
   

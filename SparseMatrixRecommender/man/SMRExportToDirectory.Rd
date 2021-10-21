@@ -9,7 +9,7 @@ SMRExportToDirectory(
   directoryPath,
   dataNamePrefix = "",
   dataNameInfix = "",
-  csvTripletsQ = FALSE,
+  format = NULL,
   digits = NULL
 )
 }
@@ -22,12 +22,13 @@ SMRExportToDirectory(
 
 \item{dataNameInfix}{A string infix designating the exported SMR object.}
 
-\item{csvTripletsQ}{Should the recommender matrix be also exported to a CSV file.}
+\item{format}{Export format, one of "CSV", "CSVHarwellBoeing", "feather", or NULL.
+If NULL then "CSVHarwellBoeing" is used.}
 
 \item{digits}{An integer for the number of digits to round to.
 See \code{\link{round}}.
 If NULL no rounding is done.
-Only applies to the file with the name pattern "SMR-M01-from-*.csv".}
+Only applies to the file with the name pattern "SMR-M01-from-*".}
 }
 \value{
 A logical.
