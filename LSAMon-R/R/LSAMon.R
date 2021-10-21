@@ -2011,7 +2011,7 @@ MostImportantSentences <- function( sentences,
 ##===========================================================
 
 #' Export to a directory
-#' @description Exports the LSAMon to specified directory.
+#' @description Exports a LSAMon object to a specified directory.
 #' @param lsaObj An LSAMon object
 #' @param directoryPath A path to a directory.
 #' @param dataNamePrefix A string prefix designating the exported LSA object.
@@ -2112,7 +2112,7 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "",
 
       feather::write_feather(
         x = dfStemRules,
-        path = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".csv")))
+        path = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".feather")))
 
     }
 
@@ -2150,3 +2150,136 @@ LSAMonExportToDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "",
 
   return(lsaObj)
 }
+
+
+##===========================================================
+## Import to directory
+##===========================================================
+
+#' Import from a directory
+#' @description Imports a LSAMon from a specified directory.
+#' @param lsaObj An LSAMon object
+#' @param directoryPath A path to a directory.
+#' @param dataNamePrefix A string prefix designating the exported LSA object.
+#' @param dataNameInfix A string infix designating the exported LSA object.
+#' @param format Export format, one of "CSV", "CSVHarwellBoeing", "feather", or NULL.
+#' If NULL then "CSVHarwellBoeing" is used.
+#' @param digits An integer for the number of digits to round to.
+#' See \code{\link{round}}.
+#' If NULL no rounding is done.
+#' Only applies to the file with the name pattern "SMR-M01-from-*.csv".
+#' @details The sparse matrix \code{lsaObj %>% LSAMonTakeDocumentTermMatrix} is
+#' exported using \code{\link{SparseMatrixRecommender::SMRSparseMatrixExportToDirectory}}.
+#' The arguments \code{csvTripletsQ} and \code{digits} are used to specify that
+#' the document-term matrix has to be also exported as a CSV file and the
+#' weights are rounded (if \code{digits} is numeric.)
+#' @return A LSAMon object
+#' @export
+LSAMonImportFromDirectory <- function( lsaObj, directoryPath, dataNamePrefix = "", dataNameInfix = "", format = NULL ) {
+
+  if( is.null(lsaObj) ) {  lsaObj <- LSAMonUnit() }
+
+  if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
+
+  if( !is.character(directoryPath) ) {
+    warning( "The argument directoryPath is expected to be a string.", call. = TRUE )
+    return(LSAMonFailure)
+  }
+
+  if( !file.exists(directoryPath) ) {
+    warning( "The argument directoryPath is expected to be a valid directory path.", call. = TRUE )
+    return(LSAMonFailure)
+  }
+
+  if( !( is.character(dataNamePrefix) && length(dataNamePrefix) == 1 ) ) {
+    warning( "The argument dataNamePrefix is expected to be a string.", call. = TRUE )
+    return(LSAMonFailure)
+  }
+
+  if( !( is.character(dataNameInfix) && length(dataNameInfix) == 1 ) ) {
+    warning( "The argument dataNameInfix is expected to be a string.", call. = TRUE )
+    return(LSAMonFailure)
+  }
+
+  if( nchar(dataNamePrefix) > 0 && !grepl( "-&", dataNamePrefix) ) {
+    dataNamePrefix <- paste0(dataNamePrefix, "-")
+  }
+
+  if( nchar(dataNameInfix) > 0 && !grepl( "^-", dataNameInfix) ) {
+    dataNameInfix <- paste0("-", dataNameInfix)
+  }
+
+  if( is.null(format) ) { format <- "CSV" }
+
+  ## Global weights
+  if( tolower(format) %in% tolower(c("CSV", "CSVHarwellBoeing")) ) {
+
+    dfGlobalWeights <- read.csv( file = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-GlobalWeights", dataNameInfix, ".csv")), stringsAsFactors = FALSE)
+
+  } else if ( tolower(format) == "feather" ) {
+
+    dfGlobalWeights <- feather::read_feather(
+      path = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-GlobalWeights", dataNameInfix, ".feather")))
+
+  } else {
+
+    stop("Unknown format.", call. = TRUE)
+
+  }
+
+  lsaObj$GlobalWeights <- setNames( dfGlobalWeights$Weight, dfGlobalWeights$Word )
+
+  ## Stemming rules
+  if( file.exists(file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".csv"))) ||
+      file.exists(file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".feather"))) ) {
+
+
+    if( tolower(format) %in% tolower(c("CSV", "CSVHarwellBoeing")) ) {
+
+      dfStemRules <-
+        read.csv( file = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".csv")), stringsAsFactors = FALSE)
+
+    } else {
+
+      dfStemRules <-
+        feather::read_feather( path = file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-StemRules", dataNameInfix, ".feather")))
+
+    }
+
+    lsaObj$StemRules <- setNames( dfStemRules$Stem, dfStemRules$Word )
+  }
+
+
+  ## Document-term matrix
+  smat <-
+    SparseMatrixRecommender::SMRSparseMatrixImportFromDirectory( directoryPath = directoryPath,
+                                                                 dataNamePrefix = paste0(dataNamePrefix, 'LSAMon-DocumentTermMatrix'),
+                                                                 dataNameInfix = dataNameInfix,
+                                                                 format = format)
+
+
+  lsaObj$DocumentTermMatrix <- smat
+
+  ## Topic matrix
+  if( file.exists(file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-TopicMatrix", dataNameInfix, ".mm"))) ||
+      file.exists(file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-TopicMatrix", dataNameInfix, ".csv"))) ||
+      file.exists(file.path( directoryPath, paste0(dataNamePrefix, "LSAMon-TopicMatrix", dataNameInfix, ".feather"))) ) {
+
+    #warning("There is a topic matrix file, but the topic matrix is not imported.", call. = TRUE)
+
+    smatH <-
+      SparseMatrixRecommender::SMRSparseMatrixImportFromDirectory( directoryPath = directoryPath,
+                                                                   dataNamePrefix = paste0(dataNamePrefix, 'LSAMon-TopicMatrix'),
+                                                                   dataNameInfix = dataNameInfix,
+                                                                   format = format)
+
+    lsaObj$H <- smatH
+
+  }
+
+  ## Result
+  lsaObj$Value <- TRUE
+
+  return(lsaObj)
+}
+
