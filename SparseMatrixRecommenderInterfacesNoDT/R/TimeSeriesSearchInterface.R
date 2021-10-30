@@ -219,7 +219,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                   sidebarPanel =
                     sidebarPanel(
                       width = 3,
-                      selectInput( "searchID", "Entity:", rownames(tsSMR$SMR$M) ),
+                      selectInput( inputId = "searchID", label = "Entity:", choices = NULL ),
                       textInput( "filterRowIDs", "Entities filter pattern:", ""),
                       sliderInput( "numberOfNNs", "Number of nearest neighbors:", min = 1, max = 100, step = 1, value = initNNs ),
                       sliderInput( "nnsNCol", "Number of graphics columns:", min = 1, max = 12, step = 1, value = initNCols ),
@@ -361,6 +361,8 @@ TSCorrSMRMakeServerFunction <- function( tsSMR, tsSearchVectors, roundDigits = 6
 
   function(input, output, session)  {
 
+
+    updateSelectizeInput(session, 'searchID', choices = rownames(tsSMR$SMR$M), server = TRUE )
 
     recResNNs <- reactive({
 
