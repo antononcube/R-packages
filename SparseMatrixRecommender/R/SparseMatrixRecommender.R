@@ -113,6 +113,7 @@
 #' @import Matrix
 #' @import purrr
 #' @import reshape2
+#' @import feather
 NULL
 
 
