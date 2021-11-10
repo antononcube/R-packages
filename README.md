@@ -38,9 +38,9 @@ Some loosely adhered to rules for the package licenses in this repository follow
 
 - If a package is with a GPL-3 license that is because:
  
-  - at least one of the underlying important packages is with GPL-3,
+  - At least one of the underlying important packages is with GPL-3
    
-  - the original version of the package was published with GPL-3,
+  - The original version of the package was published with GPL-3
   
-  - GPL-3 is the default and preferred license.
+  - GPL-3 is the default and preferred license
 
