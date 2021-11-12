@@ -85,10 +85,7 @@ SMRGlobalTermFunctionWeights <- function( docTermMat, globalWeightFunction = "No
     globalWeights <- colSums(mat)
     globalWeights[ globalWeights == 0 ] <- 1
     globalWeights <- log( nrow(mat) / globalWeights )
-    
-    # restore the original matrix
-    mat <- docTermMat
-    
+
   } else if ( globalWeightFunction == "GFIDF" ) {
     
     freqSums <- colSums(mat)
@@ -96,10 +93,7 @@ SMRGlobalTermFunctionWeights <- function( docTermMat, globalWeightFunction = "No
     globalWeights <- colSums(mat)
     globalWeights[ globalWeights == 0 ] <- 1
     globalWeights <- freqSums / globalWeights
-    
-    # restore the original matrix
-    mat <- docTermMat
-    
+
   } else if ( globalWeightFunction == "Normal" ) {
     
     globalWeights <- sqrt( colSums( mat*mat ) )
