@@ -83,8 +83,7 @@ SMRGlobalTermFunctionWeights <- function( docTermMat, globalWeightFunction = "No
     # mat[ mat>0 ] <- 1
     mat@x <- rep(1,length(mat@x))
     globalWeights <- colSums(mat)
-    globalWeights[ globalWeights == 0 ] <- 1
-    globalWeights <- log( nrow(mat) / globalWeights )
+    globalWeights <- log( nrow(mat) / ( 1.0 + globalWeights), base = 2 )
 
   } else if ( globalWeightFunction == "GFIDF" ) {
     
