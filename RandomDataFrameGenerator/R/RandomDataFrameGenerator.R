@@ -138,7 +138,7 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
     }
 
   } else {
-    stop( "Unknown type of generators specificiation.", call. = TRUE )
+    stop( "Unknown type of generators specification.", call. = TRUE )
   }
 
   ## Max Number Of Values
