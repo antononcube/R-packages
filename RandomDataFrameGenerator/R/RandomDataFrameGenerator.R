@@ -101,7 +101,7 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
   ## Otherwise at the end we will get:
   ## Error in `[.data.frame`(dfRes, , lsColNames) : undefined columns selected
   #lsColNames <- gsub( pattern = "-", replacement = ".", x = lsColNames)
-  lsColNames <- make.names(lsColNames)
+  lsColNames <- unique(make.names(lsColNames))
 
   ## Generators
   aDefaultGenerators <-
@@ -167,14 +167,24 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
   form <- tolower(form)
 
   ## Generate coordinate pairs for the random values
-  dfPairs <- setNames( expand.grid( 1:nrow, lsColNames, stringsAsFactors = FALSE ), c("Row", "Col") )
+  if ( nrow * ncol > 20000 && ( maxNumberOfValues < nrow * ncol || minNumberOfValues < nrow * ncol ) ) {
 
-  if( maxNumberOfValues < nrow * ncol || minNumberOfValues < nrow * ncol ) {
-    dfPairs <-
-      dfPairs %>%
-      dplyr::sample_n( size = runif( n = 1, min = minNumberOfValues, max = maxNumberOfValues ), replace = FALSE ) %>%
-      dplyr::arrange( Row, Col ) %>%
-      as.data.frame
+    nvals <-  sample.int(n = abs(maxNumberOfValues - minNumberOfValues) + 1, size = 1) + min(minNumberOfValues, maxNumberOfValues) - 1
+    dfPairs <- sample.int(n = nrow * ncol, size = nvals) - 1
+    dfPairs <- purrr::map_df(dfPairs, function(x) c( Row = x %/% ncol, Col = x %% ncol) + 1)
+
+  } else {
+
+    dfPairs <- setNames( expand.grid( 1:nrow, lsColNames, stringsAsFactors = FALSE ), c("Row", "Col") )
+
+    if( maxNumberOfValues < nrow * ncol || minNumberOfValues < nrow * ncol ) {
+      dfPairs <-
+        dfPairs %>%
+        dplyr::sample_n( size = runif( n = 1, min = minNumberOfValues, max = maxNumberOfValues ), replace = FALSE ) %>%
+        dplyr::arrange( Row, Col ) %>%
+        as.data.frame
+    }
+
   }
 
   if( is.null(dfPairs) || nrow(dfPairs) == 0 ) {
@@ -219,7 +229,11 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
         }
 
         lsVals <- setNames( lsVals, as.character(dfX$Row) )
-        lsVals <- setNames( lsVals[ as.character(1:nrow) ],  as.character(1:nrow) )
+
+        if ( form == "wide" ) {
+          lsVals <- setNames( lsVals[ as.character(1:nrow) ],  as.character(1:nrow) )
+        }
+
         lsVals
       }
     })
@@ -228,6 +242,11 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
 
     ## Combine into final result
     dfRes <- do.call( data.frame, dfRes )
+
+    if (ncol(dfRes) < length(lsColNames)) {
+      lsMissingColNames <- setdiff(lsColNames, colnames(dfRes))
+      dfRes = cbind(dfRes, do.call(data.frame, as.list(setNames(rep_len( x = NA, length.out = length(lsMissingColNames)), lsMissingColNames))))
+    }
     dfRes <- dfRes[, lsColNames]
 
     ## With row names or not?
@@ -245,7 +264,7 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
       purrr::map( 1:length(dfRes), function(i){
         res <-
           setNames(
-            data.frame( ID = 1:length(dfRes[[i]]),
+            data.frame( ID = names(dfRes[[i]]), #paste0("r", 1:length(dfRes[[i]])),
                         Variable = names(dfRes)[[i]],
                         Value = dfRes[[i]] ),
             c("ID", "Variable", paste0( "Value.", lsTypes[[i]] ) )
@@ -264,6 +283,7 @@ RandomDataFrame <- function( nrow = NULL, ncol = NULL,
     })
 
     dfRes <- do.call( rbind, dfRes)
+    dfRes <- dfRes[order(dfRes$ID),]
 
     ## With row names or not?
     if( !rowNamesQ ) {
