@@ -14,7 +14,7 @@ test_that("Column names generator specifications", {
 
   dfR1 <- RandomDataFrame( nrow = 31, ncol = 13, columnNamesGenerator = function(k) rpois(k, 4) )
   expect_s3_class( dfR1, "data.frame" )
-  expect_equal( dim(dfR1), c(31, 13))
+  expect_true( nrow(dfR1) == 31 && ncol(dfR1) <= 13)
 
   dfR2 <- RandomDataFrame( nrow = 31, ncol = 13, columnNamesGenerator = RandomDataFrameGenerator::RandomWord )
   expect_s3_class( dfR2, "data.frame" )
