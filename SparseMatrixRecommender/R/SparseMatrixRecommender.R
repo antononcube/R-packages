@@ -1265,7 +1265,7 @@ SMRMakeColumnValueIncidenceMatrix <- function( mat, rowNamesQ = TRUE, colNamesQ 
 #' @param vec A numerical vector to be categorized.
 #' @param probs A numerical vector to be given to 
 #' the argument \code{probs} of \code{\link{quantile}}.
-#' @param breaks A the breaks to be used.
+#' @param breaks A numerical vector with breaks to be used.
 #' If NULL \code{quantile} is used.
 #' @param intervalNamesQ Should the intervals be represented with integers or with character names?
 #' @return A character vector.
