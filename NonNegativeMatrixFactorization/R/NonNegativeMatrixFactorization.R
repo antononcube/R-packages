@@ -319,7 +319,7 @@ NearestWords <- function( H, word, n = 20, fixed = TRUE ) {
 ##===========================================================
 
 #' Sparse matrix exponent
-#' @description Computes the pseudo inverse of a sparse matrix.
+#' @description Computes the exponent of a sparse matrix.
 #' @param smat Sparse matrix.
 #' @param exp Exponent (a real number.)
 #' @param tol Tolerance (a real number.)
