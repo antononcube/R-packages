@@ -53,10 +53,11 @@ hr()
 radioButtons( inputId = "progLang", 
               label = "Programming language:",
               choices = c(
-#                "Abstract Syntax Trees" = "ast",
-#                "Julia" = "Julia",
+                # "Abstract Syntax Trees" = "ast",
+                # "Julia" = "Julia",
                 "Python" = "Python",
                 "R" = "R",
+                "Raku" = "Raku",
                 "Wolfram Language" = "WL"
               ),
               selected = "R"
@@ -121,28 +122,36 @@ URL:
 consURL <- 
   reactive({
     if( input$translatorType == "grammars" ) {
-      resURL <- paste0( input$webServiceURL, "/", "translate", "/")
-    } else if( input$translatorType == "ast") {
-      resURL <- paste0( input$webServiceURL, "/", "translate", "/", "ast", "/")
+      resURL <- paste0( input$webServiceURL, "/", "translate")
     } else if( input$translatorType == "qas") {
-      resURL <- paste0( input$webServiceURL, "/", "translate", "/", "qas", "/")
+      resURL <- paste0( input$webServiceURL, "/", "translate", "/", "qas")
     } else if( input$translatorType == "numeric" ) {
-      resURL <- paste0( input$webServiceURL, "/", "translate", "/", "numeric", "/")
+      resURL <- paste0( input$webServiceURL, "/", "translate", "/", "numeric")
     } else {
       resURL <- input$webServiceURL
     }
-    
-    if( !( input$translatorType %in% c("numeric", "ast") ) ) {
-      resURL <- paste0( resURL, input$progLang, "/")
-    } 
     
     resURL <- gsub("//", "/", resURL, fixed = T)
     resURL
   })
 ```
 
+
 ```{r}
-renderPrint( expr = DSLWebServiceInterpretationURL(textUserCommands(), url = consURL()) )
+queryURL <- 
+  reactive({
+    query <- list()
+    if( input$progLang == "ast") {
+      query <- c(query, ast="True")
+    } else {
+      query <- c(query, lang=input$progLang)
+    }
+  })
+```
+
+
+```{r}
+renderPrint( expr = DSLWebServiceInterpretationURL(command = textUserCommands(), query = queryURL(), url = consURL()) )
 ```
 
 
@@ -162,7 +171,7 @@ observeEvent(input$submitButton, {
     
   } else {
     
-    dwsResp <- InterpretByDSLWebService(textUserCommands(), url = consURL())
+    dwsResp <- InterpretByDSLWebService(command = textUserCommands(), query = queryURL(), url = consURL())
 
     if ( dwsResp$Success ) {
       
