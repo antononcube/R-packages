@@ -1514,7 +1514,7 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
 
   if( is.null(data) ) { data <- smrObj$M }
 
-  if( is.character(data) ) { data <- smrObj$M0[data, ] }
+  if( is.character(data) ) { data <- smrObj$M0[data, , drop=FALSE] }
 
 
   data <- as( data, "dgCMatrix")
@@ -1537,7 +1537,7 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
 
   ## Remove history if using smrObj$M
   if( removeHistoryQ && !SMRSparseMatrixQ(data) ) {
-    dfRecsMat <- dfRecsMat[ dfRecsMat[[1]] != dfRecsMat[[2]], ]
+    dfRecsMat <- dfRecsMat[ dfRecsMat[[1]] != dfRecsMat[[2]], , drop=FALSE]
   }
 
   ## Reverse sort and get top recommendations
@@ -1563,7 +1563,7 @@ SMRMonBatchRecommend <- function( smrObj, data = NULL, nrecs = 12, removeHistory
   }
 
   ## Order scores descendingly
-  dfRecsMat <- dfRecsMat[ order( dfRecsMat[[targetColumnName]], - dfRecsMat[["Score"]] ), ]
+  dfRecsMat <- dfRecsMat[ order( dfRecsMat[[targetColumnName]], - dfRecsMat[["Score"]] ), , drop=FALSE]
 
   smrObj$Value <- dfRecsMat
 
