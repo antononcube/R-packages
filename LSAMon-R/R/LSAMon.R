@@ -1562,16 +1562,17 @@ LSAMonExtractStatisticalThesaurus <- function( lsaObj, searchWords, numberOfNear
 #' @param words Words to find thesaurus entries for.
 #' @param numberOfNearestNeighbors Number of nearest neighbors per specified word.
 #' @param wideFormQ Should the thesaurus table be in wide form or not?
+#' @param fixedQ Should \code{searchWords} be considered fixed or pattern strings?
 #' @param echoQ Should the thesaurus table be echoed or not?
 #' @return A LSAMon object.
 #' @export
-LSAMonGetStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE, echoQ = FALSE ) {
+LSAMonGetStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE, fixedQ = TRUE, echoQ = FALSE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
   lsaObj <-
     lsaObj %>%
-    LSAMonExtractStatisticalThesaurus( searchWords = sort(words) )
+    LSAMonExtractStatisticalThesaurus( searchWords = sort(words), numberOfNearestNeighbors = numberOfNearestNeighbors, fixedQ = fixedQ )
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
@@ -1613,16 +1614,17 @@ LSAMonGetStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbo
 #' @param words Words to find thesaurus entries for.
 #' @param numberOfNearestNeighbors Number of nearest neighbors per specified word.
 #' @param wideFormQ Should the thesaurus table be in wide form or not?
+#' @param fixedQ Should \code{searchWords} be considered fixed or pattern strings?
 #' @return A LSAMon object.
 #' @details This function is a shortcut of \code{\link{LSAMonGetStatisticalThesaurus}}.
 #' @export
-LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE ) {
+LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE, fixedQ = TRUE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
   lsaObj <-
     lsaObj %>%
-    LSAMonGetStatisticalThesaurus( words = words, numberOfNearestNeighbors = numberOfNearestNeighbors, wideFormQ = wideFormQ, echoQ = TRUE )
+    LSAMonGetStatisticalThesaurus( words = words, numberOfNearestNeighbors = numberOfNearestNeighbors, wideFormQ = wideFormQ, fixedQ = fixedQ, echoQ = TRUE )
 
   lsaObj
 }
@@ -1638,16 +1640,17 @@ LSAMonEchoStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighb
 #' @param words Words to find thesaurus entries for.
 #' @param numberOfNearestNeighbors Number of nearest neighbors per specified word.
 #' @param wideFormQ Should the thesaurus table be in wide form or not?
+#' @param fixedQ Should \code{searchWords} be considered fixed or pattern strings?
 #' @return A LSAMon object.
 #' @details This function is a shortcut of \code{\link{LSAMonGetStatisticalThesaurus}}.
 #' @export
-LSAMonTakeStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, wideFormQ = FALSE ) {
+LSAMonTakeStatisticalThesaurus <- function( lsaObj, words, numberOfNearestNeighbors = 12, fixedQ = TRUE, wideFormQ = FALSE ) {
 
   if( LSAMonFailureQ(lsaObj) ) { return(LSAMonFailureSymbol) }
 
   lsaObj <-
     lsaObj %>%
-    LSAMonGetStatisticalThesaurus( words = words, numberOfNearestNeighbors = numberOfNearestNeighbors, wideFormQ = wideFormQ, echoQ = FALSE )
+    LSAMonGetStatisticalThesaurus( words = words, numberOfNearestNeighbors = numberOfNearestNeighbors, wideFormQ = wideFormQ, fixedQ = fixedQ, echoQ = FALSE )
 
   lsaObj$Value
 }
