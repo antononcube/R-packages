@@ -2178,6 +2178,7 @@ SMRImportFromDirectory <- function( directoryPath, dataNamePrefix = "", dataName
     smr$TagTypeRanges <- read.csv( file = file.path(directoryPath, paste0(dataNamePrefix, "SMR-TagTypeRanges", dataNameInfix, ".csv") ) )
     # Note that it assumed that the first column is with tag types, not necessarily a named column.
     rownames(smr$TagTypeRanges) <- smr$TagTypeRanges[,1]
+    smr$TagTypeRanges <- smr$TagTypeRanges[ , c("Begin", "End")]
     
   } else if ( tolower(format) == "feather" ) {
 
