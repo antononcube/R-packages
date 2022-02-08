@@ -1,0 +1,247 @@
+---
+title: "Stream blending recommender via tidyverse"
+author: Anton Antonov
+date: 2022-02-08
+output: html_notebook
+---
+
+```{r setup}
+library(Matrix)
+library(magrittr)
+library(tidyverse)
+library(skimr)
+library(SparseMatrixRecommender)
+library(SMRMon)
+```
+
+# Introduction
+
+This notebook shows the implementation of the Stream Blending Recommender (SBR) framework algorithms using the R package(s) `tidyverse`.
+
+SBR can be derived through mapping the algorithms of Sparse Matrix Recommender (SMR) framework -- see [AA1].
+
+The following mind-map -- made from SQL perspective -- fairly faithfully outlines the steps below:
+
+[![SQL-recommender-mind-map](https://github.com/antononcube/SimplifiedMachineLearningWorkflows-book/raw/master/Diagrams/SQL-recommender-mind-map.png)](https://github.com/antononcube/SimplifiedMachineLearningWorkflows-book/raw/master/Diagrams/SQL-recommender-mind-map.pdf)
+
+
+--------
+
+# "Raw" Data 
+
+Here is a sample of the data we use:
+
+```{r}
+head(dfTitanic, 10)
+```
+
+Here is a summary:
+
+```{r}
+skimr::skim(dfTitanic)
+```
+
+
+--------
+
+# Contingency matrix
+
+Item column name:
+
+```{r}
+itemColumnName <- "id"
+```
+
+Tag type column names:
+
+```{r}
+lsTagTypes <- c("passengerSex", "passengerClass", "passengerAge", "passengerSurvival")
+lsNumericTagTypes <- "passengerAge"
+```
+
+Convert to long form:
+
+```{r}
+dfDataLongForm <- 
+  dfTitanic %>% 
+  dplyr::mutate_at( .vars = lsNumericTagTypes, .funs = as.character) %>% 
+  tidyr::pivot_longer( cols = all_of(lsTagTypes), names_to = "TagType", values_to = "Tag" ) %>% 
+  dplyr::select( Item = itemColumnName, TagType, Tag )
+dfDataLongForm
+```
+
+```{r}
+dfItemMatrix <- 
+  dfDataLongForm %>% 
+  dplyr::group_by(Item, TagType, Tag) %>% 
+  dplyr::count() %>% 
+  dplyr::rename( Weight = n )
+dfItemMatrix
+```
+
+
+--------
+
+# LSI functions application
+
+## IDF
+
+*TBD...*
+
+## Normalization per tag type
+
+*TBD...*
+
+## Normalization per tag type per item
+
+Here we derive the norms:
+
+```{r}
+dfNorms <- 
+  dfItemMatrix %>% 
+  dplyr::group_by( Item, TagType ) %>% 
+  dplyr::mutate( Square = Weight*Weight ) %>% 
+  dplyr::summarise( Norm = sqrt(sum(Square)), .groups = "drop_last")
+dfNorms
+```
+
+Here we normalize the item-matrix:
+
+```{r}
+dfItemMatrix <-
+  dfItemMatrix %>% 
+  dplyr::inner_join( dfNorms, by = c("Item", "TagType") ) %>% 
+  dplyr::mutate( Weight = Weight / Norm ) %>% 
+  dplyr::select( Item, TagType, Tag, Weight )
+dfItemMatrix
+```
+
+
+--------
+
+# Recommend by profile
+
+Derive profile:
+
+```{r}
+if ( TRUE ) {
+  lsProf <- c(passengerAge = "30", passengerSex = "male", passengerSurvival = "survived")
+  dfProf <- data.frame( TagType = names(lsProf), Tag = setNames(lsProf, NULL))
+}
+dfProf
+```
+```{r}
+
+```
+
+Recommend by derived profile:
+
+```{r}
+dfRecs <- 
+  dfItemMatrix %>% 
+  dplyr::inner_join( dfProf, by = c("TagType", "Tag") ) %>% 
+  dplyr::group_by( Item ) %>% 
+  dplyr::summarise( Score = sum(Weight), .groups = "drop_last") %>% 
+  dplyr::arrange(desc(Score)) %>% 
+  dplyr::slice( 1:10)
+dfRecs
+```
+
+Demonstrate correctness (`JoinAcross`) :
+
+```{r}
+dfRecs %>% 
+  dplyr::inner_join( dfTitanic, by = c("Item" = itemColumnName) )
+```
+
+--------
+
+# Recommend by history
+
+Pick "history" items:
+
+```{r}
+lsHistoryItems <- c("id.1089", "id.1188")
+```
+
+Number of recommendations:
+
+```{r}
+nrecs <- 10
+```
+
+Find the profile for the "history" items:
+
+```{r}
+dfProf <- 
+  dfItemMatrix %>% 
+  dplyr::filter( Item %in% lsHistoryItems ) %>% 
+  dplyr::group_by( TagType, Tag ) %>% 
+  dplyr::summarise( Score = sum(Weight), .groups = "drop_last")
+dfProf
+```
+
+
+```{r}
+dfRecs2 <- 
+  dfItemMatrix %>% 
+  dplyr::inner_join( dfProf, by = c("TagType", "Tag") ) %>% 
+  dplyr::group_by( Item ) %>% 
+  dplyr::summarise( Score = sum(Weight), .groups = "drop_last") %>% 
+  dplyr::arrange(desc(Score)) %>% 
+  dplyr::slice( 1:nrecs ) %>% 
+  dplyr::inner_join( dfTitanic, by = c("Item" = itemColumnName) )
+dfRecs2
+```
+
+--------
+
+# Prove by profile
+
+Given a profile and, presumably, a recommended item derive proofs the item is a relevant recommendation using tag types and tags.
+
+Generally speaking, this is a simple procedure:
+
+- Find profile of the item
+
+- Find the intersection of the profile and item-profile
+
+- Multiply item-matrix tag weights with profile tag scores
+
+- Sort
+
+Here is a profile:
+
+```{r}
+dfProf <- 
+  data.frame( TagType = c("passengerClass", "passengerSex",  "passengerSurvival"), 
+              Tag = c("1st", "female", "died"),
+              Score = 1)
+dfProf
+```
+
+```{r}
+itemID <- "id.100" 
+```
+
+Here is the profile-proof computation
+```{r}
+dfProof <- 
+  dfItemMatrix %>% 
+  dplyr::filter(Item == itemID ) %>% 
+  dplyr::inner_join( dfProf, by = c("TagType", "Tag")) %>% 
+  dplyr::mutate( Score = Score * Weight ) %>% 
+  dplyr::arrange(desc(Score))
+dfProof
+```
+
+
+--------
+
+# References
+
+[AA1] Anton Antonov, 
+["Mapping Sparse Matrix Recommender to Streams Blending Recommender"](https://github.com/antononcube/MathematicaForPrediction/blob/master/Documentation/MappingSMRtoSBR/Mapping-Sparse-Matrix-Recommender-to-Streams-Blending-Recommender.pdf),
+(2019),
+[MathematicaForPrediction at GitHub](https://github.com/antononcube/MathematicaForPrediction).
+
