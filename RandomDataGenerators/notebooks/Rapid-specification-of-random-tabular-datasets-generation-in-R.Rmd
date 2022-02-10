@@ -168,6 +168,7 @@ dfCW <-
 dfCW
 ```
 
+
 ```{r}
 plot(log10(dfAW[,c(2,3)]), xlim=c(-1,5), ylim=c(0,4))
 plot(log10(dfCW[,c(2,3)]), xlim=c(-1,5), ylim=c(0,4))

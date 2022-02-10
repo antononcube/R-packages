@@ -1,17 +1,28 @@
-# Random Data Frame Generator in R
+# Random Data Generators in R
 
 ## In brief
 
 This R package implements the function `RandomDataFrame` that generates random data frames.
 The design, implementation, and unit tests closely resemble the Mathematica packages [AAp1, AAp2].
 
+The package also has additional random data generation functions: 
+`RandomDate`, `RandomPetName`, `RandomPretentiousJobTitle`, `RandomString`, `RandomWord`.
+
 See the document 
 ["Rapid specification of random tabular datasets generation in R"](https://htmlpreview.github.io/?https://github.com/antononcube/R-packages/blob/master/RandomDataFrameGenerator/notebooks/Rapid-specification-of-random-tabular-datasets-generation-in-R.nb.html)
 for a more detailed introduction.
 ([This is the corresponding Rmd notebook](./notebooks/Rapid-specification-of-random-tabular-datasets-generation-in-R.Rmd).)
 
-(Similar functionalities are provided by the [Raku](https://raku.org) module
-[Data::Generators](https://modules.raku.org/dist/Data::Generators), [AAp3].)
+**Remark:** Similar functionalities are provided by:
+
+- Python package 
+[RandomDataGenerators](https://pypi.org/project/RandomDataGenerators/), [AAp3]
+
+- [Raku](https://raku.org) module
+[Data::Generators](https://modules.raku.org/dist/Data::Generators), [AAp4]
+
+**Remark:** All package functions have corresponding functions with the same names in
+[Wolfram Function Repository](https://resources.wolframcloud.com/FunctionRepository/).
 
 ## Examples
 
@@ -78,6 +89,11 @@ RandomDataFrame(
 [MathematicaForPrediction at GitHub/antononcube](https://github.com/antononcube/MathematicaForPrediction).
 
 [AAp3] Anton Antonov,
+[RandomDataGenerators Python package](https://pypi.org/project/RandomDataGenerators/),
+(2021),
+[PyPI](https://pypi.org).
+
+[AAp4] Anton Antonov,
 [Data::Generators Raku module](https://modules.raku.org/dist/Data::Generator),
 (2021),
 [Raku Modules](https://modules.raku.org).
