@@ -4,6 +4,7 @@
 #' @import SMRMon
 #' @import arules
 #' @import purrr
+#' @import dplyr
 NULL
 
 
@@ -686,7 +687,6 @@ RSTMonTakeItemsets <- function( rstObj, functionName = "RSTMonTakeItemsets" ) {
 }
 
 
-
 ##===========================================================
 ## IngestSMRMatrixFromCSVFile
 ##===========================================================
@@ -812,6 +812,65 @@ RSTMonFindFrequentSets <- function(rstObj, profileTagTypes = NULL, supp = NULL, 
 
   ## Make sure the Items columns is of strings
   rstObj$Itemsets$Items <- as.character(rstObj$Itemsets$Items)
+
+  ## Result
+  rstObj$Value <- rstObj$Itemsets
+  rstObj
+}
+
+
+##===========================================================
+## FilterItemsets
+##===========================================================
+
+#' FilterItemsets.
+#' @description Ingests the SMR matrix data in a given feather file.
+#' @param rstObj An RSTMon object.
+#' @param pattern A pattern for grepl
+#' @param minSupport Min support.
+#' @param maxSupport Max support.
+#' @param minCount Min count.
+#' @param maxCount Max count.
+#' @param ... Additional arguments for \code{\link{grepl}}.
+#' @return An RSTMon object or \code{RSTMonFailureSymbol}.
+#' @details The data frame \code{rstObj$Itemsets} is modified using \code{\link{dplyr::filter}}.
+#' The result of the filtering is also assigned to \code{rstObj$Value}.
+#' @family Computation functions
+#' @export
+RSTMonFilterItemsets <- function(rstObj,
+                                 pattern = NULL,
+                                 minSupport = 0,
+                                 maxSupport = max(rstObj$Itemsets$Support),
+                                 minCount = 0,
+                                 maxCount = max(rstObj$Itemsets$Count),
+                                 ...) {
+
+  if( RSTMonFailureQ(rstObj) ) { return(RSTMonFailureSymbol) }
+
+  if( !is.data.frame(rstObj$Itemsets)) {
+    warning("Cannot find itemsets data frame.", call. = T)
+    return(RSTMonFailureSymbol)
+  }
+
+  ## Filter with pattern
+  if( !is.null(pattern) && is.character(pattern) && length(pattern) == 1 ) {
+
+    rstObj$Itemsets <-
+      rstObj$Itemsets %>%
+      dplyr::filter( grepl(pattern = pattern, Items, ...) )
+
+  }
+
+  ## Filter with support and count specs
+  rstObj$Itemsets <-
+    rstObj$Itemsets %>%
+    dplyr::filter( minCount <= Count & Count <= maxCount ) %>%
+    dplyr::filter( minSupport <= Support & Support <= maxSupport )
+
+  ## Warning if empty result
+  if( nrow(rstObj$Itemsets) == 0 ) {
+    warning("Empty itemsets data frame was obtained after the specified filtering.", call. = T)
+  }
 
   ## Result
   rstObj$Value <- rstObj$Itemsets

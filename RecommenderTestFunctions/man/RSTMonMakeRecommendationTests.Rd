@@ -24,6 +24,7 @@ The obtained data frame of tests is assigned to
 }
 \seealso{
 Other Computation functions: 
+\code{\link{RSTMonFilterItemsets}()},
 \code{\link{RSTMonFindFrequentSets}()},
 \code{\link{RSTMonMakeClassificationTests}()}
 }

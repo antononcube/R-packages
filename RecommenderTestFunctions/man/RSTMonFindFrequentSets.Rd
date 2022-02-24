@@ -45,6 +45,7 @@ to \code{rstObj$Value} and \code{rstObj$Itemsets}.
 }
 \seealso{
 Other Computation functions: 
+\code{\link{RSTMonFilterItemsets}()},
 \code{\link{RSTMonMakeClassificationTests}()},
 \code{\link{RSTMonMakeRecommendationTests}()}
 }
