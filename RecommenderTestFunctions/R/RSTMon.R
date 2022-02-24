@@ -5,6 +5,7 @@
 #' @import arules
 #' @import purrr
 #' @import dplyr
+#' @import feather
 NULL
 
 
@@ -754,6 +755,54 @@ RSTMonIngestSMRMatrixFromFeatherFile <- function(rstObj, fileName, ...) {
 
 
 ##===========================================================
+## ExportToCSVFile
+##===========================================================
+
+#' ExportToCSVFile
+#' @description Exports the pipeline value to a given CSV file.
+#' @param rstObj An RSTMon object.
+#' @param fileName A string that is file name.
+#' @param ... Additional parameters for \code{\link{write.csv}}.
+#' @return An RSTMon object.
+#' @family Export functions
+#' @export
+RSTMonExportToCSVFile <- function(rstObj, fileName, ...) {
+
+  if( RSTMonFailureQ(rstObj) ) { return(RSTMonFailureSymbol) }
+
+  ## Export
+  write.csv( x = rstObj$Value, file = fileName, ...)
+
+  ## Result
+  rstObj
+}
+
+
+##===========================================================
+## ExportToFeatherFile
+##===========================================================
+
+#' ExportToFeatherFile.
+#' @description Exports the pipeline value to a given feather file.
+#' @param rstObj An RSTMon object.
+#' @param fileName A string that is file name.
+#' @return An RSTMon object.
+#' @family Export functions
+#' @export
+RSTMonExportToFeatherFile <- function(rstObj, fileName) {
+
+  if( RSTMonFailureQ(rstObj) ) { return(RSTMonFailureSymbol) }
+
+
+  ## Export
+  feather::write_feather( path = fileName, x = rstObj$Value)
+
+  ## Result
+  rstObj
+}
+
+
+##===========================================================
 ## FindFrequentSets
 ##===========================================================
 
@@ -874,6 +923,30 @@ RSTMonFilterItemsets <- function(rstObj,
 
   ## Result
   rstObj$Value <- rstObj$Itemsets
+  rstObj
+}
+
+
+##===========================================================
+## EchoItemsetsSummary
+##===========================================================
+
+#' Echo itemsets summary.
+#' @description Echoes itemsets dimensions and data frame summary.
+#' @param rstObj An RSTMon object.
+#' @param f Summarization function.
+#' @return A RSTMon object.
+#' @export
+RSTMonEchoItemsetsSummary <- function( rstObj, f = function(x) summary(as.data.frame(unclass(x), stringsAsFactors=T)) ) {
+
+  if( RSTMonFailureQ(rstObj) ) { return(RSTMonFailureSymbol) }
+
+  cat("Itemsets dimensions :")
+  print(dim(rstObj$Itemsets))
+
+  cat("Itemsets summary :\n")
+  print(f(rstObj$Itemsets))
+
   rstObj
 }
 
