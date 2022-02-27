@@ -1182,6 +1182,7 @@ SMRImposeRowIDs <- function( smat, rowIDs ) {
     stop("The argument smat is expected to be a sparse matrix or a matrix.", call. = TRUE )
   }
   
+  if( is.null(rownames(smat)) && is.null(rowIDs) ) { return(smat) }
   if( is.null(rowIDs) ) { return(NULL) }
   
   missingRows <- setdiff( rowIDs, rownames(smat) )
@@ -1208,6 +1209,7 @@ SMRImposeRowIDs <- function( smat, rowIDs ) {
 #' @family Sparse matrix transformation functions
 #' @export
 SMRImposeColumnIDs <- function( smat, colIDs ) {
+  if( is.null(colnames(smat)) && is.null(colIDs) ) { return(smat) }
   if( is.null(colIDs) ) { return(NULL) }
   t( SMRImposeRowIDs( rowIDs = colIDs, smat = t(smat) ) )
 }
