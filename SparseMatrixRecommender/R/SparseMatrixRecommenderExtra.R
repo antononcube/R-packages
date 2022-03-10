@@ -404,7 +404,7 @@ SMRToMetadataRecommenderByReplacement <- function( smr, tagTypeTo, nTopTags = 1,
 #' @details The following steps are taken.
 #' (1) If \code{tagTypeMatrix} is NULL then \code{tagTypeMatrix <- SMRSubMatrix(smr, tagTypeTo)}.
 #' (2) Normalize the columns of \code{tagTypeMatrix} using \code{normalizerFunc}.
-#' (2) Each recommender sub-matrix \code{m} is is multiplied by \code{tagTypeMatrix}, i.e. \code{t(tagTypeMatrix) %*% m}
+#' (3) Each recommender sub-matrix \code{m} is multiplied by \code{tagTypeMatrix}, i.e. \code{t(tagTypeMatrix) %*% m}.
 #' (3) A new recommender is created with items that are the tags of \code{tagTypeTo}.
 #' @export
 SMRToMetadataRecommender <- function( smr, tagTypeTo, tagTypes = NULL, tagTypeMatrix = NULL, normalizerFunc = NULL ) {
@@ -446,7 +446,7 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, tagTypes = NULL, tagTypeMa
   }
   
   if( ! ( mean( rownames(tagTypeMatrix) == rownames(smr$M) ) == 1 ) ) {
-    stop( "The argument tagTypeMatrix has rownames that different than the rownames of smr$M.", call. = TRUE )
+    stop( "The argument tagTypeMatrix has rownames that are different than the rownames of smr$M.", call. = TRUE )
   }
   
   ## Process normalizerFunc
@@ -467,7 +467,7 @@ SMRToMetadataRecommender <- function( smr, tagTypeTo, tagTypes = NULL, tagTypeMa
         normalizerFunction = normalizerFunc )
   }
   
-  ## Get the recommeder contingency matrices 
+  ## Get the recommender contingency matrices 
   smats <- 
     purrr::map( tagTypes, function(tt) { 
       SMRSubMatrix(smr, tt)

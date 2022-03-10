@@ -14,7 +14,7 @@ SMRCategorizeToIntervals(
 \arguments{
 \item{vec}{A numerical vector to be categorized.}
 
-\item{breaks}{A the breaks to be used.
+\item{breaks}{A numerical vector with breaks to be used.
 If NULL \code{quantile} is used.}
 
 \item{probs}{A numerical vector to be given to 
