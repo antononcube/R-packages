@@ -8,7 +8,9 @@ SMRMonRetrieveByQueryElements(
   smrObj,
   should = NULL,
   must = NULL,
-  mustNot = NULL
+  mustNot = NULL,
+  mustType = "intersection",
+  mustNotType = "union"
 )
 }
 \arguments{
@@ -21,6 +23,10 @@ The items in the result must have the tags in \code{must}.}
 
 \item{mustNot}{A profile specification used to filter with.
 The items in the result must not have the tags in \code{mustNot}.}
+
+\item{mustType}{The type of filtering with the must tags; one of "union" or "intersection".}
+
+\item{mustNotType}{The type of filtering with the must not tags; one of "union" or "intersection".}
 }
 \value{
 An SMRMon object.

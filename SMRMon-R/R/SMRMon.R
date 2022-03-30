@@ -2057,8 +2057,13 @@ SMRMonFilterByProfile <- function( smrObj, profile, type = "intersection" ) {
 
   ## The result
   svec <- svec[ svec[,1] > 0, 1]
-  smrObj$Value <- data.frame( Score = svec, Item = names(svec), stringsAsFactors = FALSE )
-  smrObj$Value <- setNames( smrObj$Value, c("Score", smrObj %>% SMRMonTakeItemColumnName) )
+
+  if ( length(svec) > 0 ) {
+    smrObj$Value <- data.frame( Score = svec, Item = names(svec), stringsAsFactors = FALSE )
+    smrObj$Value <- setNames( smrObj$Value, c("Score", smrObj %>% SMRMonTakeItemColumnName) )
+  } else {
+    smrObj$Value <- NULL
+  }
 
   smrObj
 }
@@ -2115,13 +2120,20 @@ SMRMonFilterMatrix <- function( smrObj, profile, type = "union" ) {
 #' The items in the result must have the tags in \code{must}.
 #' @param mustNot A profile specification used to filter with.
 #' The items in the result must not have the tags in \code{mustNot}.
+#' @param mustType The type of filtering with the must tags; one of "union" or "intersection".
+#' @param mustNotType The type of filtering with the must not tags; one of "union" or "intersection".
 #' @details
 #' The result is assigned to \code{smrObj$Value}.
 #' This function is based on \code{\link{SMRMonRecommendByProfile}} ("should")
 #' and \code{\link{SMRMonFilterByProfile}} ("must" and "must not").
 #' @return An SMRMon object.
 #' @export
-SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, mustNot = NULL ) {
+SMRMonRetrieveByQueryElements <- function( smrObj,
+                                           should = NULL,
+                                           must = NULL,
+                                           mustNot = NULL,
+                                           mustType = "intersection",
+                                           mustNotType = "union") {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -2163,10 +2175,15 @@ SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, m
 
     mustItems <-
       smrObj %>%
-      SMRMonFilterByProfile( profile = must, type = "intersection" ) %>%
+      SMRMonFilterByProfile( profile = must, type = mustType ) %>%
       SMRMonTakeValue
 
-    if( SMRMonFailureQ(mustItems) ) { return(SMRMonFailureSymbol) }
+    if( is.null(mustItems) || length(mustItems) == 0 ) {
+      warning( "No items were obtained by querying with the must tags.", call. = TRUE)
+      mustItems <- setNames( data.frame( A = NA ), smrObj %>% SMRMonTakeItemColumnName)
+    }
+
+    if( !is.null(mustItems) && SMRMonFailureQ(mustItems) ) { return(SMRMonFailureSymbol) }
 
   } else {
     mustItems <- NULL
@@ -2181,10 +2198,16 @@ SMRMonRetrieveByQueryElements <- function( smrObj, should = NULL, must = NULL, m
 
     mustNotItems <-
       smrObj %>%
-      SMRMonFilterByProfile( profile = mustNot, type = "union" ) %>%
+      SMRMonFilterByProfile( profile = mustNot, type = mustNotType ) %>%
       SMRMonTakeValue
 
-    if( SMRMonFailureQ(mustNotItems) ) { return(SMRMonFailureSymbol) }
+
+    if( length(mustNotItems) == 0 ) {
+      warning( "No items were obtained by querying with the must not tags.", call. = TRUE)
+      mustNotItems <- setNames( data.frame( A = NA ), smrObj %>% SMRMonTakeItemColumnName)
+    }
+
+    if( !is.null(mustNotItems) && SMRMonFailureQ(mustNotItems) ) { return(SMRMonFailureSymbol) }
 
   } else {
     mustNotItems <- NULL
