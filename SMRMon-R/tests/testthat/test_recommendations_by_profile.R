@@ -27,7 +27,7 @@ dfRecsG <-
 ## Recommend by profile character vector.
 chRecs <-
   smrObj %>%
-  SMRMonRecommendByProfile( profile = c( "female", "survived" ), nrecs = 20 ) %>%
+  SMRMonRecommendByProfile( profile = c( "female", "survived" ), nrecs = 20, normalizeQ = F ) %>%
   SMRMonTakeValue
 
 ## This fails with stop-error.
@@ -87,6 +87,7 @@ test_that("Profile recommendations by character vector", {
 
   expect_equivalent( chRecs$Index, dfRecs$Index )
   #expect_equivalent( chRecs, chRecsG )
+  expect_true( sum(chRecs$Score >= 2) >= nrow(chRecs) )
 })
 
 test_that("Profile recommendations by numeric vector", {
