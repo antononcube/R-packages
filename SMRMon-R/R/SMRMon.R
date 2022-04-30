@@ -853,11 +853,13 @@ SMRMonApplyTermWeightFunctions <- function( smrObj, globalWeightFunction = "IDF"
 #' item-and-tag-type pair be summarized or not?
 #' @param nTopTags Number of top tags.
 #' Used when \code{summarizeTagsQ = TRUE}.
+#' @param removeTagTypesFromTagsQ Should the tag type prefixes be removed from the tags or not?
+#' @param sep Separator between tag type and tag in column names of \code{smrObj$M}.
 #' @details The result data frame is assigned to \code{smrObj$Value}.
 #' @return An SMRMon object.
 #' @family Data functions
 #' @export
-SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE, summarizeTagsQ = FALSE, nTopTags = 5 ) {
+SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE, summarizeTagsQ = FALSE, nTopTags = 5, removeTagTypesFromTagsQ = FALSE, sep = ":" ) {
 
   if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
 
@@ -936,6 +938,10 @@ SMRMonGetLongFormData <- function( smrObj, items = NULL, tagTypesQ = TRUE, summa
         dplyr::ungroup()
 
     }
+  }
+
+  if( removeTagTypesFromTagsQ ) {
+    res$Tag <- purrr::map2_chr(res$TagType, res$Tag, function(x,y) gsub(paste0("^", x, sep), "", y))
   }
 
   ## Returned result

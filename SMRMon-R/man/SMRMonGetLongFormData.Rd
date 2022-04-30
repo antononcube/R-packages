@@ -9,7 +9,9 @@ SMRMonGetLongFormData(
   items = NULL,
   tagTypesQ = TRUE,
   summarizeTagsQ = FALSE,
-  nTopTags = 5
+  nTopTags = 5,
+  removeTagTypesFromTagsQ = FALSE,
+  sep = ":"
 )
 }
 \arguments{
@@ -25,6 +27,10 @@ item-and-tag-type pair be summarized or not?}
 
 \item{nTopTags}{Number of top tags.
 Used when \code{summarizeTagsQ = TRUE}.}
+
+\item{removeTagTypesFromTagsQ}{Should the tag type prefixes be removed from the tags or not?}
+
+\item{sep}{Separator between tag type and tag in column names of \code{smrObj$M}.}
 }
 \value{
 An SMRMon object.
