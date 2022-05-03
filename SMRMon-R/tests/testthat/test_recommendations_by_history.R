@@ -25,6 +25,11 @@ dfRecsG <-
   SMRMonGetTopRecommendations( spec = data.frame( Rating = 1, Item = dfTitanic$id[1:3], stringsAsFactors = F), nrecs = 20 ) %>%
   SMRMonTakeValue
 
+dfRecsNULL <-
+  smrObj %>%
+  SMRMonRecommend( history = data.frame( Rating = 1, Item = dfTitanic$id[1], stringsAsFactors = F), nrecs = NULL ) %>%
+  SMRMonTakeValue
+
 ## Recommend by history character vector.
 chRecs <-
   smrObj %>%
@@ -63,6 +68,19 @@ test_that("History recommendations by data frame", {
   expect_true( length( intersect( c("Score", "Index", smrObj %>% SMRMonTakeItemColumnName), colnames(dfRecsG) ) ) == 3 )
 
   expect_equal( dfRecs, dfRecsG )
+})
+
+test_that("History recommendations by data frame, nrecs=NULL", {
+
+  matRecs <- smrObj$M %*% t(smrObj$M[dfTitanic$id[1], , drop=F])
+  matRecs <- matRecs[ rowSums(matRecs) > 0, , drop=F]
+
+  expect_true( nrow(dfRecsNULL) == nrow(matRecs) )
+
+  expect_s3_class( dfRecsNULL, "data.frame" )
+  expect_true( length( intersect( c("Score", "Index", smrObj %>% SMRMonTakeItemColumnName), colnames(dfRecsNULL) ) ) == 3 )
+
+  expect_equal( mean(dfRecsNULL$id %in% rownames(matRecs)), 1 )
 })
 
 test_that("History recommendations by character vector", {
