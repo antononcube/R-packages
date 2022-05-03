@@ -1362,6 +1362,7 @@ SMRMonGetTopRecommendations <- function( smrObj, spec = NULL, nrecs = 12, ... ) 
 #' a numeric vector named elements, the names being items;
 #' a character vector, the correspond ratings assumed all to be 1.
 #' @param nrecs Number of recommendations to be returned.
+#' If NULL all non-zero score items are returned.
 #' @param removeHistoryQ Should the history be removed from the recommendations?
 #' @param normalizeQ Should the scores be normalized by the maximum score or not?
 #' @param warningQ Should a warning be issued if \code{history} is of unknown type?

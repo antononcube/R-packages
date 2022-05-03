@@ -21,7 +21,8 @@ A data frame with columns \code{c("Rating", "Item")};
 a numeric vector named elements, the names being items;
 a character vector, the correspond ratings assumed all to be 1.}
 
-\item{nrecs}{Number of recommendations to be returned.}
+\item{nrecs}{Number of recommendations to be returned.
+If NULL all non-zero score items are returned.}
 
 \item{removeHistoryQ}{Should the history be removed from the recommendations?}
 
