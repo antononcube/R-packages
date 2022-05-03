@@ -19,7 +19,8 @@ SMRRecommendations(
 
 \item{userRatings}{Ratings of the history items.}
 
-\item{nrecs}{Number of recommendations to be returned.}
+\item{nrecs}{Number of recommendations to be returned.
+If NULL all non-zero score items are returned.}
 
 \item{removeHistory}{Should the history be removed from the recommendations?}
 }

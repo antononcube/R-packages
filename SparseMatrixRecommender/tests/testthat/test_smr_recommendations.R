@@ -14,6 +14,8 @@ smr <- SMRCreate( dfMushroom[, c("id", sMatNames)],
 
 historyRecs <- SMRRecommendations( smr = smr, userHistoryItems = c(1, 14, 33), userRatings = c(1), nrecs = 12 )
 
+historyRecsNULL <- SMRRecommendations( smr = smr, userHistoryItems = c(1, 14, 33), userRatings = c(1), nrecs = NULL )
+
 prof <- SMRProfileDF( smr, itemHistory = data.frame( Rating = c(1,1,1), Item = c("1", "14", "33"), stringsAsFactors = F ) )
 
 profRecs12 <- SMRRecommendationsByProfileDF( smr = smr, profile = prof[, c("Score", "Tag")], nrecs = 12 )
@@ -54,6 +56,14 @@ test_that("Recommendations by history expected objects", {
   
 })
 
+test_that("Recommendations by history expected objects, nrecs=NULL", {
+  
+  expect_is( historyRecsNULL, "data.frame" )
+  
+  expect_true( mean( colnames(historyRecsNULL) == c( "Score", "Index", smr$ItemColumnName ) ) == 1 )
+  expect_is( historyRecsNULL[[smr$ItemColumnName]], "character" )
+  
+})
 
 test_that("Recommendations by history errors", {
   expect_error( SMRRecommendations( smr = smr, userHistoryItems = c("a", "b"), userRatings = c(2,3), nrecs = 10 ) )

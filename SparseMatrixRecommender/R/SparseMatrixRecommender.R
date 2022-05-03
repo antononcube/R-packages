@@ -564,6 +564,7 @@ SMRRecommendationsVectorToDF <- function( rvec, history, nrecs, removeHistory ) 
 #' @param userHistoryItems The items the user has consumed / purchased.
 #' @param userRatings Ratings of the history items.
 #' @param nrecs Number of recommendations to be returned.
+#' If NULL all non-zero score items are returned.
 #' @param removeHistory Should the history be removed from the recommendations?
 #' @return A data frame with columns "Score", "Index", \code{smr$ItemColumnName}.
 #' @family Recommendations computation functions
@@ -573,30 +574,42 @@ SMRRecommendations <- function( smr, userHistoryItems, userRatings, nrecs, remov
   if ( class(userHistoryItems) != "integer" && class(userHistoryItems) != "numeric" ) {
     userHistoryItems <- match( userHistoryItems, rownames(smr$M) )
   }
+  
   if ( class(userHistoryItems) != "integer" && class(userHistoryItems) != "numeric" ) {
-    stop("Row ID's (names or indices) are expected for the argument userHistoryItems.", call.=TRUE)
+    stop("Row ID's (names or indices) are expected for the argument userHistoryItems.", call. = TRUE)
   }
+  
   if ( class(userRatings) != "numeric" && class(userRatings) != "integer") {
-    stop("Positive real numbers are expected for the argument userRatings.", call.=TRUE)
+    stop("Positive real numbers are expected for the argument userRatings.", call. = TRUE)
   }
+  
   if ( length(userRatings) < length(userHistoryItems) ) {
     userRatings <- rep( userRatings, length(userHistoryItems) )
   }
+  
   if ( length(userRatings) > length(userHistoryItems) ) {
     userRatings <- userRatings[1:length(userHistoryItems)]
+  }
+  
+  if ( !(is.numeric(nrecs) && nrecs > 0 || is.null(nrecs) ) ) { 
+    stop("The argument nrecs is expected to be a positive integer or NULL.", call. = TRUE)
   }
   
   hvec <- sparseMatrix(i=rep(1,length(userHistoryItems)), j=userHistoryItems, x=userRatings, dims=c(1,dim(smr$M)[1]))
   rvec <- smr$M %*% t(hvec %*% smr$M)
   rvec <- as.array(rvec)
-  recInds <- order(rvec, decreasing = T)[1:(nrecs+length(userHistoryItems))]
+  
+  recInds <- order(rvec, decreasing = T)
+  if( is.numeric(nrecs) ) {
+    recInds <- recInds[1:(nrecs+length(userHistoryItems))]
+  }
   
   if ( removeHistory ) {
     dropInds <- recInds %in% userHistoryItems
     recInds <- recInds[ ! dropInds ]
   }
   
-  if ( nrecs < length(recInds) ) {
+  if ( is.numeric(nrecs) && nrecs < length(recInds) ) {
     recInds <- recInds[1:nrecs]
   }
   recScores <- rvec[ recInds ]
