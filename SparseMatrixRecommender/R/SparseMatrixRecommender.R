@@ -595,13 +595,15 @@ SMRRecommendations <- function( smr, userHistoryItems, userRatings, nrecs, remov
     stop("The argument nrecs is expected to be a positive integer or NULL.", call. = TRUE)
   }
   
-  hvec <- sparseMatrix(i=rep(1,length(userHistoryItems)), j=userHistoryItems, x=userRatings, dims=c(1,dim(smr$M)[1]))
+  hvec <- sparseMatrix( i = rep(1, length(userHistoryItems)), j = userHistoryItems, x = userRatings, dims = c(1, dim(smr$M)[1]) )
   rvec <- smr$M %*% t(hvec %*% smr$M)
   rvec <- as.array(rvec)
   
   recInds <- order(rvec, decreasing = T)
   if( is.numeric(nrecs) ) {
-    recInds <- recInds[1:(nrecs+length(userHistoryItems))]
+    recInds <- recInds[ 1 : (nrecs + length(userHistoryItems)) ]
+  } else {
+    recInds <- recInds[ rvec[recInds] > 0 ]
   }
   
   if ( removeHistory ) {
@@ -610,7 +612,7 @@ SMRRecommendations <- function( smr, userHistoryItems, userRatings, nrecs, remov
   }
   
   if ( is.numeric(nrecs) && nrecs < length(recInds) ) {
-    recInds <- recInds[1:nrecs]
+    recInds <- recInds[ 1 : nrecs ]
   }
   recScores <- rvec[ recInds ]
   
