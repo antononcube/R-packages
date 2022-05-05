@@ -63,6 +63,18 @@ radioButtons( inputId = "progLang",
               selected = "R"
 )
 
+
+hr()
+## Natural language
+radioButtons( inputId = "fromLang", 
+              label = "Natural language:",
+              choices = c(
+                "English" = "English",
+                "Bulgarian" = "Bulgarian"
+              ),
+              selected = "English"
+)
+
 hr()
 ## Parsing into R or not
 checkboxInput( inputId = "parseQ", label = ": parse to R expression?", value = FALSE )
@@ -141,10 +153,17 @@ consURL <-
 queryURL <- 
   reactive({
     query <- list()
+    
     if( input$progLang == "ast") {
       query <- c(query, ast="True")
     } else {
       query <- c(query, lang=input$progLang)
+    }
+    
+    if( input$fromLang == "Bulgarian") {
+      query <- c(query, "from-lang" = "Bulgarian")
+    } else {
+      query <- c(query, "from-lang" = "English")
     }
   })
 ```
