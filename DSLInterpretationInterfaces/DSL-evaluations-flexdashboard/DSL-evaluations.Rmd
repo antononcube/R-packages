@@ -49,30 +49,31 @@ radioButtons( inputId = "translatorType",
 )
 
 hr()
-## Programming language
-radioButtons( inputId = "progLang", 
-              label = "Programming language:",
-              choices = c(
-                # "Abstract Syntax Trees" = "ast",
-                # "Julia" = "Julia",
-                "Python" = "Python",
-                "R" = "R",
-                "Raku" = "Raku",
-                "Wolfram Language" = "WL"
-              ),
-              selected = "R"
-)
-
-
-hr()
-## Natural language
+## From language
 radioButtons( inputId = "fromLang", 
-              label = "Natural language:",
+              label = "From language:",
               choices = c(
                 "English" = "English",
                 "Bulgarian" = "Bulgarian"
               ),
               selected = "English"
+)
+hr()
+## To language
+radioButtons( inputId = "toLang", 
+              label = "To language:",
+              choices = c(
+                # "Abstract Syntax Trees" = "ast",
+                # "Julia" = "Julia",
+                "Bulgarian" = "Bulgarian",
+                "English" = "English",
+                "Python" = "Python",
+                "R" = "R",
+                "Raku" = "Raku",
+                "Russian" = "Russian",
+                "Wolfram Language" = "WL"
+              ),
+              selected = "R"
 )
 
 hr()
@@ -154,10 +155,10 @@ queryURL <-
   reactive({
     query <- list()
     
-    if( input$progLang == "ast") {
+    if( input$toLang == "ast") {
       query <- c(query, ast="True")
     } else {
-      query <- c(query, lang=input$progLang)
+      query <- c(query, lang=input$toLang)
     }
     
     if( input$fromLang == "Bulgarian") {
