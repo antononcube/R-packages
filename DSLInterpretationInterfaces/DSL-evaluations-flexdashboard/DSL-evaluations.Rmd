@@ -53,8 +53,8 @@ hr()
 radioButtons( inputId = "fromLang", 
               label = "From language:",
               choices = c(
-                "English" = "English",
-                "Bulgarian" = "Bulgarian"
+                "Bulgarian" = "Bulgarian",
+                "English" = "English"
               ),
               selected = "English"
 )
@@ -309,6 +309,7 @@ show top confusions, misclassified examples, least certain examples;
 ### Data wrangling
 
 ```
+DSL MODULE DataQuery;
 DSL TARGET R::tidyverse;
 use data dfMeals; 
 inner join with dfFinelyFoodName over FOODID; 
@@ -317,6 +318,7 @@ show counts
 ```
 
 ```
+DSL MODULE DataQuery;
 DSL TARGET R;
 use dfTitanic;
 delete missing;
@@ -325,6 +327,7 @@ cross tabulate 'passengerClass', 'passengerSurvival' over 'passengerAge';
 ```
 
 ```
+DSL MODULE DataQuery;
 DSL TARGET Python::pandas;
 use dfTitanic;
 delete missing;
@@ -335,6 +338,7 @@ cross tabulate 'passengerClass', 'passengerSurvival' over 'passengerAge';
 ###  Epidemiologic Modeling
 
 ```
+DSL MODULE ECMMon;
 create with the model susceptible exposed infected two hospitalized recovered;
 assign 100000 to the susceptible population;
 set infected normally symptomatic population to be 0;
@@ -365,6 +369,7 @@ See [LSAMon-R at GitHub](https://github.com/antononcube/R-packages/tree/master/L
 ### Quantile Regression
 
 ```
+DSL MODULE QuantileRegression;
 DSL TARGET WL::QRMon;
 use dfTemperatureData;
 echo data summary;
@@ -379,6 +384,7 @@ See [QRMon-R at GitHub](https://github.com/antononcube/QRMon-R).
 ### Recommendation
 
 ```
+DSL MODULE Recommendations;
 DSL TARGET R::SMRMon;
 create from dfTitanic;
 make recommender;
