@@ -156,17 +156,6 @@ textAreaInput( inputId = "userText",
                placeholder = "It is 34 degrees hot on September 5th.", 
                value = "It is 34 degrees hot on September 5th.",
                width = "100%", rows = 20 )
-
-userText <- 
-  reactive({
-    
-    if( nchar(input$userText) == 0) { 
-      NULL 
-    } else {
-      input$userCommands
-    }
-    
-  })
 ```
 
 
@@ -189,14 +178,27 @@ question <-
 ```
 
 ```{r}
-consURLQuery <- 
+iconvUserText <- 
   reactive({
-    list( text = gsub( '"', '\'', iconv(input$userText, from = "", to = "UTF-8", sub = '')), question = question(), nAnswers = input$numberOfAnswers, performanceGoal = input$qualityPerformanceGoal )
+    iconv(input$userText, from = "", to = "UTF-8", sub = '')
   })
 ```
 
 ```{r}
-renderPrint( expr = DSLWebServiceInterpretationURL( command = NULL, url = consURL(), query = consURLQuery() ) )
+queryURL <- 
+  reactive({
+    query <- list()
+    
+    query <- c(query, nAnswers=input$numberOfAnswers)
+    query <- c(query, performanceGoal=input$qualityPerformanceGoal)
+    query <- c(query, question=question())
+    query <- c(query, text=iconvUserText())
+    
+  })
+```
+
+```{r}
+renderPrint( expr = DSLWebServiceInterpretationURL( command = NULL, url = consURL(), query = queryURL() ) )
 ```
 
 
@@ -216,7 +218,7 @@ observeEvent(input$submitButton, {
     
   } else {
     
-    dwsResp <- InterpretByDSLWebService( command = NULL, url = consURL(), query = consURLQuery() )
+    dwsResp <- InterpretByDSLWebService( command = NULL, url = consURL(), query = queryURL() )
 
     if ( dwsResp$Success ) {
       
