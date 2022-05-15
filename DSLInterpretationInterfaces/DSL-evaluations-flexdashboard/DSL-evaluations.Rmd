@@ -53,10 +53,11 @@ hr()
 radioButtons( inputId = "fromLang", 
               label = "From language:",
               choices = c(
+                "Automatic" = "Automatic",
                 "Bulgarian" = "Bulgarian",
                 "English" = "English"
               ),
-              selected = "English"
+              selected = "Automatic"
 )
 hr()
 ## To language
@@ -161,11 +162,7 @@ queryURL <-
       query <- c(query, lang=input$toLang)
     }
     
-    if( input$fromLang == "Bulgarian") {
-      query <- c(query, "from-lang" = "Bulgarian")
-    } else {
-      query <- c(query, "from-lang" = "English")
-    }
+    query <- c(query, "from-lang" = input$fromLang)
   })
 ```
 
@@ -296,6 +293,7 @@ show classifier confusion matrix plot, ROCCurve;
 ```
 
 ```
+DSL MODULE ClassificationWorkflows;
 DSL TARGET WL::System;
 use dfTitanic;
 split data with fraction 0.8;
