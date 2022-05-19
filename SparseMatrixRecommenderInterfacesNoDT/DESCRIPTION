@@ -18,6 +18,7 @@ Imports:
     SparseMatrixRecommender,
     dplyr,
     SMRMon,
+    LSAMon,
     ggplot2,
     Matrix,
     RcppRoll,
