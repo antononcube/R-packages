@@ -2808,4 +2808,83 @@ SMRMonFindAnomalies <- function( smrObj,
 }
 
 
+##===========================================================
+## Extend with by nearest neighbors sub-matrix
+##===========================================================
+
+#' Enhance with nearest neighbors sub-matrix
+#' @description Enhances the given SMR object with nearest neighbors sub-matrix.
+#' @param smrObj An SMRMon object.
+#' @param tagTypes Tag types to use make compute the similarities.
+#' @param numberOfNearestNeighbors Number of nearest neighbors per item.
+#' @param batchSize Batch size to use for the computations
+#' @return An SMRMon object.
+#' @export
+SMRMonEnhanceWithNearestNeighbors <- function( smrObj, tagTypes = NULL, numberOfNearestNeighbors = 20, batchSize = NULL ) {
+
+  if( SMRMonFailureQ(smrObj) ) { return(SMRMonFailureSymbol) }
+
+  ## Filter tag types
+  if( is.character(tagTypes) ) {
+    smrRes <-
+      smrObj %>%
+      SMRRemoveTagTypes( removeTagTypes = setdiff( smrObj %>% SMRMonTakeTagTypes, tagTypes))
+  } else {
+    smrRes <- smrObj
+  }
+
+  ## Similarities computations
+  if ( is.null(batchSize) || !(is.numeric(batchSize) && batchSize > 0) ) {
+
+    # cat("Whole matrix \"batch\" size: ", nrow(smrObj$M), "\n")
+
+    dfNNs <-
+      smrRes %>%
+      SMRMonBatchRecommend(data = NULL,
+                           nrecs = numberOfNearestNeighbors + 1, removeHistoryQ = FALSE,
+                           normalizeQ = TRUE, targetColumnName = "SearchID") %>%
+      SMRMonTakeValue
+
+
+  } else {
+
+    # cat("Using batch size: ", batchSize, "\n")
+
+    lsNames <- rownames(smrRes$M)
+    lsNameSubLists <- split(lsNames, ceiling(seq_along(lsNames)/batchSize))
+
+    # print(purrr::map_int( lsNameSubLists, length))
+
+    # Dealing with dimension dropping. (SMRMonBatchRecommend should handle it but still...)
+    if ( length(lsNameSubLists[length(lsNameSubLists)]) == 1 ) {
+      lsNameSubLists[[length(lsNameSubLists)-1]] <- c(lsNameSubLists[[length(lsNameSubLists)-1]], lsNameSubLists[[length(lsNameSubLists)]])
+      lsNameSubLists <- lsNameSubLists[1:(length(lsNameSubLists)-1)]
+    }
+
+    system.time(
+      dfNNs <-
+        purrr::map_df( lsNameSubLists, function(x) {
+
+          smrRes %>%
+            SMRMonBatchRecommend(data = x,
+                                 nrecs = numberOfNearestNeighbors + 1, removeHistoryQ = FALSE,
+                                 normalizeQ = TRUE, targetColumnName = "SearchID") %>%
+            SMRMonTakeValue
+
+        })
+    )
+
+  }
+
+  ## Annex sub-matrix
+  smatNNs <- xtabs( as.formula( paste0( "Score ~ SearchID + ", smrObj$ItemColumnName)), dfNNs, sparse = T )
+  rownames(smatNNs) <- gsub( paste0(smrObj$ItemColumnName, ":"), "", rownames(smatNNs))
+
+  smrRes <-
+    smrObj %>%
+    SMRAnnexSubMatrix( newSubMat = smatNNs, newTagType = smrObj$ItemColumnName, imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = F)
+
+  ## Result
+  smrRes
+}
 
