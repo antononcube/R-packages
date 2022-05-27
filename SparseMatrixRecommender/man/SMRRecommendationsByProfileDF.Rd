@@ -9,7 +9,7 @@ SMRRecommendationsByProfileDF(smr, profile, nrecs)
 \arguments{
 \item{smr}{A sparse matrix recommender.}
 
-\item{profile}{A data frame of scored tags, profile of a user with column names c( "Score", "Tag" | "Index" )/}
+\item{profile}{A data frame of scored tags, profile of a user with column names c( "Score", "Tag" | "Index" ).}
 
 \item{nrecs}{Number of recommendations to be returned,}
 }
