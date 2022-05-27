@@ -653,14 +653,16 @@ SMRRecommendationsDF <- function( smr, history, nrecs, removeHistory=TRUE ) {
 #' Recommendations using a profile data frame
 #' @description Recommend items based on a sparse matrix and a specified profile.
 #' @param smr A sparse matrix recommender.
-#' @param profile A data frame of scored tags, profile of a user with column names c( "Score", "Tag" | "Index" )/
+#' @param profile A data frame of scored tags, profile of a user with column names c( "Score", "Tag" | "Index" ).
 #' @param nrecs Number of recommendations to be returned,
 #' @return A data frame with columns \code{ c("Score", "Index", smr$ItemColumnName)}.
 #' @family Recommendations computation functions
 #' @export
 SMRRecommendationsByProfileDF <- function( smr, profile, nrecs ) {
-  if ( names(profile) == c( "Tag", "Score" ) || names(profile) == c( "Index", "Score" ) ) {
-    profile <- profile[,c(2,1)]
+  if ( length(intersect(names(profile), c( "Tag", "Score" ))) == 2 || length(intersect(names(profile), c( "Index", "Score" ))) == 2 ) {
+    profile <- profile[,c("Score", "Tag")]
+  } else {
+    stop("The argument profile is expected to be data frame or matrix with column names c( \"Score\", \"Tag\" | \"Index\" ).")
   }
   if ( is.numeric( profile[,2] ) ) {
     res <- SMRRecommendationsByProfile( smr, profile[,2], profile[,1], nrecs )
