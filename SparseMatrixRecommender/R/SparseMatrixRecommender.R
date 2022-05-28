@@ -660,18 +660,18 @@ SMRRecommendationsDF <- function( smr, history, nrecs, removeHistory=TRUE ) {
 #' @export
 SMRRecommendationsByProfileDF <- function( smr, profile, nrecs ) {
   if ( length(intersect(names(profile), c( "Tag", "Score" ))) == 2 || length(intersect(names(profile), c( "Index", "Score" ))) == 2 ) {
-    profile <- profile[,c("Score", "Tag")]
+    profile <- profile[,c("Score", setdiff(names(profile), "Score"))]
   } else {
-    stop("The argument profile is expected to be data frame or matrix with column names c( \"Score\", \"Tag\" | \"Index\" ).")
+    stop("The argument profile is expected to be a data frame with column names c( \"Score\", \"Tag\" | \"Index\" ).")
   }
   if ( is.numeric( profile[,2] ) ) {
-    res <- SMRRecommendationsByProfile( smr, profile[,2], profile[,1], nrecs )
+    res <- SMRRecommendationsByProfile( smr = smr, profileInds = profile[, 2], profileRatings = profile[, 1], nrecs = nrecs )
   } else {
-    inds <- match(  profile[,2], colnames( smr$M ) )
+    inds <- match( profile[,2], colnames( smr$M ) )
     if (  NA %in% inds ) {
       stop("Some of the tags are not in the sparse matrix recommender object.")
     }
-    res <- SMRRecommendationsByProfile( smr, inds, profile[,1], nrecs )
+    res <- SMRRecommendationsByProfile( smr = smr, profileInds = inds, profileRatings = profile[,1], nrecs )
   }
   res
 }
@@ -686,8 +686,8 @@ SMRRecommendationsByProfileDF <- function( smr, profile, nrecs ) {
 #' @family Recommendations computation functions
 #' @export
 SMRRecommendationsByProfile <- function( smr, profileInds, profileRatings, nrecs ) {
-  pvec <- sparseMatrix(i=rep(1,length(profileInds)), j=profileInds, x=profileRatings, dims=c(1,dim(smr$M)[2]))
-  SMRRecommendationsByProfileVector( smr, pvec, nrecs )
+  pvec <- sparseMatrix(i = rep(1, length(profileInds)), j = profileInds, x = profileRatings, dims = c(1, ncol(smr$M) ))
+  SMRRecommendationsByProfileVector( smr = smr, profileVec = pvec, nrecs = nrecs )
 }
 
 #' Recommendations by profile vector
