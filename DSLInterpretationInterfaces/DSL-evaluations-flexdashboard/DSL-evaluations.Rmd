@@ -104,13 +104,13 @@ textAreaInput( inputId = "userCommands",
                label = "Commands:",
                placeholder = "DSL TARGET R::tidyverse;
 use data dfMeals; 
-inner join with dfFinelyFoodName over FOODID; 
+inner join with dfFinelyFoodName over 'FoodID'; 
 group by 'Cuisine';
 counts", 
 value = "
-DSL TARGET R::tidyverse;
+DSL MODULE DataQuery;
 use data dfMeals; 
-inner join with dfFinelyFoodName over FOODID; 
+inner join with dfFinelyFoodName over 'FoodID'; 
 group by 'Cuisine';
 counts",
 width = "100%", rows = 8 )
