@@ -16,7 +16,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 ## Written by Anton Antonov,
-## antononcube @@@ gmail ... com,
+## ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ,
 ## Windermere, Florida, USA.
 ##===========================================================
 
@@ -734,13 +734,13 @@ LSAMonMakeDocumentTermMatrix <- function( lsaObj, splitPattern = "[[:space:]]|[[
   }
 
   if( is.character(stemRules) && !is.character(names(stemRules)) ) {
-    warning("If the argument stemRules is a character vector it is expected to be with named elements.", call. = TRUE )
+    warning("If the argument stemRules is a character vector, then it is expected to be with named elements.", call. = TRUE )
     return(LSAMonFailureSymbol)
   }
 
   ## Should this message be given?
   if( is.logical(stemWordsQ) && !stemWordsQ && is.character(stemRules) ) {
-    warning("The argument is stemWordsQ is FALSE, but the agrument stemRules is not NULL. Continuing by without stemming.", call. = TRUE )
+    warning("The argument stemWordsQ is FALSE, but the agrument stemRules is not NULL. Continuing without stemming.", call. = TRUE )
     stemRules <- NULL
   }
 
