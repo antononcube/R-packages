@@ -20,6 +20,7 @@ NULL
 #' If \code{stemWordsQ = FALSE} then \code{stemRules} is ignored.
 #' @param stopWords A character vector with stop words to be removed.
 #' @param numberOfTopics Number of topics to be extracted.
+#' If less or equal to 0 no topic extraction is made.
 #' @param minNumberOfDocumentsPerTerm Minimal number of documents for the terms
 #' to be considered in the topics.
 #' @param sep Separator of tag type and tag in the columns \code{smr$M}.
@@ -36,7 +37,7 @@ SMRMonToLSAMon <- function(smr,
                            minNumberOfDocumentsPerTerm = 0,
                            sep = ":") {
 
-  dfSMat <- smr %>% SMRMonGetLongFormData %>% SMRMonTakeValue
+  dfSMat <- smr %>% SMRMonGetLongFormData(tagTypesQ = T, removeTagTypesFromTagsQ = F) %>% SMRMonTakeValue
 
   dfSMat <- setNames(dfSMat, c("Item", "TagType", "Tag", "Value"))
 
@@ -59,10 +60,15 @@ SMRMonToLSAMon <- function(smr,
                                  stopWords = stopWords ) %>%
     LSAMonApplyTermWeightFunctions(globalWeightFunction = "IDF",
                                    localWeightFunction = "None",
-                                   normalizerFunction = "Cosine") %>%
-    LSAMonExtractTopics( numberOfTopics = numberOfTopics,
-                         method = "SVD",
-                         minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm)
+                                   normalizerFunction = "Cosine")
+
+  if ( numberOfTopics <= 0 ) {
+    lsaObj <-
+      lsObj %>%
+      LSAMonExtractTopics( numberOfTopics = numberOfTopics,
+                           method = "SVD",
+                           minNumberOfDocumentsPerTerm = minNumberOfDocumentsPerTerm)
+  }
 
   lsaObj
 }

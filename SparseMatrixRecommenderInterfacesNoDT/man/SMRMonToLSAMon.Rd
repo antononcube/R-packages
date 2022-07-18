@@ -31,7 +31,8 @@ If \code{stemWordsQ = FALSE} then \code{stemRules} is ignored.}
 
 \item{stopWords}{A character vector with stop words to be removed.}
 
-\item{numberOfTopics}{Number of topics to be extracted.}
+\item{numberOfTopics}{Number of topics to be extracted.
+If less or equal to 0 no topic extraction is made.}
 
 \item{minNumberOfDocumentsPerTerm}{Minimal number of documents for the terms
 to be considered in the topics.}
