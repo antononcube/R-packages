@@ -1,0 +1,49 @@
+---
+title: "Derive LSA object from SMR object"
+author: Anton Antonov
+date: 2022-07-18
+output: html_notebook
+---
+
+```{r}
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(LSAMon)
+library(SparseMatrixRecommenderInterfacesNoDT)
+```
+
+
+# Make SMR object
+
+```{r}
+smrObj <- 
+  SMRMonUnit(dfMushroom) %>% 
+  SMRMonCreate 
+smrObj %>% SMRMonTakeTagTypeRanges
+```
+
+-----
+
+# Make LSA object
+
+
+```{r}
+system.time(
+  lsaObj <- 
+    smrObj %>% 
+    SparseMatrixRecommenderInterfacesNoDT::SMRMonToLSAMon(stemWordsQ = FALSE, 
+                                                          stopWords = c(),
+                                                          numberOfTopics = 20, 
+                                                          minNumberOfDocumentsPerTerm = 100) 
+)
+```
+
+```{r}
+colnames(lsaObj %>% LSAMonTakeDocumentTermMatrix)
+```
+
+```{r}
+rownames(lsaObj %>% LSAMonTakeDocumentTermMatrix)
+```
+
+
