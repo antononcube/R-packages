@@ -62,7 +62,7 @@ SMRMonToLSAMon <- function(smr,
                                    localWeightFunction = "None",
                                    normalizerFunction = "Cosine")
 
-  if ( numberOfTopics <= 0 ) {
+  if ( numberOfTopics > 0 ) {
     lsaObj <-
       lsObj %>%
       LSAMonExtractTopics( numberOfTopics = numberOfTopics,
