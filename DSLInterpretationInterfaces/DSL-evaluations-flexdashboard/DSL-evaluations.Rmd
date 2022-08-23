@@ -68,10 +68,12 @@ radioButtons( inputId = "toLang",
                 # "Julia" = "Julia",
                 "Bulgarian" = "Bulgarian",
                 "English" = "English",
+                "Korean" = "Korean",
                 "Python" = "Python",
                 "R" = "R",
                 "Raku" = "Raku",
                 "Russian" = "Russian",
+                "Spanish" = "Spanish",
                 "Wolfram Language" = "WL"
               ),
               selected = "R"
