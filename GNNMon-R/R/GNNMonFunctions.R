@@ -220,6 +220,10 @@ GNNMonOption <- function( gnnObj, f ) {
 ## Data setter
 ##===========================================================
 
+SparseMatrixQ <- function(x) {
+  sum(c("dgCMatrix", "dgRMatrix", "dgTMatrix") %in% class(x)) > 0
+}
+
 #' Set Data.
 #' @description Sets Data into the monad object.
 #' @param gnnObj An GNNMon object.
@@ -231,7 +235,7 @@ GNNMonSetData <- function( gnnObj, Data ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
-  if( !( is.null(Data) || is.matrix(Data)) ) {
+  if( !( is.null(Data) || is.matrix(Data) || SparseMatrixQ(Data) ) ) {
     warning("The argument Data is expected to be NULL or a matrix.", call. = TRUE)
     return(GNNMonFailureSymbol)
   }
@@ -618,7 +622,7 @@ GNNMonComputeMatrixDistances <- function( gnnObj, point, method = "euclidean" ) 
   smat <- gnnObj %>% GNNMonTakeData
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
-  smat <- as( smat, "sparseMatrix" )
+  smat <- as( smat, "dgCMatrix" )
 
   if( !( is.numeric(point) && length(point) == ncol(smat) ) ) {
     warning( paste0( "The argument vec is expected to a numeric vector with length that equals ncol(gnnObj$Data), ", ncol(smat), "." ),
@@ -633,24 +637,24 @@ GNNMonComputeMatrixDistances <- function( gnnObj, point, method = "euclidean" ) 
 
     ## From the pattern matrix and the "mean" vector
     ## Compute the subtraction sparse matrix.
-    smatVec <- t( t(smat01) * point )
+    smatVec <- Matrix::t( Matrix::t(smat01) * point )
     #print( length(smatVec@x) / length(smatVec) )
 
     ## Find the Euclidean-distance residuals.
-    vecRes <- sum( point * point ) - rowSums( smatVec * smatVec )
+    vecRes <- sum( point * point ) - Matrix::rowSums( smatVec * smatVec )
 
     ## Compute the overall differences.
     m <- ( smat - smatVec )
-    m <- rowSums( m * m ) + vecRes
+    m <- Matrix::rowSums( m * m ) + vecRes
 
     ## Result.
     res <- sqrt(m)
 
   } else if ( tolower(method) %in% c( "cosine", "cosinedistance" ) ) {
 
-    smat <- Diagonal( x = 1 / sqrt( rowSums( smat * smat ) ) ) %*% smat
+    smat <- Matrix::Diagonal( x = 1 / sqrt( Matrix::rowSums( smat * smat ) ) ) %*% smat
 
-    ## This can be optmized with by making point a sparse matrix first.
+    ## This can be optimized with by making point a sparse matrix first.
     point <- point / sqrt( sum( point * point ) )
 
     res <- 1 - smat %*% point
@@ -857,8 +861,8 @@ GNNMonClassify <- function( gnnObj, points = NULL ) {
     points <- as.matrix( points )
   }
 
-  if( !( is.matrix(points) && ncol(points) == ncol(data) ) ) {
-    warning( "The argument points is expected to be a matrix with number of columns that equals ncol(gnnObj$Data).", call. = TRUE )
+  if( !( ( is.matrix(points) || SparseMatrixQ(points) ) && ncol(points) == ncol(data) ) ) {
+    warning( "The argument points is expected to be a matrix or a sparse matrix with number of columns that equals ncol(gnnObj$Data).", call. = TRUE )
     return(GNNMonFailureSymbol)
   }
 
