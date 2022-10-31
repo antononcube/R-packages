@@ -3,6 +3,7 @@
 export(GNNMonClassify)
 export(GNNMonComputeMatrixDistances)
 export(GNNMonComputeNearestNeighborDistances)
+export(GNNMonComputeProximityMatrix)
 export(GNNMonComputeThresholds)
 export(GNNMonEchoFunctionValue)
 export(GNNMonEchoValue)

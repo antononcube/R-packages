@@ -910,15 +910,44 @@ GNNMonClassify <- function( gnnObj, points = NULL ) {
 #' @export
 GNNMonComputeProximityMatrix <- function( gnnObj, n = NULL ) {
 
-
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
   dfNNDists <- gnnObj %>% GNNMonTakeNearestNeighborDistances
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
+  if ( is.null(n) ) {
+    n <-
+      gnnObj %>%
+      GNNMonTakeNearestNeighborDistances %>%
+      dplyr::count(SearchIndex) %>%
+      dplyr::pull(n) %>%
+      min
+
+    if ( n < 2 ) {
+      warning("Too few automatically derived nearest neighbors (less than 2.)", call. = TRUE)
+      return(GNNMonFailureSymbol)
+    }
+  }
+
+  if ( n < 2 ) {
+    warning("The argument n is expected to be an integer greater than 1.", call. = TRUE)
+    return(GNNMonFailureSymbol)
+  }
+
+  # Cross tabulate
+  matProx <- xtabs( formula = Distance ~ SearchID + ID, data = dfNNDists, sparse = TRUE)
+
+  # Breaks
+  lsBreaks <- setNames(quantile(matProx@x, seq(0, 1, 1/(n-1))), NULL)
+
+  # Convert distance into proximity scores
+  matProx@x <- findInterval(x = matProx@x, vec = lsBreaks, all.inside = F)
+  m <- max(matProx@x)
+  m2 <- m*m
+  matProx@x <- (m2 + matProx@x - m * matProx@x) / m2
 
   ## Result
-  gnnObj$Value <- dfDists
+  gnnObj$Value <- matProx
 
   gnnObj
 }

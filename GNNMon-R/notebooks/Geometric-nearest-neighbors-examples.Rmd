@@ -21,6 +21,7 @@ library(Matrix)
 library(ggplot2)
 library(OutlierIdentifiers)
 library(GNNMon)
+#devtools::load_all()
 ```
 
 
@@ -41,6 +42,8 @@ That package uses the outlier identifiers package
 [`OutlierIdentifiers`](https://github.com/antononcube/R-packages/tree/master/OutlierIdentifiers), 
 [AAp2].
 
+--------
+
 # Data
 
 Here we generate random 2D points (a matrix with two columns):
@@ -49,6 +52,7 @@ Here we generate random 2D points (a matrix with two columns):
 set.seed(234)
 data <- matrix( c( rnorm( n = 30, mean = 0, sd = 5 ), rnorm( n = 30, mean = 12, sd = 3) ), ncol = 2 )
 colnames(data) <- c("X", "Y")
+#rownames(data) <- paste0("p", formatC(1:nrow(data), digits = 2, flag = "0"))
 data
 ```
 
@@ -96,6 +100,8 @@ ggplot( cbind( gnnObj %>% GNNMonTakeData, gnnObj %>% GNNMonTakeValue ) ) +
   ggtitle( label = "Monad's object set of points", subtitle = "Colored according to their \"belonging\" to the set")
 ```
 
+--------
+
 # Nearest neighbors for new, "external" points
 
 Here we make a data frame with two new points:
@@ -123,6 +129,8 @@ gnnObj %>%
   GNNMonTakeValue
 ```
 
+--------
+
 # Classification
 
 Here we classify the two new points and a point monad's object into TRUE and FALSE according to are they considered to belong to the set points in the monad object:
@@ -134,6 +142,19 @@ gnnObj %>%
 ```
 
 (Compare the result above with the plot above.)
+
+--------
+
+# Proximity matrix
+
+
+```{r}
+gnnObj %>% 
+  GNNMonComputeProximityMatrix() %>% 
+  GNNMonTakeValue
+```
+
+--------
 
 # References
 

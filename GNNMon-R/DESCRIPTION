@@ -12,7 +12,7 @@ Language: en-US
 Encoding: UTF-8
 LazyData: true
 URL: https://github.com/antononcube/R-packages/tree/master/GNNMon-R
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.1
 Imports:
     magrittr,
     purrr,
