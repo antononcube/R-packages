@@ -21,7 +21,6 @@ library(Matrix)
 library(ggplot2)
 library(OutlierIdentifiers)
 library(GNNMon)
-#devtools::load_all()
 ```
 
 
@@ -149,9 +148,11 @@ gnnObj %>%
 
 
 ```{r}
-gnnObj %>% 
-  GNNMonComputeProximityMatrix() %>% 
-  GNNMonTakeValue
+Matrix::image(
+  gnnObj %>% 
+    GNNMonComputeProximityMatrix() %>% 
+    GNNMonTakeValue
+)
 ```
 
 --------
