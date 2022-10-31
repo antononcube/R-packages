@@ -32,7 +32,7 @@
 ## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ##
 ## Written by Anton Antonov,
-## antononcube@gmail.com,
+## ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ,
 ## Windermere, Florida, USA.
 ##
 ##=======================================================================================
@@ -238,6 +238,10 @@ GNNMonSetData <- function( gnnObj, Data ) {
   if( !( is.null(Data) || is.matrix(Data) || SparseMatrixQ(Data) ) ) {
     warning("The argument Data is expected to be NULL or a matrix.", call. = TRUE)
     return(GNNMonFailureSymbol)
+  }
+
+  if( is.null(rownames(Data)) ) {
+    rownames(Data) <- paste0("p", formatC(1:nrow(Data), digits = ceiling(log10(nrow(Data))), flag = "0"))
   }
 
   gnnObj$Data <- Data
@@ -702,7 +706,9 @@ GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, method =
     purrr::map_df( 1:nrow(data), function(i) {
       pvec <- data[i,,drop=F]
       recs <- gnnObj %>% GNNMonComputeMatrixDistances( point = as.numeric(pvec) ) %>% GNNMonTakeValue
-      data.frame( SearchIndex = i, Distance = sort(recs)[ 2 : min(length(recs), nTopNNs+1 ) ] )
+      recs <- sort(recs)[ 2 : min(length(recs), nTopNNs+1 ) ]
+      recNames <- names(recs)
+      data.frame( SearchID = rownames(data)[[i]], SearchIndex = i, ID = recNames, Distance = setNames(recs, NULL) )
     } )
 
   gnnObj$NearestNeighborDistances <- dfDists
@@ -887,5 +893,35 @@ GNNMonClassify <- function( gnnObj, points = NULL ) {
 
   gnnObj
 }
+
+
+##===========================================================
+## GNNMonComputeProximityMatrix
+##===========================================================
+
+#' Compute proximity matrix.
+#' @description  Computes the proximity (similarity) matrix using the matrix
+#' \code{gnnObj$NearestNeighborDistances}.
+#' @param gnnObj A GNNMon object
+#' @param n Number of nearest neighbors.
+#' @details
+#' The result is assigned to \code{gnnObj$Value}.
+#' @return A GNNMon object
+#' @export
+GNNMonComputeProximityMatrix <- function( gnnObj, n = NULL ) {
+
+
+  if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
+
+  dfNNDists <- gnnObj %>% GNNMonTakeNearestNeighborDistances
+  if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
+
+
+  ## Result
+  gnnObj$Value <- dfDists
+
+  gnnObj
+}
+
 
 
