@@ -148,12 +148,14 @@ gnnObj %>%
 
 
 ```{r}
-Matrix::image(
+matProx <- 
   gnnObj %>% 
-    GNNMonComputeProximityMatrix() %>% 
-    GNNMonTakeValue
-)
+  GNNMonComputeProximityMatrix() %>% 
+  GNNMonTakeValue
+
+Matrix::image(matProx)
 ```
+
 
 --------
 

@@ -938,17 +938,25 @@ GNNMonComputeProximityMatrix <- function( gnnObj, n = NULL ) {
     return(GNNMonFailureSymbol)
   }
 
+  # Add diagonal
+  lsIDs <- unique(dfNNDists$SearchID)
+  dfNNDists <- rbind(dfNNDists[, c("SearchID", "ID", "Distance")],
+                     data.frame( SearchID = lsIDs, ID = lsIDs, Distance = 0))
+
   # Cross tabulate
   matProx <- xtabs( formula = Distance ~ SearchID + ID, data = dfNNDists, sparse = TRUE)
 
   # Breaks
-  lsBreaks <- setNames(quantile(matProx@x, seq(0, 1, 1/n)), NULL)
+  lsBreaks <- setNames(quantile(matProx@x[matProx@x > 0], seq(0, 1, 1/n)), NULL)
 
   # Convert distance into proximity scores
   matProx@x <- findInterval(x = matProx@x, vec = lsBreaks, all.inside = F)
   m <- max(matProx@x)
   m2 <- m*m
   matProx@x <- (m2 + matProx@x - m * matProx@x) / m2
+
+  # Proper diagonal
+  matProx <- Reduce( f = function(m, i) { m[i, i] <- 1; m }, init = matProx, x = 1:nrow(matProx))
 
   ## Result
   gnnObj$Value <- matProx
