@@ -923,14 +923,18 @@ GNNMonComputeProximityMatrix <- function( gnnObj, n = NULL ) {
       dplyr::pull(n) %>%
       min
 
-    if ( n < 2 ) {
-      warning("Too few automatically derived nearest neighbors (less than 2.)", call. = TRUE)
+    n <- round(n)
+
+    if ( n < 1 ) {
+      warning("Too few automatically derived nearest neighbors (less than 1.)", call. = TRUE)
       return(GNNMonFailureSymbol)
     }
   }
 
-  if ( n < 2 ) {
-    warning("The argument n is expected to be an integer greater than 1.", call. = TRUE)
+  n <- round(n)
+
+  if ( n < 1 ) {
+    warning("The argument n is expected to be an integer greater than 0.", call. = TRUE)
     return(GNNMonFailureSymbol)
   }
 
@@ -938,7 +942,7 @@ GNNMonComputeProximityMatrix <- function( gnnObj, n = NULL ) {
   matProx <- xtabs( formula = Distance ~ SearchID + ID, data = dfNNDists, sparse = TRUE)
 
   # Breaks
-  lsBreaks <- setNames(quantile(matProx@x, seq(0, 1, 1/(n-1))), NULL)
+  lsBreaks <- setNames(quantile(matProx@x, seq(0, 1, 1/n)), NULL)
 
   # Convert distance into proximity scores
   matProx@x <- findInterval(x = matProx@x, vec = lsBreaks, all.inside = F)
