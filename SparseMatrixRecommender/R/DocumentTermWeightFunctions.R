@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # Written by Anton Antonov,
-# antononcube @ gmail . com,
+# ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ,
 # Windermere, Florida, USA.
 #
 
@@ -254,6 +254,11 @@ SMRApplyTermWeightFunctions <- function( docTermMat, globalWeightFunction = NULL
     }
   }
 
+  # Make sure the column names are preserved.
+  if (is.character(colnames(docTermMat)) ) {
+    colnames(mat) <- colnames(docTermMat)
+  }
+  
   # Result.
   mat
 }
