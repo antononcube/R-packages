@@ -826,7 +826,7 @@ SMRMonApplyTermWeightFunctions <- function( smrObj, globalWeightFunction = "IDF"
   smats <-
     purrr::map( setNames( smrObj %>% SMRMonTakeTagTypes, smrObj %>% SMRMonTakeTagTypes), function(tt) {
 
-      SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = SMRSubMatrix( smr = smrObj, tagType = tt ),
+      SparseMatrixRecommender::SMRApplyTermWeightFunctions( docTermMat = SparseMatrixRecommender::SMRSubMatrix( smr = smrObj, tagType = tt ),
                                                             globalWeightFunction = globalWeightFunction,
                                                             localWeightFunction = localWeightFunction,
                                                             normalizerFunction = normalizerFunction )
