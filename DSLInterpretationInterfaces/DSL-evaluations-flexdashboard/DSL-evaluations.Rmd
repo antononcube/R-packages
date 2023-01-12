@@ -55,7 +55,9 @@ radioButtons( inputId = "fromLang",
               choices = c(
                 "Automatic" = "Automatic",
                 "Bulgarian" = "Bulgarian",
-                "English" = "English"
+                "English" = "English",
+                "Portuguese" = "Portuguese",
+                "Russian" = "Russian"
               ),
               selected = "Automatic"
 )
@@ -333,6 +335,25 @@ use dfTitanic;
 delete missing;
 filter with 'passengerSex' is 'male' and 'passengerSurvival' equals 'died' or 'passengerSurvival' is 'survived';
 cross tabulate 'passengerClass', 'passengerSurvival' over 'passengerAge';
+```
+
+```
+DSL MODULE DataQuery;
+DSL TARGET Python::pandas;
+carga dados íris;
+levar elementos de 1 a 120 no passo 3;
+agrupar com a coluna Species;
+tabulação cruzada de Species com PetalLength;
+mostrar dimensões
+```
+
+```
+DSL MODULE DataQuery;
+DSL TARGET Python::pandas;
+загрузить набор данных iris;
+возьми элементы от 1 до 120 шаг 3;
+сгруппировать по столбцу Species;
+показать подсчеты
 ```
 
 ###  Epidemiologic Modeling
