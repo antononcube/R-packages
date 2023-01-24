@@ -685,11 +685,12 @@ GNNMonComputeMatrixDistances <- function( gnnObj, point, method = "euclidean" ) 
 #' using a specified method for each row of monad's data matrix.
 #' @param gnnObj A GNNMon object
 #' @param nTopNNs Number of top nearest neighbors.
+#' @param radius Radius within which the nearest neighbors are taken.
 #' @param method A string for the distance method.
 #' One of "euclidean", "cosine".
 #' @return A GNNMon object
 #' @export
-GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, method = "euclidean" ) {
+GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, radius = Inf, method = "euclidean" ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -707,6 +708,9 @@ GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, method =
       pvec <- data[i,,drop=F]
       recs <- gnnObj %>% GNNMonComputeMatrixDistances( point = as.numeric(pvec) ) %>% GNNMonTakeValue
       recs <- sort(recs)[ 2 : min(length(recs), nTopNNs+1 ) ]
+      if( is.numeric(radius) ) {
+        recs <- recs[recs <= radius]
+      }
       recNames <- names(recs)
       data.frame( SearchID = rownames(data)[[i]], SearchIndex = i, ID = recNames, Distance = setNames(recs, NULL) )
     } )
@@ -732,9 +736,9 @@ GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, method =
 #' @details The thresholds is assigned to \code{gnnObj$Value}.
 #' For \code{thresholdsIdentifier} the following functions from the package
 #' \code{\link{OutlierIdentifiers}} can be used:
-#' \code{\link{OutlierIdentifiers::HampelIdentifierParameters},
-#' \code{\link{OutlierIdentifiers::SPLUSQuartileIdentifierParameters},
-#' \code{\link{OutlierIdentifiers::QuartileIdentifierParameters}.
+#' \code{\link{OutlierIdentifiers::HampelIdentifierParameters}},
+#' \code{\link{OutlierIdentifiers::SPLUSQuartileIdentifierParameters}},
+#' \code{\link{OutlierIdentifiers::QuartileIdentifierParameters}}.
 #' @return A GNNMon object
 #' @export
 GNNMonComputeThresholds <- function( gnnObj,
@@ -796,6 +800,8 @@ GNNMonComputeThresholds <- function( gnnObj,
 #' @description Finds the nearest points from the monad to a given point.
 #' @param gnnObj A GNNMon object
 #' @param point A numeric vector.
+#' @param n Number of nearest neighbors.
+#' @param radius Radius within which the nearest neighbors are taken.
 #' @param method A string for the distance method.
 #' One of "euclidean", "cosine".
 #' @details The result is assigned to \code{gnnObj$Value}.
@@ -803,7 +809,7 @@ GNNMonComputeThresholds <- function( gnnObj,
 #' the top nearest neighbors the distances to all monad points are computed.
 #' @return A GNNMon object
 #' @export
-GNNMonFindNearest <- function( gnnObj, point, n = 12, method = "euclidean" )  {
+GNNMonFindNearest <- function( gnnObj, point, n = 12, radius = Inf, method = "euclidean" )  {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -815,6 +821,10 @@ GNNMonFindNearest <- function( gnnObj, point, n = 12, method = "euclidean" )  {
   dfNNs <- data.frame( Index = 1:length(dfNNs), Distance = dfNNs )
 
   dfNNs <- dfNNs[ order(dfNNs$Distance)[1:n], ]
+
+  if( is.numeric(radius) ) {
+    dfNNs <- dfNNs[ dfNNs$Distance <= radius, ]
+  }
 
   ## Result
   gnnObj$Value <- dfNNs
