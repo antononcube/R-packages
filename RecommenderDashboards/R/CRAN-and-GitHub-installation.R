@@ -8,7 +8,7 @@
 InstallRequiredPackages <- function( gitHubOnlyQ = FALSE, ... ) {
 
   if( !gitHubOnlyQ ) {
-    install.packages(c("tidyverse", "purrr", "rmarkdown", "shiny", "flexdashboard", "DT", "stopwords", "SnowballC", "irlba", "NutrienTrackeR", "devtools", "feather"))
+    install.packages(c("tidyverse", "purrr", "rmarkdown", "shiny", "flexdashboard", "DT", "stopwords", "SnowballC", "irlba", "NutrienTrackeR", "devtools", "feather", "Rsymphony"))
   }
 
   #devtools::install_github( repo = "rstudio/d3heatmap", ...)
