@@ -16,7 +16,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 ## Written by Anton Antonov,
-## antononcube@gmail.com,
+## ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ,
 ## Windermere, Florida, USA.
 ##
 ##=======================================================================================
@@ -181,7 +181,13 @@ NNMFNormalizeMatrixProduct <- function( W, H, normalizeLeftQ = TRUE ) {
     dinv <- 1 / ifelse( d == 0, 1, d ); dinv[ d==0 ] = 0
     SI <- Diagonal( x = dinv )
 
-    list( W = W %*% (SI), H = S %*% H )
+    H2 <- S %*% H
+    rownames(H2) <- rownames(H)
+
+    W2 <- W %*% SI
+    colnames(W2) <- colnames(W)
+
+    list( W = W2, H = H2 )
 
   } else {
 
@@ -190,7 +196,13 @@ NNMFNormalizeMatrixProduct <- function( W, H, normalizeLeftQ = TRUE ) {
     dinv <- 1 / ifelse( d == 0, 1, d ); dinv[ d==0 ] = 0
     SI <- Diagonal( x = dinv )
 
-    list( W = W %*% S, H = SI %*% H )
+    H2 <- SI %*% H
+    rownames(H2) <- rownames(H)
+
+    W2 <- W %*% S
+    colnames(W2) <- colnames(W)
+
+    list( W = W2, H = H2 )
   }
 }
 
