@@ -1,8 +1,8 @@
 Package: NonNegativeMatrixFactorization
 Type: Package
 Title: Non-Negative Matrix Factorization
-Version: 1.0.0
-Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+Version: 1.0.1
+Authors@R: person("Anton", "Antonov", email = "antononcube@posteo.net",
                   role = c("aut", "cre"))
 Maintainer: Anton Antonov <antononcube@gmail.com>
 Description: This package implements in R a Non-Negative Matrix Factorization algorithm.
