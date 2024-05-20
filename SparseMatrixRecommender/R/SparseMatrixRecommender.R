@@ -423,7 +423,10 @@ SMRApplyTagWeights <- function( smr, weights ) {
     weights <- weights[1:ncol(smr$M01)]
   }
   W <- Diagonal(x=weights)
-  smr$M01 %*% W
+  matRes <- smr$M01 %*% W
+  colnames(matRes) <- colnames(smr$M01)
+  rownames(matRes) <- rownames(smr$M01)
+  matRes
 }
 
 #' Normalization by maximum
