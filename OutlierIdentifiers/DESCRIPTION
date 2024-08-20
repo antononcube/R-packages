@@ -2,9 +2,9 @@ Package: OutlierIdentifiers
 Type: Package
 Title: Outlier Identifiers
 Version: 1.0.0
-Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+Authors@R: person("Anton", "Antonov", email = "ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ",
                   role = c("aut", "cre"))
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: This R package provides a collection of functions for finding
     outliers in 1-dimensional data.
 License: GPL-3

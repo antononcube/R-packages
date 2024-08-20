@@ -2,9 +2,9 @@ Package: StateMonadCodeGenerator
 Type: Package
 Title: State monad code generator
 Version: 0.1.0
-Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+Authors@R: person("Anton", "Antonov", email = "ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ",
                   role = c("aut", "cre"))
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: This R package provides a collection of functions for
     generating State monad code.
 License: GPL-3

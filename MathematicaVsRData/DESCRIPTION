@@ -3,7 +3,7 @@ Type: Package
 Title: MathematicaVsR data
 Version: 0.9.0
 Author: Anton Antonov 
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: Data for the MathematicaVsR project.
 Language: en-US
 License: GPL-3

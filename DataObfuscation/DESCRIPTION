@@ -2,9 +2,9 @@ Package: DataObfuscation
 Type: Package
 Title: Data obfuscation
 Version: 0.2.0
-Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+Authors@R: person("Anton", "Antonov", email = "ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ",
                   role = c("aut", "cre"))
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: This package has a collection of functions and tests for 
     obfuscating categorical and numerical columns of data frames.
 License: BTS-3

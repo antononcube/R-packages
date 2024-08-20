@@ -3,7 +3,7 @@ Type: Package
 Title: Data Query Workflows Tests
 Version: 0.1.0
 Author: Anton Antonov
-Maintainer: <antononcube@gmail.com>
+Maintainer: <ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ>
 Description: This package provides unit tests for testing the R-translations
     of the Raku package DSL::English::DataQueryWorkflows .
 License: MIT

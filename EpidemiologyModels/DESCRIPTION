@@ -3,7 +3,7 @@ Type: Package
 Title: Epidemiology models
 Version: 0.1.0
 Author: Anton Antonov
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: The package provides S3 objects that represent Epidemiology models.
     Simulations with those objects can be done with the package deSolve.
 License: GPL-3

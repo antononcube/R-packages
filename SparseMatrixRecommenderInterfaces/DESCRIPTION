@@ -3,7 +3,7 @@ Type: Package
 Title: Sparse Matrix Recommender framework interface functions.
 Version: 0.9.0
 Author: Anton Antonov 
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: The Sparse Matrix Recommender (SMR) framework uses sparse matrix 
     linear algebra to compute recommendations. The framework has functions for 
     nearest neighbors classification and modification of sparse matrix recommender

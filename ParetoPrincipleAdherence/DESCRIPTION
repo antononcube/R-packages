@@ -2,9 +2,9 @@ Package: ParetoPrincipleAdherence
 Type: Package
 Title: Pareto Principle adherence functions
 Version: 1.0.0
-Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+Authors@R: person("Anton", "Antonov", email = "ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ",
                   role = c("aut", "cre"))
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: This R package provides a collection of functions for
     making Pareto Principle adherence plots and computing related data.
 License: GPL-3

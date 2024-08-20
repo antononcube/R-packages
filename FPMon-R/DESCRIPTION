@@ -2,8 +2,8 @@ Package: FPMon
 Type: Package
 Title: Functional Parsers Monad
 Version: 0.7.0
-Author@R: person("Anton", "Antonov", email = "antononcube@gmail.com", role = c("aut","cre"))
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Author@R: person("Anton", "Antonov", email = "ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ", role = c("aut","cre"))
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: This package has an implementation a Functional Parsers Monad that
     allows the construction of parsers with easy to read code.
 License: BSD 3

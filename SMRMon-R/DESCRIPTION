@@ -2,9 +2,9 @@ Package: SMRMon
 Type: Package
 Title: Sparse Matrix Recommender Monad
 Version: 0.1.0
-Authors@R: person("Anton", "Antonov", email = "antononcube@gmail.com",
+Authors@R: person("Anton", "Antonov", email = "ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ",
                   role = c("aut", "cre"))
-Maintainer: Anton Antonov <antononcube@gmail.com>
+Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: This package implements in R a software monad for Sparse Matrix Recommender workflows.
 License: GPL-3
 Language: en-US

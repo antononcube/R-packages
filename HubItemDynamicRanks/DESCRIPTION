@@ -3,7 +3,7 @@ Type: Package
 Title: Computes hub-item dynamic ranks.
 Version: 0.4.0
 Author: Anton Antonov
-Maintainer: <antononcube@gmail.com>
+Maintainer: <ʇǝu˙oǝʇsod@ǝqnɔuouoʇuɐ>
 Description: The Hub-Item Dynamic Ranking Algorithm (HIDRA) can be seen as an
     extension of PageRank. See http://en.wikipedia.org/wiki/PageRank .
     The difference is that HIDRA works on a bi-partite graph and
