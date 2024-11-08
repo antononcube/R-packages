@@ -1,7 +1,7 @@
 Package: GNNMon
 Type: Package
 Title: Geometric Nearest Neighbors Monad
-Version: 0.5.0
+Version: 0.5.1
 Authors@R: person("Anton", "Antonov", email = "antononcube@posteo.net",
                   role = c("aut", "cre"))
 Maintainer: Anton Antonov <antononcube@posteo.net>
