@@ -820,7 +820,7 @@ GNNMonFindNearest <- function( gnnObj, point, n = 12, radius = Inf, method = "eu
   dfNNs <- gnnObj %>% GNNMonTakeValue
   dfNNs <- data.frame( Index = 1:length(dfNNs), Distance = dfNNs )
 
-  dfNNs <- dfNNs[ order(dfNNs$Distance)[1:n], ]
+  dfNNs <- dfNNs[ order(dfNNs$Distance)[1 : min(n, nrow(dfNNs))], ]
 
   if( is.numeric(radius) ) {
     dfNNs <- dfNNs[ dfNNs$Distance <= radius, ]
