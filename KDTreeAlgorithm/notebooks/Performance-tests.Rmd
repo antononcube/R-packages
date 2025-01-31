@@ -1,0 +1,46 @@
+---
+title: Performance test
+output: html_notebook
+---
+
+```{r setup}
+library(ggplot2)
+library(KDTreeAlgorithm)
+```
+
+```{r}
+# Set up the random matrix of 1000 points
+set.seed(123)
+n <- 4000
+random_points <- matrix(runif(2 * n, min = 0, max = 100), ncol = 2)
+rownames(random_points) <- paste0("P", seq_len(nrow(random_points)))
+
+# Initialize the K-D tree
+kdObj <- KDimensionalTree(random_points)
+kdObj
+```
+
+
+```{r}
+# Function to perform 1000 retrievals of 12 nearest neighbors
+performance_test <- function(kdObj, numRetrievals = 1000, k = 12, randomSeed = 323) {
+  set.seed(randomSeed) # For reproducibility of test points
+  test_points <- matrix(runif(numRetrievals * 2, min = 0, max = 100), ncol = 2)
+  
+  start_time <- Sys.time()
+  for (i in 1:numRetrievals) {
+    KNearest(kd_tree, test_points[i, ], k = k, values = TRUE)
+  }
+  end_time <- Sys.time()
+  
+  duration <- end_time - start_time
+  cat("Performed", numRetrievals, "retrievals of", k, "nearest neighbors in", duration, "seconds, mean", duration / numRetrievals, ".\n")
+}
+```
+
+
+```{r}
+# Run the performance test
+performance_test(kdObj, numRetrievals = 100, k = 12)
+```
+

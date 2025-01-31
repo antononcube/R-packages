@@ -1,0 +1,47 @@
+---
+title: Correctness tests
+output: html_notebook
+---
+
+```{r setup}
+library(ggplot2)
+library(KDTreeAlgorithm)
+```
+
+
+```{r}
+set.seed(123) # For reproducibility
+points <- matrix(runif(2000, min = 0, max = 100), ncol = 2)
+rownames(points) <- paste0("P", seq_len(nrow(points)))
+
+summary(points)
+```
+
+```{r}
+kdObj <- KDimensionalTree(points)
+kdObj
+```
+
+```{r}
+# Find the nearest neighbors for a given point
+query_point <- c(17, 44)
+nearest_neighbors <- KNearest(kdObj, query_point, k = 12, values = T)
+nearest_neighbors
+```
+
+```{r}
+# Plot the original points and the nearest neighbors
+#xlim = c(0, 10), ylim = c(0, 10), 
+plot(points, col = "blue", pch = 19, xlab = "X", ylab = "Y")
+#text(points, labels = rownames(points), pos = 3, col = "blue")
+points(query_point[1], query_point[2], col = "red", pch = 19)
+#text(query_point[1], query_point[2], labels = "Q", pos = 3, col = "red")
+
+# Highlight the nearest neighbors
+points(nearest_neighbors[, 1], nearest_neighbors[, 2], col = "green", pch = 19)
+text(nearest_neighbors[, 1], nearest_neighbors[, 2], labels = rownames(nearest_neighbors), pos = 3, col = "green")
+
+legend("topright", legend = c("Points", "Query Point", "Nearest Neighbors"), 
+       col = c("blue", "red", "green"), pch = 19)
+```
+

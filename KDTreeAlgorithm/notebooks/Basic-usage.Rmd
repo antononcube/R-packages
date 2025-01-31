@@ -1,0 +1,50 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r setup}
+library(ggplot2)
+library(KDTreeAlgorithm)
+```
+
+```{r}
+# Example usage of KDimensionalTree with 2D points
+
+# Create a set of 2D points as a matrix
+points <- matrix(c(2, 3, 5, 4, 9, 6, 4, 7, 8, 1, 7, 2), ncol = 2, byrow = TRUE)
+rownames(points) <- letters[1:nrow(points)]
+
+points
+```
+
+```{r}
+# Initialize the K-D tree
+kd_tree <- KDimensionalTree(points)
+kd_tree
+```
+
+
+```{r}
+# Find the nearest neighbors for a given point
+query_point <- c(5, 5)
+nearest_neighbors <- KNearest(kd_tree, query_point, k = 3, values = T)
+nearest_neighbors
+```
+
+
+```{r}
+# Plot the original points and the nearest neighbors
+plot(points, col = "blue", pch = 19, xlim = c(0, 10), ylim = c(0, 10), xlab = "X", ylab = "Y")
+text(points, labels = rownames(points), pos = 3, col = "blue")
+points(query_point[1], query_point[2], col = "red", pch = 19)
+text(query_point[1], query_point[2], labels = "Q", pos = 3, col = "red")
+
+# Highlight the nearest neighbors
+points(nearest_neighbors[, 1], nearest_neighbors[, 2], col = "green", pch = 19)
+text(nearest_neighbors[, 1], nearest_neighbors[, 2], labels = rownames(nearest_neighbors), pos = 3, col = "green")
+
+legend("topright", legend = c("Points", "Query Point", "Nearest Neighbors"), 
+       col = c("blue", "red", "green"), pch = 19)
+```
+
