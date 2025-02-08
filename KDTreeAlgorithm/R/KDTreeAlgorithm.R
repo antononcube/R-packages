@@ -73,12 +73,17 @@ KDimensionalTree <- function(points, distanceFunction = NULL) {
 
   # Handle distance function
   if(is.null(distanceFunction)) { distanceFunction <- EuclideanDistance }
+
   if(is.character(distanceFunction) && length(distanceFunction) == 1) {
+
     if(tolower(distanceFunction) %in% c("euclidean", "euclideandistance")) {
       distanceFunction <- EuclideanDistance
     } else if(tolower(distanceFunction) %in% c("cosine", "cosinedistance")) {
       distanceFunction <- CosineDistance
+    } else {
+      stop("Unknown distance function spec.")
     }
+    
   }
 
   structure(
