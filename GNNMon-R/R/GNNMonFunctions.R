@@ -642,7 +642,7 @@ GNNMonTakeUpperThreshold <- function( gnnObj, functionName = "GNNMonTakeUpperThr
 #' @return A list of functions or \code{GNNMonFailureSymbol}.
 #' @family Set/Take functions
 #' @export
-GNNMonTakeKDTreeObject <- function( gnnObj, functionName = "GNNMonTakeUpperThreshold" ) {
+GNNMonTakeKDTreeObject <- function( gnnObj, functionName = "GNNMonTakeKDTreeObject" ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -653,6 +653,33 @@ GNNMonTakeKDTreeObject <- function( gnnObj, functionName = "GNNMonTakeUpperThres
   gnnObj$KDTreeObject
 }
 
+
+##===========================================================
+## KDTreeObject creator
+##===========================================================
+
+#' Create KDTreeObject.
+#' @description Creates KDTreeObject from the monad object's data and distance function.
+#' @param gnnObj An GNNMon object.
+#' @param functionName A string that is a name of this function or a delegating function.
+#' @return A list of functions or \code{GNNMonFailureSymbol}.
+#' @return A GNNMon object
+#' @export
+GNNMonCreateKDTreeObject <- function( gnnObj, functionName = "GNNMonCreateKDTreeObject" ) {
+
+  if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
+
+  if( !GNNMonMemberPresenceCheck( gnnObj, memberName = "Data", memberPrettyName = "Data", functionName = functionName,  logicalResult = TRUE) ) {
+    return(GNNMonFailureSymbol)
+  }
+
+  gnnObj$KDTreeObject <-
+    KDTreeAlgorithm::KDimensionalTree(
+      points = gnnObj %>% GNNMonTakeData,
+      distanceFunction = gnnObj %>% GNNMonTakeDistanceFunction)
+
+  gnnObj
+}
 
 ##===========================================================
 ## Matrix distances
@@ -897,7 +924,7 @@ GNNMonFindNearest <- function( gnnObj, point, n = 12, radius = Inf, method = "sc
     # method == "kdtree"
     if(is.null(gnnObj$KDTreeObject)) {
       # Note the duplication of data points here
-      gnnObj$KDTreeObject <- KDTreeAlgorithm::KDimensionalTree(gnnObj %>% GNNMonTakeData(), distanceFunction = distanceFunction)
+      gnnObj$KDTreeObject <- KDTreeAlgorithm::KDimensionalTree(gnnObj %>% GNNMonTakeData, distanceFunction = distanceFunction)
     }
 
     dfNNs <-

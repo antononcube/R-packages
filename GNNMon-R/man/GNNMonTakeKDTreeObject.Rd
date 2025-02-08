@@ -4,7 +4,7 @@
 \alias{GNNMonTakeKDTreeObject}
 \title{Take KDTreeObject.}
 \usage{
-GNNMonTakeKDTreeObject(gnnObj, functionName = "GNNMonTakeUpperThreshold")
+GNNMonTakeKDTreeObject(gnnObj, functionName = "GNNMonTakeKDTreeObject")
 }
 \arguments{
 \item{gnnObj}{An GNNMon object.}
