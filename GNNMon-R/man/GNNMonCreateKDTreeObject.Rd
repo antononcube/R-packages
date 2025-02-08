@@ -4,10 +4,17 @@
 \alias{GNNMonCreateKDTreeObject}
 \title{Create KDTreeObject.}
 \usage{
-GNNMonCreateKDTreeObject(gnnObj, functionName = "GNNMonCreateKDTreeObject")
+GNNMonCreateKDTreeObject(
+  gnnObj,
+  distanceFunction = "euclidean",
+  functionName = "GNNMonCreateKDTreeObject"
+)
 }
 \arguments{
 \item{gnnObj}{An GNNMon object.}
+
+\item{distanceFunction}{Distance function spec.
+One of NULL, "euclidean", "cosine".}
 
 \item{functionName}{A string that is a name of this function or a delegating function.}
 }

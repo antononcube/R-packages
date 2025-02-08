@@ -661,11 +661,13 @@ GNNMonTakeKDTreeObject <- function( gnnObj, functionName = "GNNMonTakeKDTreeObje
 #' Create KDTreeObject.
 #' @description Creates KDTreeObject from the monad object's data and distance function.
 #' @param gnnObj An GNNMon object.
+#' @param distanceFunction Distance function spec.
+#' One of NULL, "euclidean", "cosine".
 #' @param functionName A string that is a name of this function or a delegating function.
 #' @return A list of functions or \code{GNNMonFailureSymbol}.
 #' @return A GNNMon object
 #' @export
-GNNMonCreateKDTreeObject <- function( gnnObj, functionName = "GNNMonCreateKDTreeObject" ) {
+GNNMonCreateKDTreeObject <- function( gnnObj, distanceFunction = "euclidean", functionName = "GNNMonCreateKDTreeObject" ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -673,10 +675,12 @@ GNNMonCreateKDTreeObject <- function( gnnObj, functionName = "GNNMonCreateKDTree
     return(GNNMonFailureSymbol)
   }
 
+  gnnObj <- gnnObj %>% GNNMonSetDistanceFunction(DistanceFunction = distanceFunction)
+
   gnnObj$KDTreeObject <-
     KDTreeAlgorithm::KDimensionalTree(
       points = gnnObj %>% GNNMonTakeData,
-      distanceFunction = gnnObj %>% GNNMonTakeDistanceFunction)
+      distanceFunction = distanceFunction)
 
   gnnObj
 }
