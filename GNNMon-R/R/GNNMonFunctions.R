@@ -897,14 +897,14 @@ GNNMonFindNearest <- function( gnnObj, point, n = 12, radius = Inf, method = "sc
     # method == "kdtree"
     if(is.null(gnnObj$KDTreeObject)) {
       # Note the duplication of data points here
-      gnnObj$KDTreeObject <- KDimensionalTree(gnnObj %>% GNNMonTakeData(), distanceFunction = distanceFunction)
+      gnnObj$KDTreeObject <- KDTreeAlgorithm::KDimensionalTree(gnnObj %>% GNNMonTakeData(), distanceFunction = distanceFunction)
     }
 
     dfNNs <-
       if(is.numeric(radius) && radius < Inf) {
-        NearestWithinBall(tree = gnnObj$KDTreeObject, point = point, radius = radius, format = "data.frame")
+        KDTreeAlgorithm::NearestWithinBall(tree = gnnObj$KDTreeObject, point = point, radius = radius, format = "data.frame")
       } else {
-        KNearest(tree = gnnObj$KDTreeObject, point = point, k = n, format = "data.frame")
+        KDTreeAlgorithm::KNearest(tree = gnnObj$KDTreeObject, point = point, k = n, format = "data.frame")
       }
   }
 
