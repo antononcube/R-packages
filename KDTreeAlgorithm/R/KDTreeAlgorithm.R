@@ -1,5 +1,52 @@
+
+#==========================================================
+# Distance functions
+#==========================================================
+
 EuclideanDistance <- function(a, b) {
   sqrt(sum((a - b) ^ 2))
+}
+
+CosineDistance <- function(vector1, vector2) {
+  norm1 <- sqrt(sum(vector1^2))
+  norm2 <- sqrt(sum(vector2^2))
+
+  if (norm1 == 0 || norm2 == 0) {
+    #warning("One or both vectors have zero magnitude, cannot compute cosine distance.")
+    return(0)
+  }
+
+  1 - sum(vector1 * vector2) / (norm1 * norm2)
+}
+
+#==========================================================
+# Format result
+#==========================================================
+
+FormatResult <- function(tree, res, format) {
+  # Format result
+  if (tolower(format) == "list") {
+
+    return(res)
+
+  } else if (tolower(format) %in% c("values", "points", "matrix")) {
+
+    return(t(sapply(res, function(x) x$point)))
+
+  } else if (tolower(format) %in% c("dataframe", "data.frame", "table")) {
+
+    dfRes <- do.call(rbind, lapply(res, function(x) {
+      data.frame(RowName = rownames(x$point), Distance = x$distance)
+    }))
+
+    dfRes <- cbind(dfRes, Index = match(dfRes$RowName, rownames(tree$points)))[, c("RowName", "Index", "Distance")]
+
+    return(dfRes)
+
+  } else {
+    warning("Unknown return format specified.")
+    return(res)
+  }
 }
 
 #==========================================================
@@ -112,29 +159,8 @@ KNearest <- function(tree, point, k = 1, format = NULL) {
   # Compute NNs
   res <- k_nearest_rec(tree$tree, point, k, 0, tree$distanceFunction)
 
-  # Format result
-  if (tolower(format) == "list") {
-
-    return(res)
-
-  } else if (tolower(format) %in% c("values", "points")) {
-
-    return(t(sapply(res, function(x) x$point)))
-
-  } else if (tolower(format) %in% c("dataframe", "data.frame", "table")) {
-
-    dfRes <- do.call(rbind, lapply(res, function(x) {
-      data.frame(RowName = rownames(x$point), Distance = x$distance)
-    }))
-
-    dfRes <- cbind(dfRes, Index = match(dfRes$RowName, rownames(tree$points)))[, c("RowName", "Index", "Distance")]
-
-    return(dfRes)
-
-  } else {
-    warning("Unknown return format specified.")
-    return(res)
-  }
+  # Result
+  FormatResult(tree, res, format)
 }
 
 k_nearest_rec <- function(node, point, k, depth, distanceFunction) {
@@ -191,29 +217,8 @@ NearestWithinBall <- function(tree, point, radius, format = TRUE) {
   # Compute NNs
   res <- nearest_within_ball_rec(tree$tree, point, radius, 0, tree$distanceFunction)
 
-  # Format result
-  if (tolower(format) == "list") {
-
-    return(res)
-
-  } else if (tolower(format) %in% c("values", "points")) {
-
-    return(t(sapply(res, function(x) x$point)))
-
-  } else if (tolower(format) %in% c("dataframe", "data.frame", "table")) {
-
-    dfRes <- do.call(rbind, lapply(res, function(x) {
-      data.frame(RowName = rownames(x$point), Distance = x$distance)
-    }))
-
-    dfRes <- cbind(dfRes, Index = match(dfRes$RowName, rownames(tree$points)))[, c("RowName", "Index", "Distance")]
-
-    return(dfRes)
-
-  } else {
-    warning("Unknown return format specified.")
-    return(res)
-  }
+  # Result
+  FormatResult(tree, res, format)
 }
 
 nearest_within_ball_rec <- function(node, point, r, depth, distanceFunction) {
