@@ -88,10 +88,12 @@ build_tree <- function(points, depth = 0) {
 #' @description For a given point finds the nearest point(s) to it.
 #' @param tree K-dimensional tree S3 object.
 #' @param Query point.
-#' @param k Number of nearest neighbors tp find.
-#' @param valuesQ Should values be returned or not?
+#' @param k Number of nearest neighbors to find.
+#' @param format Format of the result.
+#' One NULL, "data.frame", "list", or "points".
 #' @export
-KNearest <- function(tree, point, k = 1, valuesQ = TRUE) {
+KNearest <- function(tree, point, k = 1, format = NULL) {
+  # Handle point
   if (is.vector(point)) {
     point <- matrix(point, ncol = ncol(tree$points))
   }
@@ -100,10 +102,37 @@ KNearest <- function(tree, point, k = 1, valuesQ = TRUE) {
     stop("The point must be a vector or a matrix with the same number of columns as the tree's points.")
   }
 
+  # Handle format
+  if(is.null(format)) { format <- "list" }
+
+  if(!(is.character(format) && length(format) == 1)) {
+    stop('The value of the argument format is expected to be NULL, "data.frame", "list", or "points".', call. = TRUE)
+  }
+
+  # Compute NNs
   res <- k_nearest_rec(tree$tree, point, k, 0, tree$distanceFunction)
-  if (valuesQ) {
+
+  # Format result
+  if (tolower(format) == "list") {
+
+    return(res)
+
+  } else if (tolower(format) %in% c("values", "points")) {
+
     return(t(sapply(res, function(x) x$point)))
+
+  } else if (tolower(format) %in% c("dataframe", "data.frame", "table")) {
+
+    dfRes <- do.call(rbind, lapply(res, function(x) {
+      data.frame(RowName = rownames(x$point), Distance = x$distance)
+    }))
+
+    dfRes <- cbind(dfRes, Index = match(dfRes$RowName, rownames(tree$points)))[, c("RowName", "Index", "Distance")]
+
+    return(dfRes)
+
   } else {
+    warning("Unknown return format specified.")
     return(res)
   }
 }
@@ -138,10 +167,12 @@ k_nearest_rec <- function(node, point, k, depth, distanceFunction) {
 #' @description For a given point finds the nearest point(s) to it within a given ball radius.
 #' @param tree K-dimensional tree S3 object.
 #' @param Query point.
-#' @param r Ball radius.
-#' @param valuesQ Should values be returned or not?
+#' @param radius Ball radius.
+#' @param format Format of the result.
+#' One NULL, "data.frame", "list", or "points".
 #' @export
-NearestWithinBall <- function(tree, point, r, valuesQ = TRUE) {
+NearestWithinBall <- function(tree, point, radius, valuesQ = TRUE) {
+  # Handle point
   if (is.vector(point)) {
     point <- matrix(point, ncol = ncol(tree$points))
   }
@@ -150,10 +181,38 @@ NearestWithinBall <- function(tree, point, r, valuesQ = TRUE) {
     stop("The point must be a vector or a matrix with the same number of columns as the tree's points.")
   }
 
-  res <- nearest_within_ball_rec(tree$tree, point, r, 0, tree$distanceFunction)
-  if (valuesQ) {
-    return(sapply(res, function(x) x$point))
+  # Handle format
+  if(is.null(format)) { format <- "list" }
+
+  if(!(is.character(format) && length(format) == 1)) {
+    stop('The value of the argument format is expected to be NULL, "data.frame", "list", or "points".', call. = TRUE)
+  }
+
+  # Compute NNs
+  res <- nearest_within_ball_rec(tree$tree, point, radius, 0, tree$distanceFunction)
+
+
+  # Format result
+  if (tolower(format) == "list") {
+
+    return(res)
+
+  } else if (tolower(format) %in% c("values", "points")) {
+
+    return(t(sapply(res, function(x) x$point)))
+
+  } else if (tolower(format) %in% c("dataframe", "data.frame", "table")) {
+
+    dfRes <- do.call(rbind, lapply(res, function(x) {
+      data.frame(RowName = rownames(x$point), Distance = x$distance)
+    }))
+
+    dfRes <- cbind(dfRes, Index = match(dfRes$RowName, rownames(tree$points)))[, c("RowName", "Index", "Distance")]
+
+    return(dfRes)
+
   } else {
+    warning("Unknown return format specified.")
     return(res)
   }
 }

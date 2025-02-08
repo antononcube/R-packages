@@ -4,14 +4,15 @@
 \alias{KNearest}
 \title{Nearest k-points.}
 \usage{
-KNearest(tree, point, k = 1, valuesQ = TRUE)
+KNearest(tree, point, k = 1, format = NULL)
 }
 \arguments{
 \item{tree}{K-dimensional tree S3 object.}
 
-\item{k}{Number of nearest neighbors tp find.}
+\item{k}{Number of nearest neighbors to find.}
 
-\item{valuesQ}{Should values be returned or not?}
+\item{format}{Format of the result.
+One NULL, "data.frame", "list", or "points".}
 
 \item{Query}{point.}
 }

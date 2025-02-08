@@ -21,14 +21,14 @@ points
 ```{r}
 # Initialize the K-D tree
 kd_tree <- KDimensionalTree(points)
-kd_tree
+names(kd_tree)
 ```
 
 
 ```{r}
 # Find the nearest neighbors for a given point
 query_point <- c(5, 5)
-nearest_neighbors <- KNearest(kd_tree, query_point, k = 3, values = T)
+nearest_neighbors <- KNearest(kd_tree, query_point, k = 3, format = "values")
 nearest_neighbors
 ```
 
@@ -46,5 +46,11 @@ text(nearest_neighbors[, 1], nearest_neighbors[, 2], labels = rownames(nearest_n
 
 legend("topright", legend = c("Points", "Query Point", "Nearest Neighbors"), 
        col = c("blue", "red", "green"), pch = 19)
+```
+
+Data frame result can be obtained with the argument `format`:
+
+```{r}
+KNearest(kd_tree, query_point, k = 3, format = "data.frame")
 ```
 
