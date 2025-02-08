@@ -21,6 +21,7 @@ Sets Radius into the monad object.
 Other Set/Take functions: 
 \code{\link{GNNMonSetData}()},
 \code{\link{GNNMonSetDistanceMethod}()},
+\code{\link{GNNMonSetKDTreeObject}()},
 \code{\link{GNNMonSetLowerThreshold}()},
 \code{\link{GNNMonSetNearestNeighborDistances}()},
 \code{\link{GNNMonSetNumberOfNNs}()},
@@ -29,11 +30,12 @@ Other Set/Take functions:
 \code{\link{GNNMonSetValue}()},
 \code{\link{GNNMonTakeData}()},
 \code{\link{GNNMonTakeDistanceMethod}()},
+\code{\link{GNNMonTakeKDTreeObject}()},
 \code{\link{GNNMonTakeLowerThreshold}()},
 \code{\link{GNNMonTakeNearestNeighborDistances}()},
 \code{\link{GNNMonTakeNumberOfNNs}()},
-\code{\link{GNNMonTakeRadiusFunction}()},
 \code{\link{GNNMonTakeRadius}()},
+\code{\link{GNNMonTakeRadiusFunction}()},
 \code{\link{GNNMonTakeUpperThreshold}()},
 \code{\link{GNNMonTakeValue}()}
 }

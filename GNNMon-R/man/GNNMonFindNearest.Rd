@@ -4,14 +4,28 @@
 \alias{GNNMonFindNearest}
 \title{Find nearest points.}
 \usage{
-GNNMonFindNearest(gnnObj, point, n = 12, method = "euclidean")
+GNNMonFindNearest(
+  gnnObj,
+  point,
+  n = 12,
+  radius = Inf,
+  method = "scan",
+  distanceMethod = "euclidean"
+)
 }
 \arguments{
 \item{gnnObj}{A GNNMon object}
 
 \item{point}{A numeric vector.}
 
-\item{method}{A string for the distance method.
+\item{n}{Number of nearest neighbors.}
+
+\item{radius}{Radius within which the nearest neighbors are taken.}
+
+\item{method}{A string for the nearest neighbors finding method.
+One of "scan", or  "kdtree".}
+
+\item{distanceMethod}{A string for the distance method.
 One of "euclidean", "cosine".}
 }
 \value{

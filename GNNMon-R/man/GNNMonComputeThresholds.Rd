@@ -26,5 +26,10 @@ A GNNMon object
 Estimates the upper threshold of proximity radius.
 }
 \details{
-
+The thresholds is assigned to \code{gnnObj$Value}.
+For \code{thresholdsIdentifier} the following functions from the package
+\code{\link{OutlierIdentifiers}} can be used:
+\code{\link{OutlierIdentifiers::HampelIdentifierParameters}},
+\code{\link{OutlierIdentifiers::SPLUSQuartileIdentifierParameters}},
+\code{\link{OutlierIdentifiers::QuartileIdentifierParameters}}.
 }

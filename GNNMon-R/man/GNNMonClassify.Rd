@@ -11,6 +11,9 @@ GNNMonClassify(gnnObj, points = NULL)
 
 \item{points}{A numeric vector (a point) or a matrix or a data frame
 of points. If NULL monad's data is used.}
+
+\item{method}{A string for the nearest neighbors finding method.
+One of "scan", or  "kdtree".}
 }
 \value{
 A GNNMon object

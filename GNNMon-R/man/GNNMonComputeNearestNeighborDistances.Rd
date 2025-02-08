@@ -7,7 +7,8 @@
 GNNMonComputeNearestNeighborDistances(
   gnnObj,
   nTopNNs = 6,
-  method = "euclidean"
+  radius = Inf,
+  distanceMethod = "euclidean"
 )
 }
 \arguments{
@@ -15,7 +16,9 @@ GNNMonComputeNearestNeighborDistances(
 
 \item{nTopNNs}{Number of top nearest neighbors.}
 
-\item{method}{A string for the distance method.
+\item{radius}{Radius within which the nearest neighbors are taken.}
+
+\item{distanceMethod}{A string for the distance method.
 One of "euclidean", "cosine".}
 }
 \value{
@@ -23,5 +26,5 @@ A GNNMon object
 }
 \description{
 Computes the nearest neighbors and corresponding distances
-using a specified method for each row of monad's data matrix.
+using a specified distance function for each row of monad's data matrix.
 }

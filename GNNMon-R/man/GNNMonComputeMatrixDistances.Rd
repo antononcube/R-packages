@@ -4,14 +4,14 @@
 \alias{GNNMonComputeMatrixDistances}
 \title{Compute matrix-vector distances.}
 \usage{
-GNNMonComputeMatrixDistances(gnnObj, point, method = "euclidean")
+GNNMonComputeMatrixDistances(gnnObj, point, distanceMethod = "euclidean")
 }
 \arguments{
 \item{gnnObj}{A GNNMon object}
 
 \item{point}{A numeric vector.}
 
-\item{method}{A string for the distance method.
+\item{distanceMethod}{A string for the distance method.
 One of "euclidean", "cosine".}
 }
 \value{
