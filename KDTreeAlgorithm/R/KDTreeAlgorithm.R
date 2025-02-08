@@ -60,6 +60,7 @@ FormatResult <- function(tree, res, format) {
 #' If NULL then Euclidean distance is used.
 #' @export
 KDimensionalTree <- function(points, distanceFunction = NULL) {
+  # Handle points
   if (is.vector(points)) {
     points <- matrix(points, ncol = 1)
   }
@@ -70,7 +71,15 @@ KDimensionalTree <- function(points, distanceFunction = NULL) {
 
   rownames(points) <- if (is.null(rownames(points))) seq_len(nrow(points)) else rownames(points)
 
-  if(is.null(distanceFunction)) { distanceFunction <- EuclideanDistance}
+  # Handle distance function
+  if(is.null(distanceFunction)) { distanceFunction <- EuclideanDistance }
+  if(is.character(distanceFunction) && length(distanceFunction) == 1) {
+    if(tolower(distanceFunction) %in% c("euclidean", "euclideandistance")) {
+      distanceFunction <- EuclideanDistance
+    } else if(tolower(distanceFunction) %in% c("cosine", "cosinedistance")) {
+      distanceFunction <- CosineDistance
+    }
+  }
 
   structure(
     list(
