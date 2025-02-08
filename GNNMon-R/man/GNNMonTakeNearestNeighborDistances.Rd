@@ -23,7 +23,7 @@ Takes NearestNeighborDistances from the monad object.
 \seealso{
 Other Set/Take functions: 
 \code{\link{GNNMonSetData}()},
-\code{\link{GNNMonSetDistanceMethod}()},
+\code{\link{GNNMonSetDistanceFunction}()},
 \code{\link{GNNMonSetKDTreeObject}()},
 \code{\link{GNNMonSetLowerThreshold}()},
 \code{\link{GNNMonSetNearestNeighborDistances}()},
@@ -33,7 +33,7 @@ Other Set/Take functions:
 \code{\link{GNNMonSetUpperThreshold}()},
 \code{\link{GNNMonSetValue}()},
 \code{\link{GNNMonTakeData}()},
-\code{\link{GNNMonTakeDistanceMethod}()},
+\code{\link{GNNMonTakeDistanceFunction}()},
 \code{\link{GNNMonTakeKDTreeObject}()},
 \code{\link{GNNMonTakeLowerThreshold}()},
 \code{\link{GNNMonTakeNumberOfNNs}()},

@@ -8,7 +8,7 @@ GNNMonComputeNearestNeighborDistances(
   gnnObj,
   nTopNNs = 6,
   radius = Inf,
-  distanceMethod = "euclidean"
+  distanceFunction = "euclidean"
 )
 }
 \arguments{
@@ -18,7 +18,7 @@ GNNMonComputeNearestNeighborDistances(
 
 \item{radius}{Radius within which the nearest neighbors are taken.}
 
-\item{distanceMethod}{A string for the distance method.
+\item{distanceFunction}{A string for the distance function.
 One of "euclidean", "cosine".}
 }
 \value{

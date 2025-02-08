@@ -10,10 +10,10 @@ dfPoints <- data.frame( X = c(-6,2), Y = c(4.5,16) )
 
 gnnObj <-
   GNNMonUnit( data ) %>%
-  GNNMonComputeNearestNeighborDistances( nTopNNs = 3, method = "euclidean" ) %>%
+  GNNMonComputeNearestNeighborDistances( nTopNNs = 3, distanceFunction = "euclidean" ) %>%
   GNNMonComputeThresholds( nnsRadiusFunction = mean, thresholdsIdentifier = OutlierIdentifiers::HampelIdentifierParameters )
 
-expectedMemberNames <- c("Value", "Data", "NumberOfNNs", "DistanceMethod", "NearestNeighborDistances", "RadiusFunction", "Radius", "LowerThreshold", "UpperThreshold")
+expectedMemberNames <- c("Value", "Data", "NumberOfNNs", "DistanceFunction", "KDTreeObject", "NearestNeighborDistances", "RadiusFunction", "Radius", "LowerThreshold", "UpperThreshold")
 
 ## Tests
 test_that("Sanity check", {

@@ -4,7 +4,7 @@
 \alias{GNNMonClassify}
 \title{Classify for "membership".}
 \usage{
-GNNMonClassify(gnnObj, points = NULL)
+GNNMonClassify(gnnObj, points = NULL, method = NULL)
 }
 \arguments{
 \item{gnnObj}{A GNNMon object}

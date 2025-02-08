@@ -74,7 +74,7 @@ GNNMonUnit <- function( data ) {
 
   res <- list(
     Value = NULL, Data = NULL,
-    NumberOfNNs = NULL, DistanceMethod = NULL, NearestNeighborDistances = NULL,
+    NumberOfNNs = NULL, DistanceFunction = NULL, NearestNeighborDistances = NULL,
     RadiusFunction = NULL, Radius = NULL, LowerThreshold = NULL, UpperThreshold = NULL,
     KDTreeObject = NULL)
 
@@ -281,26 +281,26 @@ GNNMonSetNumberOfNNs <- function( gnnObj, NumberOfNNs ) {
 }
 
 ##===========================================================
-## DistanceMethod setter
+## DistanceFunction setter
 ##===========================================================
 
-#' Set DistanceMethod.
-#' @description Sets DistanceMethod into the monad object.
+#' Set DistanceFunction.
+#' @description Sets DistanceFunction into the monad object.
 #' @param gnnObj An GNNMon object.
-#' @param DistanceMethod An object member to be set.
+#' @param DistanceFunction An object member to be set.
 #' @return An GNNMon object.
 #' @family Set/Take functions
 #' @export
-GNNMonSetDistanceMethod <- function( gnnObj, DistanceMethod ) {
+GNNMonSetDistanceFunction <- function( gnnObj, DistanceFunction ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
-  if( !( is.null(DistanceMethod) || is.character(DistanceMethod)) ) {
-    warning("The argument DistanceMethod is expected to be NULL or a character.", call. = TRUE)
+  if( !( is.null(DistanceFunction) || is.character(DistanceFunction)) ) {
+    warning("The argument DistanceFunction is expected to be NULL or a character.", call. = TRUE)
     return(GNNMonFailureSymbol)
   }
 
-  gnnObj$DistanceMethod <- DistanceMethod
+  gnnObj$DistanceFunction <- DistanceFunction
 
   gnnObj
 }
@@ -500,25 +500,25 @@ GNNMonTakeNumberOfNNs <- function( gnnObj, functionName = "GNNMonTakeNumberOfNNs
 }
 
 ##===========================================================
-## DistanceMethod Taker
+## DistanceFunction Taker
 ##===========================================================
 
-#' Take DistanceMethod.
-#' @description Takes DistanceMethod from the monad object.
+#' Take DistanceFunction.
+#' @description Takes DistanceFunction from the monad object.
 #' @param gnnObj An GNNMon object.
 #' @param functionName A string that is a name of this function or a delegating function.
 #' @return A list of functions or \code{GNNMonFailureSymbol}.
 #' @family Set/Take functions
 #' @export
-GNNMonTakeDistanceMethod <- function( gnnObj, functionName = "GNNMonTakeDistanceMethod" ) {
+GNNMonTakeDistanceFunction <- function( gnnObj, functionName = "GNNMonTakeDistanceFunction" ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
-  if( !GNNMonMemberPresenceCheck( gnnObj, memberName = "DistanceMethod", memberPrettyName = "DistanceMethod", functionName = functionName,  logicalResult = TRUE) ) {
+  if( !GNNMonMemberPresenceCheck( gnnObj, memberName = "DistanceFunction", memberPrettyName = "DistanceFunction", functionName = functionName,  logicalResult = TRUE) ) {
     return(GNNMonFailureSymbol)
   }
 
-  gnnObj$DistanceMethod
+  gnnObj$DistanceFunction
 }
 
 ##===========================================================
@@ -666,12 +666,12 @@ GNNMonTakeKDTreeObject <- function( gnnObj, functionName = "GNNMonTakeUpperThres
 #' data matrix using a specified method.
 #' @param gnnObj A GNNMon object
 #' @param point A numeric vector.
-#' @param distanceMethod A string for the distance method.
+#' @param distanceFunction A string for the distance function.
 #' One of "euclidean", "cosine".
 #' @details The result is assigned to \code{gnnObj$Value}.
 #' @return A GNNMon object
 #' @export
-GNNMonComputeMatrixDistances <- function( gnnObj, point, distanceMethod = "euclidean" ) {
+GNNMonComputeMatrixDistances <- function( gnnObj, point, distanceFunction = "euclidean" ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -686,7 +686,7 @@ GNNMonComputeMatrixDistances <- function( gnnObj, point, distanceMethod = "eucli
     return(GNNMonFailureSymbol)
   }
 
-  if( tolower(distanceMethod) %in% c("euclidean", "euclideandistance") ) {
+  if( tolower(distanceFunction) %in% c("euclidean", "euclideandistance") ) {
 
     ## Make the pattern matrix
     smat01 <- smat; smat01@x[ smat01@x != 0 ] <- 1
@@ -706,7 +706,7 @@ GNNMonComputeMatrixDistances <- function( gnnObj, point, distanceMethod = "eucli
     ## Result.
     res <- sqrt(m)
 
-  } else if ( tolower(distanceMethod) %in% c( "cosine", "cosinedistance" ) ) {
+  } else if ( tolower(distanceFunction) %in% c( "cosine", "cosinedistance" ) ) {
 
     smat <- Matrix::Diagonal( x = 1 / sqrt( Matrix::rowSums( smat * smat ) ) ) %*% smat
 
@@ -718,7 +718,7 @@ GNNMonComputeMatrixDistances <- function( gnnObj, point, distanceMethod = "eucli
 
   } else {
 
-    warning( paste0( "The distance function spec ", distanceMethod, " is uknown." ), call. = TRUE )
+    warning( paste0( "The distance function spec ", distanceFunction, " is uknown." ), call. = TRUE )
     return(GNNMonFailureSymbol)
 
   }
@@ -738,11 +738,11 @@ GNNMonComputeMatrixDistances <- function( gnnObj, point, distanceMethod = "eucli
 #' @param gnnObj A GNNMon object
 #' @param nTopNNs Number of top nearest neighbors.
 #' @param radius Radius within which the nearest neighbors are taken.
-#' @param distanceMethod A string for the distance method.
+#' @param distanceFunction A string for the distance function.
 #' One of "euclidean", "cosine".
 #' @return A GNNMon object
 #' @export
-GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, radius = Inf, distanceMethod = "euclidean" ) {
+GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, radius = Inf, distanceFunction = "euclidean" ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -769,7 +769,7 @@ GNNMonComputeNearestNeighborDistances <- function( gnnObj, nTopNNs = 6, radius =
 
   gnnObj$NearestNeighborDistances <- dfDists
   gnnObj$NumberOfNNs <- nTopNNs
-  gnnObj$DistanceMethod <- distanceMethod
+  gnnObj$DistanceFunction <- distanceFunction
 
   gnnObj
 }
@@ -856,24 +856,31 @@ GNNMonComputeThresholds <- function( gnnObj,
 #' @param radius Radius within which the nearest neighbors are taken.
 #' @param method A string for the nearest neighbors finding method.
 #' One of "scan", or  "kdtree".
-#' @param distanceMethod A string for the distance method.
+#' @param distanceFunction A string for the distance function.
 #' One of "euclidean", "cosine".
 #' @details The result is assigned to \code{gnnObj$Value}.
 #' This is a fairly brute force algorithm because in order to find
 #' the top nearest neighbors the distances to all monad points are computed.
 #' @return A GNNMon object
 #' @export
-GNNMonFindNearest <- function( gnnObj, point, n = 12, radius = Inf, method = "scan", distanceMethod = "euclidean" )  {
+GNNMonFindNearest <- function( gnnObj, point, n = 12, radius = Inf, method = "scan", distanceFunction = "euclidean" )  {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
+  if(is.null(method)) {
+    method <- "scan"
+    if (!is.null(gnnObj$KDTreeObject) && class(gnnObj$KDTreeObject) == "KDimensionalTree") {
+      method <- "kdtree"
+    }
+  }
+
   if(!(is.character(method) && tolower(method) %in% c("scan", "kdtree"))) {
-    stop('The value of the argument method is expected to be one of "scan" or "kdtree".')
+    stop('The argument method is expected to be one of NULL, "scan", or "kdtree".')
   }
 
   if(tolower(method) == "scan") {
 
-    gnnObj <- gnnObj %>% GNNMonComputeMatrixDistances( point = point, distanceMethod = distanceMethod )
+    gnnObj <- gnnObj %>% GNNMonComputeMatrixDistances( point = point, distanceFunction = distanceFunction )
 
     if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -926,7 +933,7 @@ GNNMonFindNearest <- function( gnnObj, point, n = 12, radius = Inf, method = "sc
 #' The result is assigned to \code{gnnObj$Value}.
 #' @return A GNNMon object
 #' @export
-GNNMonClassify <- function( gnnObj, points = NULL ) {
+GNNMonClassify <- function( gnnObj, points = NULL, method = NULL ) {
 
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
@@ -936,7 +943,7 @@ GNNMonClassify <- function( gnnObj, points = NULL ) {
   nTopNNs <- gnnObj %>% GNNMonTakeNumberOfNNs
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
-  distanceMethod <- gnnObj %>% GNNMonTakeDistanceMethod
+  distanceFunction <- gnnObj %>% GNNMonTakeDistanceFunction
   if( GNNMonFailureQ(gnnObj) ) { return(GNNMonFailureSymbol) }
 
   upperThreshold <- gnnObj %>% GNNMonTakeUpperThreshold
@@ -967,7 +974,7 @@ GNNMonClassify <- function( gnnObj, points = NULL ) {
 
       recs <-
         gnnObj %>%
-        GNNMonFindNearest( point = as.numeric(pvec), n = nTopNNs, method = method, distanceMethod = distanceMethod ) %>%
+        GNNMonFindNearest( point = as.numeric(pvec), n = nTopNNs, method = method, distanceFunction = distanceFunction ) %>%
         GNNMonTakeValue
 
       mrad <- gnnObj$RadiusFunction( recs$Distance )

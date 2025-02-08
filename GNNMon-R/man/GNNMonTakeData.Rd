@@ -20,7 +20,7 @@ Takes Data from the monad object.
 \seealso{
 Other Set/Take functions: 
 \code{\link{GNNMonSetData}()},
-\code{\link{GNNMonSetDistanceMethod}()},
+\code{\link{GNNMonSetDistanceFunction}()},
 \code{\link{GNNMonSetKDTreeObject}()},
 \code{\link{GNNMonSetLowerThreshold}()},
 \code{\link{GNNMonSetNearestNeighborDistances}()},
@@ -29,7 +29,7 @@ Other Set/Take functions:
 \code{\link{GNNMonSetRadiusFunction}()},
 \code{\link{GNNMonSetUpperThreshold}()},
 \code{\link{GNNMonSetValue}()},
-\code{\link{GNNMonTakeDistanceMethod}()},
+\code{\link{GNNMonTakeDistanceFunction}()},
 \code{\link{GNNMonTakeKDTreeObject}()},
 \code{\link{GNNMonTakeLowerThreshold}()},
 \code{\link{GNNMonTakeNearestNeighborDistances}()},

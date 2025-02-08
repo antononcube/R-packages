@@ -10,7 +10,7 @@ GNNMonFindNearest(
   n = 12,
   radius = Inf,
   method = "scan",
-  distanceMethod = "euclidean"
+  distanceFunction = "euclidean"
 )
 }
 \arguments{
@@ -25,7 +25,7 @@ GNNMonFindNearest(
 \item{method}{A string for the nearest neighbors finding method.
 One of "scan", or  "kdtree".}
 
-\item{distanceMethod}{A string for the distance method.
+\item{distanceFunction}{A string for the distance function.
 One of "euclidean", "cosine".}
 }
 \value{
