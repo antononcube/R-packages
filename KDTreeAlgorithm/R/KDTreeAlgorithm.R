@@ -171,7 +171,7 @@ k_nearest_rec <- function(node, point, k, depth, distanceFunction) {
 #' @param format Format of the result.
 #' One NULL, "data.frame", "list", or "points".
 #' @export
-NearestWithinBall <- function(tree, point, radius, valuesQ = TRUE) {
+NearestWithinBall <- function(tree, point, radius, format = TRUE) {
   # Handle point
   if (is.vector(point)) {
     point <- matrix(point, ncol = ncol(tree$points))
@@ -190,7 +190,6 @@ NearestWithinBall <- function(tree, point, radius, valuesQ = TRUE) {
 
   # Compute NNs
   res <- nearest_within_ball_rec(tree$tree, point, radius, 0, tree$distanceFunction)
-
 
   # Format result
   if (tolower(format) == "list") {

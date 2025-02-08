@@ -4,17 +4,17 @@
 \alias{NearestWithinBall}
 \title{Nearest within ball.}
 \usage{
-NearestWithinBall(tree, point, radius, valuesQ = TRUE)
+NearestWithinBall(tree, point, radius, format = TRUE)
 }
 \arguments{
 \item{tree}{K-dimensional tree S3 object.}
 
 \item{radius}{Ball radius.}
 
-\item{Query}{point.}
-
 \item{format}{Format of the result.
 One NULL, "data.frame", "list", or "points".}
+
+\item{Query}{point.}
 }
 \description{
 For a given point finds the nearest point(s) to it within a given ball radius.
