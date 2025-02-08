@@ -19,13 +19,13 @@ summary(points)
 
 ```{r}
 kdObj <- KDimensionalTree(points)
-kdObj
+names(kdObj)
 ```
 
 ```{r}
 # Find the nearest neighbors for a given point
 query_point <- c(17, 44)
-nearest_neighbors <- KNearest(kdObj, query_point, k = 12, values = T)
+nearest_neighbors <- KNearest(kdObj, query_point, k = 12, format = "matrix")
 nearest_neighbors
 ```
 
@@ -45,3 +45,20 @@ legend("topright", legend = c("Points", "Query Point", "Nearest Neighbors"),
        col = c("blue", "red", "green"), pch = 19)
 ```
 
+```{r}
+dfNNs <- NearestWithinBall(kdObj, query_point, radius = 10, format = "data.frame")
+dfNNs
+```
+
+```{r}
+calculate_distances <- function(point, matrix_2d) {
+  sqrt((matrix_2d[,1] - point[1])^2 + (matrix_2d[,2] - point[2])^2)
+}
+
+# Example usage:
+distances <- calculate_distances(query_point, points)
+mean(sort(names(distances[distances<10])) == sort(dfNNs$RowName)) == 1
+```
+```{r}
+sort(names(distances[distances<10]))
+```
