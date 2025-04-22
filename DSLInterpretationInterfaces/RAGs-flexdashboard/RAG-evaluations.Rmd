@@ -1,0 +1,290 @@
+---
+title: "RAG interface"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: spacelab
+    orientation: rows
+    vertical_layout: fill
+    smooth_scroll: true
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(shiny)
+library(shinybusy)
+library(knitr)
+library(flexdashboard)
+library(DT)
+library(rmarkdown)
+
+library(ExternalParsersHookUp)
+```
+
+
+Parameters {.sidebar}
+=======================================================================
+
+```{r}
+## Submission and URL
+actionButton(inputId = "submitButton", 
+             label = "Submit", 
+             icon = icon("refresh"))
+
+textInput( inputId = "webServiceURL", 
+           label = "Web service URL:", 
+           value = "http://localhost:10000", 
+           placeholder = "http://localhost:10000")
+
+hr()
+
+## DSL parser type
+radioButtons( inputId = "vectorDatabase", 
+              label = "Knowledge base:",
+              choices = c(
+                "EconomicsAI" = "630eb4b2-0e68-477d-a2ed-7259874deca5",
+                "No833" = "045f467c-193f-4df6-bec3-790d6c83ca64"
+              ),
+              selected = "630eb4b2-0e68-477d-a2ed-7259874deca5"
+)
+
+hr()
+## To language
+radioButtons( inputId = "toLang", 
+              label = "To language:",
+              choices = c(
+                "Bulgarian" = "Bulgarian",
+                "English" = "English",
+                "Russian" = "Russian",
+                "Spanish" = "Spanish"
+              ),
+              selected = "English"
+)
+```
+
+```{r}
+# Use this function somewhere in UI.
+# See https://www.color-hex.com/color-palette/895
+# or https://www.color-hex.com/color/994d00
+# Dark orange: #994d00
+add_busy_bar(color = "#ff6f69")
+```
+
+
+Main
+=======================================================================
+
+Column {.tabset}
+-----------------------------------------------------------------------
+
+### Query
+
+```{r}
+textAreaInput( inputId = "userQuery", 
+               label = "Commands:",
+               placeholder = "Natural language query",
+               value = "Talk about international tariffs.",
+               width = "100%", rows = 8 )
+
+textUserQuery <- 
+  reactive({
+    
+    if( nchar(input$userQuery) == 0) { 
+      NULL 
+    } else {
+      input$userQuery
+    }
+    
+  })
+```
+
+
+### URL
+
+URL:
+
+```{r}
+consURL <- 
+  reactive({
+    resURL <- paste0( input$webServiceURL, "/rag", "?query=", URLencode(textUserQuery()))
+    resURL <- gsub("//", "/", resURL, fixed = T)
+    resURL
+  })
+```
+
+
+```{r}
+queryURL <- 
+  reactive({
+    query <- list()
+    
+    if( input$toLang == "ast") {
+      query <- c(query, ast="True")
+    } else {
+      query <- c(query, lang=input$toLang)
+    }
+    
+    query <- c(query, "from-lang" = input$fromLang)
+  })
+```
+
+
+```{r}
+renderPrint( expr = consURL())
+```
+
+
+### Translation
+
+```{r}
+lsInterpreted <- reactiveVal(list(CODE= "🈚️ Nothing yet"))
+lastResult <- reactiveVal(NULL)
+
+dslwsError <- reactiveVal(NULL)
+
+observeEvent(input$submitButton, {
+  
+  if( nchar(trimws(input$userQuery)) == 0) { 
+    
+    lsInterpreted(NULL)
+    
+  } else {
+    
+    # Get current setup
+    resp <- InterpretByDSLWebService(command = NULL, url = paste0( input$webServiceURL, "/", "show_setup"))
+    
+    if ( resp$Success ) {
+      vdbID <- resp$Content[["vdb-id"]]
+      
+      # Load vector database if different one is specified
+      if ( vdbID != input$vectorDatabase ) {
+        
+          resp <- InterpretByDSLWebService(command = NULL, url = paste0( input$webServiceURL, "/vdb_load", "?id=", input$vectorDatabase))
+          
+          if ( !resp$Success ) {
+            lsInterpreted(list(CODE= "See the tab Errors"))
+            dslwsError(resp$Response)
+            return()
+          }
+      }
+      
+    } else {
+      
+      lsInterpreted(list(CODE= "See the tab Errors"))
+      
+      dslwsError(resp$Response)
+      return()
+    }
+    
+    dwsResp <- InterpretByDSLWebService(command = NULL, url = consURL())
+          
+    print(dwsResp)
+    
+    if ( dwsResp$Success ) {
+      
+      res <- dwsResp$Content
+      
+      lsInterpreted(list(CODE = res))
+      
+      dslwsError(dwsResp)
+      
+    } else {
+      
+      lsInterpreted(list(CODE= "See the tab Errors"))
+      
+      dslwsError(dwsResp$Response)
+      
+    }
+  }
+  
+})
+```
+
+
+Interpreted:
+
+```{r}
+renderPrint(
+  expr = lsInterpreted()
+)
+```
+
+
+### Errors
+
+```{r}
+renderPrint(
+  expr = dslwsError()
+)
+```
+
+
+Column {data-height=900}
+-----------------------------------------------------------------------
+
+```{r}
+numericResult <- 
+  reactive({   
+    if( !is.null(lsInterpreted()$DSL) && grepl("^Lingua", lsInterpreted()$DSL)) {
+      deparse( do.call( c, lapply(lsInterpreted()$CODE, function(x) setNames( as.character(x), names(x)))) )
+    } else {
+      ""
+    }
+  })
+```
+
+### Response
+
+```{r}
+htmlOutput("code")
+output$code <- renderUI( shiny::HTML(gsub("\n", "<br>", lsInterpreted()$CODE, fixed = T)) )
+```
+
+
+
+References
+=======================================================================
+
+#### Packages, repositories
+
+[AAp1] Anton Antonov,
+[LLM::RetrievalAugmentedGeneration](https://github.com/antononcube/Raku-LLM-RetrievalAugmentedGeneration),
+(2024-2025),
+[GitHub/antononcube](https://github.com/antononcube).
+
+[AAp1] Anton Antonov,
+[LLM::Containerization](https://github.com/antononcube/Raku-LLM-Containerization),
+(2024-2025),
+[GitHub/antononcube](https://github.com/antononcube).
+
+
+------
+
+#### Videos
+
+[AAv1] Anton Antonov,
+["Raku RAG demo"](https://www.youtube.com/watch?v=JHO2Wk1b-Og),
+(2020),
+[YouTube/AAA4prediction](https://www.youtube.com/@AAA4prediction).
+
+
+-----
+
+#### Components diagram
+
+```{r, fig.width=10, fig.height=6}
+include_graphics("./RAG-process-TD.png")
+```
+
+The interactive interface utilizes:
+
+- A server at RStudio's [shinyapps.io](https://www.shinyapps.io)
+
+  - Launched on demand
+
+- A server / droplet  at [DigitalOcean](https://www.digitalocean.com)
+
+  - Permanent
+
+- [Raku](https://raku.org) and the [Raku package Cro](https://cro.services)
+
