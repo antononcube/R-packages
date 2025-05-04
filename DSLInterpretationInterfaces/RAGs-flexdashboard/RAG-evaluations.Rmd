@@ -22,6 +22,13 @@ library(httr)
 library(ExternalParsersHookUp)
 ```
 
+```{r}
+# Use this function somewhere in UI.
+# See https://www.color-hex.com/color-palette/895
+# or https://www.color-hex.com/color/994d00
+# Dark orange: #994d00
+# add_busy_bar(color = "#ff6f69")
+```
 
 Main
 =======================================================================
@@ -70,13 +77,6 @@ radioButtons( inputId = "toLang",
 )
 ```
 
-```{r}
-# Use this function somewhere in UI.
-# See https://www.color-hex.com/color-palette/895
-# or https://www.color-hex.com/color/994d00
-# Dark orange: #994d00
-add_busy_bar(color = "#ff6f69")
-```
 
 Column {.tabset}
 -----------------------------------------------------------------------
@@ -148,6 +148,8 @@ dslwsError <- reactiveVal(NULL)
 
 observeEvent(input$submitButton, {
   
+  show_modal_spinner()
+
   if( nchar(trimws(input$userQuery)) == 0) { 
     
     lsInterpreted(NULL)
@@ -201,6 +203,7 @@ observeEvent(input$submitButton, {
     }
   }
   
+  remove_modal_spinner()
 })
 ```
 
@@ -294,6 +297,12 @@ fluidRow(
 actionButton(inputId = "confSubmitButton", 
              label = "Configure", 
              icon = icon("gear"))
+```
+
+LLM configuration server response:
+
+```{r conf-params2}
+fluidRow(column(6, verbatimTextOutput("confServerResponse")))
 
 hr(style = "border-top: 1px solid #000000;")
 ```
@@ -312,6 +321,12 @@ fluidRow(
 actionButton(inputId = "vdbConfSubmitButton", 
              label = "Configure", 
              icon = icon("gear"))
+```
+
+Vector database configuration server response:
+
+```{r vdb-conf-params2}
+fluidRow(column(6, verbatimTextOutput("vdbConfServerResponse")))
 
 hr(style = "border-top: 1px solid #000000;")
 ```
@@ -361,13 +376,10 @@ confResponse <-
 ```
 
 
-### LLM configuration server response
-
 ```{r}
 output$confServerResponse <- renderText(confResponse())
-
-verbatimTextOutput("confServerResponse")
 ```
+
 
 ```{r}
 vdbConfResponse <- 
@@ -411,13 +423,8 @@ vdbConfResponse <-
   }) %>% bindEvent(input$vdbConfSubmitButton)
 ```
 
-
-### Vector database configuration server response
-
 ```{r}
 output$vdbConfServerResponse <- renderText(vdbConfResponse())
-
-verbatimTextOutput("vdbConfServerResponse")
 ```
 
 
