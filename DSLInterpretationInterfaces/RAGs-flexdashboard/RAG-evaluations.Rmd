@@ -1,5 +1,5 @@
 ---
-title: "RAG interface"
+title: "RAG evaluations"
 output: 
   flexdashboard::flex_dashboard:
     theme: spacelab
