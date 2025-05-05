@@ -48,8 +48,7 @@ hr(style = "border-top: 1px solid #000000;")
 radioButtons( inputId = "vectorDatabase", 
               label = "Knowledge base:",
               choices = c(
-                "EconomicsAI" = "c4cd86f8-8908-44a4-8a39-9f9e476cba05",
-                "No833" = "045f467c-193f-4df6-bec3-790d6c83ca64"
+                "EconomicsAI" = "c4cd86f8-8908-44a4-8a39-9f9e476cba05"
               ),
               selected = "c4cd86f8-8908-44a4-8a39-9f9e476cba05"
 )
@@ -58,7 +57,7 @@ hr(style = "border-top: 1px solid #000000;")
 
 numericInput(inputId = "nns", 
              label = "Number of nearest neighbors:",
-             value = 12,
+             value = 25,
              min = 1, 
              max = 1000)
 
@@ -273,8 +272,8 @@ Row {.tabset}
 ```{r}
 textInput( inputId = "webServiceURL", 
            label = "Web service URL:", 
-           value = "http://localhost:10000", 
-           placeholder = "http://localhost:10000")
+           value = "http://accendodata.net:5080", 
+           placeholder = "http://accendodata.net:5080")
 
 hr(style = "border-top: 1px solid #000000;")
 ```
@@ -314,7 +313,7 @@ Vector database LLM embedding model configuration parameters:
 ```{r vdb-conf-params}
 fluidRow(
   column(3, selectInput(inputId = "vdbConfName", label = "Service", choices = c("ChatGPT", "Gemini", "LLaMA"), selected = "LLaMA")),
-  column(3, textInput(inputId = "vdbConfBaseURL", label = "Base URL:", value = "http://127.0.0.1:8080")),
+  column(3, textInput(inputId = "vdbConfBaseURL", label = "Base URL:", value = "automatic")),
   column(3, textInput(inputId = "vdbConfModel", label = "Model", value = "llama-embedding"))
 )
 
@@ -343,7 +342,7 @@ confResponse <-
       "temperature" = input$confTempearture 
     )
     
-    if( trimws(input$confBaseURL) != "automatic") {
+    if( !(tolower(trimws(input$confBaseURL)) %in% c("automatic", "auto", "whatever")) ) {
       json_data[["base-url"]] = input$confBaseURL
     }
     
@@ -391,7 +390,7 @@ vdbConfResponse <-
       "model" = input$vdbConfModel
     )
     
-    if( trimws(input$confBaseURL) != "automatic") {
+    if( !(tolower(trimws(input$vdbConfBaseURL)) %in% c("automatic", "auto", "whatever")) ) {
       json_data[["base-url"]] = input$vdbConfBaseURL
     }
     
