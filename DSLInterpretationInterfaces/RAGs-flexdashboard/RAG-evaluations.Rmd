@@ -314,7 +314,7 @@ Vector database LLM embedding model configuration parameters:
 ```{r vdb-conf-params}
 fluidRow(
   column(3, selectInput(inputId = "vdbConfName", label = "Service", choices = c("ChatGPT", "Gemini", "LLaMA"), selected = "LLaMA")),
-  column(3, textInput(inputId = "vdbConfBaseURL", label = "Base URL:", value = "http://127.0.0.1:800")),
+  column(3, textInput(inputId = "vdbConfBaseURL", label = "Base URL:", value = "http://127.0.0.1:8080")),
   column(3, textInput(inputId = "vdbConfModel", label = "Model", value = "llama-embedding"))
 )
 
@@ -392,7 +392,7 @@ vdbConfResponse <-
     )
     
     if( trimws(input$confBaseURL) != "automatic") {
-      json_data[["base-url"]] = input$confBaseURL
+      json_data[["base-url"]] = input$vdbConfBaseURL
     }
     
     # Perform the POST request
