@@ -250,6 +250,8 @@ ComputeROCTypeCounts <- function( data, actualColumnName, probColumnName,
     stop( "The thresholds argument is expected to have values between 0 and 1.", call. = T)
   }
 
+  dfROCTypesLocal <- dplyr::mutate(dfROCTypes, Actual = ifelse( Actual == "0", falseLabel, trueLabel))
+  dfROCTypesLocal <- dplyr::mutate(dfROCTypesLocal, Predicted = ifelse( Predicted == "0", falseLabel, trueLabel))
 
   dfROCTypeCounts <-
     purrr::map_df( thresholds, function(th) {
@@ -264,7 +266,7 @@ ComputeROCTypeCounts <- function( data, actualColumnName, probColumnName,
       dfTemp <- as.data.frame(dfTemp)
       dfTemp <- tidyr::complete( data = dfTemp, dfGrid, fill = list( Freq = 0) )
       dfTemp <- cbind( Threshold = th, dfTemp)
-      dplyr::inner_join(dfTemp, dfROCTypes, by = c("Actual", "Predicted"))
+      dplyr::inner_join(dfTemp, dfROCTypesLocal, by = c("Actual", "Predicted"))
     })
 
   if ( tolower(form) == "wide" ) {

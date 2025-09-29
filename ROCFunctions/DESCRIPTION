@@ -1,7 +1,7 @@
 Package: ROCFunctions
 Type: Package
 Title: Receiver Operating Characteristic Functions
-Version: 0.1.0
+Version: 0.1.1
 Author: Anton Antonov
 Maintainer: Anton Antonov <antononcube@posteo.net>
 Description: Computation of the Receiver Operating Characteristic (ROC) functions.
