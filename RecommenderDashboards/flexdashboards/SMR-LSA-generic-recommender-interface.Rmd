@@ -1,6 +1,6 @@
 ---
 title: "Generic recommender interface"
-output: 
+output:
   flexdashboard::flex_dashboard:
     orientation: rows
     vertical_layout: fill
@@ -9,91 +9,151 @@ runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
-library(Matrix)
 library(shiny)
 library(flexdashboard)
+library(Matrix)
 library(DT)
-library(rmarkdown)
-library(stopwords)
-library(SnowballC)
 library(purrr)
-library(tidyverse)
+library(dplyr)
+library(stringr)
+library(tibble)
+library(tidyr)
 
 library(OutlierIdentifiers)
 library(SparseMatrixRecommender)
 library(SMRMon)
 library(LSAMon)
+
+`%||%` <- function(x, y) if (is.null(x) || length(x) == 0) y else x
+
+split_weighted_text <- function(text, prefix = NULL, drop_prefix = FALSE, valid_names = NULL) {
+  if (is.null(text) || !nzchar(trimws(text))) return(NULL)
+
+  tokens <- text |>
+    strsplit(",") |>
+    unlist(use.names = FALSE) |>
+    str_trim()
+  tokens <- tokens[nchar(tokens) > 0]
+
+  if (!is.null(prefix)) {
+    pattern <- paste0("^(", paste(prefix, collapse = "|"), "):")
+    tokens <- tokens[str_detect(tokens, pattern)]
+  }
+  if (!length(tokens)) return(NULL)
+
+  df <- str_split_fixed(tokens, ":", 3) |>
+    as_tibble(.name_repair = "minimal") |>
+    set_names(c("Prefix", "Value", "Score")) |>
+    mutate(
+      Score = suppressWarnings(as.numeric(Score)),
+      Score = replace(Score, is.na(Score), 1),
+      Name  = if (drop_prefix) Value else paste(Prefix, Value, sep = ":")
+    ) |>
+    select(Name, Score)
+
+  if (!is.null(valid_names)) {
+    df <- df |> filter(Name %in% valid_names)
+  }
+  if (!nrow(df)) return(NULL)
+  setNames(df$Score, df$Name)
+}
+
+normalize_profile <- function(x) {
+  if (is.null(x) || !length(x)) return(NULL)
+  max_abs <- max(abs(x))
+  if (isTRUE(all.equal(max_abs, 0))) return(NULL)
+  x / max_abs
+}
+
+profile_from_free_text <- function(lsa, text, type = c("terms", "topics"), allowed) {
+  type <- match.arg(type)
+  mat <- switch(
+    type,
+    terms  = lsa |> LSAMonRepresentByTerms(query = text) |> LSAMonTakeValue(),
+    topics = lsa |> LSAMonRepresentByTopics(query = text) |> LSAMonTakeValue() |>
+      SMRApplyTermWeightFunctions("None", "None", "Cosine")
+  )
+  vec <- colSums(mat)
+  vec <- vec[abs(vec) > 0]
+  if (!length(vec)) return(NULL)
+
+  prefix <- if (type == "terms") "Word" else "Topic"
+  names(vec) <- paste(prefix, names(vec), sep = ":")
+  vec <- vec[names(vec) %in% allowed]
+  normalize_profile(vec)
+}
 ```
 
-```{r get-data, include=FALSE}
-load( file = "smrGoods.RData" )
-load( file = "lsaGoods.RData" )
-load( file = "dfGoods.RData" )
+```{r data, include=FALSE}
+load("smrGoods.RData")
+load("lsaGoods.RData")
+load("dfGoods.RData")
 
-lsRecommenders <- list( "Goods" = smrGoods)
-lsLSAObjects   <- list( "Goods" = lsaGoods)
-lsData         <- list( "Goods" = dfGoods)
-
-lsRecommenders <- 
-  purrr::map( lsRecommenders, function(smr) {
-    smr %>% SMRMonApplyTermWeightFunctions( "None", "None", "Cosine" )
-  })
+lsRecommenders <- list(Goods = smrGoods) |>
+  map(~ .x |> SMRMonApplyTermWeightFunctions("None", "None", "Cosine"))
+lsLSAObjects <- list(Goods = lsaGoods)
+lsData       <- list(Goods = dfGoods)
 ```
 
 Parameters {.sidebar}
 =======================================================================
 
 ```{r}
-selectInput( inputId = "recommender", 
-             label = "Type:", 
-             choices = setNames( names(lsRecommenders), paste( names(lsRecommenders), "recommender" ) ), 
-             selected = "Goods")
-```
+selectInput(
+  "recommender",
+  "Type:",
+  choices = setNames(names(lsRecommenders), paste(names(lsRecommenders), "recommender")),
+  selected = "Goods"
+)
 
-
-```{r}
-smrObj <- 
-  reactive({
-    lsRecommenders[[ input$recommender ]]
-  })
-
-lsaObj <- 
-  reactive({
-    lsLSAObjects[[ input$recommender ]]
-  })
-
-dfData <- 
-  reactive({
-    lsData[[ input$recommender ]]
-  })
+sliderInput(
+  "numberOfRecs",
+  "Number of recommendations:",
+  min = 1, max = 300, value = 10, step = 1
+)
 ```
 
 ```{r}
-sliderInput( inputId = "numberOfRecs", label = "Number of recommendations:", min = 1, max = 300, value = 10, step = 1 )
-```
+selectedObjects <- reactive({
+  req(input$recommender)
+  list(
+    smr = lsRecommenders[[input$recommender]],
+    lsa = lsLSAObjects[[input$recommender]],
+    data = lsData[[input$recommender]]
+  )
+})
 
-```{r, echo=F}
-uiOutput("dynamic")
+smrObj <- reactive(selectedObjects()$smr)
+lsaObj <- reactive(selectedObjects()$lsa)
+dfData <- reactive(selectedObjects()$data)
 
-
-output$dynamic <- renderUI({ 
-  
-  do.call( tagList,
-          purrr::map( smrObj() %>% SMRMonTakeTagTypes, function(tt) {
-            sliderInput( inputId = paste0( tt, "Weight"), label = paste0( tt, " weight:"), min = 0, max = 1, value = 1, step = 0.01 )
-            })
-          )
-
+tagTypes <- reactive({
+  smrObj() |> SMRMonTakeTagTypes()
 })
 ```
 
 ```{r}
-tagTypeWeights <- 
-  reactive(
-    purrr::map_dbl( smrObj() %>% SMRMonTakeTagTypes, function(tt) { input[[ paste0( tt, "Weight") ]] }) 
-  )
+uiOutput("tagWeightInputs")
+
+output$tagWeightInputs <- renderUI({
+  tagTypes() |>
+    map(~ sliderInput(
+      inputId = paste0(.x, "Weight"),
+      label   = paste0(.x, " weight:"),
+      min = 0, max = 1, value = 1, step = 0.01
+    )) |>
+    tagList()
+})
 ```
 
+```{r}
+tagTypeWeights <- reactive({
+  types <- tagTypes()
+  req(types)
+  map_dbl(types, ~ input[[paste0(.x, "Weight")]] %||% 1) |>
+    set_names(types)
+})
+```
 
 Recommendations
 =======================================================================
@@ -104,216 +164,148 @@ Row {data-height=400}
 ### Tags
 
 ```{r}
-textAreaInput( 
-  inputId = "tagsText", 
-  label = "Tag text (metadata)", 
-  placeholder = "Good:milk, Country:denmark, Good:ham:1.1, Country:china:0.85", 
-  width = "600px", cols = 300, rows = 8 )
+textAreaInput(
+  "tagsText",
+  "Tag text (metadata)",
+  placeholder = "Good:milk, Country:denmark, Good:ham:1.1",
+  width = "600px", rows = 8
+)
 
-lsTagsProf <- 
-  reactive({
-    
-    if( nchar(input$tagsText) == 0) { 
-      NULL 
-    } else {
-      
-      res <- trimws( strsplit(input$tagsText, split = ",")[[1]] )
-      res <- res[ nchar(res) > 0 ]
-      res <- res[ !grepl("^Item:", res) ]
-      
-      if ( length(res) > 0 ) {
-        
-        dfRes <- as.data.frame(stringr::str_split_fixed( string = res, pattern = ":", n = 3))
-        
-        dfRes[[3]] <- as.numeric(dfRes[[3]])
-        dfRes[[3]][is.na(dfRes[[3]])] <- 1
-        
-        dfRes <- 
-          purrr::map_df( split(dfRes,1:nrow(dfRes)), function(dfX) {
-            data.frame( Tag = paste0( dfX[[1,1]], ":", dfX[[1,2]] ), Score = dfX[[1,3]] )
-          })
-        dfRes <- dfRes[ dfRes$Tag %in% colnames(smrObj()$M), ] 
-        setNames( dfRes$Score, dfRes$Tag )
-        
-      } else {
-        NULL
-      }
-    }
-  })
+lsTagsProf <- reactive({
+  text <- input$tagsText
+  if (!nzchar(text)) return(NULL)
+  prof <- split_weighted_text(text, valid_names = colnames(smrObj()$M))
+  if (is.null(prof)) return(NULL)
+  prof[!str_detect(names(prof), "^Item:")]
+})
 
-lsNNItems <- 
-  reactive({
-    
-    if( nchar(input$tagsText) == 0) { 
-      NULL 
-    } else if ( grepl("Item:", input$tagsText) ) {
-      
-      res <- trimws( strsplit(input$tagsText, split = ",")[[1]] )
-      res <- res[ nchar(res) > 0 ]
-      res <- res[ grepl("^Item:", res) ]
-      
-      if ( length(res) > 0 ) {
-        dfRes <- as.data.frame(stringr::str_split_fixed( string = res, pattern = ":", n = 3))
-        
-        dfRes[[3]] <- as.numeric(dfRes[[3]])
-        dfRes[[3]][is.na(dfRes[[3]])] <- 1
-        
-        dfRes <- 
-          purrr::map_df( split(dfRes,1:nrow(dfRes)), function(dfX) {
-            data.frame( Tag = paste0( dfX[[1,1]], ":", dfX[[1,2]] ), Score = dfX[[1,3]] )
-          })
-        dfRes$Tag <- gsub( "^Item:", "", dfRes$Tag)
-        dfRes <- dfRes[ dfRes$Tag %in% rownames(smrObj()$M), ] 
-        setNames( dfRes$Score, dfRes$Tag )
-      } else {
-        NULL
-      }      
-    } else {
-      NULL
-    }
-  })
+lsNNItems <- reactive({
+  text <- input$tagsText
+  if (!nzchar(text)) return(NULL)
+  split_weighted_text(
+    text,
+    prefix = "Item",
+    drop_prefix = TRUE,
+    valid_names = rownames(smrObj()$M)
+  )
+})
 ```
 
 Known tags:
 
 ```{r}
-renderText(paste(names(lsTagsProf()), collapse = ", "))
+renderText({
+  prof <- lsTagsProf()
+  if (is.null(prof)) "—" else paste(names(prof), collapse = ", ")
+})
 ```
 
 ### Free text
 
 ```{r}
-textAreaInput( 
-  inputId = "freeText", 
-  label = "Free text (description)", 
-  placeholder = "Milk unverbalised", 
-  width = "600px", cols = 300, rows = 8 )
+textAreaInput(
+  "freeText",
+  "Free text (description)",
+  placeholder = "Milk unverbalised",
+  width = "600px", rows = 8
+)
 
-lsFreeWordsProf <- 
-  reactive({
-    
-    if( nchar(input$freeText) == 0) { 
-      NULL 
-    } else {
-      
-      matRes <- 
-        lsaObj() %>% 
-        LSAMonRepresentByTerms( query = input$freeText ) %>% 
-        LSAMonTakeValue
-      
-      lsCSums <- colSums(matRes)
-      lsProf <- lsCSums[abs(lsCSums) > 0]
-      
-      if( length(lsProf) > 0 ) { 
-        names(lsProf) <- paste0( "Word:", names(lsProf) )
-        lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
-        
-        if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
-        rev(sort(lsProf))
-      } else {
-        NULL
-      }
-    }
-    
-  })
+lsFreeWordsProf <- reactive({
+  text <- input$freeText
+  if (!nzchar(text)) return(NULL)
+  profile_from_free_text(
+    lsa = lsaObj(),
+    text = text,
+    type = "terms",
+    allowed = colnames(smrObj()$M)
+  )
+})
 
-lsFreeTopicsProf <- 
-  reactive({
-    
-    if( nchar(input$freeText) == 0) { 
-      NULL 
-    } else {
-      
-      matRes <- 
-        lsaObj() %>% 
-        LSAMonRepresentByTopics( query = input$freeText ) %>% 
-        LSAMonTakeValue
-      
-      matRes <- SMRApplyTermWeightFunctions( matRes, "None", "None", "Cosine" )
-      
-      lsCSums <- colSums(matRes)
-      lsProf <- lsCSums[abs(lsCSums) > 0]
-      
-      if( length(lsProf) > 0 ) { 
-        names(lsProf) <- paste0( "Topic:", names(lsProf) )
-        lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
-        
-        if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
-        rev(sort(lsProf))
-      } else {
-        NULL
-      }
-    }
-    
-  })
+lsFreeTopicsProf <- reactive({
+  text <- input$freeText
+  if (!nzchar(text)) return(NULL)
+  profile_from_free_text(
+    lsa = lsaObj(),
+    text = text,
+    type = "topics",
+    allowed = colnames(smrObj()$M)
+  )
+})
+
+lsFreeProf <- reactive({
+  c(lsFreeWordsProf(), lsFreeTopicsProf())
+})
 ```
-
 
 Extracted words and topics:
 
 ```{r}
-lsFreeProf <- reactive({ c( lsFreeWordsProf(), lsFreeTopicsProf() ) })
-DT::renderDataTable(
-  expr = data.frame( Word = names(lsFreeProf()), Score =  lsFreeProf() ),
-  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
+DT::renderDT({
+  prof <- lsFreeProf()
+  validate(need(!is.null(prof), "Enter free text to extract descriptors."))
+  tibble(Word = names(prof), Score = unname(prof))
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
+  server = FALSE
 )
 ```
 
 Row {.tabset}
 -----------------------------------------------------------------------
 
-
 ### Recommendations with both tags and free text
 
 ```{r}
-lsProf <- 
-  reactive({ 
-    c( 
-      lsTagsProf(),
-      lsFreeProf() 
-    ) 
-  })
+lsProf <- reactive({
+  c(lsTagsProf(), lsFreeProf())
+})
 
-DT::renderDataTable(
-  if( is.null(lsProf()) || length(lsProf()) == 0 ) {
-    NULL
-  } else {
-    smrObj() %>% 
-      SMRMonApplyTagTypeWeights( 
-        weights = tagTypeWeights(), 
-        default = 1 ) %>% 
-      SMRMonRecommendByProfile( profile = lsProf(), nrecs = input$numberOfRecs, normalizeQ = TRUE ) %>% 
-      SMRMonJoinAcross( dfData() ) %>% 
-      SMRMonTakeValue
-    },
-  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
-) 
+DT::renderDT({
+  profile <- lsProf()
+  validate(need(!is.null(profile), "Provide tags and/or free text to get recommendations."))
+
+  smrObj() |>
+    SMRMonApplyTagTypeWeights(weights = tagTypeWeights(), default = 1) |>
+    SMRMonRecommendByProfile(
+      profile = profile,
+      nrecs = input$numberOfRecs,
+      normalizeQ = TRUE
+    ) |>
+    SMRMonJoinAcross(dfData()) |>
+    SMRMonTakeValue()
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
+  selection = "none",
+  server = FALSE
+)
 ```
-
 
 ### Recommendations with items
 
 ```{r}
-DT::renderDataTable(
+DT::renderDT({
+  history <- lsNNItems()
+  validate(need(!is.null(history), "Add Item:... entries in the tag box to pivot on items."))
 
-  if( is.null(lsNNItems()) || length(lsNNItems()) == 0 ) {
-    NULL
-  } else {
-    
-    smrObj() %>%     
-      SMRMonApplyTagTypeWeights( 
-        weights = tagTypeWeights(),
-        default = 1 ) %>% 
-      SMRMonRecommend( history = lsNNItems(), nrecs = input$numberOfRecs, normalizeQ = TRUE, removeHistoryQ = FALSE ) %>% 
-      SMRMonJoinAcross( dfData() ) %>% 
-      SMRMonTakeValue
-  },
-  
-  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE),
-  selection = "none"
-) 
+  smrObj() |>
+    SMRMonApplyTagTypeWeights(weights = tagTypeWeights(), default = 1) |>
+    SMRMonRecommend(
+      history = history,
+      nrecs = input$numberOfRecs,
+      normalizeQ = TRUE,
+      removeHistoryQ = FALSE
+    ) |>
+    SMRMonJoinAcross(dfData()) |>
+    SMRMonTakeValue()
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
+  selection = "none",
+  server = FALSE
+)
 ```
-
 
 Profiles
 =======================================================================
@@ -324,139 +316,114 @@ Row {data-height=400}
 ### Items
 
 ```{r}
-textAreaInput( inputId = "profileTagsText", label = "Items text (points)", width = "600px", cols = 300, rows = 8 )
+textAreaInput(
+  "profileTagsText",
+  "Items text (points)",
+  width = "600px", rows = 8
+)
 
-lsItemsHist <- 
-  reactive({
-    
-    if( nchar(input$profileTagsText) == 0) { 
-      NULL 
-    } else {
-      res <- trimws( strsplit(input$profileTagsText, split = ",")[[1]] )
-      res <- res[ nchar(res) > 0 ]
-      
-      dfRes <- setNames( as.data.frame(stringr::str_split_fixed( string = res, pattern = ":", n = 2)), c("Item", "Rating"))
-      
-      dfRes[[2]] <- as.numeric(dfRes[[2]])
-      dfRes[[2]][is.na(dfRes[[2]])] <- 1
-      
-      dfRes <- dfRes[ dfRes$Item %in% rownames(smrObj()$M), ] 
-      setNames( dfRes$Rating, dfRes$Item )
-    }
-  })
+lsItemsHist <- reactive({
+  text <- input$profileTagsText
+  if (!nzchar(text)) return(NULL)
+  split_weighted_text(
+    text,
+    prefix = "Item",
+    drop_prefix = TRUE,
+    valid_names = rownames(smrObj()$M)
+  )
+})
 ```
 
 Known items:
 
 ```{r}
-renderText(paste(names(lsItemsHist()), collapse = ", "))
+renderText({
+  items <- lsItemsHist()
+  if (is.null(items)) "—" else paste(names(items), collapse = ", ")
+})
 ```
 
 ### Free text
 
 ```{r}
-textAreaInput( 
-  inputId = "profileFreeText", 
-  label = "Free text (description)", 
-  placeholder = "Milk unverbalised", 
-  width = "600px", cols = 300, rows = 8 )
+textAreaInput(
+  "profileFreeText",
+  "Free text (description)",
+  placeholder = "Milk unverbalised",
+  width = "600px", rows = 8
+)
 
-lsProfileFreeWordsProf <- 
-  reactive({
-    
-    if( nchar(input$profileFreeText) == 0) { 
-      NULL 
-    } else {
-      
-      matRes <- 
-        lsaObj() %>% 
-        LSAMonRepresentByTerms( query = input$profileFreeText ) %>% 
-        LSAMonTakeValue
-      
-      lsCSums <- colSums(matRes)
-      lsProf <- lsCSums[abs(lsCSums) > 0]
-      
-      if( length(lsProf) > 0 ) { 
-        names(lsProf) <- paste0( "Word:", names(lsProf) )
-        lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
-        
-        if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
-        rev(sort(lsProf))
-      } else {
-        NULL
-      }
-    }
-    
-  })
+lsProfileFreeWordsProf <- reactive({
+  text <- input$profileFreeText
+  if (!nzchar(text)) return(NULL)
+  profile_from_free_text(
+    lsa = lsaObj(),
+    text = text,
+    type = "terms",
+    allowed = colnames(smrObj()$M)
+  )
+})
 
-lsProfileFreeTopicsProf <- 
-  reactive({
-    
-    if( nchar(input$profileFreeText) == 0) { 
-      NULL 
-    } else {
-      
-      matRes <- 
-        lsaObj() %>% 
-        LSAMonRepresentByTopics( query = input$profileFreeText ) %>% 
-        LSAMonTakeValue
-      
-      matRes <- SMRApplyTermWeightFunctions( matRes, "None", "None", "Cosine" )
-      
-      lsCSums <- colSums(matRes)
-      lsProf <- lsCSums[abs(lsCSums) > 0]
-      
-      if( length(lsProf) > 0 ) { 
-        names(lsProf) <- paste0( "Topic:", names(lsProf) )
-        lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
-        
-        if( max(abs(lsProf)) > 0 ) { lsProf <- lsProf / max(abs(lsProf)) }
-        rev(sort(lsProf))
-      } else {
-        NULL
-      }
-    }
-    
-  })
+lsProfileFreeTopicsProf <- reactive({
+  text <- input$profileFreeText
+  if (!nzchar(text)) return(NULL)
+  profile_from_free_text(
+    lsa = lsaObj(),
+    text = text,
+    type = "topics",
+    allowed = colnames(smrObj()$M)
+  )
+})
 
-dfItemsByFreeText <- 
-  reactive({
-    if ( is.null(lsProfileFreeProf()) ) { 
-      NULL
-    } else {
-      
-      smrObj() %>% 
-        SMRMonApplyTagTypeWeights( 
-          weights = tagTypeWeights(),
-          default = 1 ) %>% 
-        SMRMonRecommendByProfile( profile = lsProfileFreeProf(), nrecs = input$numberOfRecs, normalizeQ = TRUE ) %>% 
-        SMRMonTakeValue
-    }
-  })
-    
-dfProfileByFreeText <- 
-  reactive({
-    if ( is.null(dfItemsByFreeText()) ) { 
-      NULL
-    } else {
-      smrObj() %>% 
-        SMRMonProfile( history = setNames(dfItemsByFreeText(), c("Rating", "Index", "Item")), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
-        SMRMonTakeValue
-    }
-  })
+lsProfileFreeProf <- reactive({
+  c(lsProfileFreeWordsProf(), lsProfileFreeTopicsProf())
+})
+
+dfItemsByFreeText <- reactive({
+  prof <- lsProfileFreeProf()
+  req(prof)
+
+  smrObj() |>
+    SMRMonApplyTagTypeWeights(weights = tagTypeWeights(), default = 1) |>
+    SMRMonRecommendByProfile(
+      profile = prof,
+      nrecs = input$numberOfRecs,
+      normalizeQ = TRUE
+    ) |>
+    SMRMonTakeValue()
+})
+
+dfProfileByFreeText <- reactive({
+  items <- dfItemsByFreeText()
+  req(items)
+
+  history <- items |>
+    rename(Rating = Score) |>
+    select(Rating, Index, Item)
+
+  smrObj() |>
+    SMRMonProfile(
+      history = history,
+      tagTypesQ = TRUE,
+      normalizeQ = TRUE
+    ) |>
+    SMRMonTakeValue()
+})
 ```
-
 
 Extracted words and topics:
 
 ```{r}
-lsProfileFreeProf <- reactive({ c( lsProfileFreeWordsProf(), lsProfileFreeTopicsProf() ) })
-DT::renderDataTable(
-  expr = data.frame( Word = names(lsProfileFreeProf()), Score =  lsProfileFreeProf() ),
-  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
+DT::renderDT({
+  prof <- lsProfileFreeProf()
+  validate(need(!is.null(prof), "Enter profile free text to see descriptors."))
+  tibble(Word = names(prof), Score = unname(prof))
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
+  server = FALSE
 )
 ```
-
 
 Row {.tabset}
 -----------------------------------------------------------------------
@@ -464,80 +431,88 @@ Row {.tabset}
 ### Profile of items
 
 ```{r}
-dfProfileByItemsHist <- 
-  reactive({
-    
-    if( is.null(lsItemsHist()) || length(lsItemsHist()) == 0 ) {
-      NULL
-    } else {
-      
-      smrObj() %>%     
-        SMRMonApplyTagTypeWeights( 
-          weights = tagTypeWeights(), 
-          default = 1 ) %>% 
-        SMRMonProfile( history = lsItemsHist(), tagTypesQ = TRUE, normalizeQ = TRUE ) %>% 
-        SMRMonTakeValue
-    }
-  })
+dfProfileByItemsHist <- reactive({
+  history <- lsItemsHist()
+  if (is.null(history) || !length(history)) return(NULL)
+
+  smrObj() |>
+    SMRMonApplyTagTypeWeights(weights = tagTypeWeights(), default = 1) |>
+    SMRMonProfile(
+      history = history,
+      tagTypesQ = TRUE,
+      normalizeQ = TRUE
+    ) |>
+    SMRMonTakeValue()
+})
 ```
 
 ```{r}
-DT::renderDataTable( 
-  if( is.null(dfProfileByItemsHist()) ) { NULL } 
-  else { dfProfileByItemsHist() }, 
-  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
-) 
+DT::renderDT({
+  validate(need(!is.null(dfProfileByItemsHist()), "Provide items to build a profile."))
+  dfProfileByItemsHist()
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
+  server = FALSE
+)
 ```
-
 
 ### Profile by free text
 
 ```{r}
-DT::renderDataTable(
-  if( is.null(dfProfileByFreeText()) ) { NULL } 
-  else { dfProfileByFreeText() },
-  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
-) 
+DT::renderDT({
+  validate(need(!is.null(dfProfileByFreeText()), "Provide profile free text."))
+  dfProfileByFreeText()
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
+  server = FALSE
+)
 ```
-
 
 ### Profile by both items and free text
 
 ```{r}
+DT::renderDT({
+  items_profile <- dfProfileByItemsHist()
+  free_profile  <- dfProfileByFreeText()
+  validate(need(!is.null(items_profile) || !is.null(free_profile),
+                "Provide items and/or free text for fused profile."))
 
-DT::renderDataTable(
-  if( is.null(dfProfileByItemsHist()) && is.null(dfProfileByFreeText())  ) {
-    
-    NULL
-    
-  } else {
-    
-    rbind( dfProfileByItemsHist(), dfProfileByFreeText() ) %>% 
-      dplyr::group_by( TagType, Tag) %>% 
-      dplyr::summarise( Score = sum(Score), .groups = "drop_last") %>% 
-      dplyr::arrange(desc(Score)) %>% 
-      dplyr::select( Score, TagType, Tag)
-    
-  },
-  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
-) 
+  bind_rows(items_profile %||% tibble(), free_profile %||% tibble()) |>
+    group_by(TagType, Tag) |>
+    summarise(Score = sum(Score), .groups = "drop") |>
+    arrange(desc(Score)) |>
+    select(Score, TagType, Tag)
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
+  server = FALSE
+)
 ```
 
 Summary
 =======================================================================
 
-### Dimensions of the recommender matrix:
+### Dimensions of the recommender matrix
 
 ```{r}
-renderText( dim(smrObj() %>% SMRMonTakeM) )
+renderText({
+  dims <- smrObj() |> SMRMonTakeM() |> dim()
+  glue::glue("Rows: {dims[1]}, Columns: {dims[2]}")
+})
 ```
 
-### Tag types and ranges:
+### Tag types and ranges
 
 ```{r}
-DT::renderDataTable( smrObj() %>% SMRMonTakeTagTypeRanges )
+DT::renderDT({
+  smrObj() |> SMRMonTakeTagTypeRanges()
+},
+  options = list(pageLength = 5, scrollX = TRUE),
+  server = FALSE
+)
 ```
-
 
 References
 =======================================================================
@@ -554,7 +529,7 @@ and
 [AAp1, AAp2, AAp3].
 
 
-#### Packages 
+#### Packages
 
 [AAp1] Anton Antonov,
 [Sparse Matrix Recommender framework functions, R-package](https://github.com/antononcube/R-packages/tree/master/SparseMatrixRecommender),
@@ -572,6 +547,6 @@ and
 [R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
 
 [AAp4] Anton Antonov,
-[Random Data Frame Generator, R-package](https://github.com/antononcube/R-packages/tree/master/RandomDataFrameGenerator),
-(2021),
+[Random Data Generators, R-package](https://github.com/antononcube/R-packages/tree/master/RandomDataGenerators),
+(2021-2025),
 [R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
