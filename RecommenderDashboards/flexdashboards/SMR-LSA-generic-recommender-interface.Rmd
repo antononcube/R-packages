@@ -397,9 +397,7 @@ dfProfileByFreeText <- reactive({
   items <- dfItemsByFreeText()
   req(items)
 
-  history <- items |>
-    rename(Rating = Score) |>
-    select(Rating, Index, Item)
+  history <- setNames(items, c("Rating", "Index", "Item"))
 
   smrObj() |>
     SMRMonProfile(
