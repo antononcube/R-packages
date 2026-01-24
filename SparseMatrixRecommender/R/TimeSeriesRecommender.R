@@ -344,6 +344,8 @@ MakeTimeSeriesSearchVectors <- function( tsMat ) {
   
   ## Search for trends
   tsSearchVectors <- c()
+
+  ## Straight line is going to produce 0s using Pearson and Spearman correlations.
   
   ## Straight ascending line
   searchVector <- ( 1:ncol(tsMat) ) / ncol(tsMat)
@@ -358,6 +360,10 @@ MakeTimeSeriesSearchVectors <- function( tsMat ) {
   searchVector <- searchVector / ncol(tsMat)
   tsSearchVectors <- c( tsSearchVectors, list(SecondHalfUp = searchVector) )
   
+  ## Decreasing in the first half
+  searchVector <- rev(searchVector)
+  tsSearchVectors <- c( tsSearchVectors, list(FirstHalfDown = searchVector) )
+  
   ## Decreasing in first half, increasing in the last half
   searchVector1 <- ( 1:ncol(tsMat) ) - ( ncol(tsMat) / 2 ); searchVector1[ searchVector1 < 0 ] <- 0
   searchVector2 <- rev( 1:ncol(tsMat) ) - ( ncol(tsMat) / 2 ); searchVector2[ searchVector2 < 0 ] <- 0
@@ -365,7 +371,7 @@ MakeTimeSeriesSearchVectors <- function( tsMat ) {
   searchVector <- searchVector / ncol(tsMat)
   tsSearchVectors <- c( tsSearchVectors, list(DownAndUp = searchVector) )
   
-  ## Decreasing in first half, increasing in the last half
+  ## Increasing in first half, decreasing in the last half
   tsSearchVectors <- c( tsSearchVectors, list(UpAndDown = (-searchVector) + max(searchVector) ) )
   
   ## Sin
