@@ -284,7 +284,7 @@ TSCorrSMRMakeUI <- function( tsSMR, tsSearchVectors, initNNs = 12, initNCols = 2
                                     label = "Value plotting:",
                                     choices = c( "Raw" = "Value", "Smoothed" = "Value.ma"),
                                     inline = TRUE ),
-                      sliderInput( "svecSmoothedWindowSize", "Smoothing window size:", min = 1, max = 60, step = 1, value = 12 ),
+                      sliderInput( "svecSmoothedWindowSize", "Smoothing window size:", min = 1, max = 90, step = 1, value = 14 ),
                       hr(),
                       checkboxInput( inputId = "showPlotLegendTrends",
                                      label = ": show plot legend",
