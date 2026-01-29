@@ -237,19 +237,6 @@ lsFreeProf <- reactive({
 })
 ```
 
-Extracted words and topics:
-
-```{r}
-DT::renderDT({
-  prof <- lsFreeProf()
-  validate(need(!is.null(prof), "Enter free text to extract descriptors."))
-  tibble(Word = names(prof), Score = unname(prof))
-},
-  extensions = "Scroller",
-  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
-  server = FALSE
-)
-```
 
 Row {.tabset}
 -----------------------------------------------------------------------
@@ -303,6 +290,21 @@ DT::renderDT({
   extensions = "Scroller",
   options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
   selection = "none",
+  server = FALSE
+)
+```
+
+
+### Extracted words and topics
+
+```{r}
+DT::renderDT({
+  prof <- lsFreeProf()
+  validate(need(!is.null(prof), "Enter free text to extract descriptors."))
+  tibble(Word = names(prof), Score = unname(prof))
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
   server = FALSE
 )
 ```
@@ -409,19 +411,6 @@ dfProfileByFreeText <- reactive({
 })
 ```
 
-Extracted words and topics:
-
-```{r}
-DT::renderDT({
-  prof <- lsProfileFreeProf()
-  validate(need(!is.null(prof), "Enter profile free text to see descriptors."))
-  tibble(Word = names(prof), Score = unname(prof))
-},
-  extensions = "Scroller",
-  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
-  server = FALSE
-)
-```
 
 Row {.tabset}
 -----------------------------------------------------------------------
@@ -482,6 +471,20 @@ DT::renderDT({
     summarise(Score = sum(Score), .groups = "drop") |>
     arrange(desc(Score)) |>
     select(Score, TagType, Tag)
+},
+  extensions = "Scroller",
+  options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
+  server = FALSE
+)
+```
+
+### Extracted words and topics
+
+```{r}
+DT::renderDT({
+  prof <- lsProfileFreeProf()
+  validate(need(!is.null(prof), "Enter profile free text to see descriptors."))
+  tibble(Word = names(prof), Score = unname(prof))
 },
   extensions = "Scroller",
   options = list(scrollX = TRUE, scrollY = 300, scroller = TRUE),
